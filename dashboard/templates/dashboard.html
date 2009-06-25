@@ -1,0 +1,28 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://genshi.edgewall.org/"
+      xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <xi:include href="master.html" />
+  <xi:include href="dashboard_event_table.html" />
+  <xi:include href="dashboard_history_table.html" />
+
+<head>
+  <meta content="text/html; charset=UTF-8" http-equiv="content-type" py:replace="''"/>
+  <title>Welcome to TurboGears 2.0, standing on the 
+  shoulders of giants, since 2007</title>
+<link rel="stylesheet" type="text/css" href="${tg.url('/css/style_dash.css')}" />
+</head>
+
+<body>
+
+<div class="main_content">
+
+	${event_table(events,page,pages,id_first_row,id_last_row,total_row,event_edit_status_options)}
+	<br /><br />
+	${history_table(history,hist_error)}
+</div>
+
+</body>
+</html>
