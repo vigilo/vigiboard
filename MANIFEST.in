@@ -1,4 +1,0 @@
-recursive-include dashboard/public *
-include dashboard/public/favicon.ico
-recursive-include dashboard/i18n *
-recursive-include dashboard/templates *
