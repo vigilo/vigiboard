@@ -1,0 +1,45 @@
+#Apache configuration File
+#Read README.txt
+#1. This file should be added to your apache config folder; On Debian copy to /etc/apache2/sites-available/
+#Default location for tg2 project is /usr/local/turbogears/vigiboard. That is where you should put your project. This folder should be outside of apache location. Your package should not be installed into python site-package.
+
+#2. Alias/Allow apache to serve static content.
+Alias /vigiboard/images /usr/local/turbogears/vigiboard/vigiboard/public/images
+Alias /vigiboard/css /usr/local/turbogears/vigiboard/vigiboard/public/css
+Alias /vigiboard/javascript /usr/local/turbogears/vigiboard/vigiboard/public/javascript
+
+#Embeded mode (http://example.com/vigiboard).For big websites with a lot of memory and visitors.
+WSGIScriptAlias /vigiboard /usr/local/turbogears/vigiboard/apache/vigiboard.wsgi
+
+#3. Test if modwsgi is working. Uncomment below line, and go to http://localhost/test:
+#WSGIScriptAlias /test /usr/local/turbogears/vigiboard/apache/test.wsgi
+
+#4. [Optional] Sitewide (http://example.com/)
+#Alias /images /usr/local/turbogears/vigiboard/vigiboard/public/images
+#Alias /css /usr/local/turbogears/vigiboard/vigiboard/public/css
+#Alias /javascript /usr/local/turbogears/vigiboard/vigiboard/public/javascript
+#WSGIScriptAlias / /usr/local/turbogears/apache/vigiboard.wsgi
+
+#5. [Optional] Deamon mode with 10 threads and 3 processes. For small to medium website.
+#WSGIDaemonProcess vigiboard threads=10 processes=3
+#WSGIProcessGroup vigiboard
+#WSGIScriptAlias / /usr/local/turbogears/vigiboard/apache/vigiboard.wsgi
+
+#6. Directory Permission.
+<Directory /usr/local/turbogears/vigiboard/apache>
+Order deny,allow
+Allow from all
+</Directory>
+
+#7. [Optional] If you want to use Virtualhost apache settings. 
+#Sample Virtual Host configuration would look like this:
+
+#<Directory /usr/local/turbogears/vigiboard/apache>
+#    Order allow,deny
+#    Allow from all
+#</Directory>
+
+#NameVirtualHost *:81
+#<VirtualHost *:81>
+#    WSGIScriptAlias / /usr/local/turbogears/vigiboard/apache/vigiboard.wsgi
+#</VirtualHost>
