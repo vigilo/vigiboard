@@ -361,11 +361,11 @@ class VigiboardRequest():
         nécessaire au fonctionnement de Vigiboard
         """
         # Dialogue d'édition
-        tmpl_context.edit_event_form = Edit_Event_Form('edit_event_form',action=url('update'))
+        tmpl_context.edit_event_form = Edit_Event_Form('edit_event_form',action=url('/vigiboard/update'))
         tmpl_context.edit_eventdialog = JQueryUIDialog(id='Edit_EventsDialog',autoOpen=False,title=_('Edit Event'))
     
         # Dialogue de recherche
-        tmpl_context.search_form = Search_Form('search_form',action=url('1'))
+        tmpl_context.search_form = Search_Form('search_form',action=url('/vigiboard'))
         tmpl_context.searchdialog = JQueryUIDialog(id='SearchDialog',autoOpen=False,title=_('Search Event'))
         
         # Dialogue de détail d'un évènement

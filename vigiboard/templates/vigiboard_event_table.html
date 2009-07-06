@@ -16,17 +16,17 @@
 	<thead>
 		<tr>
 			<td style="width:27px">
-				<a py:if="page > pages[0]" href="${tg.url('%d' % (page-1))}"><img src="${tg.url('/images/vigiboard/fleche_up.png')}" alt="" /></a>
+				<a py:if="page > pages[0]" href="${tg.url('/vigiboard/%d' % (page-1))}"><img src="${tg.url('/images/vigiboard/fleche_up.png')}" alt="" /></a>
 				<img py:if="page == pages[0]" src="${tg.url('/images/vigiboard/fleche_up.png')}" alt="" />
 			</td>
 			<td colspan="${8+len(events[1][6])}" style="background-color:#4682B4;color:white;text-align:center">Showing rows ${id_first_row} to ${id_last_row} of ${total_row}<br />
 				Pages <py:for each="p in pages">
-				<a py:if="p != page" href="${tg.url('%d' % p)}" py:content="p" />
+				<a py:if="p != page" href="${tg.url('/vigiboard/%d' % p)}" py:content="p" />
 				<span py:if="p == page" py:replace="p" />
 				</py:for>
 			</td>
 			<td style="width:27px">
-				<a py:if="pages[-1] > page" href="${tg.url('%d' % (page+1))}"><img src="${tg.url('/images/vigiboard/fleche_down.png')}" alt="" /></a>
+				<a py:if="pages[-1] > page" href="${tg.url('/vigiboard/%d' % (page+1))}"><img src="${tg.url('/images/vigiboard/fleche_down.png')}" alt="" /></a>
 				<img py:if="page == pages[-1]" src="${tg.url('/images/vigiboard/fleche_down.png')}" alt="" />
 			</td>
 		</tr>
@@ -66,11 +66,11 @@ ${tmpl_context.searchdialog()}
 
 <script type="text/javascript">
 	function vigiboard_historydialog(idd) {
-		$.getJSON("${tg.url('HistoryDialog')}",{id:idd},function(json){
+		$.getJSON("${tg.url('/vigiboard/HistoryDialog')}",{id:idd},function(json){
 			$('#HistoryDialog_initial_state').html(json.initial_state);
 			$('#HistoryDialog_current_state').html(json.current_state);
-			$('#HistoryDialog_detailed_event').attr('href' , '${tg.url('event/')}' + json.idevent);
-			$('#HistoryDialog_detailed_host').attr('href', '${tg.url('host_service/')}' + json.host + "/" + json.service);
+			$('#HistoryDialog_detailed_event').attr('href' , '${tg.url('/vigiboard/event/')}' + json.idevent);
+			$('#HistoryDialog_detailed_host').attr('href', '${tg.url('/vigiboard/host_service/')}' + json.host + "/" + json.service);
 			$('#HistoryDialog_nagios').attr('href', json.nagios_link);
 			$('#HistoryDialog_metrology').attr('href', json.metrology_link);
 			$('#HistoryDialog_security').attr('href', json.security_link);

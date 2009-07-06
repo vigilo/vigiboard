@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+# vim:set expandtab tabstop=4 shiftwidth=4:
+
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
@@ -16,27 +19,29 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from tw.api import Widget, JSLink, CSSLink, js_function, js_callback
-from tw.jquery import JQuery
-from tw.jquery.direction import *
-from tw.forms import FormField
+from tw.api import Widget, CSSLink, js_function
+from tw.jquery.direction import jquery_direction_js
 from ui_core import jquery_ui_core_js
 from ui import ui_dialog_js , ui_draggable_js, ui_resizable_js
 
 __all__ = ["jquery_ui_dialog_js"]
 
-jquery_ui_dialog_css    = CSSLink(modname=__name__, filename='static/css/ui.all.css')
+jquery_ui_dialog_css    = CSSLink(modname=__name__,
+		filename='static/css/ui.all.css')
 
 jQuery = js_function('jQuery')
 
 class JQueryUIDialog(Widget):
     
-    javascript = [ui_dialog_js,ui_draggable_js,jquery_ui_core_js,jquery_direction_js,ui_resizable_js]
-    css=[jquery_ui_dialog_css]
+    """Generate an instance for an UI Dialog"""
+
+    javascript = [ui_dialog_js,ui_draggable_js,jquery_ui_core_js,
+		    jquery_direction_js,ui_resizable_js]
+    css = [jquery_ui_dialog_css]
     
-    params = ["autoOpen","bgiframe","buttons","closeOnEscape","dialogClass"
-	"draggable","height","hide","maxHeight","maxWidht","minHeight","minWidth"
-	"modal","position","resizable","show","stack","title","width","zindex" ]
+    params = ['autoOpen', 'bgiframe', 'buttons', 'closeOnEscape', 'dialogClass'
+	'draggable', 'height', 'hide', 'maxHeight', 'maxWidht', 'minHeight', 'minWidth'
+	'modal', 'position', 'resizable', 'show', 'stack', 'title', 'width', 'zindex' ]
    
     autoOpen = True
     bgiframe = False
@@ -58,11 +63,17 @@ class JQueryUIDialog(Widget):
     title = ''
     width = "auto"
     zindex = 1000
+
     def update_params(self, d):
+        
+        """Allow the user to update the UI Dialog parameters"""
+
         super(JQueryUIDialog, self).update_params(d)
-        if not getattr(d,"id",None):
+        
+        if not getattr(d, "id", None):
             raise ValueError, "JQueryUIDialog is supposed to have id"
-    	dialog_params = dict (     autoOpen = self.autoOpen,
+    	
+        dialog_params = dict (     autoOpen = self.autoOpen,
 			bgiframe = self.bgiframe,
 			buttons = self.buttons,
 			closeOnEscape = self.closeOnEscape,

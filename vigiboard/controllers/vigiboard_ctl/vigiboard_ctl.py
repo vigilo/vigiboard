@@ -37,7 +37,7 @@ class VigiboardController(TGController):
         if request.environ.get('HTTP_REFERER') :
             redirect(request.environ.get('HTTP_REFERER').split(request.environ.get('HTTP_HOST'))[1])
         else :
-            redirect('1')
+            redirect('/vigiboard')
 
     @validate(validators={'page':validators.Int(not_empty=False)},error_handler=process_form_errors)
     @expose('vigiboard.templates.vigiboard')
@@ -172,7 +172,7 @@ class VigiboardController(TGController):
         # Vérification que l'évènement existe
         if ev.NumRows() != 1 :
             flash(_('Error in DB'),'error')
-            redirect('1')
+            redirect('/vigiboard')
        
         ev.FormatEvents(0,1)
         ev.FormatHistory()
@@ -208,7 +208,7 @@ class VigiboardController(TGController):
         
         # Vérification qu'il y a au moins 1 évènement qui correspond
         if ev.NumRows() == 0 :
-            redirect('1')
+            redirect('/vigiboard')
        
         ev.FormatEvents(0,ev.NumRows())
         ev.FormatHistory()
@@ -258,7 +258,7 @@ class VigiboardController(TGController):
         # Vérification que au moins un des identifiants existe et est éditable
         if ev.NumRows() <= 0 :
             flash(_('No access to this event'),'error')
-            redirect('1')
+            redirect('/vigiboard')
         
         # Modification des évènements et création d'un historique pour chacun d'eux
         for event in ev.rq :
