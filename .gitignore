@@ -1,0 +1,13 @@
+/bin
+/data/sessions
+/develop-eggs
+/.installed.cfg
+/log/auth.log
+/log/root.log
+/log/sql.log
+/log/vigiboard.log
+/parts
+/Paste-1.7.2-py2.6.egg
+/PasteDeploy-1.3.3-py2.6.egg
+/PasteScript-1.7.3-py2.6.egg
+/vigiboard.egg-info
