@@ -24,6 +24,8 @@ setup(
         
         "repoze.what-quickstart >= 1.0",
 
+	# Requires postgresql8.3-devel for source install
+        "psycopg2",
         "MySQL-python",
         "tw.jquery",
                 ],
