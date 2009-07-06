@@ -4,21 +4,20 @@
       xmlns:py="http://genshi.edgewall.org/"
       xmlns:xi="http://www.w3.org/2001/XInclude">
 
-  <xi:include href="master.html" />
   <xi:include href="vigiboard_event_table.html" />
   <xi:include href="vigiboard_history_table.html" />
 
 <head>
   <meta content="text/html; charset=UTF-8" http-equiv="content-type" py:replace="''"/>
-  <title>Welcome to TurboGears 2.0, standing on the 
-  shoulders of giants, since 2007</title>
-<link rel="stylesheet" type="text/css" href="${tg.url('/css/vigiboard_style.css')}" />
+  <title>Vigiboard</title>
+  <link rel="stylesheet" type="text/css" href="${tg.url('/css/vigiboard_style.css')}" />
 </head>
 
 <body>
-
+<py:with vars="flash=tg.flash_obj.render('flash', use_js=False)">
+<div py:if="flash" py:content="XML(flash)" />
+</py:with>
 <div class="main_content">
-
 	${event_table(events,page,pages,id_first_row,id_last_row,total_row,event_edit_status_options)}
 	<br /><br />
 	${history_table(history,hist_error)}

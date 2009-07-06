@@ -22,19 +22,10 @@ from tw.jquery.direction import *
 from tw.forms import FormField
 from ui_core import jquery_ui_core_js
 from ui import ui_dialog_js , ui_draggable_js, ui_resizable_js
+
 __all__ = ["jquery_ui_dialog_js"]
 
-
-# declare your static resources here
-
-## JS dependencies can be listed at 'javascript' so they'll get included
-## before
-
 jquery_ui_dialog_css    = CSSLink(modname=__name__, filename='static/css/ui.all.css')
-#jquery_ui_dialog_js    = JSLink(modname=__name__, filename='static/javascript/ui/ui.dialog.js', javascript=[jquery_ui_core_js,jquery_direction_js])
-
-#jquery_ui_draggable_js =  JSLink(modname=__name__, filename='static/javascript/ui/ui.draggable.js')
-
 
 jQuery = js_function('jQuery')
 
@@ -90,10 +81,7 @@ class JQueryUIDialog(Widget):
 			stack = self.stack,
 			title = self.title,
 			width = self.width,
-			zindex = self.zindex#,
-			#open = js_callback('function(event,ui) { for ( i in event ) { alert(i);}}') # $(\'#%s\').dialog(\'option\' , \'position\' , \'top\')}' % d.id )
+			zindex = self.zindex
 
 			)
         self.add_call(jQuery("#%s" % d.id).dialog(dialog_params))
-	
-        

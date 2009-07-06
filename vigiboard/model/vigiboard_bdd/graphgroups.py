@@ -1,27 +1,32 @@
 # -*- coding: utf-8 -*-
-"""Model For GraphGroups Table"""
+# vim:set expandtab tabstop=4 shiftwidth=4:
+"""Modèle pour la table GraphGroups"""
 
 from sqlalchemy.orm import mapper, relation
-from sqlalchemy import Table, ForeignKeyConstraint, Column
+from sqlalchemy import Table, ForeignKey, Column
 from sqlalchemy.types import Integer, String, Text, DateTime
 
 from vigiboard.model import metadata
 
-from tg import config
-
+from vigiboard.config.vigiboard_config import vigiboard_config
 # Generation par SQLAutoCode
 
-graphgroups =  Table(config['vigiboard_bdd.basename'] + 'graphgroups', metadata,
-            Column(u'graphname', String(length=100, convert_unicode=False, assert_unicode=None), primary_key=True, nullable=False),
-            Column(u'idgraphgroup', Integer(), primary_key=True, nullable=False),
-            Column(u'parent', Integer(), primary_key=False, nullable=False),
-	    ForeignKeyConstraint([u'graphname'], [config['vigiboard_bdd.basename'] + u'graph.name'], name=u'graphgroups_ibfk_1'),
+graphgroups =  Table(vigiboard_config['vigiboard_bdd.basename'] + 'graphgroups', metadata,
+        Column(u'name', String(length=100, convert_unicode=True, assert_unicode=None),primary_key=True, nullable=False),
+        Column(u'parent', Integer(), primary_key=False, nullable=True),
+        mysql_engine='InnoDB',
+        mysql_charset='utf8'
     )
 
 # Classe a mapper
 
 class GraphGroups(object):
-	pass  
+    """
+    Classe liée avec la table associée
+    """
+    
+    def __init__(self,name,parent=None):
+        self.name = name
+        self.parent = parent
+
 mapper(GraphGroups,graphgroups)
-
-

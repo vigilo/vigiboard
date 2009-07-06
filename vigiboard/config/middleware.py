@@ -33,6 +33,8 @@ def make_app(global_conf, full_stack=True, **app_conf):
    
     """
 
+    # Petit hack permettant d'importer la configuration de vigiboard
+
     for i in vigiboard_config :
 	app_conf[i] = vigiboard_config[i]
 

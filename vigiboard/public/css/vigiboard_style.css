@@ -1,91 +1,73 @@
+body {
+        text-align: left;
+        width: 99%;
+        margin: auto;
+        padding: 0;
+        font-size: 11px;
+        font-family:"Lucida Grande","Lucida Sans Unicode",geneva,verdana,sans-serif;
+}
+
+.vigitable {
+	width: 100%;
+	border-spacing: 10px;
+	border-collapse: collapse;
+}
+
+.vigitable tr {
+	border-style: solid;
+        border-width: 1px 1px 1px 1px;
+        border-color: #FFFFFF;
+        padding: 5px;
+        empty-cells: show;
+}
+
+.vigitable tr td {
+	border-style: solid;
+        border-width: 1px 1px 1px 1px;
+        border-color: #FFFFFF;
+        padding: 4px;
+        empty-cells: show;
+}
+
 tr.odd {
 	background-color: #F8F8F8;
-	border-style: solid;
-	border-width: 1px 1px 1px 1px;
-	border-color: #FFFFFF;
-	padding: 5px;
-	empty-cells: show;
 }
 
 tr.even {
 	background-color: #F0F0F0;
-	border-style: solid;
-	border-width: 1px 1px 1px 1px;
-	border-color: #FFFFFF;
-	padding: 5px;
-	empty-cells: show;
 }
 
 td.Minor {
 	background-color: #FFFF00;
-	border-style: solid;
-	border-width: 1px 1px 1px 1px;
-	border-color: #FFFFFF;
-	padding: 4px;
-	empty-cells: show;
 }
 
 td.Major {
 	background-color: #FF8700;
-	border-style: solid;
-	border-width: 1px 1px 1px 1px;
-	border-color: #FFFFFF;
-	padding: 4px;
-	empty-cells: show;
 }
 
 td.Critical {
 	background-color: #FF0000;
-	border-style: solid;
-	border-width: 1px 1px 1px 1px;
-	border-color: #FFFFFF;
-	padding: 4px;
-	empty-cells: show;
 }
 
 td.Cleared {
 	background-color: #73DE78;
-	border-style: solid;
-	border-width: 1px 1px 1px 1px;
-	border-color: #FFFFFF;
-	padding: 4px;
-	empty-cells: show;
 }
 
 td.MinorAck {
 	background-color: #FCFCA2;
-	border-style: solid;
-	border-width: 1px 1px 1px 1px;
-	border-color: #FFFFFF;
-	padding: 4px;
-	empty-cells: show;
+
 }
 
 td.MajorAck {
 	background-color: #FCCA90;
-	border-style: solid;
-	border-width: 1px 1px 1px 1px;
-	border-color: #FFFFFF;
-	padding: 4px;
-	empty-cells: show;
 }
 
 td.CriticalAck {
 	background-color: #FC9090;
-	border-style: solid;
-	border-width: 1px 1px 1px 1px;
-	border-color: #FFFFFF;
-	padding: 4px;
-	empty-cells: show;
 }
 
 td.ClearedAck {
 	background-color: #A9EBAC;
-	border-style: solid;
-	border-width: 1px 1px 1px 1px;
-	border-color: #FFFFFF;
-	padding: 4px;
-	empty-cells: show;
 }
 
 a {
@@ -97,4 +79,36 @@ img {
 	border: none;
 }
 
+#flash, .notice {
+font-size:120%;
+font-weight:bolder;
+margin:0pt auto 0.5em;
+width:680px;
+}
+#flash div, .notice {
+padding:20px 15px 20px 65px;
+}
+#flash .ok {
+background:#d8ecd8 url(../images/ok.png) no-repeat scroll 10px center;
+}
+#flash .warning {
+background:#fff483 url(../images/warning.png) no-repeat scroll 10px center;
+}
+#flash .error {
+background:#f9c5c1 url(../images/error.png) no-repeat scroll 10px center;
+}
+#flash .alert,
+#flash .info {
+background:#EEEEFF url(../images/info.png) no-repeat scroll 10px center;
+}
+.notice {
+background:#EEEEFF url(../images/info.png) no-repeat scroll 10px center;
+}
+.fielderror {
+color:red;
+font-weight:bold;
+}
+div.clearingdiv {
+clear:both;
+}
 

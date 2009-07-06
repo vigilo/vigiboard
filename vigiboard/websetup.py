@@ -51,6 +51,22 @@ def setup_app(command, conf, vars):
     editor.password = u'editpass'
 
     model.DBSession.add(editor)
+
+    group = model.Group()
+    group.group_name = u'editors'
+    group.display_name = u'Editors Group'
+
+    group.users.append(editor)
+
+    model.DBSession.add(group)
+
+    permission = model.Permission()
+    permission.permission_name = u'edit'
+    permission.description = u'This permission give an Editor the right to edit'
+    permission.groups.append(group)
+
+    model.DBSession.add(permission)
+
     model.DBSession.flush()
 
     transaction.commit()

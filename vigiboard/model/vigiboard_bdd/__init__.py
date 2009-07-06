@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+# vim:set expandtab tabstop=4 shiftwidth=4:
 """BdD Vigiboard"""
 
 from vigiboard.model.vigiboard_bdd.eventhistory import EventHistory
@@ -13,3 +15,4 @@ from vigiboard.model.vigiboard_bdd.servicegroups import ServiceGroups
 from vigiboard.model.vigiboard_bdd.servicehautniveau import ServiceHautNiveau
 from vigiboard.model.vigiboard_bdd.service import Service
 from vigiboard.model.vigiboard_bdd.servicetopo import ServiceTopo
+from vigiboard.model.vigiboard_bdd.graphtogroups import GraphToGroups

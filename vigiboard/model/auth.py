@@ -37,7 +37,9 @@ group_permission_table = Table('tg_group_permission', metadata,
     Column('group_id', Integer, ForeignKey('tg_group.group_id',
         onupdate="CASCADE", ondelete="CASCADE")),
     Column('permission_id', Integer, ForeignKey('tg_permission.permission_id',
-        onupdate="CASCADE", ondelete="CASCADE"))
+        onupdate="CASCADE", ondelete="CASCADE")),
+    mysql_engine='InnoDB',
+    mysql_charset='utf8'
 )
 
 # This is the association table for the many-to-many relationship between
@@ -46,7 +48,9 @@ user_group_table = Table('tg_user_group', metadata,
     Column('user_id', Integer, ForeignKey('tg_user.user_id',
         onupdate="CASCADE", ondelete="CASCADE")),
     Column('group_id', Integer, ForeignKey('tg_group.group_id',
-        onupdate="CASCADE", ondelete="CASCADE"))
+        onupdate="CASCADE", ondelete="CASCADE")),
+    mysql_engine='InnoDB',
+    mysql_charset='utf8'
 )
 
 
@@ -62,7 +66,8 @@ class Group(DeclarativeBase):
     """
     
     __tablename__ = 'tg_group'
-    
+    __table_args__ = {'mysql_engine':'InnoDB','mysql_charset':'utf8'}
+
     #{ Columns
     
     group_id = Column(Integer, autoincrement=True, primary_key=True)
@@ -100,6 +105,7 @@ class User(DeclarativeBase):
     
     """
     __tablename__ = 'tg_user'
+    __table_args__ = {'mysql_engine':'InnoDB','mysql_charset':'utf8'}
     
     #{ Columns
 
@@ -204,7 +210,8 @@ class Permission(DeclarativeBase):
     """
     
     __tablename__ = 'tg_permission'
-    
+    __table_args__ = {'mysql_engine':'InnoDB','mysql_charset':'utf8'}
+
     #{ Columns
 
     permission_id = Column(Integer, autoincrement=True, primary_key=True)

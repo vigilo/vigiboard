@@ -1,28 +1,35 @@
 # -*- coding: utf-8 -*-
-"""Model For ServiceHautNiveau Table"""
+# vim:set expandtab tabstop=4 shiftwidth=4:
+"""Modèle pour la table ServiceHautNiveau"""
 
 from sqlalchemy.orm import mapper, relation
-from sqlalchemy import Table, ForeignKeyConstraint, Column, Index
+from sqlalchemy import Table, ForeignKey, Column, Index
 from sqlalchemy.types import Integer, String, Text, DateTime
 
 from vigiboard.model import metadata
 
-from tg import config
-
+from vigiboard.config.vigiboard_config import vigiboard_config
 # Generation par SQLAutoCode
 
-servicehautniveau =  Table(config['vigiboard_bdd.basename'] + 'servicehautniveau', metadata,
-	    Column(u'servicename', String(length=100, convert_unicode=False, assert_unicode=None), primary_key=True, nullable=False),
-            Column(u'servicename_dep', String(length=100, convert_unicode=False, assert_unicode=None), primary_key=True, nullable=False),
-	    ForeignKeyConstraint([u'servicename'], [config['vigiboard_bdd.basename'] + u'service.name'], name=u'servicehautniveau_ibfk_1'),
-            ForeignKeyConstraint([u'servicename_dep'], [config['vigiboard_bdd.basename'] + u'service.name'], name=u'servicehautniveau_ibfk_2'),
+servicehautniveau =  Table(vigiboard_config['vigiboard_bdd.basename'] + 'servicehautniveau', metadata,
+        Column(u'servicename', String(length=100, convert_unicode=True, assert_unicode=None), ForeignKey(vigiboard_config['vigiboard_bdd.basename'] + u'service.name'),primary_key=True, nullable=False),
+        Column(u'servicename_dep', String(length=100, convert_unicode=True, assert_unicode=None), ForeignKey(vigiboard_config['vigiboard_bdd.basename'] + u'service.name'),index=True,primary_key=True, nullable=False),
+        mysql_engine='InnoDB',
+        mysql_charset='utf8'
     )
-Index(u'servicename_dep', servicehautniveau.c.servicename_dep, unique=False)
 
 # Classe a mapper
 
 class ServiceHautNiveau(object):
-	pass  
+    
+    """
+    Classe liée avec la table associée
+    """
+    
+    def __init__(self,servicename,servicename_dep):
+        self.servicename = servicename
+        self.servicename_dep = servicename_dep
+
 mapper(ServiceHautNiveau,servicehautniveau)
 
 
