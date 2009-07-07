@@ -28,7 +28,7 @@ class Service(object):
     Classe liée avec la table associée
     """
     
-    def __init__(self,name,type=0,command=''):
+    def __init__(self,name=None,type=0,command=''):
         self.name = name
         self.type = type
         self.command = command

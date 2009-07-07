@@ -12,7 +12,7 @@ from vigiboard.config.vigiboard_config import vigiboard_config
 # Generation par SQLAutoCode
 
 host =  Table(vigiboard_config['vigiboard_bdd.basename'] + 'host', metadata,
-        Column(u'name', String(length=255, convert_unicode=True, assert_unicode=None), index=True,primary_key=True, nullable=False),
+        Column(u'name', String(length=255, convert_unicode=True, assert_unicode=None), index=True, primary_key=True, nullable=False),
         Column(u'checkhostcmd', String(length=255, convert_unicode=True, assert_unicode=None), primary_key=False, nullable=False),
         Column(u'community', String(length=255, convert_unicode=True, assert_unicode=None), primary_key=False, nullable=False),
         Column(u'fqhn', String(length=255, convert_unicode=True, assert_unicode=None), primary_key=False, nullable=False),
@@ -33,7 +33,7 @@ class Host(object):
     Classe liée avec la table associée
     """
     
-    def __init__(self,name,checkhostcmd='',community='',fqhn='',hosttpl='',mainip='',port=0,snmpoidsperdu=0,snmpversion=''):
+    def __init__(self,name=None,checkhostcmd='',community='',fqhn='',hosttpl='',mainip='',port=0,snmpoidsperdu=0,snmpversion=''):
         self.name = name
         self.checkhostcmd = checkhostcmd
         self.community = community

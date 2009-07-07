@@ -42,7 +42,7 @@ class Events(object):
     Classe liée avec la table associée
     """
 
-    def __init__(self,hostname,servicename,server_source='',severity=0,status='None',active=True,timestamp=datetime.now(),output='',event_timestamp=datetime.now(),last_check=datetime.now(),recover_output='',timestamp_active=datetime.now(),timestamp_cleared="0000-00-00 00:00:00",trouble_ticket=None,occurence=1):
+    def __init__(self,hostname='',servicename='',server_source='',severity=0,status='None',active=True,timestamp=datetime.now(),output='',event_timestamp=datetime.now(),last_check=datetime.now(),recover_output='',timestamp_active=datetime.now(),timestamp_cleared="0000-00-00 00:00:00",trouble_ticket=None,occurence=1):
         self.hostname = hostname
         self.servicename = servicename
         self.server_source = server_source
