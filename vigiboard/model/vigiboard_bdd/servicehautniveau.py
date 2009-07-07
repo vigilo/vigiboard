@@ -12,8 +12,8 @@ from vigiboard.config.vigiboard_config import vigiboard_config
 # Generation par SQLAutoCode
 
 servicehautniveau =  Table(vigiboard_config['vigiboard_bdd.basename'] + 'servicehautniveau', metadata,
-        Column(u'servicename', String(length=100, convert_unicode=True, assert_unicode=None), ForeignKey(vigiboard_config['vigiboard_bdd.basename'] + u'service.name'),primary_key=True, nullable=False),
-        Column(u'servicename_dep', String(length=100, convert_unicode=True, assert_unicode=None), ForeignKey(vigiboard_config['vigiboard_bdd.basename'] + u'service.name'),index=True,primary_key=True, nullable=False),
+        Column(u'servicename', String(length=100, convert_unicode=True, assert_unicode=None), ForeignKey(vigiboard_config['vigiboard_bdd.basename'] + u'service.name'), primary_key=True, nullable=False, unique=True),
+        Column(u'servicename_dep', String(length=100, convert_unicode=True, assert_unicode=None), ForeignKey(vigiboard_config['vigiboard_bdd.basename'] + u'service.name'), index=True, primary_key=True, nullable=False),
         mysql_engine='InnoDB',
         mysql_charset='utf8'
     )
