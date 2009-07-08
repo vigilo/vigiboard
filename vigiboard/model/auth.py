@@ -66,7 +66,7 @@ class Group(DeclarativeBase):
     """
     
     __tablename__ = 'tg_group'
-    __table_args__ = {'mysql_engine':'InnoDB','mysql_charset':'utf8'}
+    __table_args__ = {'mysql_engine':'InnoDB', 'mysql_charset':'utf8'}
 
     #{ Columns
     
@@ -105,7 +105,7 @@ class User(DeclarativeBase):
     
     """
     __tablename__ = 'tg_user'
-    __table_args__ = {'mysql_engine':'InnoDB','mysql_charset':'utf8'}
+    __table_args__ = {'mysql_engine':'InnoDB', 'mysql_charset':'utf8'}
     
     #{ Columns
 
@@ -210,7 +210,7 @@ class Permission(DeclarativeBase):
     """
     
     __tablename__ = 'tg_permission'
-    __table_args__ = {'mysql_engine':'InnoDB','mysql_charset':'utf8'}
+    __table_args__ = {'mysql_engine':'InnoDB', 'mysql_charset':'utf8'}
 
     #{ Columns
 

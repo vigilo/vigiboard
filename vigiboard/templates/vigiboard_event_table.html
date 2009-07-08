@@ -42,7 +42,7 @@
 		<py:for each="(event,class_tr,class_td_severity,class_td_date,img_fleche,img_statu,plugin) in events[1:]">
 		<tr py:attrs="class_tr">
 			<td py:attrs="class_td_severity"><a href="javascript:vigiboard_historydialog('${event.idevent}')" class="HistoryLien"><img src="${tg.url(img_fleche['src'])}" style="width:20px"/></a></td>
-			<td py:attrs="class_td_date">${event.GetDate('timestamp_active')}<br />[${event.GetSinceDate('timestamp_active')}]</td>
+			<td py:attrs="class_td_date">${event.get_date('timestamp_active')}<br />[${event.get_since_date('timestamp_active')}]</td>
 			<td py:attrs="class_td_date">${event.occurence}</td>
 			<td>${event.hostname}</td>
 			<td>${event.servicename}</td>
@@ -66,7 +66,7 @@ ${tmpl_context.searchdialog()}
 
 <script type="text/javascript">
 	function vigiboard_historydialog(idd) {
-		$.getJSON("${tg.url('/vigiboard/HistoryDialog')}",{id:idd},function(json){
+		$.getJSON("${tg.url('/vigiboard/history_dialog')}",{id:idd},function(json){
 			$('#HistoryDialog_initial_state').html(json.initial_state);
 			$('#HistoryDialog_current_state').html(json.current_state);
 			$('#HistoryDialog_detailed_event').attr('href' , '${tg.url('/vigiboard/event/')}' + json.idevent);

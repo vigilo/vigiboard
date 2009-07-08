@@ -35,8 +35,8 @@ class JQueryUIDialog(Widget):
     
     """Generate an instance for an UI Dialog"""
 
-    javascript = [ui_dialog_js,ui_draggable_js,jquery_ui_core_js,
-		    jquery_direction_js,ui_resizable_js]
+    javascript = [ui_dialog_js, ui_draggable_js, jquery_ui_core_js,
+		    jquery_direction_js, ui_resizable_js]
     css = [jquery_ui_dialog_css]
     
     params = ['autoOpen', 'bgiframe', 'buttons', 'closeOnEscape', 'dialogClass'

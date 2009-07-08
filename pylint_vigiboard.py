@@ -29,7 +29,7 @@ else:
 # A list of messages that should not be printed by pylint. 
 SUPRESSED_MESSAGES = [
     'I0011', # Used when an inline option disable a message or a messages 
-             # category.
+'F0401',             # category.
 # If you decided to globally switch of a certain message instead of doing so
 # in file or scope where its generated then you can just uncomment it here.
 # Or add it if its not in the list.
@@ -46,7 +46,7 @@ SUPRESSED_MESSAGES = [
 ]
 
 PARAMS = [
-    '--reports=n', '--include-ids=y', 
+    '--reports=n', '--include-ids=y', '--const-rgx=(([a-z_][a-z0-9_]*)|(__.*__))$', 
           '--disable-msg=%s' % ",".join(SUPRESSED_MESSAGES), 
 ]
 PARAMS.extend(FILES)

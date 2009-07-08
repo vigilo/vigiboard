@@ -1,3 +1,10 @@
-from vigiboard.controllers.vigiboard_ctl.userutils import GetUserGroups
-from vigiboard.controllers.vigiboard_ctl.vigiboardrequest import VigiboardRequest, VigiboardRequestPlugin
-from vigiboard.controllers.vigiboard_ctl.vigiboard_ctl import VigiboardController
+"""
+Module contenant le controller ainsi que la classe
+permettant l'affichage du Vigiboard
+"""
+
+from vigiboard.controllers.vigiboard_ctl.userutils import get_user_groups
+from vigiboard.controllers.vigiboard_ctl.vigiboardrequest import \
+		VigiboardRequest, VigiboardRequestPlugin
+from vigiboard.controllers.vigiboard_ctl.vigiboard_ctl import \
+		VigiboardController

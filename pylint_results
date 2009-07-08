@@ -1,0 +1,724 @@
+************* Module setup
+C0111:  1: Missing docstring
+************* Module pylint_projectname
+C0301: 49: Line too long (84/80)
+C0103: 19: Invalid name "FILES" (should match (([a-z_][a-z0-9_]*)|(__.*__))$)
+C0103: 21: Invalid name "FILES" (should match (([a-z_][a-z0-9_]*)|(__.*__))$)
+C0103: 30: Invalid name "SUPRESSED_MESSAGES" (should match (([a-z_][a-z0-9_]*)|(__.*__))$)
+C0103: 48: Invalid name "PARAMS" (should match (([a-z_][a-z0-9_]*)|(__.*__))$)
+************* Module ez_setup.__init__
+C0301: 18: Line too long (86/80)
+C0301: 89: Line too long (81/80)
+W0511: 98: XXX could we install in a subprocess here?
+************* Module ez_setup
+C0103: 17: Invalid name "DEFAULT_VERSION" (should match (([a-z_][a-z0-9_]*)|(__.*__))$)
+C0103: 18: Invalid name "DEFAULT_URL" (should match (([a-z_][a-z0-9_]*)|(__.*__))$)
+W0404: 50: Reimport 'sys' (imported line 16)
+C0111: 52:_validate_md5: Missing docstring
+C0323: 57:_validate_md5: Operator not followed by a space
+            print >>sys.stderr, (
+                   ^
+                "md5 validation of %s failed!  (Possible download problem?)"
+                % egg_name
+C0323: 83:use_setuptools: Operator not followed by a space
+            print >>sys.stderr, (
+                   ^
+            "You have an obsolete version of setuptools installed.  Please\n"
+C0321: 91:use_setuptools: More than one statement on a single line
+C0103: 97:use_setuptools: Invalid name "e" (should match [a-z_][a-z0-9_]{2,30}$)
+C0323: 99:use_setuptools: Operator not followed by a space
+        print >>sys.stderr, (
+               ^
+            "The required version of setuptools (>=%s) is not available, and\n"
+            "can't be installed while this script is running. Please install\n"
+            " a more recent version first.\n\n(Currently using %r)"
+        ) % (version, e.args[0])
+C0324:118:download_setuptools: Comma not followed by a space
+    egg_name = "setuptools-%s-py%s.egg" % (version,sys.version[:3])
+                                                  ^^
+C0321:141:download_setuptools: More than one statement on a single line
+C0321:147:download_setuptools: More than one statement on a single line
+C0321:149:download_setuptools: More than one statement on a single line
+C0321:150:download_setuptools: More than one statement on a single line
+W0612:117:download_setuptools: Unused variable 'shutil'
+W0621:163:main: Redefining name 'main' from outer scope (line 153)
+C0324:162:main: Comma not followed by a space
+            sys.path.insert(0,egg)
+                             ^^
+W0404:179:main: Reimport 'main' (imported line 163)
+W0404:186:main: Reimport 'main' (imported line 163)
+C0324:189:main: Comma not followed by a space
+            print "Setuptools version",version,"or greater has been installed."
+                                      ^^
+C0103:202:update_md5: Invalid name "f" (should match [a-z_][a-z0-9_]{2,30}$)
+C0103:212:update_md5: Invalid name "f" (should match [a-z_][a-z0-9_]{2,30}$)
+C0321:212:update_md5: More than one statement on a single line
+C0323:216:update_md5: Operator not followed by a space
+        print >>sys.stderr, "Internal error!"
+               ^
+C0103:220:update_md5: Invalid name "f" (should match [a-z_][a-z0-9_]{2,30}$)
+C0322:225: Operator not preceded by a space
+if __name__=='__main__':
+           ^^
+************* Module ui_dialog
+C0111:  1: Missing docstring
+C0103: 32: Invalid name "jQuery" (should match (([a-z_][a-z0-9_]*)|(__.*__))$)
+W0232: 34:JQueryUIDialog: Class has no __init__ method
+C0103: 67:JQueryUIDialog.update_params: Invalid name "d" (should match [a-z_][a-z0-9_]{2,30}$)
+E1002: 67:JQueryUIDialog.update_params: Use super on an old style class
+C0103: 67:JQueryUIDialog.update_params: Invalid name "d" (should match [a-z_][a-z0-9_]{2,30}$)
+E1101: 98:JQueryUIDialog.update_params: Instance of 'JQueryUIDialog' has no 'add_call' member
+R0903: 34:JQueryUIDialog: Too few public methods (1/2)
+************* Module vigiboard.websetup
+C0301: 42: Line too long (90/80)
+W0622: 16:setup_app: Redefining built-in 'vars'
+E0611: 20:setup_app: No name 'model' in module 'vigiboard'
+W0613: 16:setup_app: Unused argument 'vars'
+W0613: 16:setup_app: Unused argument 'command'
+************* Module vigiboard.model
+E0611:  4: No name 'sqlalchemy' in module 'zope'
+C0103: 13: Invalid name "DBSession" (should match (([a-z_][a-z0-9_]*)|(__.*__))$)
+C0103: 18: Invalid name "DeclarativeBase" (should match (([a-z_][a-z0-9_]*)|(__.*__))$)
+E0611: 62: No name 'model' in module 'vigiboard'
+E0611: 63: No name 'model' in module 'vigiboard'
+W0401: 63: Wildcard import vigiboard.model.vigiboard_bdd
+************* Module vigiboard.model.auth
+E0611: 26: No name 'model' in module 'vigiboard'
+W0232: 60:Group: Class has no __init__ method
+R0903: 60:Group: Too few public methods (0/2)
+W0232: 99:User: Class has no __init__ method
+C0103:141:User.permissions: Invalid name "g" (should match [a-z_][a-z0-9_]{2,30}$)
+E1101:141:User.permissions: Instance of 'User' has no 'groups' member
+W0622:166:User._set_password: Redefining built-in 'hash'
+W1001:182:User: Use of "property" on an old style class
+W0232:204:Permission: Class has no __init__ method
+R0903:204:Permission: Too few public methods (0/2)
+************* Module vigiboard.model.vigiboard_bdd.service
+E0611:  8: No name 'model' in module 'vigiboard'
+R0903: 31:Service: Too few public methods (0/2)
+************* Module vigiboard.model.vigiboard_bdd.graphtogroups
+E0611:  9: No name 'model' in module 'vigiboard'
+R0903: 32:GraphToGroups: Too few public methods (0/2)
+************* Module vigiboard.model.vigiboard_bdd.graphgroups
+E0611:  9: No name 'model' in module 'vigiboard'
+R0903: 26:GraphGroups: Too few public methods (0/2)
+************* Module vigiboard.model.vigiboard_bdd.servicetopo
+E0611:  8: No name 'model' in module 'vigiboard'
+R0903: 30:ServiceTopo: Too few public methods (0/2)
+************* Module vigiboard.model.vigiboard_bdd.host
+E0611:  8: No name 'model' in module 'vigiboard'
+R0902: 44:Host: Too many instance attributes (9/7)
+R0913: 50:Host.__init__: Too many arguments (10/5)
+R0903: 44:Host: Too few public methods (0/2)
+************* Module vigiboard.model.vigiboard_bdd.graph
+E0611:  8: No name 'model' in module 'vigiboard'
+R0903: 30:Graph: Too few public methods (0/2)
+************* Module vigiboard.model.vigiboard_bdd.grouppermissions
+E0611:  8: No name 'model' in module 'vigiboard'
+R0903: 29:GroupPermissions: Too few public methods (0/2)
+************* Module vigiboard.model.vigiboard_bdd.groups
+E0611:  8: No name 'model' in module 'vigiboard'
+R0903: 28:Groups: Too few public methods (0/2)
+************* Module vigiboard.model.vigiboard_bdd.servicegroups
+E0611:  8: No name 'model' in module 'vigiboard'
+R0903: 33:ServiceGroups: Too few public methods (0/2)
+************* Module vigiboard.model.vigiboard_bdd.hostgroups
+E0611:  8: No name 'model' in module 'vigiboard'
+R0903: 30:HostGroups: Too few public methods (0/2)
+************* Module vigiboard.model.vigiboard_bdd.eventhistory
+E0611:  8: No name 'model' in module 'vigiboard'
+R0913: 50:EventHistory.__init__: Too many arguments (6/5)
+R0903: 46:EventHistory: Too few public methods (0/2)
+************* Module vigiboard.model.vigiboard_bdd.events
+E0611: 11: No name 'model' in module 'vigiboard'
+R0902: 57:Events: Too many instance attributes (15/7)
+R0913: 63:Events.__init__: Too many arguments (16/5)
+R0914: 63:Events.__init__: Too many local variables (16/15)
+W0612:114:Events.get_since_date: Unused variable 'seconds'
+************* Module vigiboard.model.vigiboard_bdd.perfdatasource
+E0611:  8: No name 'model' in module 'vigiboard'
+R0913: 51:PerfDataSource.__init__: Too many arguments (7/5)
+R0903: 45:PerfDataSource: Too few public methods (0/2)
+************* Module vigiboard.model.vigiboard_bdd
+E0611:  5: No name 'model' in module 'vigiboard'
+E0611:  6: No name 'model' in module 'vigiboard'
+E0611:  7: No name 'model' in module 'vigiboard'
+E0611:  8: No name 'model' in module 'vigiboard'
+E0611:  9: No name 'model' in module 'vigiboard'
+E0611: 10: No name 'model' in module 'vigiboard'
+E0611: 11: No name 'model' in module 'vigiboard'
+E0611: 12: No name 'model' in module 'vigiboard'
+E0611: 13: No name 'model' in module 'vigiboard'
+E0611: 14: No name 'model' in module 'vigiboard'
+E0611: 15: No name 'model' in module 'vigiboard'
+E0611: 16: No name 'model' in module 'vigiboard'
+E0611: 17: No name 'model' in module 'vigiboard'
+E0611: 18: No name 'model' in module 'vigiboard'
+************* Module vigiboard.model.vigiboard_bdd.servicehautniveau
+E0611:  8: No name 'model' in module 'vigiboard'
+R0903: 33:ServiceHautNiveau: Too few public methods (0/2)
+************* Module vigiboard.widgets.edit_event
+C0103: 15:Edit_Event_Form: Invalid name "Edit_Event_Form" (should match [A-Z_][a-zA-Z0-9]+$)
+W0232: 15:Edit_Event_Form: Class has no __init__ method
+R0903: 15:Edit_Event_Form: Too few public methods (0/2)
+C0103: 32:Search_Form: Invalid name "Search_Form" (should match [A-Z_][a-zA-Z0-9]+$)
+W0232: 32:Search_Form: Class has no __init__ method
+R0903: 32:Search_Form: Too few public methods (0/2)
+************* Module vigiboard.lib.base
+E0611: 10: No name 'model' in module 'vigiboard'
+W0232: 15:BaseController: Class has no __init__ method
+R0903: 15:BaseController: Too few public methods (0/2)
+W0611:  6: Unused import render
+W0611:  9: Unused import WidgetBunch
+W0611:  8: Unused import N_
+W0611: 10: Unused import model
+W0611:  8: Unused import ungettext
+W0611:  8: Unused import _
+************* Module vigiboard.lib.helpers
+W0611:  5: Unused import html
+W0611:  5: Unused import feedgenerator
+W0611:  5: Unused import date
+W0611:  5: Unused import text
+W0611:  5: Unused import misc
+W0611:  5: Unused import number
+************* Module vigiboard.lib
+C0111:  1: Missing docstring
+************* Module vigiboard.lib.app_globals
+R0903:  8:Globals: Too few public methods (0/2)
+************* Module vigiboard.controllers.template
+W0232:  9:TemplateController: Class has no __init__ method
+E0602: 35:TemplateController.view: Undefined variable 'abort'
+R0201: 33:TemplateController.view: Method could be a function
+W0613: 33:TemplateController.view: Unused argument 'url'
+R0903:  9:TemplateController: Too few public methods (1/2)
+************* Module vigiboard.controllers.error
+R0201: 22:ErrorController.document: Method could be a function
+W0613: 22:ErrorController.document: Unused argument 'kwargs'
+W0613: 22:ErrorController.document: Unused argument 'args'
+R0903:  9:ErrorController: Too few public methods (1/2)
+************* Module vigiboard.controllers.secure
+C0301: 20: Line too long (87/80)
+W0232: 15:SecureController: Class has no __init__ method
+R0201: 23:SecureController.index: Method could be a function
+R0201: 29:SecureController.some_where: Method could be a function
+************* Module vigiboard.controllers.root
+E0611: 12: No name 'model' in module 'vigiboard'
+E0611: 14: No name 'model' in module 'vigiboard'
+E0611: 17: No name 'vigiboard_ctl' in module 'vigiboard.controllers'
+W0232: 21:RootController: Class has no __init__ method
+R0201: 44:RootController.index: Method could be a function
+R0201: 49:RootController.about: Method could be a function
+R0201: 54:RootController.auth: Method could be a function
+R0201: 60:RootController.manage_permission_only: Method could be a function
+W0613: 60:RootController.manage_permission_only: Unused argument 'kw'
+R0201: 66:RootController.editor_user_only: Method could be a function
+W0613: 66:RootController.editor_user_only: Unused argument 'kw'
+R0201: 71:RootController.login: Method could be a function
+R0201: 80:RootController.post_login: Method could be a function
+R0201: 94:RootController.post_logout: Method could be a function
+************* Module vigiboard.controllers.vigiboard_ctl.userutils
+E0611:  5: No name 'model' in module 'vigiboard'
+************* Module vigiboard.controllers.vigiboard_ctl.vigiboardrequest
+E0611:  5: No name 'model' in module 'vigiboard'
+W0401:  5: Wildcard import vigiboard.model.vigiboard_bdd
+E0611:  7: No name 'model' in module 'vigiboard'
+E0611: 11: No name 'vigiboard_ctl' in module 'vigiboard.controllers'
+R0902: 14:VigiboardRequest: Too many instance attributes (17/7)
+E0602: 42:VigiboardRequest.__init__: Undefined variable 'Events'
+E0602: 43:VigiboardRequest.__init__: Undefined variable 'Host'
+E0602: 43:VigiboardRequest.__init__: Undefined variable 'Events'
+E0602: 43:VigiboardRequest.__init__: Undefined variable 'Host'
+E0602: 44:VigiboardRequest.__init__: Undefined variable 'Service'
+E0602: 44:VigiboardRequest.__init__: Undefined variable 'Events'
+E0602: 44:VigiboardRequest.__init__: Undefined variable 'Service'
+E0602: 45:VigiboardRequest.__init__: Undefined variable 'HostGroups'
+E0602: 45:VigiboardRequest.__init__: Undefined variable 'Host'
+E0602: 45:VigiboardRequest.__init__: Undefined variable 'HostGroups'
+E0602: 46:VigiboardRequest.__init__: Undefined variable 'ServiceGroups'
+E0602: 46:VigiboardRequest.__init__: Undefined variable 'Service'
+E0602: 46:VigiboardRequest.__init__: Undefined variable 'ServiceGroups'
+E0602: 49:VigiboardRequest.__init__: Undefined variable 'HostGroups'
+E0602: 50:VigiboardRequest.__init__: Undefined variable 'ServiceGroups'
+E0602: 51:VigiboardRequest.__init__: Undefined variable 'Events'
+E0602: 52:VigiboardRequest.__init__: Undefined variable 'Events'
+E0602: 53:VigiboardRequest.__init__: Undefined variable 'Events'
+E0602: 54:VigiboardRequest.__init__: Undefined variable 'Events'
+E0602: 55:VigiboardRequest.__init__: Undefined variable 'Events'
+E0602: 56:VigiboardRequest.__init__: Undefined variable 'Events'
+E0602: 57:VigiboardRequest.__init__: Undefined variable 'Events'
+E0602: 58:VigiboardRequest.__init__: Undefined variable 'Events'
+E0602: 59:VigiboardRequest.__init__: Undefined variable 'Events'
+W0142: 74:VigiboardRequest.add_plugin: Used * or ** magic
+W0142: 75:VigiboardRequest.add_plugin: Used * or ** magic
+W0142: 76:VigiboardRequest.add_plugin: Used * or ** magic
+W0142: 77:VigiboardRequest.add_plugin: Used * or ** magic
+W0142: 78:VigiboardRequest.add_plugin: Used * or ** magic
+W0142: 79:VigiboardRequest.add_plugin: Used * or ** magic
+R0201:222:VigiboardRequest.format_events_img_statu: Method could be a function
+E0602:274:VigiboardRequest.format_events: Undefined variable 'Events'
+E0602:332:VigiboardRequest.format_history: Undefined variable 'EventHistory'
+E0602:333:VigiboardRequest.format_history: Undefined variable 'EventHistory'
+E0602:334:VigiboardRequest.format_history: Undefined variable 'EventHistory'
+E0602:335:VigiboardRequest.format_history: Undefined variable 'EventHistory'
+R0201:391:VigiboardRequest.generate_tmpl_context: Method could be a function
+R0902:414:VigiboardRequestPlugin: Too many instance attributes (8/7)
+W0622:420:VigiboardRequestPlugin.__init__: Redefining built-in 'filter'
+W0102:420:VigiboardRequestPlugin.__init__: Dangerous default value [] as argument
+W0102:420:VigiboardRequestPlugin.__init__: Dangerous default value [] as argument
+W0102:420:VigiboardRequestPlugin.__init__: Dangerous default value [] as argument
+W0102:420:VigiboardRequestPlugin.__init__: Dangerous default value [] as argument
+W0102:420:VigiboardRequestPlugin.__init__: Dangerous default value [] as argument
+W0102:420:VigiboardRequestPlugin.__init__: Dangerous default value [] as argument
+W0102:420:VigiboardRequestPlugin.__init__: Dangerous default value {} as argument
+R0913:420:VigiboardRequestPlugin.__init__: Too many arguments (9/5)
+W0702:444:VigiboardRequestPlugin.__show__: No exception type(s) specified
+R0201:446:VigiboardRequestPlugin.show: Method could be a function
+W0613:446:VigiboardRequestPlugin.show: Unused argument 'event'
+R0903:414:VigiboardRequestPlugin: Too few public methods (1/2)
+************* Module vigiboard.controllers.vigiboard_ctl.vigiboard_ctl
+E0611: 16: No name 'model' in module 'vigiboard'
+E0611: 18: No name 'model' in module 'vigiboard'
+W0401: 18: Wildcard import vigiboard.model.vigiboard_bdd
+E0611: 19: No name 'vigiboard_ctl' in module 'vigiboard.controllers'
+E0611: 24: No name 'vigiboard_ctl' in module 'vigiboard.controllers'
+W0232: 29:VigiboardController: Class has no __init__ method
+R0201: 36:VigiboardController.process_form_errors: Method could be a function
+W0613: 36:VigiboardController.process_form_errors: Unused argument 'kwargv'
+W0613: 36:VigiboardController.process_form_errors: Unused argument 'argv'
+R0913: 52:VigiboardController.default: Too many arguments (6/5)
+W0232: 78:VigiboardController.default.PluginSHN: Class has no __init__ method
+R0201: 85:VigiboardController.default.PluginSHN.show: Method could be a function
+R0903: 78:VigiboardController.default.PluginSHN: Too few public methods (1/2)
+E0602: 95:VigiboardController.default: Undefined variable 'ServiceHautNiveau'
+E0602: 96:VigiboardController.default: Undefined variable 'Events'
+E0602: 97:VigiboardController.default: Undefined variable 'ServiceHautNiveau'
+E0602: 98:VigiboardController.default: Undefined variable 'ServiceHautNiveau'
+E0602: 98:VigiboardController.default: Undefined variable 'Events'
+E0602: 99:VigiboardController.default: Undefined variable 'Events'
+E0602:106:VigiboardController.default: Undefined variable 'Events'
+E0602:108:VigiboardController.default: Undefined variable 'Events'
+E0602:110:VigiboardController.default: Undefined variable 'Events'
+E0602:112:VigiboardController.default: Undefined variable 'Events'
+R0201: 52:VigiboardController.default: Method could be a function
+E0602:155:VigiboardController.history_dialog: Undefined variable 'Events'
+E0602:155:VigiboardController.history_dialog: Undefined variable 'Events'
+E0602:156:VigiboardController.history_dialog: Undefined variable 'Events'
+E0602:156:VigiboardController.history_dialog: Undefined variable 'Events'
+E0602:157:VigiboardController.history_dialog: Undefined variable 'HostGroups'
+E0602:157:VigiboardController.history_dialog: Undefined variable 'Events'
+E0602:157:VigiboardController.history_dialog: Undefined variable 'HostGroups'
+E0602:158:VigiboardController.history_dialog: Undefined variable 'HostGroups'
+E0602:159:VigiboardController.history_dialog: Undefined variable 'Events'
+E0602:161:VigiboardController.history_dialog: Undefined variable 'EventHistory'
+E0602:162:VigiboardController.history_dialog: Undefined variable 'EventHistory'
+E0602:163:VigiboardController.history_dialog: Undefined variable 'EventHistory'
+E0602:164:VigiboardController.history_dialog: Undefined variable 'EventHistory'
+R0201:143:VigiboardController.history_dialog: Method could be a function
+E0602:204:VigiboardController.event: Undefined variable 'Events'
+R0201:194:VigiboardController.event: Method could be a function
+E0602:243:VigiboardController.host_service: Undefined variable 'Events'
+E0602:244:VigiboardController.host_service: Undefined variable 'Events'
+R0201:230:VigiboardController.host_service: Method could be a function
+E0602:294:VigiboardController.update: Undefined variable 'Events'
+E0602:310:VigiboardController.update: Undefined variable 'EventHistory'
+E0602:316:VigiboardController.update: Undefined variable 'EventHistory'
+R0201:269:VigiboardController.update: Method could be a function
+W0613:274:VigiboardController.update: Unused argument 'argv'
+************* Module vigiboard.controllers.vigiboard_ctl
+E0611:  6: No name 'vigiboard_ctl' in module 'vigiboard.controllers'
+E0611:  7: No name 'vigiboard_ctl' in module 'vigiboard.controllers'
+E0611:  9: No name 'vigiboard_ctl' in module 'vigiboard.controllers'
+************* Module vigiboard.tests
+E0611: 14: No name 'model' in module 'vigiboard'
+C0103: 49:TestController.setUp: Invalid name "setUp" (should match [a-z_][a-z0-9_]{2,30}$)
+C0103: 61:TestController.tearDown: Invalid name "tearDown" (should match [a-z_][a-z0-9_]{2,30}$)
+R0201: 61:TestController.tearDown: Method could be a function
+************* Module vigiboard.tests.models.test_vigiboard
+E0611:  5: No name 'assert_true' in module 'nose.tools'
+E0611:  7: No name 'model' in module 'vigiboard'
+W0401:  7: Wildcard import vigiboard.model
+E0611:  8: No name 'tests' in module 'vigiboard'
+W0232: 11:TestEventHistory: Class has no __init__ method
+E0602: 14:TestEventHistory: Undefined variable 'EventHistory'
+E0602: 21:TestEventHistory.do_get_dependencies: Undefined variable 'DBSession'
+E0602: 21:TestEventHistory.do_get_dependencies: Undefined variable 'Host'
+E0602: 22:TestEventHistory.do_get_dependencies: Undefined variable 'DBSession'
+E0602: 22:TestEventHistory.do_get_dependencies: Undefined variable 'Service'
+E0602: 23:TestEventHistory.do_get_dependencies: Undefined variable 'DBSession'
+E0602: 24:TestEventHistory.do_get_dependencies: Undefined variable 'DBSession'
+E0602: 24:TestEventHistory.do_get_dependencies: Undefined variable 'Events'
+E0602: 25:TestEventHistory.do_get_dependencies: Undefined variable 'DBSession'
+E0602: 26:TestEventHistory.do_get_dependencies: Undefined variable 'DBSession'
+E0602: 26:TestEventHistory.do_get_dependencies: Undefined variable 'Events'
+R0201: 18:TestEventHistory.do_get_dependencies: Method could be a function
+R0903: 11:TestEventHistory: Too few public methods (1/2)
+W0232: 28:TestEvent: Class has no __init__ method
+E0602: 31:TestEvent: Undefined variable 'Events'
+E0602: 37:TestEvent.do_get_dependencies: Undefined variable 'DBSession'
+E0602: 37:TestEvent.do_get_dependencies: Undefined variable 'Host'
+E0602: 38:TestEvent.do_get_dependencies: Undefined variable 'DBSession'
+E0602: 38:TestEvent.do_get_dependencies: Undefined variable 'Service'
+E0602: 39:TestEvent.do_get_dependencies: Undefined variable 'DBSession'
+R0201: 34:TestEvent.do_get_dependencies: Method could be a function
+E1101: 46:TestEvent.test_get_date: Instance of 'TestEvent' has no 'obj' member
+E1101: 47:TestEvent.test_get_date: Instance of 'TestEvent' has no 'obj' member
+E1101: 52:TestEvent.test_get_since_date: Instance of 'TestEvent' has no 'obj' member
+W0232: 54:TestGraph: Class has no __init__ method
+E0602: 57:TestGraph: Undefined variable 'GraphGroups'
+R0903: 54:TestGraph: Too few public methods (0/2)
+W0232: 60:TestGraphToGroups: Class has no __init__ method
+E0602: 63:TestGraphToGroups: Undefined variable 'GraphToGroups'
+E0602: 69:TestGraphToGroups.do_get_dependencies: Undefined variable 'DBSession'
+E0602: 69:TestGraphToGroups.do_get_dependencies: Undefined variable 'Graph'
+E0602: 70:TestGraphToGroups.do_get_dependencies: Undefined variable 'DBSession'
+E0602: 70:TestGraphToGroups.do_get_dependencies: Undefined variable 'GraphGroups'
+E0602: 71:TestGraphToGroups.do_get_dependencies: Undefined variable 'DBSession'
+R0201: 66:TestGraphToGroups.do_get_dependencies: Method could be a function
+R0903: 60:TestGraphToGroups: Too few public methods (1/2)
+W0232: 74:TestGraphGroups: Class has no __init__ method
+E0602: 77:TestGraphGroups: Undefined variable 'GraphGroups'
+R0903: 74:TestGraphGroups: Too few public methods (0/2)
+W0232: 80:TestGroupPermissions: Class has no __init__ method
+E0602: 83:TestGroupPermissions: Undefined variable 'GroupPermissions'
+E0602: 89:TestGroupPermissions.do_get_dependencies: Undefined variable 'DBSession'
+E0602: 89:TestGroupPermissions.do_get_dependencies: Undefined variable 'Groups'
+E0602: 90:TestGroupPermissions.do_get_dependencies: Undefined variable 'DBSession'
+R0201: 86:TestGroupPermissions.do_get_dependencies: Method could be a function
+R0903: 80:TestGroupPermissions: Too few public methods (1/2)
+W0232: 93:TestGroups: Class has no __init__ method
+E0602: 96:TestGroups: Undefined variable 'Groups'
+R0903: 93:TestGroups: Too few public methods (0/2)
+W0232: 99:TestHost: Class has no __init__ method
+E0602:102:TestHost: Undefined variable 'Host'
+R0903: 99:TestHost: Too few public methods (0/2)
+W0232:105:TestHostGroups: Class has no __init__ method
+E0602:108:TestHostGroups: Undefined variable 'HostGroups'
+E0602:114:TestHostGroups.do_get_dependencies: Undefined variable 'DBSession'
+E0602:114:TestHostGroups.do_get_dependencies: Undefined variable 'Host'
+E0602:115:TestHostGroups.do_get_dependencies: Undefined variable 'DBSession'
+E0602:115:TestHostGroups.do_get_dependencies: Undefined variable 'Groups'
+E0602:116:TestHostGroups.do_get_dependencies: Undefined variable 'DBSession'
+R0201:111:TestHostGroups.do_get_dependencies: Method could be a function
+R0903:105:TestHostGroups: Too few public methods (1/2)
+W0232:119:TestPerfDataSource: Class has no __init__ method
+E0602:122:TestPerfDataSource: Undefined variable 'PerfDataSource'
+E0602:128:TestPerfDataSource.do_get_dependencies: Undefined variable 'DBSession'
+E0602:128:TestPerfDataSource.do_get_dependencies: Undefined variable 'Host'
+E0602:129:TestPerfDataSource.do_get_dependencies: Undefined variable 'DBSession'
+E0602:129:TestPerfDataSource.do_get_dependencies: Undefined variable 'Service'
+E0602:130:TestPerfDataSource.do_get_dependencies: Undefined variable 'DBSession'
+E0602:130:TestPerfDataSource.do_get_dependencies: Undefined variable 'Graph'
+E0602:131:TestPerfDataSource.do_get_dependencies: Undefined variable 'DBSession'
+R0201:125:TestPerfDataSource.do_get_dependencies: Method could be a function
+R0903:119:TestPerfDataSource: Too few public methods (1/2)
+W0232:135:TestServiceGroups: Class has no __init__ method
+E0602:138:TestServiceGroups: Undefined variable 'ServiceGroups'
+E0602:144:TestServiceGroups.do_get_dependencies: Undefined variable 'DBSession'
+E0602:144:TestServiceGroups.do_get_dependencies: Undefined variable 'Service'
+E0602:145:TestServiceGroups.do_get_dependencies: Undefined variable 'DBSession'
+E0602:145:TestServiceGroups.do_get_dependencies: Undefined variable 'Groups'
+E0602:146:TestServiceGroups.do_get_dependencies: Undefined variable 'DBSession'
+R0201:141:TestServiceGroups.do_get_dependencies: Method could be a function
+R0903:135:TestServiceGroups: Too few public methods (1/2)
+W0232:149:TestServiceHautNiveau: Class has no __init__ method
+E0602:152:TestServiceHautNiveau: Undefined variable 'ServiceHautNiveau'
+E0602:157:TestServiceHautNiveau.do_get_dependencies: Undefined variable 'DBSession'
+E0602:157:TestServiceHautNiveau.do_get_dependencies: Undefined variable 'Service'
+E0602:158:TestServiceHautNiveau.do_get_dependencies: Undefined variable 'DBSession'
+R0201:155:TestServiceHautNiveau.do_get_dependencies: Method could be a function
+R0903:149:TestServiceHautNiveau: Too few public methods (1/2)
+W0232:161:TestService: Class has no __init__ method
+E0602:164:TestService: Undefined variable 'Service'
+R0903:161:TestService: Too few public methods (0/2)
+W0232:167:TestServiceTopo: Class has no __init__ method
+E0602:170:TestServiceTopo: Undefined variable 'ServiceTopo'
+C0111:173:TestServiceTopo.do_get_dependencies: Missing docstring
+E0602:174:TestServiceTopo.do_get_dependencies: Undefined variable 'DBSession'
+E0602:174:TestServiceTopo.do_get_dependencies: Undefined variable 'Service'
+E0602:175:TestServiceTopo.do_get_dependencies: Undefined variable 'DBSession'
+E0602:175:TestServiceTopo.do_get_dependencies: Undefined variable 'ServiceHautNiveau'
+E0602:177:TestServiceTopo.do_get_dependencies: Undefined variable 'DBSession'
+R0201:173:TestServiceTopo.do_get_dependencies: Method could be a function
+R0903:167:TestServiceTopo: Too few public methods (1/2)
+************* Module vigiboard.tests.models.test_auth
+E0611:  5: No name 'model' in module 'vigiboard'
+E0611:  6: No name 'tests' in module 'vigiboard'
+W0232:  8:TestGroup: Class has no __init__ method
+R0903:  8:TestGroup: Too few public methods (0/2)
+W0232: 17:TestUser: Class has no __init__ method
+E1101: 28:TestUser.test_obj_creation_username: Instance of 'TestUser' has no 'obj' member
+E1101: 32:TestUser.test_obj_creation_email: Instance of 'TestUser' has no 'obj' member
+E1101: 36:TestUser.test_no_permissions_by_default: Instance of 'TestUser' has no 'obj' member
+E1101: 41:TestUser.test_getting_by_email: Instance of 'TestUser' has no 'obj' member
+W0232: 44:TestPermission: Class has no __init__ method
+R0903: 44:TestPermission: Too few public methods (0/2)
+************* Module vigiboard.tests.models.__init__
+W0312: 27: Found indentation with tabs instead of spaces
+W0312: 28: Found indentation with tabs instead of spaces
+W0312: 29: Found indentation with tabs instead of spaces
+C0301: 48: Line too long (115/80)
+************* Module vigiboard.tests.models
+E0611:  3: No name 'assert_equals' in module 'nose.tools'
+E0611:  5: No name 'model' in module 'vigiboard'
+E0611:  6: No name 'tests' in module 'vigiboard'
+W0622: 26:ModelTest.wri: Redefining built-in 'str'
+C0111: 26:ModelTest.wri: Missing docstring
+C0324: 26:ModelTest.wri: Comma not followed by a space
+    def wri(self,str):
+                ^^
+C0322: 27:ModelTest.wri: Operator not preceded by a space
+	    f=open("/home/tandreja/moimoi","a")
+      ^
+C0103: 27:ModelTest.wri: Invalid name "f" (should match [a-z_][a-z0-9_]{2,30}$)
+C0324: 28:ModelTest.wri: Comma not followed by a space
+	    f.write("%s %s\n" % (str,self.__class__))
+                             ^^
+C0111: 31:ModelTest.setup: Missing docstring
+E1102: 36:ModelTest.setup: self.klass is not callable
+W0142: 36:ModelTest.setup: Used * or ** magic
+C0103: 44:ModelTest.tearDown: Invalid name "tearDown" (should match [a-z_][a-z0-9_]{2,30}$)
+C0111: 44:ModelTest.tearDown: Missing docstring
+R0201: 44:ModelTest.tearDown: Method could be a function
+R0201: 47:ModelTest.do_get_dependencies: Method could be a function
+C0111: 51:ModelTest.test_create_obj: Missing docstring
+C0111: 54:ModelTest.test_query_obj: Missing docstring
+W0201: 36:ModelTest.setup: Attribute 'obj' defined outside __init__
+************* Module vigiboard.tests.functional.test_userutils
+C0301: 38: Line too long (81/80)
+E0611:  6: No name 'assert_true' in module 'nose.tools'
+E0611:  8: No name 'model' in module 'vigiboard'
+W0401:  8: Wildcard import vigiboard.model
+E0611:  9: No name 'tests' in module 'vigiboard'
+E0611: 10: No name 'vigiboard_ctl' in module 'vigiboard.controllers'
+E0611: 11: No name 'tests' in module 'vigiboard'
+C0111: 25:TestUserUtils: Missing docstring
+W0232: 25:TestUserUtils: Class has no __init__ method
+E0602: 35:TestUserUtils.test_get_user_groups: Undefined variable 'DBSession'
+E0602: 35:TestUserUtils.test_get_user_groups: Undefined variable 'Groups'
+E0602: 36:TestUserUtils.test_get_user_groups: Undefined variable 'DBSession'
+E0602: 36:TestUserUtils.test_get_user_groups: Undefined variable 'Groups'
+E0602: 37:TestUserUtils.test_get_user_groups: Undefined variable 'DBSession'
+E0602: 37:TestUserUtils.test_get_user_groups: Undefined variable 'Permission'
+E0602: 38:TestUserUtils.test_get_user_groups: Undefined variable 'Permission'
+E0602: 39:TestUserUtils.test_get_user_groups: Undefined variable 'DBSession'
+E0602: 39:TestUserUtils.test_get_user_groups: Undefined variable 'Permission'
+E0602: 40:TestUserUtils.test_get_user_groups: Undefined variable 'Permission'
+E0602: 41:TestUserUtils.test_get_user_groups: Undefined variable 'DBSession'
+E0602: 41:TestUserUtils.test_get_user_groups: Undefined variable 'GroupPermissions'
+E0602: 43:TestUserUtils.test_get_user_groups: Undefined variable 'DBSession'
+E0602: 43:TestUserUtils.test_get_user_groups: Undefined variable 'GroupPermissions'
+E1101: 54:TestUserUtils.test_get_user_groups: Instance of 'TestUserUtils' has no 'app' member
+E1101: 69:TestUserUtils.test_get_user_groups: Instance of 'TestUserUtils' has no 'app' member
+R0903: 25:TestUserUtils: Too few public methods (1/2)
+************* Module vigiboard.tests.functional.test_root
+E0611: 13: No name 'assert_true' in module 'nose.tools'
+E0611: 15: No name 'tests' in module 'vigiboard'
+C0111: 18:TestRootController: Missing docstring
+W0232: 18:TestRootController: Class has no __init__ method
+C0111: 19:TestRootController.test_index: Missing docstring
+E1101: 20:TestRootController.test_index: Instance of 'TestRootController' has no 'app' member
+E1101: 37:TestRootController.test_secc_with_manager: Instance of 'TestRootController' has no 'app' member
+E1101: 43:TestRootController.test_secc_with_editor: Instance of 'TestRootController' has no 'app' member
+E1101: 48:TestRootController.test_secc_with_anonymous: Instance of 'TestRootController' has no 'app' member
+************* Module vigiboard.tests.functional.test_authentication
+C0301: 51: Line too long (81/80)
+E0611: 10: No name 'tests' in module 'vigiboard'
+W0232: 13:TestAuthentication: Class has no __init__ method
+E1101: 38:TestAuthentication.test_forced_login: Instance of 'TestAuthentication' has no 'app' member
+E1101: 58:TestAuthentication.test_voluntary_login: Instance of 'TestAuthentication' has no 'app' member
+E1101: 74:TestAuthentication.test_logout: Instance of 'TestAuthentication' has no 'app' member
+E1101: 80:TestAuthentication.test_logout: Instance of 'TestAuthentication' has no 'app' member
+************* Module vigiboard.tests.functional.test_vigiboardrequest
+C0301: 40: Line too long (81/80)
+C0301: 57: Line too long (81/80)
+C0301:124: Line too long (85/80)
+C0301:152: Line too long (84/80)
+E0611:  6: No name 'assert_true' in module 'nose.tools'
+E0611:  8: No name 'model' in module 'vigiboard'
+W0401:  8: Wildcard import vigiboard.model
+E0611:  9: No name 'tests' in module 'vigiboard'
+E0611: 10: No name 'vigiboard_ctl' in module 'vigiboard.controllers'
+E0611: 12: No name 'tests' in module 'vigiboard'
+C0111: 26:TestVigiboardRequest: Missing docstring
+W0232: 26:TestVigiboardRequest: Class has no __init__ method
+E0602: 37:TestVigiboardRequest.test_creation_requete: Undefined variable 'DBSession'
+E0602: 37:TestVigiboardRequest.test_creation_requete: Undefined variable 'Groups'
+E0602: 38:TestVigiboardRequest.test_creation_requete: Undefined variable 'DBSession'
+E0602: 38:TestVigiboardRequest.test_creation_requete: Undefined variable 'Groups'
+E0602: 39:TestVigiboardRequest.test_creation_requete: Undefined variable 'DBSession'
+E0602: 39:TestVigiboardRequest.test_creation_requete: Undefined variable 'Permission'
+E0602: 40:TestVigiboardRequest.test_creation_requete: Undefined variable 'Permission'
+E0602: 41:TestVigiboardRequest.test_creation_requete: Undefined variable 'DBSession'
+E0602: 41:TestVigiboardRequest.test_creation_requete: Undefined variable 'Permission'
+E0602: 42:TestVigiboardRequest.test_creation_requete: Undefined variable 'Permission'
+E0602: 43:TestVigiboardRequest.test_creation_requete: Undefined variable 'DBSession'
+E0602: 43:TestVigiboardRequest.test_creation_requete: Undefined variable 'GroupPermissions'
+E0602: 45:TestVigiboardRequest.test_creation_requete: Undefined variable 'DBSession'
+E0602: 45:TestVigiboardRequest.test_creation_requete: Undefined variable 'GroupPermissions'
+E0602: 49:TestVigiboardRequest.test_creation_requete: Undefined variable 'DBSession'
+E0602: 49:TestVigiboardRequest.test_creation_requete: Undefined variable 'Host'
+E0602: 50:TestVigiboardRequest.test_creation_requete: Undefined variable 'DBSession'
+E0602: 50:TestVigiboardRequest.test_creation_requete: Undefined variable 'Service'
+E0602: 51:TestVigiboardRequest.test_creation_requete: Undefined variable 'DBSession'
+E0602: 51:TestVigiboardRequest.test_creation_requete: Undefined variable 'Host'
+E0602: 52:TestVigiboardRequest.test_creation_requete: Undefined variable 'DBSession'
+E0602: 52:TestVigiboardRequest.test_creation_requete: Undefined variable 'Service'
+E0602: 53:TestVigiboardRequest.test_creation_requete: Undefined variable 'DBSession'
+E0602: 54:TestVigiboardRequest.test_creation_requete: Undefined variable 'Events'
+E0602: 55:TestVigiboardRequest.test_creation_requete: Undefined variable 'Events'
+E0602: 56:TestVigiboardRequest.test_creation_requete: Undefined variable 'Events'
+E0602: 57:TestVigiboardRequest.test_creation_requete: Undefined variable 'Events'
+E0602: 60:TestVigiboardRequest.test_creation_requete: Undefined variable 'DBSession'
+E0602: 61:TestVigiboardRequest.test_creation_requete: Undefined variable 'DBSession'
+E0602: 62:TestVigiboardRequest.test_creation_requete: Undefined variable 'DBSession'
+E0602: 63:TestVigiboardRequest.test_creation_requete: Undefined variable 'DBSession'
+E0602: 64:TestVigiboardRequest.test_creation_requete: Undefined variable 'DBSession'
+E0602: 65:TestVigiboardRequest.test_creation_requete: Undefined variable 'DBSession'
+E0602: 65:TestVigiboardRequest.test_creation_requete: Undefined variable 'EventHistory'
+E0602: 67:TestVigiboardRequest.test_creation_requete: Undefined variable 'DBSession'
+E0602: 67:TestVigiboardRequest.test_creation_requete: Undefined variable 'EventHistory'
+E0602: 69:TestVigiboardRequest.test_creation_requete: Undefined variable 'DBSession'
+E0602: 69:TestVigiboardRequest.test_creation_requete: Undefined variable 'EventHistory'
+E0602: 71:TestVigiboardRequest.test_creation_requete: Undefined variable 'DBSession'
+E0602: 71:TestVigiboardRequest.test_creation_requete: Undefined variable 'EventHistory'
+E0602: 73:TestVigiboardRequest.test_creation_requete: Undefined variable 'DBSession'
+E0602: 73:TestVigiboardRequest.test_creation_requete: Undefined variable 'EventHistory'
+E0602: 75:TestVigiboardRequest.test_creation_requete: Undefined variable 'DBSession'
+E0602: 75:TestVigiboardRequest.test_creation_requete: Undefined variable 'EventHistory'
+E0602: 77:TestVigiboardRequest.test_creation_requete: Undefined variable 'DBSession'
+E0602: 77:TestVigiboardRequest.test_creation_requete: Undefined variable 'EventHistory'
+E0602: 79:TestVigiboardRequest.test_creation_requete: Undefined variable 'DBSession'
+E0602: 79:TestVigiboardRequest.test_creation_requete: Undefined variable 'EventHistory'
+E0602: 83:TestVigiboardRequest.test_creation_requete: Undefined variable 'DBSession'
+E0602: 83:TestVigiboardRequest.test_creation_requete: Undefined variable 'HostGroups'
+E0602: 85:TestVigiboardRequest.test_creation_requete: Undefined variable 'DBSession'
+E0602: 85:TestVigiboardRequest.test_creation_requete: Undefined variable 'HostGroups'
+E0602: 87:TestVigiboardRequest.test_creation_requete: Undefined variable 'DBSession'
+E0602: 87:TestVigiboardRequest.test_creation_requete: Undefined variable 'ServiceGroups'
+E0602: 89:TestVigiboardRequest.test_creation_requete: Undefined variable 'DBSession'
+E0602: 89:TestVigiboardRequest.test_creation_requete: Undefined variable 'ServiceGroups'
+E0602: 91:TestVigiboardRequest.test_creation_requete: Undefined variable 'DBSession'
+E1101: 99:TestVigiboardRequest.test_creation_requete: Instance of 'TestVigiboardRequest' has no 'app' member
+W0232:107:TestVigiboardRequest.test_creation_requete.MonPlugin: Class has no __init__ method
+R0201:110:TestVigiboardRequest.test_creation_requete.MonPlugin.show: Method could be a function
+R0903:107:TestVigiboardRequest.test_creation_requete.MonPlugin: Too few public methods (1/2)
+E0602:115:TestVigiboardRequest.test_creation_requete: Undefined variable 'EventHistory'
+E0602:116:TestVigiboardRequest.test_creation_requete: Undefined variable 'EventHistory'
+E0602:116:TestVigiboardRequest.test_creation_requete: Undefined variable 'EventHistory'
+E0602:116:TestVigiboardRequest.test_creation_requete: Undefined variable 'Events'
+E1101:140:TestVigiboardRequest.test_creation_requete: Instance of 'TestVigiboardRequest' has no 'app' member
+E0602:146:TestVigiboardRequest.test_creation_requete: Undefined variable 'EventHistory'
+E0602:147:TestVigiboardRequest.test_creation_requete: Undefined variable 'EventHistory'
+E0602:147:TestVigiboardRequest.test_creation_requete: Undefined variable 'EventHistory'
+E0602:147:TestVigiboardRequest.test_creation_requete: Undefined variable 'Events'
+R0903: 26:TestVigiboardRequest: Too few public methods (1/2)
+************* Module vigiboard.config.app_cfg
+E0611: 19: No name 'model' in module 'vigiboard'
+E1101: 37: Module 'vigiboard' has no 'model' member
+E1101: 38: Module 'vigiboard' has no 'model' member
+W0611: 20: Unused import helpers
+W0611: 20: Unused import app_globals
+************* Module vigiboard.config.middleware
+W0312: 39: Found indentation with tabs instead of spaces
+W0613: 15:make_app: Unused argument 'full_stack'
+************* Module vigiboard.config
+C0111:  1: Missing docstring
+************* Module vigiboard.config.__init__
+R0801:  1: Similar lines in 2 files
+==vigiboard.tests.functional.test_userutils:10
+==vigiboard.tests.functional.test_vigiboardrequest:11
+from vigiboard.tests import setup_db, teardown_db
+import tg
+import transaction
+
+#Create an empty database before we start our tests for this module
+def setup():
+    """Function called by nose on module load"""
+    setup_db()
+
+#Teardown that database
+def teardown():
+    """Function called by nose after all tests in this module ran"""
+    teardown_db()
+
+R0801:  1: Similar lines in 2 files
+==vigiboard.tests.functional.test_userutils:36
+==vigiboard.tests.functional.test_vigiboardrequest:38
+        idmanagers = DBSession.query(Permission
+                ).filter(Permission.permission_name == 'manage')[0].permission_id
+        ideditors = DBSession.query(Permission
+                ).filter(Permission.permission_name == 'edit')[0].permission_id
+        DBSession.add(GroupPermissions(groupname = "hostmanagers",
+                idpermission = idmanagers))
+        DBSession.add(GroupPermissions(groupname = "hosteditors",
+                idpermission = ideditors))
+
+        # Les évènements et leurs dépendances
+R0801:  1: Similar lines in 4 files
+==vigiboard.model.vigiboard_bdd.hostgroups:4
+==vigiboard.model.vigiboard_bdd.servicegroups:4
+==vigiboard.model.vigiboard_bdd.servicehautniveau:4
+==vigiboard.model.vigiboard_bdd.servicetopo:4
+from sqlalchemy.orm import mapper
+from sqlalchemy import Table, ForeignKey, Column
+from sqlalchemy.types import String
+from vigiboard.model import metadata
+
+from vigiboard.config.vigiboard_config import vigiboard_config
+
+# Generation par SQLAutoCode
+
+R0801:  1: Similar lines in 2 files
+==vigiboard.model.vigiboard_bdd.groups:4
+==vigiboard.model.vigiboard_bdd.service:4
+from sqlalchemy.orm import mapper
+from sqlalchemy import Table, Column
+from sqlalchemy.types import String
+from vigiboard.model import metadata
+
+from vigiboard.config.vigiboard_config import vigiboard_config
+
+# Generation par SQLAutoCode
+
+R0801:  1: Similar lines in 2 files
+==vigiboard.model.vigiboard_bdd.eventhistory:37
+==vigiboard.model.vigiboard_bdd.host:35
+            String(length=255, convert_unicode=True, assert_unicode=None),
+            primary_key=False),
+        mysql_engine='InnoDB',
+        mysql_charset='utf8'
+    )
+
+# Classe a mapper
+
+R0801:  1: Similar lines in 3 files
+==vigiboard.model.vigiboard_bdd.graph:4
+==vigiboard.model.vigiboard_bdd.groups:4
+==vigiboard.model.vigiboard_bdd.service:4
+from sqlalchemy.orm import mapper
+from sqlalchemy import Table, Column
+from sqlalchemy.types import String
+from vigiboard.model import metadata
+
+from vigiboard.config.vigiboard_config import vigiboard_config
+# Generation par SQLAutoCode
+
+R0801:  1: Similar lines in 2 files
+==vigiboard.model.vigiboard_bdd.servicegroups:15
+==vigiboard.model.vigiboard_bdd.servicehautniveau:15
+    metadata,
+    Column(u'servicename',
+        String(length=100, convert_unicode=True, assert_unicode=None),
+        ForeignKey(
+            vigiboard_config['vigiboard_bdd.basename'] + u'service.name'
+        ), primary_key=True, nullable=False),
+R0801:  1: Similar lines in 2 files
+==vigiboard.model.vigiboard_bdd.hostgroups:14
+==vigiboard.model.vigiboard_bdd.perfdatasource:15
+    metadata,
+    Column(u'hostname',
+        String(length=100, convert_unicode=True, assert_unicode=None),
+        ForeignKey(vigiboard_config['vigiboard_bdd.basename'] + u'host.name'),
+        primary_key=True, nullable=False),
+R0401:  1: Cyclic import (vigiboard.controllers.vigiboard_ctl -> vigiboard.controllers.vigiboard_ctl.vigiboard_ctl)
+R0401:  1: Cyclic import (vigiboard.model -> vigiboard.model.auth)

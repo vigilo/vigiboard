@@ -3,13 +3,13 @@
 """Gestion de la requête, des plugins et de l'affichage du Vigiboard"""
 
 from vigiboard.model.vigiboard_bdd import *
-from tg import request, tmpl_context, url
+from tg import tmpl_context, url
 from vigiboard.model import DBSession
-from sqlalchemy import not_ , and_ , asc , desc, or_, sql
+from sqlalchemy import not_ , and_ , asc , desc
 from tw.jquery import JQueryUIDialog
 from vigiboard.widgets.edit_event import Edit_Event_Form , Search_Form
-from vigiboard.controllers.vigiboard_ctl.userutils import GetUserGroups
-from pylons.i18n import ugettext as _, lazy_ugettext as l_
+from vigiboard.controllers.vigiboard_ctl.userutils import get_user_groups
+from pylons.i18n import ugettext as _
 
 class VigiboardRequest():
     
@@ -22,28 +22,36 @@ class VigiboardRequest():
 
         """
         Initialisation de toutes les variables nécessaires: Liste des groupes de
-        l'utilisateur, les classes à appliquer suivant la sévérité, les différentes
-        étapes de la génération de la requête et la liste des plugins appliqués.
+        l'utilisateur, les classes à appliquer suivant la sévérité, les
+        différentes étapes de la génération de la requête et la liste des
+        plugins appliqués.
         """
 
-        self.user_groups = GetUserGroups()
-        self.bouton_severity = { 0 : 'Minor' , 1 : 'Minor', 2 : 'Minor', 3 : 'Minor', 4 : 'Minor', 5 : 'Minor' , 6 : 'Major' , 7 : 'Critical' }
-        self.class_severity = { 0 : 'None' , 1 : 'None', 2 : 'None', 3 : 'None', 4 : 'None', 5 : 'Minor' , 6 : 'Major' , 7 : 'Critical' }
-        self.severity = { 0 : _('None') , 1 : _('OK'), 2 : _('Suppressed'), 3 : _('Initial'), 4 : _('Maintenance'), 5 : _('Minor') , 6 : _('Major') , 7 : _('Critical') }
+        self.user_groups = get_user_groups()
+        self.bouton_severity = { 0: 'Minor', 1: 'Minor', 2: 'Minor',
+                3: 'Minor', 4: 'Minor', 5: 'Minor', 6: 'Major', 7: 'Critical' }
+        self.class_severity = { 0: 'None', 1: 'None', 2: 'None', 3: 'None',
+                4: 'None', 5: 'Minor', 6: 'Major', 7: 'Critical' }
+        self.severity = { 0: _('None'), 1: _('OK'), 2: _('Suppressed'),
+                3: _('Initial'), 4: _('Maintenance'), 5: _('Minor'),
+                6: _('Major'), 7: _('Critical') }
 
-        self.class_ack = { 'Acknowledged' : 'Ack' , 'None' : '' , 'AAClosed' : 'Ack' }
+        self.class_ack = {'Acknowledged': 'Ack', 'None': '', 'AAClosed': 'Ack'}
 
-        self.generaterq= False
+        self.generaterq = False
         self.table = [Events]
         self.join = [( Host, Events.hostname == Host.name ),
                 ( Service, Events.servicename == Service.name ),
                 ( HostGroups , Host.name == HostGroups.hostname ),
-                ( ServiceGroups , Service.name == ServiceGroups.servicename )]
+                ( ServiceGroups , Service.name == ServiceGroups.servicename )
+                ]
         self.outerjoin = []
         self.filter = [HostGroups.groupname.in_(self.user_groups),
-                        ServiceGroups.groupname.in_(self.user_groups),
-                       not_(and_(Events.active == False,Events.status == 'AAClosed')),
-                   Events.timestamp_active != None]
+                 ServiceGroups.groupname.in_(self.user_groups),
+                 not_(and_(Events.active == False,
+                     Events.status == 'AAClosed')),
+                 Events.timestamp_active != None,
+                 not_(Events.timestamp_active.like('0000-00-00 00:00:00'))]
         self.orderby = [asc(Events.status),
                                 desc(Events.active),
                                 desc(Events.severity),
@@ -51,23 +59,27 @@ class VigiboardRequest():
                                 desc(Events.timestamp)]
         self.groupby = []
         self.plugin = []
-        
-    def AddPlugin(self,*argv):
+        self.events = []
+        self.idevents = []
+        self.hist = []
+        self.req = DBSession
+
+    def add_plugin(self, *argv):
         
         """
         Ajout d'un plugin, on lui prélève ses ajouts dans la requête
         """
         for i in argv :
-            if isinstance(i,VigiboardRequestPlugin):
-                self.AddTable(*i.table)
-                self.AddJoin(*i.join)
-                self.AddOuterJoin(*i.outerjoin)
-                self.AddFilter(*i.filter)
-                self.AddGroupBy(*i.groupby)
-                self.AddOrderBy(*i.orderby)
+            if isinstance(i, VigiboardRequestPlugin):
+                self.add_table(*i.table)
+                self.add_join(*i.join)
+                self.add_outer_join(*i.outerjoin)
+                self.add_filter(*i.filter)
+                self.add_group_by(*i.groupby)
+                self.add_order_by(*i.orderby)
                 self.plugin.append(i)
 
-    def GenerateRequest(self):
+    def generate_request(self):
         
         """
         Génération de la requête avec l'ensemble des données stockées
@@ -75,20 +87,20 @@ class VigiboardRequest():
         """
         
         # query et join ont besoin de referrence
-        self.rq = DBSession.query(*self.table)
-        self.rq = self.rq.join(*self.join)
+        self.req = self.req.query(*self.table)
+        self.req = self.req.join(*self.join)
 
         # le reste, non
         for i in self.outerjoin:
-            self.rq = self.rq.outerjoin(i)
+            self.req = self.req.outerjoin(i)
         for i in self.filter:
-            self.rq = self.rq.filter(i)
+            self.req = self.req.filter(i)
         for i in self.groupby:
-            self.rq = self.rq.group_by(i)
+            self.req = self.req.group_by(i)
         for i in self.orderby:
-            self.rq = self.rq.order_by(i)
+            self.req = self.req.order_by(i)
 
-    def NumRows(self):
+    def num_rows(self):
 
         """
         Retourne le nombre de lignes de la requête.
@@ -98,11 +110,11 @@ class VigiboardRequest():
         """
 
         if not self.generaterq :
-            self.GenerateRequest()
+            self.generate_request()
             self.generaterq = True
-        return self.rq.count()
+        return self.req.count()
 
-    def AddTable(self,*argv):
+    def add_table(self, *argv):
         
         """
         Ajoute une ou plusieurs tables/élément d'une table à
@@ -120,7 +132,7 @@ class VigiboardRequest():
                     break
             self.table.append(i)
 
-    def AddJoin(self,*argv):
+    def add_join(self, *argv):
         
         """
         Ajoute une ou plusieurs jointures à
@@ -138,7 +150,7 @@ class VigiboardRequest():
                     break
             self.join.append(i)
 
-    def AddOuterJoin(self,*argv):
+    def add_outer_join(self, *argv):
         
         """
         Ajoute une ou plusieurs jointures externes à
@@ -156,7 +168,7 @@ class VigiboardRequest():
                     break
             self.outerjoin.append(i)    
 
-    def AddFilter(self,*argv):
+    def add_filter(self, *argv):
 
         """
         Ajoute un ou plusieurs filtres à la requête.
@@ -173,7 +185,7 @@ class VigiboardRequest():
                     break
             self.filter.append(i)
 
-    def AddGroupBy(self,*argv):
+    def add_group_by(self, *argv):
 
         """
         Ajoute un ou plusieurs groupements à la requête.
@@ -190,7 +202,7 @@ class VigiboardRequest():
                     break
             self.groupby.append(i)
 
-    def AddOrderBy(self,*argv):
+    def add_order_by(self, *argv):
 
         """
         Ajoute un ou plusieurs orders à la requête.
@@ -207,7 +219,7 @@ class VigiboardRequest():
                     break
             self.orderby.append(i)
 
-    def FormatEventsImgStatu (self,event):
+    def format_events_img_statu (self, event):
         
         """
         Suivant l'état de l'évènement, retourne la classe à appliquer
@@ -225,13 +237,13 @@ class VigiboardRequest():
         else:
             return None
 
-    def FormatEvents(self,first_row,last_row):
+    def format_events(self, first_row, last_row):
         
         """
         Formate la réponse de la requête et y applique les plugins
         pour un affichage simple du résultat par Genshi.
-        On génère une liste de liste, chaqu'une étant la description de l'affichage pour un
-        évènement donné.
+        On génère une liste de liste, chaqu'une étant la description de
+        l'affichage pour un évènement donné.
 
         @param first_row: Indice de début de la liste des évènements
         @param last_row: Indice de fin de la liste des évènements
@@ -239,62 +251,76 @@ class VigiboardRequest():
         
         # Si la requête n'est pas générée, on le fait
         if not self.generaterq :
-            self.GenerateRequest()
+            self.generate_request()
             self.generaterq = True
 
         # Liste des éléments pour la tête du tableau
 
-        lst_title = ['',_('Date<br />[Duration]'),'#',_('Host'),_('Service Type<br />Service Name'),_('Output')]
+        lst_title = ['', _('Date<br />[Duration]'), '#', _('Host'),
+                _('Service Type<br />Service Name'), _('Output')]
         lst_title.extend([plug.name for plug in self.plugin])
-        lst_title.extend(['[T T]',''])
+        lst_title.extend(['[T T]', ''])
         
-        ev = [lst_title]
-        i=0
-        class_tr = ['odd','even']
+        events = [lst_title]
+        i = 0
+        class_tr = ['odd', 'even']
         ids = []
-        for rq in self.rq[first_row : last_row]:
+        for req in self.req[first_row : last_row]:
 
-            # Si il y a plus d'un élément dans la liste des tables, rq devient une liste plutôt
-            # que d'être directement la table souhaité
+            # Si il y a plus d'un élément dans la liste des tables,
+            # rq devient une liste plutôt que d'être directement la
+            # table souhaité
             
-            if isinstance(rq,Events) :
-                event = rq
+            if isinstance(req, Events) :
+                event = req
             else :
-                event = rq[0]
+                event = req[0]
             ids.append(event.idevent)
+
             # La liste pour l'évènement actuel comporte dans l'ordre :
             #   L'évènment en lui même
-            #   La classe à appliquer sur la ligne (permet d'alterner les couleurs suivant les lignes)
+            #   La classe à appliquer sur la ligne (permet d'alterner les
+            #       couleurs suivant les lignes)
             #   La classe pour la case comportant la flèche de détails
             #   La classe pour la date, l'occurrence et l'édition
             #   L'image a affiche pour la flèche de détails
-            #   Une liste (une case par plugin) de ce que le plugin souhaite afficher en fonction de l'évènement
+            #   Une liste (une case par plugin) de ce que le plugin souhaite
+            #       afficher en fonction de l'évènement
+
             if event.active :
-                ev.append([
+                events.append([
                     event,
                     {'class': class_tr[i%2]},
-                    {'class' : self.bouton_severity[event.severity] + self.class_ack[event.status]},
-                    {'class' : self.bouton_severity[event.severity] + self.class_ack[event.status] },
-                    {'src' : '/images/vigiboard/%s2.png' % self.bouton_severity[event.severity].upper()},
-                    self.FormatEventsImgStatu(event),
-                    [[j.__show__(rq),j.style] for j in self.plugin]
+                    {'class' : self.bouton_severity[event.severity] + \
+                            self.class_ack[event.status]},
+                    {'class' : self.bouton_severity[event.severity] + \
+                            self.class_ack[event.status] },
+                    {'src' : '/images/vigiboard/%s2.png' % \
+                            self.bouton_severity[event.severity].upper()},
+                    self.format_events_img_statu(event),
+                    [[j.__show__(req), j.style] for j in self.plugin]
                     ])
             else :
-                ev.append([
+                events.append([
                     event,
                     {'class': class_tr[i%2]},
-                    {'class' : self.bouton_severity[event.severity] + self.class_ack[event.status] },
+                    {'class' : self.bouton_severity[event.severity] + \
+                            self.class_ack[event.status] },
                     {'class' : 'Cleared' + self.class_ack[event.status] },
-                    {'src' : '/images/vigiboard/%s2.png' % self.bouton_severity[event.severity].upper()},
-                    self.FormatEventsImgStatu(event),
-                    [[j.__show__(rq),j.style] for j in self.plugin]
+                    {'src' : '/images/vigiboard/%s2.png' % \
+                            self.bouton_severity[event.severity].upper()},
+                    self.format_events_img_statu(event),
+                    [[j.__show__(req), j.style] for j in self.plugin]
                     ])
-            i=i+1
-        # On sauvegarde la liste précédemment créée puis rempli le TmplContext
-        self.events = ev
+            i = i + 1
+
+        # On sauvegarde la liste précédemment créée puis rempli
+        # le TmplContext
+
+        self.events = events
         self.idevents = ids
 
-    def FormatHistory (self):
+    def format_history (self):
         
         """
         Formate les historiques correspondant aux évènements sélectionnés
@@ -303,16 +329,22 @@ class VigiboardRequest():
         historique donné.
         """
 
-        history = DBSession.query(EventHistory).filter(EventHistory.idevent.in_(self.idevents)).order_by(desc(EventHistory.timestamp)).order_by(desc(EventHistory.idhistory))
+        history = DBSession.query(EventHistory
+                ).filter(EventHistory.idevent.in_(self.idevents)
+                ).order_by(desc(EventHistory.timestamp)
+                ).order_by(desc(EventHistory.idhistory))
+
         if history.count() == 0:
-            self.hist=[]
+            self.hist = []
             return
-        hist = []
+        hists = []
         i = 0
-        class_tr = ['odd','even']
+        class_tr = ['odd', 'even']
         hostname = self.events[1][0].hostname
         servicename = self.events[1][0].servicename
-        for h in history :
+
+        for hist in history :
+
             # La liste pour l'historique actuel comporte dans l'ordre :
             #   Son identifiant
             #   Son nom d'hôte
@@ -322,53 +354,62 @@ class VigiboardRequest():
             #   Le type d'action qui a été appliqué
             #   La sévérité de l'action si besoin est
             #   Le détail de l'action
-            #   La classe à appliquer à la ligne (permet d'alterner les couleurs)
+            #   La classe à appliquer à la ligne (permet d'alterner
+            #       les couleurs)
             #   La classe de la sévérité s'il y a
-            if h.value :
-                hist.append([
-                    h.idhistory,
+
+            if hist.value :
+                hists.append([
+                    hist.idhistory,
                     hostname,
                     servicename,
-                    h.timestamp,
-                    h.username,
-                    h.type_action,
-                    self.severity[min(int(h.value),7)],
-                    h.text,
+                    hist.timestamp,
+                    hist.username,
+                    hist.type_action,
+                    self.severity[min(int(hist.value),7)],
+                    hist.text,
                     {'class' : class_tr[i%2]},
-                    {'class':self.class_severity[min(int(h.value),7)]}
+                    {'class':self.class_severity[min(int(hist.value),7)]}
                 ])
             else:
-                hist.append([
-                    h.idhistory,
+                hists.append([
+                    hist.idhistory,
                     hostname,
                     servicename,
-                    h.timestamp,
-                    h.username,
-                    h.type_action,
+                    hist.timestamp,
+                    hist.username,
+                    hist.type_action,
                     self.severity[0],
-                    h.text,
+                    hist.text,
                     {'class' : class_tr[i%2]},
                     {'class':self.class_severity[0]}
                 ])    
-            i = i+1
+            i = i + 1
         
-        self.hist = hist
+        self.hist = hists
 
-    def GenerateTmplContext(self):
+    def generate_tmpl_context(self):
+        
         """
-        Génère et peuple la variable tmpl_context avec les Dialogs et formulaires
-        nécessaire au fonctionnement de Vigiboard
+        Génère et peuple la variable tmpl_context avec les Dialogs et
+        formulaires nécessaire au fonctionnement de Vigiboard
         """
+
         # Dialogue d'édition
-        tmpl_context.edit_event_form = Edit_Event_Form('edit_event_form',action=url('/vigiboard/update'))
-        tmpl_context.edit_eventdialog = JQueryUIDialog(id='Edit_EventsDialog',autoOpen=False,title=_('Edit Event'))
+        tmpl_context.edit_event_form = Edit_Event_Form('edit_event_form',
+                action=url('/vigiboard/update'))
+        tmpl_context.edit_eventdialog = JQueryUIDialog(id='Edit_EventsDialog',
+                autoOpen=False,title=_('Edit Event'))
     
         # Dialogue de recherche
-        tmpl_context.search_form = Search_Form('search_form',action=url('/vigiboard'))
-        tmpl_context.searchdialog = JQueryUIDialog(id='SearchDialog',autoOpen=False,title=_('Search Event'))
+        tmpl_context.search_form = Search_Form('search_form',
+                action=url('/vigiboard'))
+        tmpl_context.searchdialog = JQueryUIDialog(id='SearchDialog',
+                autoOpen=False,title=_('Search Event'))
         
         # Dialogue de détail d'un évènement
-        tmpl_context.historydialog = JQueryUIDialog(id='HistoryDialog',autoOpen=False,title=_('History'))
+        tmpl_context.historydialog = JQueryUIDialog(id='HistoryDialog',
+                autoOpen=False,title=_('History'))
 
 class VigiboardRequestPlugin():
 
@@ -376,7 +417,8 @@ class VigiboardRequestPlugin():
     Classe dont les plugins utilisé dans VigiboardRequest doivent étendre.
     """
     
-    def __init__ (self,table=[],join=[],outerjoin=[],filter=[],groupby=[],orderby=[],name='',style={}):
+    def __init__ (self, table = [], join = [], outerjoin = [], filter = [],
+            groupby = [], orderby = [], name = '', style = {}):
         self.table = table
         self.join = join
         self.outerjoin = outerjoin
@@ -386,18 +428,18 @@ class VigiboardRequestPlugin():
         self.groupby = groupby
         self.style = style
 
-    def __show__ (self,event):
+    def __show__ (self, event):
         
         """
         Permet d'éviter toutes erreurs d'affichage.
         C'est la fonction appelé par le formateur d'évènements.
         """
 
-        s = self.show(event)
+        show = self.show(event)
         
-        if s != None :
+        if show != None :
             try:
-                return str(s)
+                return str(show)
             except:
                 return _('Error')
     

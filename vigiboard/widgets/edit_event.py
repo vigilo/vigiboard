@@ -2,10 +2,15 @@
 # vim:set expandtab tabstop=4 shiftwidth=4:
 """Les différents formulaires de Vigiboard"""
 
-from pylons.i18n import ugettext as _, lazy_ugettext as l_
+from pylons.i18n import ugettext as _
 from tw.forms import TableForm, SingleSelectField, TextField, HiddenField
 
-edit_event_status_options = [['NoChange',_('No change')],['None',_('Change to None')],['Acknowledged',_('Change to Acknowledged')],['AAClosed',_('Change to Closed')]]
+edit_event_status_options = [
+            ['NoChange',_('No change')],
+            ['None',_('Change to None')],
+            ['Acknowledged',_('Change to Acknowledged')],
+            ['AAClosed',_('Change to Closed')]
+            ]
 
 class Edit_Event_Form(TableForm):
     
@@ -22,7 +27,7 @@ class Edit_Event_Form(TableForm):
 		SingleSelectField('status',options=edit_event_status_options)
 		]
 
-    submit_text=_('Apply')
+    submit_text = _('Apply')
 
 class Search_Form(TableForm):
     
@@ -39,4 +44,4 @@ class Search_Form(TableForm):
 		TextField('trouble_ticket',label_text=_('Trouble Ticket')),
 		]
 
-    submit_text=_('Search')
+    submit_text = _('Search')

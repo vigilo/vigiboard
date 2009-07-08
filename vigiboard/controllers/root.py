@@ -4,7 +4,6 @@
 
 from tg import expose, flash, require, url, request, redirect
 
-import pylons
 from pylons.i18n import ugettext as _, lazy_ugettext as l_
 from catwalk.tg2 import Catwalk
 from repoze.what import predicates
