@@ -5,7 +5,7 @@ Test de la classe User Utils
 """
 from nose.tools import assert_true
 
-from vigiboard.model import * 
+from vigiboard.model import DBSession, Groups, Permission, GroupPermissions 
 from vigiboard.tests import TestController
 from vigiboard.controllers.vigiboard_ctl import get_user_groups
 from vigiboard.tests import setup_db, teardown_db
@@ -23,6 +23,7 @@ def teardown():
     teardown_db()
 
 class TestUserUtils(TestController):
+    """Test de la classe User Utils"""
 
     def test_get_user_groups(self):
         """
@@ -34,8 +35,8 @@ class TestUserUtils(TestController):
         
         DBSession.add(Groups(name="hostmanagers"))
         DBSession.add(Groups(name="hosteditors", parent="hostmanagers"))
-        idmanagers = DBSession.query(Permission
-                ).filter(Permission.permission_name == 'manage')[0].permission_id
+        idmanagers = DBSession.query(Permission).filter(
+                Permission.permission_name == 'manage')[0].permission_id
         ideditors = DBSession.query(Permission
                 ).filter(Permission.permission_name == 'edit')[0].permission_id
         DBSession.add(GroupPermissions(groupname = "hostmanagers",

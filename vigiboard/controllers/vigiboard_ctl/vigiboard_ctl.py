@@ -3,6 +3,7 @@
 """Vigiboard Controller"""
 
 import tg
+
 from tg import expose, flash, require, request, redirect, \
                 validate, tmpl_context
 
@@ -15,14 +16,16 @@ from sqlalchemy import sql, asc
 from vigiboard.lib.base import TGController
 from vigiboard.model import DBSession
 
-from vigiboard.model.vigiboard_bdd import *
-from vigiboard.controllers.vigiboard_ctl.userutils import get_user_groups
+from vigiboard.model.vigiboard_bdd import ServiceHautNiveau, HostGroups, \
+        Events, EventHistory
+
 from repoze.what.predicates import Any, not_anonymous
 
 from vigiboard.widgets.edit_event import edit_event_status_options
 
-from vigiboard.controllers.vigiboard_ctl import VigiboardRequest, \
-        VigiboardRequestPlugin
+from vigiboard.controllers.vigiboard_ctl.userutils import get_user_groups
+from vigiboard.controllers.vigiboard_ctl.vigiboardrequest import \
+        VigiboardRequest, VigiboardRequestPlugin
 
 __all__ = ['VigiboardController']
 
@@ -137,7 +140,7 @@ class VigiboardController(TGController):
                hist_error = False
             )
        
-    @validate(validators={'id':validators.Int(not_empty=True)},
+    @validate(validators={'idevent':validators.Int(not_empty=True)},
             error_handler=process_form_errors)
     @expose('json')
     @require(Any(not_anonymous(), msg=_("You need to be authenticated")))
@@ -271,7 +274,7 @@ class VigiboardController(TGController):
                 'AAClosed'])
         }, error_handler=process_form_errors)
     @require(Any(not_anonymous(), msg=_("You need to be authenticated")))
-    def update(self,*argv,**krgv):
+    def update(self,**krgv):
         
         """
         Mise à jour d'un évènement suivant les arguments passés.

@@ -2,12 +2,13 @@
 # vim:set expandtab tabstop=4 shiftwidth=4: 
 """Gestion de la requête, des plugins et de l'affichage du Vigiboard"""
 
-from vigiboard.model.vigiboard_bdd import *
+from vigiboard.model.vigiboard_bdd import Events, Host, Service, \
+        HostGroups, ServiceGroups, EventHistory
 from tg import tmpl_context, url
 from vigiboard.model import DBSession
 from sqlalchemy import not_ , and_ , asc , desc
 from tw.jquery import JQueryUIDialog
-from vigiboard.widgets.edit_event import Edit_Event_Form , Search_Form
+from vigiboard.widgets.edit_event import EditEventForm , SearchForm
 from vigiboard.controllers.vigiboard_ctl.userutils import get_user_groups
 from pylons.i18n import ugettext as _
 
@@ -71,12 +72,18 @@ class VigiboardRequest():
         """
         for i in argv :
             if isinstance(i, VigiboardRequestPlugin):
-                self.add_table(*i.table)
-                self.add_join(*i.join)
-                self.add_outer_join(*i.outerjoin)
-                self.add_filter(*i.filter)
-                self.add_group_by(*i.groupby)
-                self.add_order_by(*i.orderby)
+                if i.table :
+                    self.add_table(*i.table)
+                if i.join :
+                    self.add_join(*i.join)
+                if i.outerjoin :
+                    self.add_outer_join(*i.outerjoin)
+                if i.filter :
+                    self.add_filter(*i.filter)
+                if i.groupby :    
+                    self.add_group_by(*i.groupby)
+                if i.orderby :
+                    self.add_order_by(*i.orderby)
                 self.plugin.append(i)
 
     def generate_request(self):
@@ -396,13 +403,13 @@ class VigiboardRequest():
         """
 
         # Dialogue d'édition
-        tmpl_context.edit_event_form = Edit_Event_Form('edit_event_form',
+        tmpl_context.edit_event_form = EditEventForm('edit_event_form',
                 action=url('/vigiboard/update'))
         tmpl_context.edit_eventdialog = JQueryUIDialog(id='Edit_EventsDialog',
                 autoOpen=False,title=_('Edit Event'))
     
         # Dialogue de recherche
-        tmpl_context.search_form = Search_Form('search_form',
+        tmpl_context.search_form = SearchForm('search_form',
                 action=url('/vigiboard'))
         tmpl_context.searchdialog = JQueryUIDialog(id='SearchDialog',
                 autoOpen=False,title=_('Search Event'))
@@ -417,12 +424,14 @@ class VigiboardRequestPlugin():
     Classe dont les plugins utilisé dans VigiboardRequest doivent étendre.
     """
     
-    def __init__ (self, table = [], join = [], outerjoin = [], filter = [],
-            groupby = [], orderby = [], name = '', style = {}):
+    def __init__ (self, table = None, join = None, outerjoin = None,
+            filters = None, groupby = None, orderby = None, name = '',
+            style = None):
+
         self.table = table
         self.join = join
         self.outerjoin = outerjoin
-        self.filter = filter
+        self.filter = filters
         self.orderby = orderby
         self.name = name
         self.groupby = groupby

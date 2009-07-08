@@ -28,8 +28,8 @@ else:
 
 # A list of messages that should not be printed by pylint. 
 SUPRESSED_MESSAGES = [
-    'I0011', # Used when an inline option disable a message or a messages 
-'F0401',             # category.
+#    'I0011', # Used when an inline option disable a message or a messages category
+    'F0401', # Used when pylint has been unable to import a module.
 # If you decided to globally switch of a certain message instead of doing so
 # in file or scope where its generated then you can just uncomment it here.
 # Or add it if its not in the list.
@@ -38,15 +38,23 @@ SUPRESSED_MESSAGES = [
 #   'W0232', # Used when a class has no __init__ method, neither its parent 
 #            # classes.
 #   'W0401', # Used when `from module import *` is detected.
+   'E0611', # Used when a name cannot be found in a module.
 #   'W0611', # Used when an imported module or variable is not used.
-#   'R0201', # Used when a method doesn't use its bound instance, and so could 
-#            # be written as a function.
-#   'R0801', # Indicates that a set of similar lines has been detected among 
-#            # multiple file.
+   'R0201', # Used when a method doesn't use its bound instance, and so could 
+            # be written as a function.
+#   'W0102', # Used when a mutable value as list or dictionary is detected in a default
+   	    # value for an argument.
+   'W0142', # Used when a function or method is called using *args or **kwargs to
+	    # dispatch arguments. This doesn't improve readility and should be
+	    # used with care.
+   'R0801', # Indicates that a set of similar lines has been detected among 
+            # multiple file.
 ]
 
 PARAMS = [
-    '--reports=n', '--include-ids=y', '--const-rgx=(([a-z_][a-z0-9_]*)|(__.*__))$', 
+    #'--reports=n',
+    '--include-ids=y',
+    '--const-rgx=(([a-z_][a-z0-9_]*)|(__.*__))$', 
           '--disable-msg=%s' % ",".join(SUPRESSED_MESSAGES), 
 ]
 PARAMS.extend(FILES)

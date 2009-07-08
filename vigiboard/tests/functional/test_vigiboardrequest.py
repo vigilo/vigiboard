@@ -5,7 +5,8 @@ Test de la classe Vigiboard Request
 """
 from nose.tools import assert_true
 
-from vigiboard.model import *
+from vigiboard.model import DBSession, Events, EventHistory, Groups, \
+    Permission, GroupPermissions, Host, Service, HostGroups, ServiceGroups
 from vigiboard.tests import TestController
 from vigiboard.controllers.vigiboard_ctl import VigiboardRequest, \
             VigiboardRequestPlugin
@@ -24,6 +25,7 @@ def teardown():
     teardown_db()
 
 class TestVigiboardRequest(TestController):
+    """Test de la classe Vigiboard Request"""
 
     def test_creation_requete(self):
         """
@@ -36,8 +38,8 @@ class TestVigiboardRequest(TestController):
         # les groups et leurs dépendances
         DBSession.add(Groups(name="hostmanagers"))
         DBSession.add(Groups(name="hosteditors", parent = "hostmanagers"))
-        idmanagers = DBSession.query(Permission
-                ).filter(Permission.permission_name == 'manage')[0].permission_id
+        idmanagers = DBSession.query(Permission).filter(
+                Permission.permission_name == 'manage')[0].permission_id
         ideditors = DBSession.query(Permission
                 ).filter(Permission.permission_name == 'edit')[0].permission_id
         DBSession.add(GroupPermissions(groupname = "hostmanagers",
@@ -54,7 +56,8 @@ class TestVigiboardRequest(TestController):
         event1 = Events(hostname = "monhost", servicename = "monservice")
         event2 = Events(hostname = "monhostuser", servicename = "monservice")
         event3 = Events(hostname = "monhost", servicename = "monserviceuser")
-        event4 = Events(hostname = "monhostuser", servicename = "monserviceuser")
+        event4 = Events(hostname = "monhostuser",
+                servicename = "monserviceuser")
 
         # Les historiques
         DBSession.add(event1)
@@ -121,8 +124,9 @@ class TestVigiboardRequest(TestController):
         #   le plugin fonctionne correctement
 
         num_rows = vigi_req.num_rows() 
-        assert_true(num_rows == 2, msg = "2 historiques devrait être disponible " +\
-                "pour l'utilisateur 'editor' mais il y en a %d" % num_rows)
+        assert_true(num_rows == 2, msg = "2 historiques devrait " +\
+                "être disponible pour l'utilisateur 'editor' mais il " +\
+                "y en a %d" % num_rows)
         vigi_req.format_events(0, 10)
         vigi_req.format_history()
         assert_true(len(vigi_req.events) == 1 + 1, 
@@ -148,8 +152,8 @@ class TestVigiboardRequest(TestController):
 
         num_rows = vigi_req.num_rows()
         assert_true(num_rows == 8, 
-                msg = "8 historiques devrait être disponible " +\
-                        "pour l'utilisateur 'manager' mais il y en a %d" % num_rows)
+                msg = "8 historiques devrait être disponible pour " +\
+                        "l'utilisateur 'manager' mais il y en a %d" % num_rows)
         vigi_req.format_events(0, 10)
         vigi_req.format_history()
         assert_true(len(vigi_req.events) == 4 + 1, 

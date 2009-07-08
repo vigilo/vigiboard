@@ -12,7 +12,7 @@ edit_event_status_options = [
             ['AAClosed',_('Change to Closed')]
             ]
 
-class Edit_Event_Form(TableForm):
+class EditEventForm(TableForm):
     
     """
     Formulaire d'édition d'évènement
@@ -29,7 +29,7 @@ class Edit_Event_Form(TableForm):
 
     submit_text = _('Apply')
 
-class Search_Form(TableForm):
+class SearchForm(TableForm):
     
     """
     Formulaire de recherche dans les évènements

@@ -4,7 +4,9 @@
 
 from nose.tools import assert_true
 import re
-from vigiboard.model import *
+from vigiboard.model import DBSession, Host, Service, Events, Graph, \
+    GraphGroups, Groups, ServiceHautNiveau, EventHistory, GraphToGroups, \
+    GroupPermissions, HostGroups, PerfDataSource, ServiceGroups, ServiceTopo
 from vigiboard.tests.models import ModelTest
 
 
@@ -154,6 +156,7 @@ class TestServiceHautNiveau(ModelTest):
 
     def do_get_dependencies(self):
         """Generate some data for the test"""
+        
         DBSession.add(Service(name = "monservice"))
         DBSession.flush()
         return dict(servicename = "monservice", servicename_dep = "monservice")
@@ -171,6 +174,8 @@ class TestServiceTopo(ModelTest):
     attrs = {}
 
     def do_get_dependencies(self):
+        """Generate some data for the test"""
+
         DBSession.add(Service(name = "monservice"))
         DBSession.add(ServiceHautNiveau(servicename = "monservice",
             servicename_dep = "monservice"))
