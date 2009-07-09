@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 # vim:set expandtab tabstop=4 shiftwidth=4:
+"""JQuery UI Dialog"""
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +30,7 @@ __all__ = ["jquery_ui_dialog_js"]
 jquery_ui_dialog_css    = CSSLink(modname=__name__,
 		filename='static/css/ui.all.css')
 
-jQuery = js_function('jQuery')
+jquery = js_function('jQuery')
 
 class JQueryUIDialog(Widget):
     
@@ -64,13 +65,13 @@ class JQueryUIDialog(Widget):
     width = "auto"
     zindex = 1000
 
-    def update_params(self, d):
+    def update_params(self, dparm):
         
         """Allow the user to update the UI Dialog parameters"""
 
-        super(JQueryUIDialog, self).update_params(d)
+        super(JQueryUIDialog, self).update_params(dparm)
         
-        if not getattr(d, "id", None):
+        if not getattr(dparm, "id", None):
             raise ValueError, "JQueryUIDialog is supposed to have id"
     	
         dialog_params = dict (     autoOpen = self.autoOpen,
@@ -95,4 +96,4 @@ class JQueryUIDialog(Widget):
 			zindex = self.zindex
 
 			)
-        self.add_call(jQuery("#%s" % d.id).dialog(dialog_params))
+        self.add_call(jquery("#%s" % dparm.id).dialog(dialog_params))

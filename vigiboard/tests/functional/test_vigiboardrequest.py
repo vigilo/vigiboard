@@ -10,7 +10,7 @@ from vigiboard.model import DBSession, Events, EventHistory, Groups, \
 from vigiboard.tests import TestController
 from vigiboard.controllers.vigiboard_ctl import VigiboardRequest, \
             VigiboardRequestPlugin
-from vigiboard.tests import setup_db, teardown_db
+from vigiboard.tests import teardown_db
 import tg
 import transaction
 
@@ -19,6 +19,8 @@ class TestVigiboardRequest(TestController):
     """Test de la classe Vigiboard Request"""
 
     def tearDown(self):
+        """TearDown method for Nose"""
+
         DBSession.rollback()
         transaction.begin()
         teardown_db()

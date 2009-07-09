@@ -23,11 +23,6 @@ class ModelTest(object):
     klass = None
     attrs = {}
 
-    def wri(self,str):
-	    f=open("/home/tandreja/moimoi","a")
-	    f.write("%s %s\n" % (str,self.__class__))
-	    f.close()
-
     def setup(self):
         try:
             new_attrs = {}

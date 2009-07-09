@@ -5,10 +5,11 @@ Test de la classe User Utils
 """
 from nose.tools import assert_true
 
-from vigiboard.model import DBSession, Groups, Permission, GroupPermissions, Events 
+from vigiboard.model import DBSession, Groups, Permission, \
+        GroupPermissions
 from vigiboard.tests import TestController
 from vigiboard.controllers.vigiboard_ctl import get_user_groups
-from vigiboard.tests import setup_db, teardown_db
+from vigiboard.tests import teardown_db
 import tg
 import transaction
 
@@ -17,6 +18,8 @@ class TestUserUtils(TestController):
     """Test de la classe User Utils"""
     
     def tearDown(self):
+        """TearDown methode for Nose"""
+
         DBSession.rollback()
         teardown_db()
         transaction.begin() 
