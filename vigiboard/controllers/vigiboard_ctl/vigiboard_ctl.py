@@ -99,7 +99,7 @@ class VigiboardController(TGController):
                 sql.func.count(Events.idevent)],
             outerjoin = [(ServiceHautNiveau,
                 ServiceHautNiveau.servicename_dep == Events.servicename)],
-            groupby = [(Events.idevent)],
+            groupby = [(Events),(ServiceHautNiveau.servicename_dep)],
             name = _(u'SHNs impacté'),
             style = {'style':'text-align:center'}
            ))

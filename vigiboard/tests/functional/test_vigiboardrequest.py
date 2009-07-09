@@ -14,25 +14,20 @@ from vigiboard.tests import setup_db, teardown_db
 import tg
 import transaction
 
-#Create an empty database before we start our tests for this module
-def setup():
-    """Function called by nose on module load"""
-    setup_db()
-
-#Teardown that database 
-def teardown():
-    """Function called by nose after all tests in this module ran"""
-    teardown_db()
 
 class TestVigiboardRequest(TestController):
     """Test de la classe Vigiboard Request"""
+
+    def tearDown(self):
+        DBSession.rollback()
+        transaction.begin()
+        teardown_db()
 
     def test_creation_requete(self):
         """
         Génération d'une requête avec application d'un plugin et
         des permissions
         """
-
         # On commence par peupler la base de donnée actuellement vide
 
         # les groups et leurs dépendances
@@ -92,10 +87,8 @@ class TestVigiboardRequest(TestController):
         DBSession.add(ServiceGroups(servicename = "monserviceuser",
             groupname = "hosteditors"))
         DBSession.flush()
-        
         # On commit tout car app.get fait un rollback ou équivalent
         transaction.commit()
-
         # On indique qui on est et on requête l'index pour obtenir
         # toutes les variables de sessions
         environ = {'REMOTE_USER': 'editor'}

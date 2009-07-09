@@ -16,7 +16,7 @@ servicetopo =  Table(vigiboard_config['vigiboard_bdd.basename'] + 'servicetopo',
     Column(u'servicename',
         String(length=100, convert_unicode=True, assert_unicode=None),
         ForeignKey(vigiboard_config['vigiboard_bdd.basename'] + \
-                u'servicehautniveau.servicename'),
+                u'service.name'),
         primary_key=True, nullable=False),
     Column(u'function',
         String(length=50, convert_unicode=True, assert_unicode=None),

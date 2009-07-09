@@ -65,7 +65,7 @@ class Events(object):
             output = '', event_timestamp = datetime.now(),
             last_check = datetime.now(), recover_output = '',
             timestamp_active = datetime.now(),
-            timestamp_cleared="0000-00-00 00:00:00", trouble_ticket = None,
+            timestamp_cleared=None, trouble_ticket = None,
             occurence = 1):
 
         self.hostname = hostname

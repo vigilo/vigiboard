@@ -51,9 +51,10 @@ class VigiboardRequest():
                  ServiceGroups.groupname.in_(self.user_groups),
                  not_(and_(Events.active == False,
                      Events.status == 'AAClosed')),
-                 Events.timestamp_active != None,
-                 not_(Events.timestamp_active.like('0000-00-00 00:00:00'))]
-        self.orderby = [asc(Events.status),
+                 Events.timestamp_active != None#,
+                 #not_(Events.timestamp_active.like('0000-00-00 00:00:00'))
+                 ]
+        self.orderby = [desc(Events.status),
                                 desc(Events.active),
                                 desc(Events.severity),
                                 asc(Events.hostname),

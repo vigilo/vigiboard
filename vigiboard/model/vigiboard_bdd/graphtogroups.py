@@ -9,6 +9,10 @@ from sqlalchemy.types import String
 from vigiboard.model import metadata
 
 from vigiboard.config.vigiboard_config import vigiboard_config
+
+from vigiboard.model.vigiboard_bdd.graph import Graph
+from vigiboard.model.vigiboard_bdd.graphgroups import GraphGroups
+
 # Generation par SQLAutoCode
 
 graphtogroups =  Table(
