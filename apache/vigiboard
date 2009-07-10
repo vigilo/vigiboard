@@ -34,10 +34,10 @@ Allow from all
 #7. [Optional] If you want to use Virtualhost apache settings. 
 #Sample Virtual Host configuration would look like this:
 
-#<Directory /usr/local/turbogears/vigiboard/apache>
-#    Order allow,deny
-#    Allow from all
-#</Directory>
+<Directory /usr/local/turbogears/vigiboard/vigiboard/public>
+    Order allow,deny
+    Allow from all
+</Directory>
 
 #NameVirtualHost *:81
 #<VirtualHost *:81>

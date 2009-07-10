@@ -47,7 +47,7 @@ class VigiboardController(TGController):
             redirect(request.environ.get('HTTP_REFERER'
                 ).split(request.environ.get('HTTP_HOST'))[1])
         else :
-            redirect('/vigiboard')
+            redirect('/')
 
     @validate(validators={'page':validators.Int(not_empty=False)},
             error_handler=process_form_errors)
@@ -209,7 +209,7 @@ class VigiboardController(TGController):
         # Vérification que l'évènement existe
         if events.num_rows() != 1 :
             flash(_('Error in DB'), 'error')
-            redirect('/vigiboard')
+            redirect('/')
        
         events.format_events(0, 1)
         events.format_history()
@@ -248,7 +248,7 @@ class VigiboardController(TGController):
         
         # Vérification qu'il y a au moins 1 évènement qui correspond
         if events.num_rows() == 0 :
-            redirect('/vigiboard')
+            redirect('/')
        
         events.format_events(0, events.num_rows())
         events.format_history()
@@ -266,7 +266,6 @@ class VigiboardController(TGController):
                hist_error = True
             )
 
-    @expose('vigiboard.templates.vigiboard_update')
     @validate(validators={
         "id":validators.Regex(r'^[0-9]+(,[0-9]*)*,?$'),
         "trouble_ticket":validators.Regex(r'^[0-9]*$'),
@@ -299,7 +298,7 @@ class VigiboardController(TGController):
         # Vérification que au moins un des identifiants existe et est éditable
         if events.num_rows() <= 0 :
             flash(_('No access to this event'), 'error')
-            redirect('/vigiboard')
+            redirect('/')
         
         # Modification des évènements et création d'un historique
         # pour chacun d'eux
@@ -323,8 +322,7 @@ class VigiboardController(TGController):
                 DBSession.add(history)
        
         flash(_('Updated successfully'))
-
-        # Redirection vers la dernière page accédée
+	# Redirection vers la dernière page accédée
         redirect(request.environ.get('HTTP_REFERER').split(
-            request.environ.get('HTTP_HOST'))[1])
+            request.environ.get('HTTP_HOST')+tg.config['base_url_filter.base_url'])[1])
 

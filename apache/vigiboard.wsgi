@@ -8,7 +8,7 @@
 #Debian: chown -R www-data:www-data /usr/local/turbogears/vigiboard
 
 import sys
-
+sys.stdout = sys.stderr
 #3. start of virtualenv (enabled by default).
 #Please comment out until 4 if you don't use virtualenv. 
 #Make sure root owns the virtualenv folder. Example:(root:root)
@@ -19,7 +19,7 @@ import sys
 prev_sys_path = list(sys.path)
 
 import site 
-site.addsitedir('/usr/local/pythonenv/BASELINE/lib/python2.5/site-packages')
+site.addsitedir('/usr/lib/python2.5/site-packages')
 
 #Move just added item to the front of the python system path. 
 #Not needed if modwsgi>=3.0. Uncomment next 6 lines.
@@ -49,3 +49,6 @@ application = loadapp('config:/usr/local/turbogears/vigiboard/production.ini')
 
 
 #8.[Optional] If you want to test modwsgi only, uncomment section 3 in you /usr/local/turbogears/vigiboard/apache/vigiboard
+import paste.fixture
+app = paste.fixture.TestApp(application)
+app.get("/")
