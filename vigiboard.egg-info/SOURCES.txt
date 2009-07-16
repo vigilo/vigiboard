@@ -139,7 +139,6 @@ vigiboard/public/images/vigiboard/fleche_up.png
 vigiboard/public/images/vigiboard/icon_page_edit.png
 vigiboard/public/images/vigiboard/plus.png
 vigiboard/templates/__init__.py
-vigiboard/templates/__init__.pyc
 vigiboard/templates/about.html
 vigiboard/templates/authentication.html
 vigiboard/templates/debug.html
