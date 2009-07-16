@@ -5,6 +5,6 @@ permettant l'affichage du Vigiboard
 
 from vigiboard.controllers.vigiboard_ctl.userutils import get_user_groups
 from vigiboard.controllers.vigiboard_ctl.vigiboardrequest import \
-		VigiboardRequest, VigiboardRequestPlugin
+		VigiboardRequest
 from vigiboard.controllers.vigiboard_ctl.vigiboard_ctl import \
 		VigiboardController

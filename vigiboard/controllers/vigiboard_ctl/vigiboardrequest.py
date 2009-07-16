@@ -4,12 +4,13 @@
 
 from vigiboard.model.vigiboard_bdd import Events, Host, Service, \
         HostGroups, ServiceGroups, EventHistory
-from tg import tmpl_context, url
+from tg import tmpl_context, url, config
 from vigiboard.model import DBSession
 from sqlalchemy import not_ , and_ , asc , desc
 from tw.jquery import JQueryUIDialog
 from vigiboard.widgets.edit_event import EditEventForm , SearchForm
 from vigiboard.controllers.vigiboard_ctl.userutils import get_user_groups
+from vigiboard.controllers.vigiboard_ctl.vigiboard_plugin import VigiboardRequestPlugin
 from pylons.i18n import ugettext as _
 
 class VigiboardRequest():
@@ -93,6 +94,14 @@ class VigiboardRequest():
         Génération de la requête avec l'ensemble des données stockées
         et la place dans la variable rq de la classe
         """
+        for plug in config['vigiboard_plugins']:
+            try:
+                mypac = __import__(
+                    'vigiboard.controllers.vigiboard_ctl.vigiboard_plugin.' +\
+                            plug[0],globals(), locals(), [plug[1]],-1)
+                self.add_plugin(getattr(mypac,plug[1])())
+            except:
+                raise
         
         # query et join ont besoin de referrence
         self.req = self.req.query(*self.table)
@@ -418,49 +427,3 @@ class VigiboardRequest():
         # Dialogue de détail d'un évènement
         tmpl_context.historydialog = JQueryUIDialog(id='HistoryDialog',
                 autoOpen=False,title=_('History'))
-
-class VigiboardRequestPlugin():
-
-    """
-    Classe dont les plugins utilisé dans VigiboardRequest doivent étendre.
-    """
-    
-    def __init__ (self, table = None, join = None, outerjoin = None,
-            filters = None, groupby = None, orderby = None, name = '',
-            style = None):
-
-        self.table = table
-        self.join = join
-        self.outerjoin = outerjoin
-        self.filter = filters
-        self.orderby = orderby
-        self.name = name
-        self.groupby = groupby
-        self.style = style
-
-    def __show__ (self, event):
-        
-        """
-        Permet d'éviter toutes erreurs d'affichage.
-        C'est la fonction appelé par le formateur d'évènements.
-        """
-
-        show = self.show(event)
-        
-        if show != None :
-            try:
-                return str(show)
-            except:
-                return _('Error')
-    
-    def show(self, event):
-        
-        """
-        Fonction qui affichera par défaut une chaîne de
-        caractères vide dans la colonne attribué au plugin.
-
-        En général, les plugins devront redéfinir cette fonction
-        pour afficher ce qu'ils souhaitent.
-        """
-        
-        return ''

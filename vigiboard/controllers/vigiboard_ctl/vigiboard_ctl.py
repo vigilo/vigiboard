@@ -25,7 +25,7 @@ from vigiboard.widgets.edit_event import edit_event_status_options
 
 from vigiboard.controllers.vigiboard_ctl.userutils import get_user_groups
 from vigiboard.controllers.vigiboard_ctl.vigiboardrequest import \
-        VigiboardRequest, VigiboardRequestPlugin
+        VigiboardRequest
 
 __all__ = ['VigiboardController']
 
@@ -74,35 +74,6 @@ class VigiboardController(TGController):
             page = 1
 
         events = VigiboardRequest()
-
-        # Création d'un plugin affichant le nombre de service impactés
-        # par un évènement
-
-        class PluginSHN (VigiboardRequestPlugin):
-            
-            """
-            Plugin permettant de rajouter le nombre de SHNs impactés à
-            l'affichage
-            """
-
-            def show(self, req):
-                """Fonction d'affichage"""
-                if req[1] : 
-                    return req[2]
-                else :
-                    return None
-
-        # Intégration de celui-ci à la requête en cours
-
-        events.add_plugin(PluginSHN(
-            table = [ServiceHautNiveau.servicename_dep,
-                sql.func.count(Events.idevent)],
-            outerjoin = [(ServiceHautNiveau,
-                ServiceHautNiveau.servicename_dep == Events.servicename)],
-            groupby = [(Events),(ServiceHautNiveau.servicename_dep)],
-            name = _(u'SHNs impacté'),
-            style = {'style':'text-align:center'}
-           ))
 
         # Application des filtres si nécessaire
         if host :
@@ -306,7 +277,11 @@ class VigiboardController(TGController):
         username = request.environ.get('repoze.who.identity'
                 ).get('repoze.who.userid')
 
-        for event in events.req :
+        for req in events.req :
+            if isinstance(req,Events):
+                event = req
+            else:
+                event = req[0]
             if krgv['trouble_ticket'] != '' :
                 event.trouble_ticket = krgv['trouble_ticket']
                 history = EventHistory(type_action = "Ticket change",

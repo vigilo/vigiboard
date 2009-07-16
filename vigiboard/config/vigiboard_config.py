@@ -14,6 +14,11 @@ vigiboard_config = {
     'vigiboard_item_per_page' : '15',
 
     # Nom de base des tables de la base de données
-	'vigiboard_bdd.basename' : ''
+	'vigiboard_bdd.basename' : '',
+    
+    'vigiboard_plugins' : [
+        [ 'shn' , 'PluginSHN' ]
+        ]
+
 }
 

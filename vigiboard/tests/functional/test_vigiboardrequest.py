@@ -98,20 +98,8 @@ class TestVigiboardRequest(TestController):
         tg.request = response.request
 
         vigi_req = VigiboardRequest()
-
-        # On cré notre plugin, ici il ne sert qu'à lier l'historique
-        # avec chaque évènement
-
-        class MonPlugin(VigiboardRequestPlugin):
-            """Plugin de test"""
-
-            def show(self, req):
-                """Fonction d'affichage"""
-                return req[1]        
-        
-        vigi_req.add_plugin(MonPlugin(
-            table = [EventHistory.idevent],
-            join = [(EventHistory, EventHistory.idevent == Events.idevent)]))
+        tg.config['vigiboard_plugins'] = [['tests','MonPlugin']]
+        # Derrière, VigiboardRequest doit charger le plugin de test tout seul
         
         # On effectu les tests suivants :
         #   le nombre de ligne (historique et évènements) doivent
