@@ -7,7 +7,7 @@
 
 <div style="text-align: right">
 	<a id="SearchLien" href="javascript:vigiboard_searchdialog()">
-	<img src="${tg.url('/images/vigiboard/filter.png')}" />
+	<img src="${tg.url('/images/filter.png')}" />
 	</a>
 </div>
 <py:if test="len(events) > 1">
@@ -16,8 +16,8 @@
 	<thead>
 		<tr>
 			<td style="width:27px">
-				<a py:if="page > pages[0]" href="${tg.url('/vigiboard/%d' % (page-1))}"><img src="${tg.url('/images/vigiboard/fleche_up.png')}" alt="" /></a>
-				<img py:if="page == pages[0]" src="${tg.url('/images/vigiboard/fleche_up.png')}" alt="" />
+				<a py:if="page > pages[0]" href="${tg.url('/vigiboard/%d' % (page-1))}"><img src="${tg.url('/images/fleche_up.png')}" alt="" /></a>
+				<img py:if="page == pages[0]" src="${tg.url('/images/fleche_up.png')}" alt="" />
 			</td>
 			<td colspan="${8+len(events[1][6])}" style="background-color:#4682B4;color:white;text-align:center">Showing rows ${id_first_row} to ${id_last_row} of ${total_row}<br />
 				Pages <py:for each="p in pages">
@@ -26,13 +26,13 @@
 				</py:for>
 			</td>
 			<td style="width:27px">
-				<a py:if="pages[-1] > page" href="${tg.url('/vigiboard/%d' % (page+1))}"><img src="${tg.url('/images/vigiboard/fleche_down.png')}" alt="" /></a>
-				<img py:if="page == pages[-1]" src="${tg.url('/images/vigiboard/fleche_down.png')}" alt="" />
+				<a py:if="pages[-1] > page" href="${tg.url('/vigiboard/%d' % (page+1))}"><img src="${tg.url('/images/fleche_down.png')}" alt="" /></a>
+				<img py:if="page == pages[-1]" src="${tg.url('/images/fleche_down.png')}" alt="" />
 			</td>
 		</tr>
 		<tr style="background-color:#F8F8F8;font-weight: bold">
 			<td py:for="item in events[0]">${HTML(item)}</td>
-			<td><a class="Edit_EventsLien" href="javascript:vigiboard_edit_eventdialog('all')"><img src="${tg.url('/images/vigiboard/icon_page_edit.png')}" /></a></td>
+			<td><a class="Edit_EventsLien" href="javascript:vigiboard_edit_eventdialog('all')"><img src="${tg.url('/images/icon_page_edit.png')}" /></a></td>
 			<td><input id="vigiboard_checkall_checkbox" type="checkbox" onclick="javascript:vigiboard_checkall()" /></td>
 		</tr>
 	</thead>
@@ -50,7 +50,7 @@
 			<td py:for="plug in plugin" py:attrs="plug[1]">${plug[0]}</td>
 			<td>${event.trouble_ticket}</td>
 			<td><img py:attrs="img_statu" py:if="img_statu != None" /></td>
-			<td py:attrs="class_td_date"><a class="Edit_EventsLien" href="javascript:vigiboard_edit_eventdialog('${event.idevent}')"><img src="${tg.url('/images/vigiboard/icon_page_edit.png')}" /></a></td>
+			<td py:attrs="class_td_date"><a class="Edit_EventsLien" href="javascript:vigiboard_edit_eventdialog('${event.idevent}')"><img src="${tg.url('/images/icon_page_edit.png')}" /></a></td>
 			<td py:attrs="class_td_date"><input type="checkbox" class="Edit_EventsCheckBox" value="${event.idevent}"/></td>
 
 		</tr>

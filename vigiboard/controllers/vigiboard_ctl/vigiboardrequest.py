@@ -248,9 +248,9 @@ class VigiboardRequest():
         """
 
         if event.active and event.status == 'AAClosed':
-            return { 'src': url('/images/vigiboard/crossed.png') }
+            return { 'src': url('/images/crossed.png') }
         elif event.status == 'Acknowledged' :
-            return { 'src': url('/images/vigiboard/checked.png') }
+            return { 'src': url('/images/checked.png') }
         else:
             return None
 
@@ -312,7 +312,7 @@ class VigiboardRequest():
                             self.class_ack[event.status]},
                     {'class' : self.bouton_severity[event.severity] + \
                             self.class_ack[event.status] },
-                    {'src' : '/images/vigiboard/%s2.png' % \
+                    {'src' : '/images/%s2.png' % \
                             self.bouton_severity[event.severity].upper()},
                     self.format_events_img_statu(event),
                     [[j.__show__(req), j.style] for j in self.plugin]
@@ -324,7 +324,7 @@ class VigiboardRequest():
                     {'class' : self.bouton_severity[event.severity] + \
                             self.class_ack[event.status] },
                     {'class' : 'Cleared' + self.class_ack[event.status] },
-                    {'src' : '/images/vigiboard/%s2.png' % \
+                    {'src' : '/images/%s2.png' % \
                             self.bouton_severity[event.severity].upper()},
                     self.format_events_img_statu(event),
                     [[j.__show__(req), j.style] for j in self.plugin]
