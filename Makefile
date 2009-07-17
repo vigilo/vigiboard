@@ -4,10 +4,11 @@ all: bin/python
 	@echo "Template Makefile, to be filled with build and install targets"
 
 bin/buildout: buildenv/bootstrap.py
-	python2.5 $^
+	http_proxy='' python2.5 $^
+	-[ -f $@ ] && touch $@
 
 bin/python bin/paster: bin/buildout
-	./$^
+	http_proxy='' ./$^
 
 clean:
 	find $(CURDIR) \( -name "*.pyc" -o -name "*~" \) -delete
