@@ -17,14 +17,14 @@ setup(
         "TurboGears2 >= 2.0b7",
         "Catwalk >= 2.0.2",
         "Babel >=0.9.4",
-        #can be removed iif use_toscawidgets = False
+        #can be removed if use_toscawidgets = False
         "ToscaWidgets >= 0.9.7.1",
         "zope.sqlalchemy >= 0.4 ",
         "repoze.tm2 >= 1.0a4",
         
         "repoze.what-quickstart >= 1.0",
 
-	# Requires postgresql8.3-devel for source install
+        # Requires postgresql8.3-devel for source install
         "psycopg2",
         "MySQL-python",
         "tw.jquery",
