@@ -16,7 +16,7 @@ from sqlalchemy import sql, asc
 from vigiboard.lib.base import TGController
 from vigiboard.model import DBSession
 
-from vigiboard.model.vigiboard_bdd import ServiceHautNiveau, HostGroups, \
+from vigiboard.model import ServiceHautNiveau, HostGroups, \
         Events, EventHistory
 
 from repoze.what.predicates import Any, not_anonymous

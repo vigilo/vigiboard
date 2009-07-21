@@ -1,4 +1,4 @@
-/vigiboard_config\['vigiboard_bdd.basename'\]/vigicore_config\['vigicore_bdd.basename'\]/g -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 # vim:set expandtab tabstop=4 shiftwidth=4:
 """Modèle pour la table GraphGroups"""
 

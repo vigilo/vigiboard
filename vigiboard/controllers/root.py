@@ -44,8 +44,9 @@ class RootController(BaseController):
             try :
                 mymod = __import__(
                     'vigiboard.controllers.' + mod + '_ctl',globals(), locals(), [mod + 'Controller'],-1)
+                setattr(self,mod,getattr(mymod,mod + 'Controller')())
             except:
-                pass 
+                pass
 
     @expose('vigiboard.templates.index')
     def index(self):

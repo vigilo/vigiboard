@@ -2,7 +2,7 @@
 # vim:set expandtab tabstop=4 shiftwidth=4: 
 """Gestion de la requête, des plugins et de l'affichage du Vigiboard"""
 
-from vigiboard.model.vigiboard_bdd import Events, Host, Service, \
+from vigiboard.model import Events, Host, Service, \
         HostGroups, ServiceGroups, EventHistory
 from tg import tmpl_context, url, config
 from vigiboard.model import DBSession
