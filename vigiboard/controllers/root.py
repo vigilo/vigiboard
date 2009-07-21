@@ -2,7 +2,7 @@
 # vim:set expandtab tabstop=4 shiftwidth=4: 
 """Main Controller"""
 
-from tg import expose, flash, require, url, request, redirect
+from tg import expose, flash, require, url, request, redirect, config
 
 from pylons.i18n import ugettext as _, lazy_ugettext as l_
 from catwalk.tg2 import Catwalk
@@ -13,8 +13,6 @@ from vigiboard.model import DBSession
 from vigiboard.controllers.error import ErrorController
 from vigiboard import model
 from vigiboard.controllers.secure import SecureController
-
-from vigiboard.controllers.vigiboard_ctl import VigiboardController
 
 __all__ = ['RootController']
 
@@ -38,7 +36,16 @@ class RootController(BaseController):
     
     error = ErrorController()
 
-    vigiboard = VigiboardController()
+    # on charge les controleurs souhaité en dynamique
+    def __init__(self) :
+        super(RootController,self).__init__()
+        
+        for mod in config['vigilo_mods']:
+            try :
+                mymod = __import__(
+                    'vigiboard.controllers.' + mod + '_ctl',globals(), locals(), [mod + 'Controller'],-1)
+            except:
+                pass 
 
     @expose('vigiboard.templates.index')
     def index(self):

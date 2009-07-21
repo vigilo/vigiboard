@@ -9,7 +9,7 @@ from vigiboard.model import DBSession
 from sqlalchemy import not_ , and_ , asc , desc
 from tw.jquery import JQueryUIDialog
 from vigiboard.widgets.edit_event import EditEventForm , SearchForm
-from vigiboard.controllers.vigiboard_ctl.userutils import get_user_groups
+from vigiboard.controllers.userutils import get_user_groups
 from vigiboard.controllers.vigiboard_ctl.vigiboard_plugin import VigiboardRequestPlugin
 from pylons.i18n import ugettext as _
 

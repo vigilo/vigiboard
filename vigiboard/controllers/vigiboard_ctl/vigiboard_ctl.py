@@ -23,13 +23,13 @@ from repoze.what.predicates import Any, not_anonymous
 
 from vigiboard.widgets.edit_event import edit_event_status_options
 
-from vigiboard.controllers.vigiboard_ctl.userutils import get_user_groups
+from vigiboard.controllers.userutils import get_user_groups
 from vigiboard.controllers.vigiboard_ctl.vigiboardrequest import \
         VigiboardRequest
 
 __all__ = ['VigiboardController']
 
-class VigiboardController(TGController):
+class vigiboardController(TGController):
     
     """
     Le controller général de vigiboard

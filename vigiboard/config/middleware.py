@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
+# vim:set expandtab tabstop=4 shiftwidth=4:
+
 """WSGI middleware initialization for the vigiboard application."""
 
 from vigiboard.config.app_cfg import base_config
 from vigiboard.config.environment import load_environment
-from vigiboard.config.vigiboard_config import vigiboard_config
+from vigiboard.config.vigilo_conf import vigilo_mods
 
 __all__ = ['make_app']
 
@@ -35,8 +37,14 @@ def make_app(global_conf, full_stack=True, **app_conf):
 
     # Petit hack permettant d'importer la configuration de vigiboard
 
-    for i in vigiboard_config :
-	app_conf[i] = vigiboard_config[i]
+    for mod in vigilo_mods :
+        myconf = __import__(
+            'vigiboard.config.vigilo_conf.' + mod ,globals(), locals(), [mod + '_config'],-1)
+        myconf = getattr(myconf,mod + '_config')
+        for conf in myconf:
+            app_conf[conf] = myconf[conf]
+
+    app_conf['vigilo_mods'] = vigilo_mods
 
     app = make_base_app(global_conf, full_stack=True, **app_conf)
     

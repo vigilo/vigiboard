@@ -24,3 +24,4 @@ from tw.jquery.ui_dialog import JQueryUIDialog
 2 ) Copier le fichier README_jquery/ui_dialog.py vers /path/to/lib/python2.6/site-packages/tw.jquery-0.9.4.5-py2.6.egg/tw/jquery/ui_dialog.py
 3 ) Copier les fichiers README_jquery/static/css vers /path/to/lib/python2.6/site-packages/tw.jquery-0.9.4.5-py2.6.egg/tw/jquery/static/css
 
+Ticket sur ToscaWidgets : http://toscawidgets.org/trac/tw.jquery/ticket/4
