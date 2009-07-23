@@ -1,4 +1,10 @@
 ########################
+#    SVN
+########################
+
+Révision SVN juste avant la séparation entre vigiboard et vigicore : 346 
+
+########################
 #    Désactiver l'environnement virtuel
 ########################
 

@@ -46,7 +46,7 @@ setup(
 
     entry_points="""
     [paste.app_factory]
-    main = vigiboard.config.middleware:make_app
+    main = vigicore.config.middleware:make_app
 
     [paste.app_install]
     main = pylons.util:PylonsInstaller
