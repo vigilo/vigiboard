@@ -28,6 +28,8 @@ setup(
         "psycopg2",
         "MySQL-python",
         "tw.jquery",
+	# Le Vigicore
+	"vigicore",
                 ],
     setup_requires=["PasteScript >= 1.7"],
     paster_plugins=['PasteScript', 'Pylons', 'TurboGears2', 'tg.devtools'],
