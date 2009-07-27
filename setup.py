@@ -26,7 +26,7 @@ setup(
 
         # Requires postgresql8.3-devel for source install
         "psycopg2",
-        "MySQL-python",
+        #"MySQL-python",
         "tw.jquery",
 	# Le Vigicore
 	"vigicore",
