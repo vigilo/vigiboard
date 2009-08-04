@@ -9,28 +9,23 @@ except ImportError:
 setup(
     name='vigiboard',
     version='0.1',
-    description='',
-    author='',
-    author_email='',
-    #url='',
+    description="""
+    IHM Module for the Dashboard
+    """,
+    author="""Thomas ANDREJAK""",
+    author_email="""thomas.andrejak@gmail.com""",
     install_requires=[
         "TurboGears2 >= 2.0b7",
         "Catwalk >= 2.0.2",
         "Babel >=0.9.4",
-        #can be removed if use_toscawidgets = False
         "ToscaWidgets >= 0.9.7.1",
         "zope.sqlalchemy >= 0.4 ",
         "repoze.tm2 >= 1.0a4",
-        
         "repoze.what-quickstart >= 1.0",
-
-        # Requires postgresql8.3-devel for source install
         "psycopg2",
-        #"MySQL-python",
         "tw.jquery",
-	# Le Vigicore
-	"vigicore",
-                ],
+	    "vigicore",
+        ],
     setup_requires=["PasteScript >= 1.7"],
     paster_plugins=['PasteScript', 'Pylons', 'TurboGears2', 'tg.devtools'],
     packages=find_packages(exclude=['ez_setup']),

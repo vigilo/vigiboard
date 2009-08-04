@@ -12,7 +12,9 @@ vigiboard_config = {
     
     # Nombre d'évènments par pages
     'vigiboard_item_per_page' : '15',
-
+    
+    # plugin a activer
+    # nom du fichier sans l'extension suivit du nom de la classe
     'vigiboard_plugins' : [
         [ 'shn' , 'PluginSHN' ]
         ]

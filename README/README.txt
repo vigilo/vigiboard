@@ -15,13 +15,11 @@ Editer le fichier apache/vigiboard.wsgi et commenter la section 3
 ########################
 
 Les variables de configuration de l'application (par exemple les liens externes)
-sont dans le fichier vigiboard/config/vigiboard_config.py
+sont dans le fichier vigiboard/config/vigiboard.py
 
 ########################
-#    Installation des Eggs
+#    Installation des Eggs - précision
 ########################
-
-Installer la liste des Eggs du fichier README_Eggs_Requis.txt en utilisant easy_install
 
 Pour JQuery, pour avoir UI.Dialog, il faut :
 
