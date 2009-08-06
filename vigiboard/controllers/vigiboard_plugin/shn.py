@@ -3,7 +3,7 @@
 
 from vigiboard.controllers.vigiboard_plugin import \
         VigiboardRequestPlugin
-from vigicore.model import ServiceHautNiveau, Events
+from vigiboard.model import ServiceHautNiveau, Events
 from sqlalchemy import sql, asc
 from pylons.i18n import ugettext as _
 

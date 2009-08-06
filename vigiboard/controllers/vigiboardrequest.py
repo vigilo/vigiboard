@@ -2,14 +2,14 @@
 # vim:set expandtab tabstop=4 shiftwidth=4: 
 """Gestion de la requête, des plugins et de l'affichage du Vigiboard"""
 
-from vigicore.model import Events, Host, Service, \
+from vigiboard.model import Events, Host, Service, \
         HostGroups, ServiceGroups, EventHistory
 from tg import tmpl_context, url, config
-from vigicore.model import DBSession
+from vigiboard.model import DBSession
 from sqlalchemy import not_ , and_ , asc , desc
 from tw.jquery.ui_dialog import JQueryUIDialog
 from vigiboard.widgets.edit_event import EditEventForm , SearchForm
-from vigicore.controllers.userutils import get_user_groups
+from vigiboard.controllers.userutils import get_user_groups
 from vigiboard.controllers.vigiboard_plugin import VigiboardRequestPlugin
 from pylons.i18n import ugettext as _
 

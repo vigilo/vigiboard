@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """The vigiboard package"""
-import vigicore.lib
-import vigicore.model
+import vigiboard.lib
+import vigiboard.model
 
-lib = vigicore.lib
-model = vigicore.model
+lib = vigiboard.lib
+model = vigiboard.model

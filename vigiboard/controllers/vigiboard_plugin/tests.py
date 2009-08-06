@@ -3,7 +3,7 @@
 
 from vigiboard.controllers.vigiboard_plugin import \
 	        VigiboardRequestPlugin
-from vigicore.model import EventHistory, Events
+from vigiboard.model import EventHistory, Events
 
 class MonPlugin(VigiboardRequestPlugin):
     """Plugin de test"""

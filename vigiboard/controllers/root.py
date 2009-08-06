@@ -13,25 +13,25 @@ from pylons.i18n import ugettext as _
 
 from sqlalchemy import sql, asc
 
-from vigicore.lib.base import TGController
-from vigicore.model import DBSession
+from vigiboard.lib.base import TGController
+from vigiboard.model import DBSession
 
-from vigicore.model import ServiceHautNiveau, HostGroups, \
+from vigiboard.model import ServiceHautNiveau, HostGroups, \
         Events, EventHistory
 
 from repoze.what.predicates import Any, not_anonymous
 
 from vigiboard.widgets.edit_event import edit_event_status_options
 
-from vigicore.controllers.userutils import get_user_groups
+from vigiboard.controllers.userutils import get_user_groups
 from vigiboard.controllers.vigiboardrequest import \
         VigiboardRequest
 
-from vigicore.controllers.vigicore_controller import Vigicore_RootController
+from vigiboard.controllers.vigiboard_controller import Vigiboard_RootController
 
 __all__ = ['RootController']
 
-class RootController(Vigicore_RootController):
+class RootController(Vigiboard_RootController):
     
     """
     Le controller général de vigiboard
