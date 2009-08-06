@@ -7,7 +7,7 @@ from vigicore.model import Events, Host, Service, \
 from tg import tmpl_context, url, config
 from vigicore.model import DBSession
 from sqlalchemy import not_ , and_ , asc , desc
-from tw.jquery import JQueryUIDialog
+from tw.jquery.ui_dialog import JQueryUIDialog
 from vigiboard.widgets.edit_event import EditEventForm , SearchForm
 from vigicore.controllers.userutils import get_user_groups
 from vigiboard.controllers.vigiboard_plugin import VigiboardRequestPlugin
