@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
-"""The vigiboard package"""
-import vigiboard.lib
-import vigiboard.model
+# vim: set fileencoding=utf-8 sw=4 ts=4 et :
+from __future__ import absolute_import
 
-lib = vigiboard.lib
-model = vigiboard.model
+"""The vigiboard package"""
+
+from . import lib
+

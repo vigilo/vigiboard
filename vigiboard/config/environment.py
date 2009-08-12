@@ -1,7 +1,9 @@
-# -*- coding: utf-8 -*-
+# vim: set fileencoding=utf-8 sw=4 ts=4 et :
+from __future__ import absolute_import
+
 """WSGI environment setup for vigiboard."""
 
-from vigiboard.config.app_cfg import base_config
+from .app_cfg import base_config
 
 __all__ = ['load_environment']
 
