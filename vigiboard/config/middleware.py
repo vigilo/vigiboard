@@ -35,21 +35,6 @@ def make_app(global_conf, full_stack=True, **app_conf):
     
    
     """
-    # Petit hack permettant d'importer la configuration de vigiboard
-    try:
-        # chargement de l'application
-        
-        myapp = __import__(app_conf['appname'] ,globals(), locals(), [],-1)
-        base_config.package = myapp
-
-        # chargement de la conf de l'application
-        myconf = __import__(
-            app_conf['appname'] + '.config.' + app_conf['appname'] ,globals(), locals(), [app_conf['appname'] + '_config'],-1)
-        myconf = getattr(myconf,app_conf['appname'] + '_config')
-        for conf in myconf:
-            app_conf[conf] = myconf[conf]
-    except:
-        print "vigilo-core runing without application"
 
     for i in vigiboard_config:
         app_conf[i] = vigiboard_config[i]
@@ -65,3 +50,4 @@ def make_app(global_conf, full_stack=True, **app_conf):
         )
     
     return app
+

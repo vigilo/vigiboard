@@ -60,6 +60,6 @@ def init_model(engine):
 
 # Import your model modules here.
 from vigiboard.model.auth import User, Group, Permission
-from vigiboard.model.vigilo_bdd import Events, EventHistory, Graph, \
+from vigilo.models.vigilo_bdd import Events, EventHistory, Graph, \
     GraphGroups, GraphToGroups, Groups, GroupPermissions, HostGroups, Host, \
     PerfDataSource, ServiceGroups, ServiceHautNiveau, Service, ServiceTopo
