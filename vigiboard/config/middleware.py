@@ -4,7 +4,7 @@ from __future__ import absolute_import
 """WSGI middleware initialization for the vigiboard application."""
 from .app_cfg import base_config
 from .environment import load_environment
-from .vigiboard_conf import vigiboard_config
+from .vigiboard import vigiboard_config
 from paste.cascade import Cascade
 from paste.urlparser import StaticURLParser
 

@@ -2,7 +2,7 @@
 # vim:set expandtab tabstop=4 shiftwidth=4: 
 """Configuration des modèles"""
 
-from vigiboard.config.vigiboard_conf import vigiboard_config
+from vigiboard.config.vigiboard import vigiboard_config
 
 from vigiboard.model import metadata
 

@@ -3,6 +3,7 @@
 """Configuration de Vigiboard."""
 
 vigiboard_config = {
+    'vigiboard_bdd.basename' : '',
     
     # Affichage, lien disponibles dans la fenêtre de détail d'un évènement
     'vigiboard_links.nagios' : 'http://example1.com/%(idevent)d',
@@ -17,7 +18,7 @@ vigiboard_config = {
     # nom du fichier sans l'extension suivit du nom de la classe
     'vigiboard_plugins' : [
         [ 'shn' , 'PluginSHN' ]
-        ]
+        ],
 
 }
 
