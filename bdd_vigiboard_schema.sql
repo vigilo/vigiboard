@@ -36,6 +36,7 @@ ALTER TABLE public.event_history OWNER TO vigiboard;
 --
 
 CREATE SEQUENCE event_history_idhistory_seq
+    START WITH 1
     INCREMENT BY 1
     NO MAXVALUE
     NO MINVALUE
@@ -68,7 +69,7 @@ CREATE TABLE events (
     trouble_ticket character varying(20),
     occurence integer,
     impact integer,
-    rawstate character varying
+    rawstate character varying(8)
 );
 
 
@@ -79,6 +80,7 @@ ALTER TABLE public.events OWNER TO vigiboard;
 --
 
 CREATE SEQUENCE events_idevent_seq
+    START WITH 1
     INCREMENT BY 1
     NO MAXVALUE
     NO MINVALUE
@@ -275,6 +277,7 @@ ALTER TABLE public.state OWNER TO vigiboard;
 --
 
 CREATE SEQUENCE state_idstat_seq
+    START WITH 1
     INCREMENT BY 1
     NO MAXVALUE
     NO MINVALUE
@@ -444,6 +447,13 @@ ALTER TABLE events ALTER COLUMN idevent SET DEFAULT nextval('events_idevent_seq'
 
 
 --
+-- Name: idstat; Type: DEFAULT; Schema: public; Owner: vigiboard
+--
+
+ALTER TABLE state ALTER COLUMN idstat SET DEFAULT nextval('state_idstat_seq'::regclass);
+
+
+--
 -- Name: group_id; Type: DEFAULT; Schema: public; Owner: vigiboard
 --
 
@@ -577,6 +587,14 @@ ALTER TABLE ONLY servicetopo
 
 
 --
+-- Name: state_pkey; Type: CONSTRAINT; Schema: public; Owner: vigiboard; Tablespace: 
+--
+
+ALTER TABLE ONLY state
+    ADD CONSTRAINT state_pkey PRIMARY KEY (idstat);
+
+
+--
 -- Name: tg_group_group_name_key; Type: CONSTRAINT; Schema: public; Owner: vigiboard; Tablespace: 
 --
 
@@ -630,6 +648,14 @@ ALTER TABLE ONLY tg_user
 
 ALTER TABLE ONLY tg_user
     ADD CONSTRAINT tg_user_user_name_key UNIQUE (user_name);
+
+
+--
+-- Name: version_pkey; Type: CONSTRAINT; Schema: public; Owner: vigiboard; Tablespace: 
+--
+
+ALTER TABLE ONLY version
+    ADD CONSTRAINT version_pkey PRIMARY KEY (name);
 
 
 --
@@ -707,6 +733,27 @@ CREATE INDEX ix_servicegroups_groupname ON servicegroups USING btree (groupname)
 --
 
 CREATE INDEX ix_servicehautniveau_servicename_dep ON servicehautniveau USING btree (servicename_dep);
+
+
+--
+-- Name: ix_state_hostname; Type: INDEX; Schema: public; Owner: vigiboard; Tablespace: 
+--
+
+CREATE INDEX ix_state_hostname ON state USING btree (hostname);
+
+
+--
+-- Name: ix_state_servicename; Type: INDEX; Schema: public; Owner: vigiboard; Tablespace: 
+--
+
+CREATE INDEX ix_state_servicename ON state USING btree (servicename);
+
+
+--
+-- Name: ix_version_name; Type: INDEX; Schema: public; Owner: vigiboard; Tablespace: 
+--
+
+CREATE INDEX ix_version_name ON version USING btree (name);
 
 
 --
@@ -835,6 +882,22 @@ ALTER TABLE ONLY servicehautniveau
 
 ALTER TABLE ONLY servicetopo
     ADD CONSTRAINT servicetopo_servicename_fkey FOREIGN KEY (servicename) REFERENCES service(name);
+
+
+--
+-- Name: state_hostname_fkey; Type: FK CONSTRAINT; Schema: public; Owner: vigiboard
+--
+
+ALTER TABLE ONLY state
+    ADD CONSTRAINT state_hostname_fkey FOREIGN KEY (hostname) REFERENCES host(name);
+
+
+--
+-- Name: state_servicename_fkey; Type: FK CONSTRAINT; Schema: public; Owner: vigiboard
+--
+
+ALTER TABLE ONLY state
+    ADD CONSTRAINT state_servicename_fkey FOREIGN KEY (servicename) REFERENCES service(name);
 
 
 --
