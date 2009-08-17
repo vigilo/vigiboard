@@ -4,7 +4,8 @@
 from zope.sqlalchemy import ZopeTransactionExtension
 from sqlalchemy.orm import scoped_session, sessionmaker
 #from sqlalchemy import MetaData
-from sqlalchemy.ext.declarative import declarative_base
+
+from vigilo.models import vigilo_bdd_config
 
 # Global session manager: DBSession() returns the Thread-local
 # session object appropriate for the current web request.
@@ -15,7 +16,7 @@ DBSession = scoped_session(maker)
 # Base class for all of our model classes: By default, the data model is
 # defined with SQLAlchemy's declarative extension, but if you need more
 # control, you can switch to the traditional method.
-DeclarativeBase = declarative_base()
+DeclarativeBase = vigilo_bdd_config.DeclarativeBase
 
 # There are two convenient ways for you to spare some typing.
 # You can have a query property on all your model classes by doing this:
@@ -25,7 +26,7 @@ DeclarativeBase = declarative_base()
 
 # Global metadata.
 # The default metadata is the one from the declarative base.
-metadata = DeclarativeBase.metadata
+metadata = vigilo_bdd_config.metadata
 
 # If you have multiple databases with overlapping table names, you'll need a
 # metadata for each database. Feel free to rename 'metadata2'.
