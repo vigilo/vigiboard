@@ -46,15 +46,15 @@ class Vigiboard_RootController(BaseController):
 #            except:
 #                pass
 
-    @expose('vigiboard.templates.index')
-    def index(self):
-        """Handle the front-page."""
-        return dict(page='index')
-
-    @expose('vigiboard.templates.about')
-    def about(self):
-        """Handle the 'about' page."""
-        return dict(page='about')
+#    @expose('vigiboard.templates.index')
+#    def index(self):
+#        """Handle the front-page."""
+#        return dict(page='index')
+#
+#    @expose('vigiboard.templates.about')
+#    def about(self):
+#        """Handle the 'about' page."""
+#        return dict(page='about')
 
     @expose('vigiboard.templates.authentication')
     def auth(self):

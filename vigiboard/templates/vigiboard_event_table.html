@@ -5,7 +5,8 @@
 <py:def function="event_table(events,page,pages,id_first_row,id_last_row,total_row,edit_event_status_options)">
 <?python from genshi import HTML ?>
 
-<div style="text-align: right">
+<div style="text-align: right; margin-bottom: 10px">
+	<a href="${tg.url('/')}">Accueil</a>
 	<a id="SearchLien" href="javascript:vigiboard_searchdialog()">
 	<img src="${tg.url('/images/filter.png')}" />
 	</a>
@@ -43,7 +44,7 @@
 		<tr py:attrs="class_tr">
 			<td py:attrs="class_td_severity"><a href="javascript:vigiboard_historydialog('${event.idevent}')" class="HistoryLien"><img src="${tg.url(img_fleche['src'])}" style="width:20px"/></a></td>
 			<td py:attrs="class_td_date">${event.get_date('timestamp_active')}<br />[${event.get_since_date('timestamp_active')}]</td>
-			<td py:attrs="class_td_date">${event.occurence}</td>
+			<td py:attrs="class_td_date" style="text-align:center">${event.occurence}</td>
 			<td>${event.hostname}</td>
 			<td>${event.servicename}</td>
 			<td>${event.output}</td>

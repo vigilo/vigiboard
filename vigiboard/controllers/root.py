@@ -55,8 +55,8 @@ class RootController(Vigiboard_RootController):
             error_handler=process_form_errors)
     @expose('vigiboard.templates.vigiboard')
     @require(Any(not_anonymous(), msg="You need to be authenticated"))
-    def index(self, page = 1, host = None, service = None, output = None,
-            trouble_ticket=None):
+    def default(self, page = 1, host = None, service = None, output = None,
+            trouble_ticket=None,*argv,**krgv):
             
         """
         Page d'accueil de Vigiboard. Elle affiche, suivant la page demandée (page 1 par
@@ -154,13 +154,13 @@ class RootController(Vigiboard_RootController):
                 host = events.hostname,
                 service = events.servicename,
                 nagios_link = tg.config['vigiboard_links.nagios'] % \
-                        {'idevent': events.idevent},
+                        {'idevent': events.idevent,'host': events.hostname, 'service': events.servicename},
                 metrology_link = tg.config['vigiboard_links.metrology'] % \
-                        {'idevent': events.idevent},
+                        {'idevent': events.idevent,'host': events.hostname, 'service': events.servicename},
                 security_link = tg.config['vigiboard_links.security'] % \
-                        {'idevent': events.idevent},
+                        {'idevent': events.idevent,'host': events.hostname, 'service': events.servicename},
                 servicetype_link = tg.config['vigiboard_links.servicetype'] % \
-                        {'idevent': events.idevent}
+                        {'idevent': events.idevent,'host': events.hostname, 'service': events.servicename}
             )
 
     @validate(validators={'idevent':validators.Int(not_empty=True)},
