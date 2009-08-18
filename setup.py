@@ -26,6 +26,7 @@ setup(
         "psycopg2",
         "tw.jquery >= 0.9.5",
         "vigilo-models",
+        "decorator != 3.1.0", # Blacklist bad version
         ],
     setup_requires=["PasteScript >= 1.7"],
     paster_plugins=['PasteScript', 'Pylons', 'TurboGears2', 'tg.devtools'],
