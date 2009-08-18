@@ -109,7 +109,8 @@ class RootController(Vigiboard_RootController):
                page = page,
                event_edit_status_options = edit_event_status_options,
                history = [],
-               hist_error = False
+               hist_error = False,
+               plugin_context = events.context_fct
             )
        
     @validate(validators={'idevent':validators.Int(not_empty=True)},
@@ -161,6 +162,7 @@ class RootController(Vigiboard_RootController):
                         {'idevent': events.idevent,'host': events.hostname, 'service': events.servicename},
                 servicetype_link = tg.config['vigiboard_links.servicetype'] % \
                         {'idevent': events.idevent,'host': events.hostname, 'service': events.servicename}
+
             )
 
     @validate(validators={'idevent':validators.Int(not_empty=True)},
@@ -196,7 +198,8 @@ class RootController(Vigiboard_RootController):
                page = 1,
                event_edit_status_options = edit_event_status_options,
                history = events.hist,
-               hist_error = True
+               hist_error = True,
+               plugin_context = events.context_fct
             )
 
     @validate(validators={'host':validators.NotEmpty(),
@@ -235,7 +238,8 @@ class RootController(Vigiboard_RootController):
                page = 1,
                event_edit_status_options = edit_event_status_options,
                history = events.hist,
-               hist_error = True
+               hist_error = True,
+               plugin_context = events.context_fct
             )
 
     @validate(validators={
@@ -302,3 +306,21 @@ class RootController(Vigiboard_RootController):
         redirect(request.environ.get('HTTP_REFERER').split(
             request.environ.get('HTTP_HOST')+tg.config['base_url_filter.base_url'])[1])
 
+
+    @validate(validators={"plugin_name":validators.OneOf(
+        [i for [i,j] in tg.config['vigiboard_plugins']])},
+                error_handler=process_form_errors)
+    @expose('json')
+    def get_plugin_value(self,plugin_name,*arg,**krgv):
+        """
+        Permet aux plugins de pouvoir récupérer des valeurs Json
+        """
+        plugin = [i for i in tg.config['vigiboard_plugins'] if i[0] == plugin_name][0]
+        try:
+            mypac = __import__(
+                'vigiboard.controllers.vigiboard_plugin.' +\
+                        plugin[0],globals(), locals(), [plugin[1]],-1)
+            p = getattr(mypac,plugin[1])()
+            return p.controller(*arg,**krgv)
+        except:
+            raise

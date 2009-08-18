@@ -9,7 +9,7 @@ class VigiboardRequestPlugin(object):
 
     def __init__ (self, table = None, join = None, outerjoin = None,
             filters = None, groupby = None, orderby = None, name = '',
-            style = None):
+            style = None, object_name = ""):
 
         self.table = table
         self.join = join
@@ -19,6 +19,7 @@ class VigiboardRequestPlugin(object):
         self.name = name
         self.groupby = groupby
         self.style = style
+        self.object_name = object_name
 
     def __show__ (self, event):
 
@@ -47,3 +48,21 @@ class VigiboardRequestPlugin(object):
 
         return ''
 
+    def context(self,context):
+
+        """
+        Fonction permettant de rajouter du context à la page d'évènements,
+        comme par exemple un css ou une fonction Javascript
+        """
+
+        pass
+ 
+    
+    def controller(self):
+
+        """
+        Fonction permettant de rajouter un pseudo controller pour le plugin.
+        Ceci permet par exemple de faire de appels json
+        """
+
+        pass

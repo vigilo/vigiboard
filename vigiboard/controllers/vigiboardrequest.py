@@ -66,6 +66,7 @@ class VigiboardRequest():
         self.idevents = []
         self.hist = []
         self.req = DBSession
+        self.context_fct = []
 
     def add_plugin(self, *argv):
         
@@ -427,3 +428,7 @@ class VigiboardRequest():
         # Dialogue de détail d'un évènement
         tmpl_context.historydialog = JQueryUIDialog(id='HistoryDialog',
                 autoOpen=False,title=_('History'))
+
+        # Exécution des contexts des plugins
+        for j in self.plugin:
+            j.context(self.context_fct)

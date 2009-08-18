@@ -2,6 +2,8 @@
       xmlns:xi="http://www.w3.org/2001/XInclude"
       py:strip="">
 
+
+
 <py:def function="event_table(events,page,pages,id_first_row,id_last_row,total_row,edit_event_status_options)">
 <?python from genshi import HTML ?>
 
@@ -48,7 +50,7 @@
 			<td>${event.hostname}</td>
 			<td>${event.servicename}</td>
 			<td>${event.output}</td>
-			<td py:for="plug in plugin" py:attrs="plug[1]">${plug[0]}</td>
+			<td py:for="plug in plugin" py:attrs="plug[1]">${HTML(plug[0])}</td>
 			<td>${event.trouble_ticket}</td>
 			<td><img py:attrs="img_statu" py:if="img_statu != None" /></td>
 			<td py:attrs="class_td_date"><a class="Edit_EventsLien" href="javascript:vigiboard_edit_eventdialog('${event.idevent}')"><img src="${tg.url('/images/icon_page_edit.png')}" /></a></td>
@@ -61,9 +63,13 @@
 
 </table>
 
-${tmpl_context.historydialog()}
 ${tmpl_context.edit_eventdialog()}
-${tmpl_context.searchdialog()}
+${tmpl_context.searchdialog}
+${tmpl_context.historydialog}
+<py:for each="fct,tpl in plugin_context">
+	${fct()}
+	<xi:include href="vigiboard_plugin/${tpl}.html" /> 
+</py:for>
 
 <script type="text/javascript">
 	function vigiboard_historydialog(idd) {
