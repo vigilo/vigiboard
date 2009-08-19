@@ -274,11 +274,10 @@ class VigiboardRequest():
 
         # Liste des éléments pour la tête du tableau
 
-        lst_title = ['', _('Date<br />[Duration]'), '#', _('Host'),
-                _('Service Type<br />Service Name'), _('Output')]
-        lst_title.extend([plug.name for plug in self.plugin])
-        lst_title.extend(['[T T]', ''])
-        
+        lst_title = [['',{}], [_('Date')+ '<span style="font-weight:normal">' + _('<br />[Duration]') + '</span>', {}], ['#',{'style':'text-align:center'}], [_('Host'),{}],
+                [_('Service Type<br />Service Name'),{}], [_('Output'),{}]]
+        lst_title.extend([[plug.name,plug.style] for plug in self.plugin])
+        lst_title.extend([['[TT]',{'style':'text-align:center'}], ['',{}]])
         events = [lst_title]
         i = 0
         class_tr = ['odd', 'even']
@@ -310,7 +309,8 @@ class VigiboardRequest():
                     event,
                     {'class': class_tr[i%2]},
                     {'class' : self.bouton_severity[event.severity] + \
-                            self.class_ack[event.status]},
+                            self.class_ack[event.status],
+                     'style' : 'text-align: center'},
                     {'class' : self.bouton_severity[event.severity] + \
                             self.class_ack[event.status] },
                     {'src' : '/images/%s2.png' % \

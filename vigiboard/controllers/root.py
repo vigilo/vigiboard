@@ -75,15 +75,20 @@ class RootController(Vigiboard_RootController):
             page = 1
 
         events = VigiboardRequest()
-
+        
+        search = 0
         # Application des filtres si nécessaire
         if host :
+            search = 1
             events.add_filter(Events.hostname.like('%%%s%%' % host))
         if service :
+            search = 1
             events.add_filter(Events.servicename.like('%%%s%%' % service))
         if output :
+            search = 1
             events.add_filter(Events.output.like('%%%s%%' % output))
         if trouble_ticket :
+            search = 1
             events.add_filter(Events.trouble_ticket.like(
                 '%%%s%%' % trouble_ticket))
 
@@ -110,7 +115,8 @@ class RootController(Vigiboard_RootController):
                event_edit_status_options = edit_event_status_options,
                history = [],
                hist_error = False,
-               plugin_context = events.context_fct
+               plugin_context = events.context_fct,
+               search = search
             )
        
     @validate(validators={'idevent':validators.Int(not_empty=True)},
@@ -147,22 +153,20 @@ class RootController(Vigiboard_RootController):
         severity = { 0: _('None'), 1: _('OK'), 2: _('Suppressed'),
                 3: _('Initial'), 4: _('Maintenance'), 5: _('Minor'),
                 6: _('Major'), 7: _('Critical') }
-        
+        eventdetails = {}
+        for edname, edlink in tg.config['vigiboard_links.eventdetails'].iteritems():
+            eventdetails[edname] = edlink[1] % {
+                    'idevent': events.idevent,
+                    'host': events.hostname,
+                    'service': events.servicename
+                    }
         return dict(
                 initial_state = severity[int(initial_state)],
                 current_state = severity[events.severity],
                 idevent = events.idevent,
                 host = events.hostname,
                 service = events.servicename,
-                nagios_link = tg.config['vigiboard_links.nagios'] % \
-                        {'idevent': events.idevent,'host': events.hostname, 'service': events.servicename},
-                metrology_link = tg.config['vigiboard_links.metrology'] % \
-                        {'idevent': events.idevent,'host': events.hostname, 'service': events.servicename},
-                security_link = tg.config['vigiboard_links.security'] % \
-                        {'idevent': events.idevent,'host': events.hostname, 'service': events.servicename},
-                servicetype_link = tg.config['vigiboard_links.servicetype'] % \
-                        {'idevent': events.idevent,'host': events.hostname, 'service': events.servicename}
-
+                eventdetails = eventdetails
             )
 
     @validate(validators={'idevent':validators.Int(not_empty=True)},
@@ -199,7 +203,8 @@ class RootController(Vigiboard_RootController):
                event_edit_status_options = edit_event_status_options,
                history = events.hist,
                hist_error = True,
-               plugin_context = events.context_fct
+               plugin_context = events.context_fct,
+               search = 0
             )
 
     @validate(validators={'host':validators.NotEmpty(),
@@ -239,7 +244,8 @@ class RootController(Vigiboard_RootController):
                event_edit_status_options = edit_event_status_options,
                history = events.hist,
                hist_error = True,
-               plugin_context = events.context_fct
+               plugin_context = events.context_fct,
+               search = 0
             )
 
     @validate(validators={

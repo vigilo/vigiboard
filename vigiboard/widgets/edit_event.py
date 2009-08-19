@@ -44,4 +44,5 @@ class SearchForm(TableForm):
 		TextField('trouble_ticket',label_text=_('Trouble Ticket')),
 		]
 
+    method = 'GET'
     submit_text = _('Search')

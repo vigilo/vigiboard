@@ -7,36 +7,33 @@
 <py:def function="event_table(events,page,pages,id_first_row,id_last_row,total_row,edit_event_status_options)">
 <?python from genshi import HTML ?>
 
-<div style="text-align: right; margin-bottom: 10px">
-	<a href="${tg.url('/')}">Accueil</a>
-	<a id="SearchLien" href="javascript:vigiboard_searchdialog()">
-	<img src="${tg.url('/images/filter.png')}" />
-	</a>
-</div>
 <py:if test="len(events) > 1">
 <table class="vigitable">
 	
 	<thead>
-		<tr>
-			<td style="width:27px">
+		<tr >
+			<td style="width:26px;background-color: rgb(70, 130, 180);">
 				<a py:if="page > pages[0]" href="${tg.url('/%d' % (page-1))}"><img src="${tg.url('/images/fleche_up.png')}" alt="" /></a>
 				<img py:if="page == pages[0]" src="${tg.url('/images/fleche_up.png')}" alt="" />
 			</td>
-			<td colspan="${8+len(events[1][6])}" style="background-color:#4682B4;color:white;text-align:center">Showing rows ${id_first_row} to ${id_last_row} of ${total_row}<br />
+			<td colspan="${8+len(events[1][6])}" style="width:100%;background-color:#4682B4;color:white;text-align:center">Showing rows ${id_first_row} to ${id_last_row} of ${total_row}<br />
 				Pages <py:for each="p in pages">
 				<a py:if="p != page" href="${tg.url('/%d' % p)}" py:content="p" />
 				<span py:if="p == page" py:replace="p" />
 				</py:for>
 			</td>
-			<td style="width:27px">
+			<td style="width:26px">
 				<a py:if="pages[-1] > page" href="${tg.url('/%d' % (page+1))}"><img src="${tg.url('/images/fleche_down.png')}" alt="" /></a>
 				<img py:if="page == pages[-1]" src="${tg.url('/images/fleche_down.png')}" alt="" />
 			</td>
 		</tr>
+
 		<tr style="background-color:#F8F8F8;font-weight: bold">
-			<td py:for="item in events[0]">${HTML(item)}</td>
-			<td><a class="Edit_EventsLien" href="javascript:vigiboard_edit_eventdialog('all')"><img src="${tg.url('/images/icon_page_edit.png')}" /></a></td>
-			<td><input id="vigiboard_checkall_checkbox" type="checkbox" onclick="javascript:vigiboard_checkall()" /></td>
+			<py:for each="(pname,pstyle) in events[0]">
+			<td style="padding: 5px;" py:attrs="pstyle">${HTML(pname)}</td>
+			</py:for>
+			<td style="text-align: center;" ><a class="Edit_EventsLien" href="javascript:vigiboard_edit_eventdialog('all')"><img src="${tg.url('/images/icon_page_edit.png')}" /></a></td>
+			<td style="text-align: center;"><input id="vigiboard_checkall_checkbox" type="checkbox" onclick="javascript:vigiboard_checkall()" /></td>
 		</tr>
 	</thead>
 	
@@ -45,16 +42,21 @@
 		<py:for each="(event,class_tr,class_td_severity,class_td_date,img_fleche,img_statu,plugin) in events[1:]">
 		<tr py:attrs="class_tr">
 			<td py:attrs="class_td_severity"><a href="javascript:vigiboard_historydialog('${event.idevent}')" class="HistoryLien"><img src="${tg.url(img_fleche['src'])}" style="width:20px"/></a></td>
-			<td py:attrs="class_td_date">${event.get_date('timestamp_active')}<br />[${event.get_since_date('timestamp_active')}]</td>
+			<td py:attrs="class_td_date"><span style="font-weight: bold;">${event.get_date('timestamp_active')}</span><br />[${event.get_since_date('timestamp_active')}]</td>
 			<td py:attrs="class_td_date" style="text-align:center">${event.occurence}</td>
 			<td>${event.hostname}</td>
 			<td>${event.servicename}</td>
 			<td>${event.output}</td>
 			<td py:for="plug in plugin" py:attrs="plug[1]">${HTML(plug[0])}</td>
-			<td>${event.trouble_ticket}</td>
-			<td><img py:attrs="img_statu" py:if="img_statu != None" /></td>
-			<td py:attrs="class_td_date"><a class="Edit_EventsLien" href="javascript:vigiboard_edit_eventdialog('${event.idevent}')"><img src="${tg.url('/images/icon_page_edit.png')}" /></a></td>
-			<td py:attrs="class_td_date"><input type="checkbox" class="Edit_EventsCheckBox" value="${event.idevent}"/></td>
+			<td style="text-align: center"><a href="${
+					tg.config['vigiboard_links.tt'] % {
+						'idevent' : event.idevent,
+						'host' : event.hostname,
+						'service' : event.servicename,
+						'tt' : event.trouble_ticket }}">${event.trouble_ticket}</a></td>
+			<td style="text-align: center"><img py:attrs="img_statu" py:if="img_statu != None" /></td>
+			<td py:attrs="class_td_date" style="text-align: center"><a class="Edit_EventsLien" href="javascript:vigiboard_edit_eventdialog('${event.idevent}')"><img src="${tg.url('/images/icon_page_edit.png')}" /></a></td>
+			<td py:attrs="class_td_date" style="text-align: center"><input type="checkbox" class="Edit_EventsCheckBox" value="${event.idevent}"/></td>
 
 		</tr>
 		</py:for>
@@ -78,10 +80,9 @@ ${tmpl_context.historydialog}
 			$('#HistoryDialog_current_state').html(json.current_state);
 			$('#HistoryDialog_detailed_event').attr('href' , '${tg.url('/event/')}' + json.idevent);
 			$('#HistoryDialog_detailed_host').attr('href', '${tg.url('/host_service/')}' + json.host + "/" + json.service);
-			$('#HistoryDialog_nagios').attr('href', json.nagios_link);
-			$('#HistoryDialog_metrology').attr('href', json.metrology_link);
-			$('#HistoryDialog_security').attr('href', json.security_link);
-			$('#HistoryDialog_servicetype').attr('href', json.servicetype_link);
+			<py:for each="edname, edit in tg.config['vigiboard_links.eventdetails'].iteritems()">
+			$('#HistoryDialog_${edname}').attr('href', json.eventdetails['${edname}']);
+			</py:for>
 			$('#HistoryDialog').dialog('open');
 		})
 	}
@@ -133,10 +134,9 @@ Current State: <span id="HistoryDialog_current_state" /><br />
 <ul>
 	<li><a id="HistoryDialog_detailed_event" href="" >Detailed history for this event</a></li>
 	<li><a id="HistoryDialog_detailed_host" href="" >Detailed history for this host/service</a></li>
-	<li><a id="HistoryDialog_nagios" href="" >Nagios host details</a></li>
-	<li><a id="HistoryDialog_metrology" href="" >Metrology details</a></li>
-	<li><a id="HistoryDialog_security" href="" >Security details</a></li>
-	<li><a id="HistoryDialog_servicetype" href="" >Service Type</a></li>
+	<li py:for="edname, edit in tg.config['vigiboard_links.eventdetails'].iteritems()">
+		<a href="" id="HistoryDialog_${edname}">${edit[0]}</a>
+	</li>
 </ul>
 </div>
 
@@ -150,7 +150,51 @@ Current State: <span id="HistoryDialog_current_state" /><br />
 </py:if>
 
 <py:if test="1 >= len(events)">
-Aucun évènement disponible.
+<table class="vigitable">
+
+        <thead>
+                <tr >
+                        <td style="width:26px;background-color: rgb(70, 130, 180);">
+                                <img src="${tg.url('/images/fleche_up.png')}" alt="" />
+                        </td>
+                        <td colspan="9" style="width:100%;background-color:#4682B4;color:white;text-align:center">Showing rows 0 to 0 of 0<br />
+                                Page 0
+                        </td>
+                        <td style="width:26px">
+                                <img src="${tg.url('/images/fleche_down.png')}" alt="" />
+                        </td>
+                </tr>
+
+                <tr style="background-color:#F8F8F8;font-weight: bold">
+			<py:for each="(pname,pstyle) in events[0]">
+		                        <td py:attrs="pstyle">${HTML(pname)}</td>
+				                        </py:for>	
+			<td style="text-align: center;"><img src="${tg.url('/images/icon_page_edit.png')}" /></td>
+                        <td style="text-align: center;"><input id="vigiboard_checkall_checkbox" type="checkbox" /></td>
+                </tr>
+        </thead>
+
+        <tbody>
+<tr><td colspan="9"><br />Aucun évènement disponible.</td></tr>
+</tbody>
+</table>
+${tmpl_context.searchdialog}
+<div id="SearchDialog">
+        ${tmpl_context.search_form()}
+</div>
+<script type="text/javascript">
+function vigiboard_searchdialog() {
+                $('#search_form_host').attr('value','');
+                $('#search_form_service').attr('value','');
+                $('#search_form_output').attr('value','');
+                $('#search_form_trouble_ticket').attr('value', '');
+                $('#SearchDialog').dialog('open');      
+        }
+$('#SearchLien').click(function(e){
+                $('#SearchDialog').dialog('option','position','center');
+        });
+</script>
+
 </py:if>
 
 </py:def>
