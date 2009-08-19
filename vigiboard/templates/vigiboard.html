@@ -18,8 +18,8 @@
 <table class="table_top">
 	<tr>
 		<td style="width: 20%;text-align: left;">
-			<a py:if="tg.config['vigiboard_links.logo'] != ''" href="${tg.config['vigiboard_links.logo']}"><img alt="logo" src="images/vigilo.png" style="width:58px;"/></a>
-			<a py:if="tg.config['vigiboard_links.logo'] == ''" href="${tg.url('/')}"><img alt="logo" src="images/vigilo.png" style="width:58px;"/></a>
+			<a py:if="tg.config['vigiboard_links.logo'] != ''" href="${tg.config['vigiboard_links.logo']}"><img alt="logo" src="${tg.url('/images/vigilo.png')}" style="width:58px;"/></a>
+			<a py:if="tg.config['vigiboard_links.logo'] == ''" href="${tg.url('/')}"><img alt="logo" src="${tg.url('/images/vigilo.png')}" style="width:58px;"/></a>
 			v${tg.config['vigiboard_version']}</td>
 		<td style="text-align: center">
 			<span py:if="search == 1" style="color:rgb(70, 130, 180)">
