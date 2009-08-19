@@ -3,8 +3,9 @@
       py:strip="">
 
 
+  <xi:include href="vigiboard_history_table.html" />
 
-<py:def function="event_table(events,page,pages,id_first_row,id_last_row,total_row,edit_event_status_options)">
+<py:def function="event_table(events,page,pages,id_first_row,id_last_row,total_row,edit_event_status_options,history,hist_error)">
 <?python from genshi import HTML ?>
 
 <py:if test="len(events) > 1">
@@ -41,7 +42,7 @@
 	
 		<py:for each="(event,class_tr,class_td_severity,class_td_date,img_fleche,img_statu,plugin) in events[1:]">
 		<tr py:attrs="class_tr">
-			<td py:attrs="class_td_severity"><a href="javascript:vigiboard_historydialog('${event.idevent}')" class="HistoryLien"><img src="${tg.url(img_fleche['src'])}" style="width:20px"/></a></td>
+			<td style="padding: 3px;" py:attrs="class_td_severity"><a href="javascript:vigiboard_historydialog('${event.idevent}')" class="HistoryLien"><img src="${tg.url(img_fleche['src'])}" style="width:20px"/></a></td>
 			<td py:attrs="class_td_date"><span style="font-weight: bold;">${event.get_date('timestamp_active')}</span><br />[${event.get_since_date('timestamp_active')}]</td>
 			<td py:attrs="class_td_date" style="text-align:center">${event.occurence}</td>
 			<td>${event.hostname}</td>
@@ -59,6 +60,11 @@
 			<td py:attrs="class_td_date" style="text-align: center"><input type="checkbox" class="Edit_EventsCheckBox" value="${event.idevent}"/></td>
 
 		</tr>
+		<py:if test="hist_error == True">
+			<tr><td colspan="${10+len(plugin)}">
+					${history_table(history[event.idevent],hist_error)}	
+			</td></tr>
+		</py:if>
 		</py:for>
 	
 	</tbody>

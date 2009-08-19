@@ -9,12 +9,9 @@ There is no history.
 </p>
 
 <py:if test="history and len(history) > 0">
-<table style="width: 100%">
+<table style="width: 100%;margin-bottom: 30px;">
 	<thead>
 		<tr style="background-color:#F8F8F8;font-weight:bold">
-			<td>ID</td>
-			<td>Host</td>
-			<td>Service</td>
 			<td>Time</td>
 			<td>User</td>
 			<td>Type</td>
@@ -23,11 +20,8 @@ There is no history.
 		</tr>
 	</thead>
 	<tbody>
-		<py:for each="(id,host,service,time,user,type,value,text,class_tr,class_value) in history">
+		<py:for each="(time,user,type,value,text,class_tr,class_value) in history">
 		<tr py:attrs="class_tr">
-			<td>${id}</td>
-			<td>${host}</td>	
-			<td>${service}</td>
 			<td>${time}</td>
 			<td>${user}</td>
 			<td>${type}</td>

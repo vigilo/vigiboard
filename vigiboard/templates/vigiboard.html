@@ -5,7 +5,6 @@
       xmlns:xi="http://www.w3.org/2001/XInclude">
 
   <xi:include href="vigiboard_event_table.html" />
-  <xi:include href="vigiboard_history_table.html" />
 
 <head>
   <meta content="text/html; charset=UTF-8" http-equiv="content-type" py:replace="''"/>
@@ -38,9 +37,7 @@
 <div py:if="flash" py:content="XML(flash)" />
 </py:with>
 <div class="main_content">
-	${event_table(events,page,pages,id_first_row,id_last_row,total_row,event_edit_status_options)}
-	<br /><br />
-	${history_table(history,hist_error)}
+	${event_table(events,page,pages,id_first_row,id_last_row,total_row,event_edit_status_options,history,hist_error)}
 </div>
 
 </body>

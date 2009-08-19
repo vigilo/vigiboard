@@ -309,8 +309,7 @@ class VigiboardRequest():
                     event,
                     {'class': class_tr[i%2]},
                     {'class' : self.bouton_severity[event.severity] + \
-                            self.class_ack[event.status],
-                     'style' : 'text-align: center'},
+                            self.class_ack[event.status]},
                     {'class' : self.bouton_severity[event.severity] + \
                             self.class_ack[event.status] },
                     {'src' : '/images/%s2.png' % \
@@ -351,22 +350,25 @@ class VigiboardRequest():
                 ).filter(EventHistory.idevent.in_(self.idevents)
                 ).order_by(desc(EventHistory.timestamp)
                 ).order_by(desc(EventHistory.idhistory))
-
+        print history
         if history.count() == 0:
             self.hist = []
             return
-        hists = []
+        hists = {}
         i = 0
         class_tr = ['odd', 'even']
         hostname = self.events[1][0].hostname
         servicename = self.events[1][0].servicename
-
+        hist_tmp = []
+        last_idevent = history[0].idevent
         for hist in history :
+            
+            if last_idevent != hist.idevent:
+                hists[last_idevent] = hist_tmp
+                last_idevent = hist.idevent
+                hist_tmp = []
 
             # La liste pour l'historique actuel comporte dans l'ordre :
-            #   Son identifiant
-            #   Son nom d'hôte
-            #   Son nom de service
             #   Le moment où il a été généré
             #   Qui l'a généré
             #   Le type d'action qui a été appliqué
@@ -377,10 +379,7 @@ class VigiboardRequest():
             #   La classe de la sévérité s'il y a
 
             if hist.value :
-                hists.append([
-                    hist.idhistory,
-                    hostname,
-                    servicename,
+                hist_tmp.append([
                     hist.timestamp,
                     hist.username,
                     hist.type_action,
@@ -390,10 +389,7 @@ class VigiboardRequest():
                     {'class':self.class_severity[min(int(hist.value),7)]}
                 ])
             else:
-                hists.append([
-                    hist.idhistory,
-                    hostname,
-                    servicename,
+                hist_tmp.append([
                     hist.timestamp,
                     hist.username,
                     hist.type_action,
@@ -404,6 +400,7 @@ class VigiboardRequest():
                 ])    
             i = i + 1
         
+        hists[last_idevent] = hist_tmp
         self.hist = hists
 
     def generate_tmpl_context(self):

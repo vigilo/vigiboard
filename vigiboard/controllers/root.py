@@ -225,7 +225,8 @@ class RootController(Vigiboard_RootController):
         events = VigiboardRequest()
         events.add_filter(Events.hostname == host,
                 Events.servicename == service)
-        
+        del events.filter[2]
+
         # Vérification qu'il y a au moins 1 évènement qui correspond
         if events.num_rows() == 0 :
             redirect('/')
@@ -233,7 +234,6 @@ class RootController(Vigiboard_RootController):
         events.format_events(0, events.num_rows())
         events.format_history()
         events.generate_tmpl_context() 
-
         return dict(
                events = events.events,
                id_first_row = 1,
