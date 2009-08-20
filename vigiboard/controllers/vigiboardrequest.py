@@ -274,10 +274,10 @@ class VigiboardRequest():
 
         # Liste des éléments pour la tête du tableau
 
-        lst_title = [['',{}], [_('Date')+ '<span style="font-weight:normal">' + _('<br />[Duration]') + '</span>', {}], ['#',{'style':'text-align:center'}], [_('Host'),{}],
-                [_('Service Type<br />Service Name'),{}], [_('Output'),{}]]
+        lst_title = [['',{}], [_('Date')+ '<span style="font-weight:normal">' + _('<br />[Duration]') + '</span>', {'style':'text-align:left'}], ['#',{'title':_('Occurrence')}], [_('Host'),{'style':'text-align:left'}],
+                [_('Service Type<br />Service Name'),{'style':'text-align:left'}], [_('Output'),{'style':'text-align:left'}]]
         lst_title.extend([[plug.name,plug.style] for plug in self.plugin])
-        lst_title.extend([['[TT]',{'style':'text-align:center'}], ['',{}]])
+        lst_title.extend([[_('[TT]'),{'title':_('Trouble Ticket')}], ['',{}]])
         events = [lst_title]
         i = 0
         class_tr = ['odd', 'even']

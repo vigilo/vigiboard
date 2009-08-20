@@ -20,22 +20,30 @@ body {
 	border-collapse: collapse;
 }
 
+.vigitable thead {
+	text-align: center;
+}
+
 .vigitable thead tr td {
 	padding: 0px;
+	background-color: #4682b4;
+	color:white;
+}
+
+.vigitable thead tr th {
+	padding: 4px 10px;
+	background-color: #EBECF0;
+	font-weight: bold;
 }
 
 .vigitable tbody tr {
-	border-style: solid;
-        border-width: 1px 1px 1px 1px;
-        border-color: #FFFFFF;
+	border: solid 1px white;
         empty-cells: show;
 }
 
 .vigitable tbody tr td {
-	border-style: solid;
-        border-width: 1px 1px 1px 1px;
-        border-color: #FFFFFF;
-        padding: 3px 10px 3px 10px;
+	border: solid 1px white;
+        padding: 3px 10px;
         empty-cells: show;
 }
 
@@ -94,30 +102,35 @@ img {
 	margin: 0px;
 }
 
+#flash {
+	display: none;
+}
 #flash, .notice {
 font-size:120%;
 font-weight:bolder;
 margin:0pt auto 0.5em;
-width:680px;
+margin-left: 26px;
+width:400px;
+position: absolute;
 }
 #flash div, .notice {
-padding:20px 15px 20px 65px;
+padding:8px 7px 6px 40px;
 }
 #flash .ok {
-background:#d8ecd8 url(../images/ok.png) no-repeat scroll 10px center;
+background:#d8ecd8 url(../images/ok.png) no-repeat scroll 0px center;
 }
 #flash .warning {
-background:#fff483 url(../images/warning.png) no-repeat scroll 10px center;
+background:#fff483 url(../images/warning.png) no-repeat scroll 0px center;
 }
 #flash .error {
-background:#f9c5c1 url(../images/error.png) no-repeat scroll 10px center;
+background:#f9c5c1 url(../images/error.png) no-repeat scroll 0px center;
 }
 #flash .alert,
 #flash .info {
-background:#EEEEFF url(../images/info.png) no-repeat scroll 10px center;
+background:#EEEEFF url(../images/info.png) no-repeat scroll 0px center;
 }
 .notice {
-background:#EEEEFF url(../images/info.png) no-repeat scroll 10px center;
+background:#EEEEFF url(../images/info.png) no-repeat scroll 0px center;
 }
 .fielderror {
 color:red;

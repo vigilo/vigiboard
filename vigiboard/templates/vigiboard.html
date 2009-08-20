@@ -14,20 +14,20 @@
 
 <body>
 	
-<table class="table_top">
+<table class="table_top" summary="Barre Outils">
 	<tr>
 		<td style="width: 20%;text-align: left;">
-			<a py:if="tg.config['vigiboard_links.logo'] != ''" href="${tg.config['vigiboard_links.logo']}"><img alt="logo" src="${tg.url('/images/vigilo.png')}" style="width:58px;"/></a>
-			<a py:if="tg.config['vigiboard_links.logo'] == ''" href="${tg.url('/')}"><img alt="logo" src="${tg.url('/images/vigilo.png')}" style="width:58px;"/></a>
+			<a py:if="tg.config['vigiboard_links.logo'] != ''" href="${tg.config['vigiboard_links.logo']}"><img alt="logo" title="Logo" src="${tg.url('/images/vigilo.png')}" style="width:58px;"/></a>
+			<a py:if="tg.config['vigiboard_links.logo'] == ''" href="${tg.url('/')}"><img alt="logo" title="Logo" src="${tg.url('/images/vigilo.png')}" style="width:58px;"/></a>
 			v${tg.config['vigiboard_version']}</td>
 		<td style="text-align: center">
 			<span py:if="search == 1" style="color:rgb(70, 130, 180)">
 				Mode recherche, <a href="${tg.url('/')}" style="color:rgb(70, 130, 180); text-decoration: underline;">cliquer ici</a> pour revenir au mode initial.
 			</span>
 		</td>
-		<td style="width: 20%;text-align: right;"><a href="${tg.url('/')}">Accueil</a>
+		<td style="width: 20%;text-align: right;"><a href="${tg.url('/')}"><img alt="accueil" title="Accueil" src="${tg.url('/images/home.gif')}" /></a>
 			<a id="SearchLien" href="javascript:vigiboard_searchdialog()">
-				<img src="${tg.url('/images/filter.png')}" />
+				<img src="${tg.url('/images/filter.png')}" alt="filtrer" title="Filtrer"/>
 				</a>
 		</td>
 	</tr>
@@ -39,6 +39,10 @@
 <div class="main_content">
 	${event_table(events,page,pages,id_first_row,id_last_row,total_row,event_edit_status_options,history,hist_error)}
 </div>
-
+<script type="text/javascript">
+	$("#flash").show("slow",function(){
+		setTimeout('$("#flash").hide("slow")',5000);
+			});
+</script>
 </body>
 </html>

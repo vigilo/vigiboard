@@ -26,7 +26,6 @@ class EditEventForm(TableForm):
 		TextField('trouble_ticket',label_text=_('Touble Ticket')),
 		SingleSelectField('status',options=edit_event_status_options)
 		]
-
     submit_text = _('Apply')
 
 class SearchForm(TableForm):

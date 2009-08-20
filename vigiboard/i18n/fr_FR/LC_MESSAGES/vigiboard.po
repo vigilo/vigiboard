@@ -135,11 +135,11 @@ msgstr "Pages"
 
 #: vigiboard/templates/vigiboard_event_table.html:123
 msgid "Initial State:"
-msgstr "Statu initial:"
+msgstr "Statut initial:"
 
 #: vigiboard/templates/vigiboard_event_table.html:124
 msgid "Current State:"
-msgstr "Statu actuel:"
+msgstr "Statut actuel:"
 
 #: vigiboard/templates/vigiboard_event_table.html:127
 msgid "Detailed history for this event"
