@@ -13,19 +13,19 @@
 	
 	<thead>
 		<tr >
-			<td style="width:26px">
-				<a py:if="page > pages[0]" href="${tg.url('/%d' % (page-1))}"><img src="${tg.url('/images/fleche_up.png')}" alt="up" title="page précédente"/></a>
-				<img py:if="page == pages[0]" src="${tg.url('/images/fleche_up.png')}" alt="up" title="page précédente" />
+			<td style="width:26px;border-right: solid 1px #4682b4">
+				<a py:if="page > pages[0]" href="${tg.url('/%d' % (page-1))}"><img src="${tg.url('/images/fleche_up.png')}" alt="up" title="Page précédente"/></a>
+				<img py:if="page == pages[0]" src="${tg.url('/images/fleche_up.png')}" alt="up" title="Page précédente" />
 			</td>
-			<td colspan="${8+len(events[1][6])}">Showing rows ${id_first_row} to ${id_last_row} of ${total_row}<br />
+			<td colspan="${8+len(events[1][6])}" style="background-color: #4682b4" >Showing rows ${id_first_row} to ${id_last_row} of ${total_row}<br />
 				Pages <py:for each="p in pages">
 				<a py:if="p != page" href="${tg.url('/%d' % p)}" py:content="p" />
 				<span py:if="p == page" py:replace="p" />
 				</py:for>
 			</td>
-			<td style="width:26px">
-				<a py:if="pages[-1] > page" href="${tg.url('/%d' % (page+1))}"><img src="${tg.url('/images/fleche_down.png')}" alt="down" title="page suivante"/></a>
-				<img py:if="page == pages[-1]" src="${tg.url('/images/fleche_down.png')}"  alt="down" title="page suivante" />
+			<td style="width:26px;border-left: solid 1px #4682b4">
+				<a py:if="pages[-1] > page" href="${tg.url('/%d' % (page+1))}"><img src="${tg.url('/images/fleche_down.png')}" alt="down" title="Page suivante"/></a>
+				<img py:if="page == pages[-1]" src="${tg.url('/images/fleche_down.png')}"  alt="down" title="Page suivante" />
 			</td>
 		</tr>
 
@@ -33,8 +33,8 @@
 			<py:for each="(pname,pstyle) in events[0]">
 			<th style="padding: 5px;" py:attrs="pstyle">${HTML(pname)}</th>
 			</py:for>
-			<th><a class="Edit_EventsLien" href="javascript:vigiboard_edit_eventdialog('all')"><img src="${tg.url('/images/icon_page_edit.png')}" alt="edit_all" title="Editer tous les évènements sélectionnés"/></a></th>
-			<th style="padding:3px;"><input id="vigiboard_checkall_checkbox" type="checkbox" onclick="javascript:vigiboard_checkall()" /></th>
+			<th style="width:26px;padding: 0px;"><a class="Edit_EventsLien" href="javascript:vigiboard_edit_eventdialog('all')"><img src="${tg.url('/images/icon_page_edit.png')}" alt="edit_all" title="Editer tous les évènements sélectionnés"/></a></th>
+			<th style="padding:0px;"><input title="Sélectioner tout" id="vigiboard_checkall_checkbox" type="checkbox" onclick="javascript:vigiboard_checkall()" /></th>
 		</tr>
 	</thead>
 	
@@ -56,8 +56,8 @@
 						'service' : event.servicename,
 						'tt' : event.trouble_ticket }}">[${event.trouble_ticket}]</a></td>
 			<td style="text-align: center"><img py:attrs="img_statu" py:if="img_statu != None" alt="statut" title="Statut de l'évènement"/></td>
-			<td py:attrs="class_td_date" style="text-align: center"><a class="Edit_EventsLien" href="javascript:vigiboard_edit_eventdialog('${event.idevent}')"><img src="${tg.url('/images/icon_page_edit.png')}" alt="edit" title="Editer cet élément"/></a></td>
-			<td py:attrs="class_td_date" style="padding: 3px;text-align: center"><input type="checkbox" class="Edit_EventsCheckBox" value="${event.idevent}"/></td>
+			<td py:attrs="class_td_date" style="padding: 0px;text-align: center"><a class="Edit_EventsLien" href="javascript:vigiboard_edit_eventdialog('${event.idevent}')"><img src="${tg.url('/images/icon_page_edit.png')}" alt="edit" title="Editer cet élément"/></a></td>
+			<td py:attrs="class_td_date" style="padding:0px;text-align: center"><input type="checkbox" class="Edit_EventsCheckBox" value="${event.idevent}"/></td>
 
 		</tr>
 		<py:if test="hist_error == True">

@@ -24,7 +24,7 @@ class PluginSHN (VigiboardRequestPlugin):
                 ServiceHautNiveau.servicename_dep == Events.servicename)],
             groupby = [(Events),(ServiceHautNiveau.servicename_dep)],
             name = _(u'SHNs impacté'),
-            style = {'style':'text-align:center'},
+            style = {'title':'Services de haut niveau impactés','style':'text-align:center'},
             object_name = "shn"
         )
     
