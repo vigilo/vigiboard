@@ -7,6 +7,8 @@ except ImportError:
     use_setuptools()
     from setuptools import setup, find_packages
 
+tests_require = ['WebTest', 'BeautifulSoup']
+
 setup(
     name='vigiboard',
     version='0.1',
@@ -26,14 +28,17 @@ setup(
         "psycopg2",
         "tw.jquery >= 0.9.5",
         "vigilo-models",
+        "PasteScript >= 1.7", # setup_requires has issues
         "decorator != 3.1.0", # Blacklist bad version
         ],
-    setup_requires=["PasteScript >= 1.7"],
     paster_plugins=['PasteScript', 'Pylons', 'TurboGears2', 'tg.devtools'],
     packages=find_packages(exclude=['ez_setup']),
     include_package_data=True,
     test_suite='nose.collector',
-    tests_require=['WebTest', 'BeautifulSoup'],
+    tests_require=tests_require,
+    extras_require={
+        'tests': tests_require,
+        },
     package_data={'vigiboard': ['i18n/*/LC_MESSAGES/*.mo',
                                  'templates/*/*',
                                  'public/*/*']},
@@ -43,11 +48,16 @@ setup(
             ('templates/**.html', 'genshi', None),
             ('public/**', 'ignore', None)]},
 
-    entry_points="""
-    [paste.app_factory]
-    main = vigiboard.config.middleware:make_app
-
-    [paste.app_install]
-    main = pylons.util:PylonsInstaller
-    """,
+    entry_points={
+        'paste.app_factory': [
+            'main = vigiboard.config.middleware:make_app',
+            ],
+        'paste.app_install': [
+            'main = pylons.util:PylonsInstaller',
+            ],
+        'console_scripts': [
+            'runtests-vigiboard = vigiboard.tests:runtests [tests]',
+            ],
+        },
 )
+

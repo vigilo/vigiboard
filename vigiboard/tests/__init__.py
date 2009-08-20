@@ -9,7 +9,8 @@ from paste.deploy import loadapp
 from paste.script.appinstall import SetupCommand
 from routes import url_for
 from webtest import TestApp
-from nose.tools import eq_
+import nose
+from nose.tools import eq_, nottest
 
 from vigiboard import model
 
@@ -62,3 +63,10 @@ class TestController(object):
         """Method called by nose after running each test"""
         # Cleaning up the database:
         teardown_db()
+
+
+def runtests():
+    # XXX hard-coded path.
+    sys.argv[-1:] = ['--with-pylons', '../vigiboard/test.ini', 'vigiboard.tests' ]
+    nose.main()
+
