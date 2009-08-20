@@ -1,14 +1,11 @@
 NAME = vigiboard
+BUILDENV = ../glue
 
-all: bin/python
+all:
 	@echo "Template Makefile, to be filled with build and install targets"
 
-bin/buildout: buildenv/bootstrap.py
-	http_proxy='' HTTP_PROXY='' python2.5 $^
-	-[ -f $@ ] && touch $@
-
-bin/python bin/paster: bin/buildout
-	http_proxy='' HTTP_PROXY='' ./$^
+$(BUILDENV)/bin/python $(BUILDENV)/bin/paster:
+	make -C $(BUILDENV) bin/python
 
 clean:
 	find $(CURDIR) \( -name "*.pyc" -o -name "*~" \) -delete
@@ -24,10 +21,10 @@ doc/apidoc/index.html: $(NAME)
 		   --docformat=epytext $^
 
 lint:
-	./pylint_vigiboard.py $(NAME)
+	$(BUILDENV)/bin/python ./pylint_vigiboard.py $(NAME)
 
 tests:
-	nosetests --with-coverage --cover-inclusive --cover-erase --cover-package $(NAME) tests
+	PYTHONPATH=$(BUILDENV) VIGILO_SETTINGS_MODULE=settings_tests $(BUILDENV)/bin/python "$$(which nosetests)" --with-coverage --cover-inclusive --cover-erase --cover-package $(NAME) $(NAME)/tests
 
 
 .PHONY: all clean buildclean apidoc lint tests
