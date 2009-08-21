@@ -8,8 +8,8 @@ from nose.tools import assert_true
 from vigiboard.model import DBSession, Events, EventHistory, Groups, \
     Permission, GroupPermissions, Host, Service, HostGroups, ServiceGroups
 from vigiboard.tests import TestController
-from vigiboard.controllers.vigiboardrequest import VigiboardRequest, \
-            VigiboardRequestPlugin
+from vigiboard.controllers.vigiboardrequest import VigiboardRequest
+from vigiboard.controllers.vigiboard_plugin.tests import MonPlugin
 from vigiboard.tests import teardown_db
 import tg
 import transaction
@@ -129,9 +129,7 @@ class TestVigiboardRequest(TestController):
         
         vigi_req = VigiboardRequest()
         
-        vigi_req.add_plugin(MonPlugin(
-            table = [EventHistory.idevent],
-            join = [(EventHistory, EventHistory.idevent == Events.idevent)]))
+        vigi_req.add_plugin(MonPlugin)
 
         num_rows = vigi_req.num_rows()
         assert_true(num_rows == 8, 
