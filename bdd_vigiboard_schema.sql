@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-SET client_encoding = 'SQL_ASCII';
+SET client_encoding = 'UTF8';
 SET standard_conforming_strings = off;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
@@ -22,10 +22,10 @@ CREATE TABLE event_history (
     idhistory integer NOT NULL,
     type_action character varying(27) NOT NULL,
     idevent integer NOT NULL,
-    value character varying(255),
+    value text,
     text text,
     "timestamp" timestamp without time zone,
-    username character varying(255)
+    username text
 );
 
 
@@ -58,15 +58,15 @@ ALTER SEQUENCE event_history_idhistory_seq OWNED BY event_history.idhistory;
 
 CREATE TABLE events (
     idevent integer NOT NULL,
-    hostname character varying(100) NOT NULL,
-    servicename character varying(100),
+    hostname text NOT NULL,
+    servicename text,
     severity integer NOT NULL,
     status character varying(12) DEFAULT 'None'::character varying NOT NULL,
     active boolean,
     "timestamp" timestamp without time zone,
     output text NOT NULL,
     timestamp_active timestamp without time zone,
-    trouble_ticket character varying(20),
+    trouble_ticket text,
     occurence integer,
     impact integer,
     rawstate character varying(8)
@@ -101,9 +101,9 @@ ALTER SEQUENCE events_idevent_seq OWNED BY events.idevent;
 --
 
 CREATE TABLE graph (
-    name character varying(100) NOT NULL,
-    template character varying(2500) NOT NULL,
-    vlabel character varying(2500) NOT NULL
+    name text NOT NULL,
+    template text NOT NULL,
+    vlabel text NOT NULL
 );
 
 
@@ -114,7 +114,7 @@ ALTER TABLE public.graph OWNER TO vigiboard;
 --
 
 CREATE TABLE graphgroups (
-    name character varying(100) NOT NULL,
+    name text NOT NULL,
     parent integer
 );
 
@@ -126,8 +126,8 @@ ALTER TABLE public.graphgroups OWNER TO vigiboard;
 --
 
 CREATE TABLE graphtogroups (
-    graphname character varying(100) NOT NULL,
-    groupname character varying(100) NOT NULL
+    graphname text NOT NULL,
+    groupname text NOT NULL
 );
 
 
@@ -138,7 +138,7 @@ ALTER TABLE public.graphtogroups OWNER TO vigiboard;
 --
 
 CREATE TABLE grouppermissions (
-    groupname character varying(100) NOT NULL,
+    groupname text NOT NULL,
     idpermission integer NOT NULL
 );
 
@@ -150,8 +150,8 @@ ALTER TABLE public.grouppermissions OWNER TO vigiboard;
 --
 
 CREATE TABLE groups (
-    name character varying(100) NOT NULL,
-    parent character varying(100)
+    name text NOT NULL,
+    parent text
 );
 
 
@@ -162,15 +162,15 @@ ALTER TABLE public.groups OWNER TO vigiboard;
 --
 
 CREATE TABLE host (
-    name character varying(255) NOT NULL,
-    checkhostcmd character varying(255) NOT NULL,
-    community character varying(255) NOT NULL,
-    fqhn character varying(255) NOT NULL,
-    hosttpl character varying(255) NOT NULL,
-    mainip character varying(255) NOT NULL,
+    name text NOT NULL,
+    checkhostcmd text NOT NULL,
+    community text NOT NULL,
+    fqhn text NOT NULL,
+    hosttpl text NOT NULL,
+    mainip text NOT NULL,
     port integer NOT NULL,
     snmpoidsperpdu integer,
-    snmpversion character varying(255)
+    snmpversion text
 );
 
 
@@ -181,8 +181,8 @@ ALTER TABLE public.host OWNER TO vigiboard;
 --
 
 CREATE TABLE hostgroups (
-    hostname character varying(100) NOT NULL,
-    groupname character varying(100) NOT NULL
+    hostname text NOT NULL,
+    groupname text NOT NULL
 );
 
 
@@ -193,11 +193,11 @@ ALTER TABLE public.hostgroups OWNER TO vigiboard;
 --
 
 CREATE TABLE perfdatasource (
-    hostname character varying(100) NOT NULL,
-    servicename character varying(100) NOT NULL,
-    graphname character varying(100) NOT NULL,
-    type character varying(100) NOT NULL,
-    label character varying(255),
+    hostname text NOT NULL,
+    servicename text NOT NULL,
+    graphname text NOT NULL,
+    type text NOT NULL,
+    label text,
     factor double precision NOT NULL
 );
 
@@ -209,9 +209,9 @@ ALTER TABLE public.perfdatasource OWNER TO vigiboard;
 --
 
 CREATE TABLE service (
-    name character varying(255) NOT NULL,
-    type character varying(255) NOT NULL,
-    command character varying(255) NOT NULL
+    name text NOT NULL,
+    type text NOT NULL,
+    command text NOT NULL
 );
 
 
@@ -222,8 +222,8 @@ ALTER TABLE public.service OWNER TO vigiboard;
 --
 
 CREATE TABLE servicegroups (
-    servicename character varying(100) NOT NULL,
-    groupname character varying(100) NOT NULL
+    servicename text NOT NULL,
+    groupname text NOT NULL
 );
 
 
@@ -234,8 +234,8 @@ ALTER TABLE public.servicegroups OWNER TO vigiboard;
 --
 
 CREATE TABLE servicehautniveau (
-    servicename character varying(100) NOT NULL,
-    servicename_dep character varying(100) NOT NULL
+    servicename text NOT NULL,
+    servicename_dep text NOT NULL
 );
 
 
@@ -246,8 +246,8 @@ ALTER TABLE public.servicehautniveau OWNER TO vigiboard;
 --
 
 CREATE TABLE servicetopo (
-    servicename character varying(100) NOT NULL,
-    function character varying(50) NOT NULL
+    servicename text NOT NULL,
+    function text NOT NULL
 );
 
 
@@ -259,9 +259,9 @@ ALTER TABLE public.servicetopo OWNER TO vigiboard;
 
 CREATE TABLE state (
     idstat integer NOT NULL,
-    hostname character varying(100) NOT NULL,
-    servicename character varying(100),
-    ip character varying(40),
+    hostname text NOT NULL,
+    servicename text,
+    ip text,
     "timestamp" timestamp without time zone,
     statename character varying(8) DEFAULT 'OK'::character varying NOT NULL,
     type character varying(4) DEFAULT 'SOFT'::character varying NOT NULL,
@@ -425,8 +425,8 @@ ALTER SEQUENCE tg_user_user_id_seq OWNED BY tg_user.user_id;
 --
 
 CREATE TABLE version (
-    name character varying(255) NOT NULL,
-    version character varying(255) NOT NULL
+    name text NOT NULL,
+    version text NOT NULL
 );
 
 
