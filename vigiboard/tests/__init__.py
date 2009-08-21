@@ -69,6 +69,9 @@ def runtests():
     # XXX This is a hack, some import gets there first.
     #environ.setdefault('VIGILO_SETTINGS_MODULE', 'settings_tests')
     # XXX hard-coded path.
-    sys.argv[1:0] = ['--with-pylons', '../vigiboard/test.ini', 'vigiboard.tests' ]
+    sys.argv[1:0] = ['--with-pylons', '../vigiboard/test.ini', 
+                     '--with-coverage', '--cover-inclusive',
+                     '--cover-erase', '--cover-package', 'vigiboard',
+                     'vigiboard.tests' ]
     nose.main()
 
