@@ -8,7 +8,7 @@ from nose.tools import assert_true
 from vigiboard.model import DBSession, Events, EventHistory, Groups, \
     Permission, GroupPermissions, Host, Service, HostGroups, ServiceGroups
 from vigiboard.tests import TestController
-from vigiboard.controllers.vigiboard_ctl import VigiboardRequest, \
+from vigiboard.controllers.vigiboardrequest import VigiboardRequest, \
             VigiboardRequestPlugin
 from vigiboard.tests import teardown_db
 import tg

@@ -8,7 +8,7 @@ from nose.tools import assert_true
 from vigiboard.model import DBSession, Groups, Permission, \
         GroupPermissions
 from vigiboard.tests import TestController
-from vigiboard.controllers.vigiboard_ctl import get_user_groups
+from vigiboard.controllers.userutils import get_user_groups
 from vigiboard.tests import teardown_db
 import tg
 import transaction
