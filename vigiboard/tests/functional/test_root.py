@@ -17,9 +17,8 @@ from vigiboard.tests import TestController
 
 class TestRootController(TestController):
     def test_index(self):
-        response = self.app.get('/')
-        msg = 'TurboGears 2 is rapid web application development toolkit '\
-              'designed to make your life easier.'
+        response = self.app.get('/', status=401)
+        msg = 'Unauthorized'
         # You can look for specific strings:
         assert_true(msg in response)
         
