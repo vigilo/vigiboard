@@ -14,6 +14,20 @@ body {
 	border-collapse:collapse;
 	margin-bottom: 10px;
 }
+.table_top tr td {
+	padding: 4px;
+}
+
+.history_table {
+	width: 100%;
+	margin-bottom: 30px;
+}
+.history_table thead {
+	background-color:#F8F8F8;
+	font-weight:bold;
+}
+
+
 .vigitable {
 	width: 100%;
 	border-collapse: collapse;
@@ -25,14 +39,13 @@ body {
 
 .vigitable thead tr td {
 	padding: 0px;
-	color:white;
 }
 
 .vigitable thead tr th {
 	padding: 4px 10px;
 	background-color: #EBECF0;
 	font-weight: bold;
-	border: none;
+	border: solid 1px #EBECF0;
 }
 
 .vigitable tbody tr {
@@ -137,5 +150,15 @@ font-weight:bold;
 }
 div.clearingdiv {
 clear:both;
+}
+
+.refresh_select {
+	background-color: #DBEAF5;
+	border: 1px solid #4682B4;
+}
+
+.refresh_button {
+	background-color: red;
+	color: white
 }
 

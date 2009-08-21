@@ -35,13 +35,13 @@ def make_app(global_conf, full_stack=True, **app_conf):
     
    
     """
-
+    # chargement de la config
     for i in vigiboard_config:
         app_conf[i] = vigiboard_config[i]
 
     # on cré l'application de base
     app = make_base_app(global_conf, full_stack=True, **app_conf)
-    
+
     # on rajoute le path public de l'application
     import vigiboard
     app = Cascade([

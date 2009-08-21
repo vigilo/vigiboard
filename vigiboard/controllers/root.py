@@ -5,7 +5,7 @@
 import tg
 
 from tg import config, expose, flash, require, request, redirect, \
-                validate, tmpl_context
+                validate, tmpl_context, session
 
 from tw.forms import validators 
 
@@ -71,24 +71,25 @@ class RootController(Vigiboard_RootController):
         @param output: Idem que host mais sur le text explicatif
         @param trouble_ticket: Idem que host mais sur les tickets attribués
         """
+
         if page < 1 :
             page = 1
 
         events = VigiboardRequest()
         
-        search = 0
+        search = {'host':'', 'service':'', 'output':'', 'tt':''}
         # Application des filtres si nécessaire
         if host :
-            search = 1
+            search['host'] = host
             events.add_filter(Events.hostname.like('%%%s%%' % host))
         if service :
-            search = 1
+            search['service'] = service
             events.add_filter(Events.servicename.like('%%%s%%' % service))
         if output :
-            search = 1
+            search['output'] = output
             events.add_filter(Events.output.like('%%%s%%' % output))
         if trouble_ticket :
-            search = 1
+            search['tt'] = trouble_ticket
             events.add_filter(Events.trouble_ticket.like(
                 '%%%s%%' % trouble_ticket))
 
@@ -104,7 +105,6 @@ class RootController(Vigiboard_RootController):
 
         events.format_events(id_first_row, id_last_row)
         events.generate_tmpl_context() 
-
         return dict(
                events = events.events,
                id_first_row = id_first_row + 1,
@@ -117,8 +117,9 @@ class RootController(Vigiboard_RootController):
                hist_error = False,
                plugin_context = events.context_fct,
                search = search
+               
             )
-       
+      
     @validate(validators={'idevent':validators.Int(not_empty=True)},
             error_handler=process_form_errors)
     @expose('json')
@@ -132,21 +133,22 @@ class RootController(Vigiboard_RootController):
 
         @param id: identifiant de l'évènement
         """
-        
+
         # Obtention de données sur l'évènement et sur son historique
         events = DBSession.query(Events.severity, Events.idevent,
                         Events.hostname, Events.servicename
                  ).join(( HostGroups , Events.hostname == HostGroups.hostname )
                  ).filter(HostGroups.groupname.in_(get_user_groups())
                  ).filter(Events.idevent == idevent)[0]
-
         initial_state = DBSession.query(EventHistory
                  ).filter(EventHistory.idevent == idevent
                  ).order_by(asc(EventHistory.timestamp)
                  ).order_by(asc(EventHistory.type_action))
-
         if initial_state.count() > 0 :
-            initial_state = initial_state[0].value
+            for i in initial_state:
+                if i.value != '' and i.value is not None:
+                    initial_state = i.value
+                    break
         else :
             initial_state = 0
         
@@ -204,7 +206,7 @@ class RootController(Vigiboard_RootController):
                history = events.hist,
                hist_error = True,
                plugin_context = events.context_fct,
-               search = 0
+               search = {'host':None,'service':None,'output':None,'tt':None}
             )
 
     @validate(validators={'host':validators.NotEmpty(),
@@ -245,7 +247,7 @@ class RootController(Vigiboard_RootController):
                history = events.hist,
                hist_error = True,
                plugin_context = events.context_fct,
-               search = 0
+               search = {'host':None,'service':None,'output':None,'tt':None}
             )
 
     @validate(validators={
@@ -330,3 +332,24 @@ class RootController(Vigiboard_RootController):
             return p.controller(*arg,**krgv)
         except:
             raise
+    
+    @validate(validators={"fontsize":validators.Int()}, error_handler=process_form_errors)
+    @expose('json')
+    def set_fontsize(self,fontsize):
+        try:
+            session['fontsize'] = fontsize
+            session.save()
+            return dict(ret='ok')
+        except:
+            return dict(ret='fail')
+
+    @validate(validators={"refresh":validators.Int()}, error_handler=process_form_errors)
+    @expose('json')
+    def set_refresh(self,refresh):
+        try:
+            session['refresh'] = refresh
+            session.save()
+            return dict(ret='ok')
+        except:
+            return dict(ret='fail')
+

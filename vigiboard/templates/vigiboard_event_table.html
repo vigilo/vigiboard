@@ -5,7 +5,7 @@
 
   <xi:include href="vigiboard_history_table.html" />
 
-<py:def function="event_table(events,page,pages,id_first_row,id_last_row,total_row,edit_event_status_options,history,hist_error)">
+<py:def function="event_table(events,page,pages,id_first_row,id_last_row,total_row,edit_event_status_options,history,hist_error,search)">
 <?python from genshi import HTML ?>
 
 <py:if test="len(events) > 1">
@@ -14,18 +14,18 @@
 	<thead>
 		<tr >
 			<td style="width:26px;border-right: solid 1px #4682b4">
-				<a py:if="page > pages[0]" href="${tg.url('/%d' % (page-1))}"><img src="${tg.url('/images/fleche_up.png')}" alt="up" title="Page précédente"/></a>
-				<img py:if="page == pages[0]" src="${tg.url('/images/fleche_up.png')}" alt="up" title="Page précédente" />
+				<a py:if="page > pages[0]" href="${tg.url('/%d' % (page-1))}"><img src="${tg.url('/images/fleche_up.png')}" alt="Précédent" title="Page précédente"/></a>
+				<img py:if="page == pages[0]" src="${tg.url('/images/fleche_up.png')}" alt="Précédent" title="Page précédente" />
 			</td>
-			<td colspan="${8+len(events[1][6])}" style="background-color: #4682b4" >Showing rows ${id_first_row} to ${id_last_row} of ${total_row}<br />
+			<td colspan="${8+len(events[1][6])}" style="color: white;background-color: #4682b4" >Showing rows ${id_first_row} to ${id_last_row} of ${total_row}<br />
 				Pages <py:for each="p in pages">
 				<a py:if="p != page" href="${tg.url('/%d' % p)}" py:content="p" />
 				<span py:if="p == page" py:replace="p" />
 				</py:for>
 			</td>
 			<td style="width:26px;border-left: solid 1px #4682b4">
-				<a py:if="pages[-1] > page" href="${tg.url('/%d' % (page+1))}"><img src="${tg.url('/images/fleche_down.png')}" alt="down" title="Page suivante"/></a>
-				<img py:if="page == pages[-1]" src="${tg.url('/images/fleche_down.png')}"  alt="down" title="Page suivante" />
+				<a py:if="pages[-1] > page" href="${tg.url('/%d' % (page+1))}"><img src="${tg.url('/images/fleche_down.png')}" alt="Suivante" title="Page suivante"/></a>
+				<img py:if="page == pages[-1]" src="${tg.url('/images/fleche_down.png')}"  alt="" title="Page suivante" />
 			</td>
 		</tr>
 
@@ -33,7 +33,7 @@
 			<py:for each="(pname,pstyle) in events[0]">
 			<th style="padding: 5px;" py:attrs="pstyle">${HTML(pname)}</th>
 			</py:for>
-			<th style="width:26px;padding: 0px;"><a class="Edit_EventsLien" href="javascript:vigiboard_edit_eventdialog('all')"><img src="${tg.url('/images/icon_page_edit.png')}" alt="edit_all" title="Editer tous les évènements sélectionnés"/></a></th>
+			<th style="width:26px;padding: 0px;"><a class="Edit_EventsLien" href="javascript:vigiboard_edit_eventdialog('all')"><img src="${tg.url('/images/icon_page_edit.png')}" alt="Edit all selected events" title="Edit all selected events"/></a></th>
 			<th style="padding:0px;"><input title="Sélectioner tout" id="vigiboard_checkall_checkbox" type="checkbox" onclick="javascript:vigiboard_checkall()" /></th>
 		</tr>
 	</thead>
@@ -109,10 +109,10 @@ ${tmpl_context.historydialog}
 		$('#Edit_EventsDialog').dialog('open');
 	}
 	function vigiboard_searchdialog() {
-		$('#search_form_host').attr('value','');
-		$('#search_form_service').attr('value','');
-		$('#search_form_output').attr('value','');
-		$('#search_form_trouble_ticket').attr('value', '');
+		$('#search_form_host').attr('value','${search['host']}');
+		$('#search_form_service').attr('value','${search['service']}');
+		$('#search_form_output').attr('value','${search['output']}');
+		$('#search_form_trouble_ticket').attr('value', '${search['tt']}');
 		$('#SearchDialog').dialog('open');	
 	}
 	function vigiboard_checkall() {
@@ -134,7 +134,7 @@ ${tmpl_context.historydialog}
 
 </script>
 
-<div id="HistoryDialog">
+<div style="display:none" id="HistoryDialog">
 Initial State: <span id="HistoryDialog_initial_state" /><br />
 Current State: <span id="HistoryDialog_current_state" /><br />
 <ul>
@@ -146,10 +146,10 @@ Current State: <span id="HistoryDialog_current_state" /><br />
 </ul>
 </div>
 
-<div id="Edit_EventsDialog">
+<div  style="display:none" id="Edit_EventsDialog">
 	${tmpl_context.edit_event_form()} 
 </div>
-<div id="SearchDialog">
+<div  style="display:none" id="SearchDialog">
 	${tmpl_context.search_form()}
 </div>
 
@@ -185,7 +185,7 @@ Current State: <span id="HistoryDialog_current_state" /><br />
 </tbody>
 </table>
 ${tmpl_context.searchdialog}
-<div id="SearchDialog">
+<div  style="display:none" id="SearchDialog">
         ${tmpl_context.search_form()}
 </div>
 <script type="text/javascript">

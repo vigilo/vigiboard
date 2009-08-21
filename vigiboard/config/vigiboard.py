@@ -33,5 +33,8 @@ vigiboard_config = {
     # - %(host)s
     # - %(service)s
     # - %(tt)s
-    'vigiboard_links.tt' : 'http://example4.com/%(idevent)d/%(tt)s'
+    'vigiboard_links.tt' : 'http://example4.com/%(idevent)d/%(tt)s',
+
+    # Taille de police par défaut
+    'vigiboard_font.size' : '10'
 }

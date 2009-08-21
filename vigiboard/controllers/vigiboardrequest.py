@@ -274,7 +274,7 @@ class VigiboardRequest():
 
         # Liste des éléments pour la tête du tableau
 
-        lst_title = [['',{}], [_('Date')+ '<span style="font-weight:normal">' + _('<br />[Duration]') + '</span>', {'style':'text-align:left'}], ['#',{'title':_('Occurrence')}], [_('Host'),{'style':'text-align:left'}],
+        lst_title = [['',{}], [_('Date')+ '<span style="font-weight:normal">' + _('<br />[Duration]') + '</span>', {'style':'text-align:left'}], ['#',{'title':_('Nombre d\'occurrences')}], [_('Host'),{'style':'text-align:left'}],
                 [_('Service Type<br />Service Name'),{'style':'text-align:left'}], [_('Output'),{'style':'text-align:left'}]]
         lst_title.extend([[plug.name,plug.style] for plug in self.plugin])
         lst_title.extend([[_('[TT]'),{'title':_('Trouble Ticket')}], ['',{}]])
@@ -350,9 +350,10 @@ class VigiboardRequest():
                 ).filter(EventHistory.idevent.in_(self.idevents)
                 ).order_by(desc(EventHistory.timestamp)
                 ).order_by(desc(EventHistory.idhistory))
-        print history
         if history.count() == 0:
-            self.hist = []
+            self.hist = {}
+            for i in self.idevents:
+                self.hist[i] = []
             return
         hists = {}
         i = 0
