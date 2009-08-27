@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
 # vim:set expandtab tabstop=4 shiftwidth=4: 
+"""
+Generic plugin
+"""
+
+from pylons.i18n import ugettext as _
 
 class VigiboardRequestPlugin(object):
 
@@ -48,7 +53,7 @@ class VigiboardRequestPlugin(object):
 
         return ''
 
-    def context(self,context):
+    def context(self, context):
 
         """
         Fonction permettant de rajouter du context à la page d'évènements,

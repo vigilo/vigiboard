@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 # vim:set expandtab tabstop=4 shiftwidth=4: 
-from tg import expose, flash, require, url, request, redirect, config
+"""
+Controller for authentification
+"""
+
+from tg import expose, flash, require, url, request, redirect
 
 from pylons.i18n import ugettext as _, lazy_ugettext as l_
 from catwalk.tg2 import Catwalk
@@ -11,7 +15,7 @@ from vigiboard.model import DBSession
 from vigiboard.controllers.error import ErrorController
 from vigiboard import model
 from vigiboard.controllers.secure import SecureController
-class Vigiboard_RootController(BaseController):
+class VigiboardRootController(BaseController):
     """
     The root controller for the vigiboard application.
     
@@ -30,31 +34,6 @@ class Vigiboard_RootController(BaseController):
     admin = Catwalk(model, DBSession)
     
     error = ErrorController()
-
-#    # on charge les controleurs souhaité en dynamique
-#    def __init__(self) :
-#        super(RootController,self).__init__()
-#        a = config['app_conf']['appname']
-#        p = __import__(a + '.config.' + a,globals(), locals(), [a + '_config'],-1)
-#        print getattr(p,a + '_config')
-#
-#        for mod in config['vigilo_mods']:
-#            try :
-#                mymod = __import__(
-#                    'vigiboard.controllers.' + mod + '_ctl',globals(), locals(), [mod + 'Controller'],-1)
-#                setattr(self,mod,getattr(mymod,mod + 'Controller')())
-#            except:
-#                pass
-
-#    @expose('vigiboard.templates.index')
-#    def index(self):
-#        """Handle the front-page."""
-#        return dict(page='index')
-#
-#    @expose('vigiboard.templates.about')
-#    def about(self):
-#        """Handle the 'about' page."""
-#        return dict(page='about')
 
     @expose('vigiboard.templates.authentication')
     def auth(self):

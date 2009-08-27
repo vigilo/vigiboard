@@ -100,7 +100,7 @@ class VigiboardRequest():
                 mypac = __import__(
                     'vigiboard.controllers.vigiboard_plugin.' +\
                             plug[0],globals(), locals(), [plug[1]],-1)
-                self.add_plugin(getattr(mypac,plug[1])())
+                self.add_plugin(getattr(mypac, plug[1])())
             except:
                 raise
         
@@ -274,10 +274,20 @@ class VigiboardRequest():
 
         # Liste des éléments pour la tête du tableau
 
-        lst_title = [['',{}], [_('Date')+ '<span style="font-weight:normal">' + _('<br />[Duration]') + '</span>', {'style':'text-align:left'}], ['#',{'title':_('Nombre d\'occurrences')}], [_('Host'),{'style':'text-align:left'}],
-                [_('Service Type<br />Service Name'),{'style':'text-align:left'}], [_('Output'),{'style':'text-align:left'}]]
-        lst_title.extend([[plug.name,plug.style] for plug in self.plugin])
-        lst_title.extend([[_('[TT]'),{'title':_('Trouble Ticket')}], ['',{}]])
+        lst_title = [
+                ['',{}],
+                [_('Date')+ '<span style="font-weight:normal">' + \
+                        _('<br />[Duration]') + '</span>',
+                        {'style':'text-align:left'}],
+                ['#', {'title':_('Nombre d\'occurrences')}],
+                [_('Host'), {'style':'text-align:left'}],
+                [_('Service Type<br />Service Name'),
+                    {'style':'text-align:left'}], 
+                [_('Output'), {'style':'text-align:left'}]
+                ]
+        lst_title.extend([[plug.name, plug.style] for plug in self.plugin])
+        lst_title.extend([[_('[TT]'), {'title': _('Trouble Ticket')}],
+                            ['', {}]])
         events = [lst_title]
         i = 0
         class_tr = ['odd', 'even']
@@ -358,8 +368,6 @@ class VigiboardRequest():
         hists = {}
         i = 0
         class_tr = ['odd', 'even']
-        hostname = self.events[1][0].hostname
-        servicename = self.events[1][0].servicename
         hist_tmp = []
         last_idevent = history[0].idevent
         for hist in history :

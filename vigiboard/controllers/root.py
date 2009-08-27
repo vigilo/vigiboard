@@ -4,20 +4,18 @@
 
 import tg
 
-from tg import config, expose, flash, require, request, redirect, \
+from tg import expose, flash, require, request, redirect, \
                 validate, tmpl_context, session
 
 from tw.forms import validators 
 
 from pylons.i18n import ugettext as _
 
-from sqlalchemy import sql, asc
+from sqlalchemy import asc
 
-from vigiboard.lib.base import TGController
 from vigiboard.model import DBSession
 
-from vigiboard.model import ServiceHautNiveau, HostGroups, \
-        Events, EventHistory
+from vigiboard.model import HostGroups, Events, EventHistory
 
 from repoze.what.predicates import Any, not_anonymous
 
@@ -27,11 +25,11 @@ from vigiboard.controllers.userutils import get_user_groups
 from vigiboard.controllers.vigiboardrequest import \
         VigiboardRequest
 
-from vigiboard.controllers.vigiboard_controller import Vigiboard_RootController
+from vigiboard.controllers.vigiboard_controller import VigiboardRootController
 
 __all__ = ['RootController']
 
-class RootController(Vigiboard_RootController):
+class RootController(VigiboardRootController):
     
     """
     Le controller général de vigiboard
@@ -156,12 +154,15 @@ class RootController(Vigiboard_RootController):
                 3: _('Initial'), 4: _('Maintenance'), 5: _('Minor'),
                 6: _('Major'), 7: _('Critical') }
         eventdetails = {}
-        for edname, edlink in tg.config['vigiboard_links.eventdetails'].iteritems():
+        for edname, edlink in \
+                tg.config['vigiboard_links.eventdetails'].iteritems():
+
             eventdetails[edname] = edlink[1] % {
                     'idevent': events.idevent,
                     'host': events.hostname,
                     'service': events.servicename
                     }
+
         return dict(
                 initial_state = severity[int(initial_state)],
                 current_state = severity[events.severity],
@@ -291,7 +292,7 @@ class RootController(Vigiboard_RootController):
                 ).get('repoze.who.userid')
 
         for req in events.req :
-            if isinstance(req,Events):
+            if isinstance(req, Events):
                 event = req
             else:
                 event = req[0]
@@ -312,44 +313,47 @@ class RootController(Vigiboard_RootController):
         flash(_('Updated successfully'))
 	# Redirection vers la dernière page accédée
         redirect(request.environ.get('HTTP_REFERER').split(
-            request.environ.get('HTTP_HOST')+tg.config['base_url_filter.base_url'])[1])
+                    request.environ.get('HTTP_HOST') + \
+                    tg.config['base_url_filter.base_url'])[1])
 
 
     @validate(validators={"plugin_name":validators.OneOf(
         [i for [i,j] in tg.config['vigiboard_plugins']])},
-                error_handler=process_form_errors)
+                error_handler = process_form_errors)
     @expose('json')
-    def get_plugin_value(self,plugin_name,*arg,**krgv):
+    def get_plugin_value(self, plugin_name, *arg, **krgv):
         """
         Permet aux plugins de pouvoir récupérer des valeurs Json
         """
-        plugin = [i for i in tg.config['vigiboard_plugins'] if i[0] == plugin_name][0]
+        plugin = [i for i in tg.config['vigiboard_plugins'] \
+                            if i[0] == plugin_name][0]
         try:
             mypac = __import__(
-                'vigiboard.controllers.vigiboard_plugin.' +\
-                        plugin[0],globals(), locals(), [plugin[1]],-1)
-            p = getattr(mypac,plugin[1])()
-            return p.controller(*arg,**krgv)
+                'vigiboard.controllers.vigiboard_plugin.' + plugin[0],
+                globals(), locals(), [plugin[1]], -1)
+            plug = getattr(mypac, plugin[1])()
+            return plug.controller(*arg, **krgv)
         except:
             raise
     
-    @validate(validators={"fontsize":validators.Int()}, error_handler=process_form_errors)
+    @validate(validators= {"fontsize": validators.Int()},
+                    error_handler = process_form_errors)
     @expose('json')
-    def set_fontsize(self,fontsize):
-        try:
-            session['fontsize'] = fontsize
-            session.save()
-            return dict(ret='ok')
-        except:
-            return dict(ret='fail')
+    def set_fontsize(self, fontsize):
+        """
+        Save font size
+        """
+        session['fontsize'] = fontsize
+        session.save()
+        return dict(ret= 'ok')
 
-    @validate(validators={"refresh":validators.Int()}, error_handler=process_form_errors)
+    @validate(validators= {"refresh": validators.Int()},
+            error_handler = process_form_errors)
     @expose('json')
-    def set_refresh(self,refresh):
-        try:
-            session['refresh'] = refresh
-            session.save()
-            return dict(ret='ok')
-        except:
-            return dict(ret='fail')
-
+    def set_refresh(self, refresh):
+        """
+        Save refresh time
+        """
+        session['refresh'] = refresh
+        session.save()
+        return dict(ret= 'ok')
