@@ -26,7 +26,8 @@ lint: $(PYTHON)
 	$(PYTHON) ./pylint_vigiboard.py $(NAME)
 
 tests: $(PYTHON)
-	PYTHONPATH=$(BUILDENV) $(BUILDENV)/bin/runtests-$(NAME)
+	VIGILO_SETTINGS_MODULE=settings_tests \
+		PYTHONPATH=$(BUILDENV) $(BUILDENV)/bin/runtests-$(NAME)
 
 
 .PHONY: all clean buildclean apidoc lint tests
