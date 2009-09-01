@@ -18,14 +18,11 @@ __all__ = ['setup_db', 'teardown_db', 'TestController', 'url_for']
 
 def setup_db():
     """Method used to build a database"""
-    engine = config['pylons.app_globals'].sa_engine 
-    model.init_model(engine)
-    model.metadata.create_all(engine)
+    model.metadata.create_all()
 
 def teardown_db():
     """Method used to destroy a database"""
-    engine = config['pylons.app_globals'].sa_engine
-    model.metadata.drop_all(engine)
+    model.metadata.drop_all()
 
 
 class TestController(object):
@@ -46,6 +43,9 @@ class TestController(object):
     """
     
     application_under_test = 'main_without_authn'
+
+    def __init__(self):
+        object.__init__(self)
     
     def setUp(self):
         """Method called by nose before running each test"""
@@ -63,9 +63,10 @@ class TestController(object):
         """Method called by nose after running each test"""
         # Cleaning up the database:
         teardown_db()
-
+        del self.app
 
 def runtests():
+    """This is the method called when running unit tests."""
     # XXX hard-coded path.
     sys.argv[1:0] = ['--with-pylons', '../vigiboard/test.ini', 
                      '--with-coverage', '--cover-inclusive',

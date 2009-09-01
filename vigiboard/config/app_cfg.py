@@ -1,6 +1,5 @@
+# -*- coding: utf-8 -*-
 # vim: set fileencoding=utf-8 sw=4 ts=4 et :
-from __future__ import absolute_import
-
 """
 Global configuration file for TG2-specific settings in vigiboard.
 
@@ -17,10 +16,25 @@ convert them into boolean, for example, you should use the
 
 from tg.configuration import AppConfig
 
-import vigiboard
-import vigiboard.model
+class MyAppConfig(AppConfig):
+    """We overload AppConfig to prevent it from loading init_model()"""
 
-base_config = AppConfig()
+    def __init__(self):
+        AppConfig.__init__(self)
+
+    def setup_sqlalchemy(self):
+        """
+        TG2 needs to configure the DB session before anything else, then it
+        calls init_model(). In our case, the DB session is already configured
+        so the function call is unnecessary. We suppress TG2's behaviour here.
+        """
+        pass
+
+import vigiboard
+from vigiboard import model
+from vigiboard.lib import app_globals, helpers
+
+base_config = MyAppConfig()
 base_config.renderers = []
 
 base_config.package = vigiboard
@@ -35,18 +49,21 @@ base_config.renderers.append('genshi')
 
 #Configure the base SQLALchemy Setup
 base_config.use_sqlalchemy = True
-base_config.model = vigiboard.model
-base_config.DBSession = vigiboard.model.DBSession
+base_config.model = model
+base_config.DBSession = model.DBSession
 
 # Configure the authentication backend
 base_config.auth_backend = 'sqlalchemy'
-base_config.sa_auth.dbsession = vigiboard.model.DBSession
+base_config.sa_auth.dbsession = model.DBSession
 # what is the class you want to use to search for users in the database
-base_config.sa_auth.user_class = vigiboard.model.User
+base_config.sa_auth.user_class = model.User
 # what is the class you want to use to search for groups in the database
-base_config.sa_auth.group_class = vigiboard.model.Group
+base_config.sa_auth.group_class = model.UserGroup
 # what is the class you want to use to search for permissions in the database
-base_config.sa_auth.permission_class = vigiboard.model.Permission
+base_config.sa_auth.permission_class = model.Permission
+# The name "groups" is already used for groups of hosts.
+# We use "usergroups" when referering to users to avoid confusion.
+base_config.sa_auth.translations.groups = 'usergroups'
 
 # override this if you would like to provide a different who plugin for
 # managing login and logout of your application
@@ -59,3 +76,4 @@ base_config.sa_auth.post_login_url = '/post_login'
 # You may optionally define a page where you want users to be redirected to
 # on logout:
 base_config.sa_auth.post_logout_url = '/post_logout'
+

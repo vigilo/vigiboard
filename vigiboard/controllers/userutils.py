@@ -20,7 +20,7 @@ def get_user_groups():
     groups = DBSession.query(Groups.name).join(
         ( GroupPermissions , Groups.name == GroupPermissions.groupname ),
         ( Permission ,
-            Permission.permission_id == GroupPermissions.idpermission )
+            Permission.idpermission == GroupPermissions.idpermission )
         ).filter(Permission.permission_name.in_(
             tg.request.environ.get('repoze.who.identity').get('permissions')
         ))

@@ -1,10 +1,10 @@
+# -*- coding: utf-8 -*-
 # vim: set fileencoding=utf-8 sw=4 ts=4 et :
-from __future__ import absolute_import
-
 """WSGI middleware initialization for the vigiboard application."""
-from .app_cfg import base_config
-from .environment import load_environment
-from .vigiboard import vigiboard_config
+
+from vigiboard.config.app_cfg import base_config
+from vigiboard.config.environment import load_environment
+from vigiboard.config.vigiboard_cfg import vigiboard_config
 from paste.cascade import Cascade
 from paste.urlparser import StaticURLParser
 

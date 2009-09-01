@@ -38,3 +38,4 @@ vigiboard_config = {
     # Taille de police par défaut
     'vigiboard_font.size' : '10'
 }
+
