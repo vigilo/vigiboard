@@ -14,7 +14,6 @@ from vigiboard.lib.base import BaseController
 from vigiboard.model import DBSession 
 from vigiboard.controllers.error import ErrorController
 from vigiboard import model
-from vigiboard.controllers.secure import SecureController
 class VigiboardRootController(BaseController):
     """
     The root controller for the vigiboard application.
@@ -29,8 +28,6 @@ class VigiboardRootController(BaseController):
     must be wrapped around with :class:`tg.controllers.WSGIAppController`.
     
     """
-    secc = SecureController()
-    
     admin = Catwalk(model, DBSession)
     
     error = ErrorController()

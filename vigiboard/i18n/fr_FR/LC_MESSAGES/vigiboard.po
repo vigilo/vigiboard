@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: vigiboard 0.1\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2009-07-06 11:19+0200\n"
-"PO-Revision-Date: 2009-07-22 16:36+0200\n"
+"PO-Revision-Date: 2009-09-03 14:08+0200\n"
 "Last-Translator: Thomas ANDREJAK <thomas.andrejak@c-s.fr>\n"
 "Language-Team: fr_FR <LL@li.org>\n"
 "Plural-Forms: nplurals=2; plural=(n > 1)\n"
@@ -17,155 +17,1056 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 0.9.4\n"
 
-#: vigiboard/controllers/root.py:123 vigiboard/controllers/root.py:174
-#: vigiboard/controllers/root.py:210 vigiboard/controllers/root.py:252
+#: vigiboard/controllers/root.py:117 vigiboard/controllers/root.py:175
+#: vigiboard/controllers/root.py:213 vigiboard/controllers/root.py:257
 msgid "You need to be authenticated"
 msgstr "Vous devez être authentifié"
 
-#: vigiboard/controllers/root.py:151
+#: vigiboard/controllers/root.py:150
 #: vigiboard/controllers/vigiboardrequest.py:37
 msgid "None"
 msgstr "Aucun"
 
-#: vigiboard/controllers/root.py:151
+#: vigiboard/controllers/root.py:150
 #: vigiboard/controllers/vigiboardrequest.py:37
 msgid "OK"
 msgstr ""
 
-#: vigiboard/controllers/root.py:151
+#: vigiboard/controllers/root.py:150
 #: vigiboard/controllers/vigiboardrequest.py:37
 msgid "Suppressed"
 msgstr "Supprimé"
 
-#: vigiboard/controllers/root.py:152
+#: vigiboard/controllers/root.py:151
 #: vigiboard/controllers/vigiboardrequest.py:38
 msgid "Initial"
 msgstr ""
 
-#: vigiboard/controllers/root.py:152
+#: vigiboard/controllers/root.py:151
 #: vigiboard/controllers/vigiboardrequest.py:38
 msgid "Maintenance"
 msgstr ""
 
-#: vigiboard/controllers/root.py:152
+#: vigiboard/controllers/root.py:151
 #: vigiboard/controllers/vigiboardrequest.py:38
 msgid "Minor"
 msgstr "Mineur"
 
-#: vigiboard/controllers/root.py:153
+#: vigiboard/controllers/root.py:152
 #: vigiboard/controllers/vigiboardrequest.py:39
 msgid "Major"
 msgstr "Majeur"
 
-#: vigiboard/controllers/root.py:153
+#: vigiboard/controllers/root.py:152
 #: vigiboard/controllers/vigiboardrequest.py:39
 msgid "Critical"
 msgstr "Critique"
 
-#: vigiboard/controllers/root.py:188
+#: vigiboard/controllers/root.py:189
 msgid "Error in DB"
 msgstr "Erreur dans la base de données"
 
-#: vigiboard/controllers/root.py:277
+#: vigiboard/controllers/root.py:282
 msgid "No access to this event"
 msgstr "Accès à cet évènement refusé"
 
-#: vigiboard/controllers/root.py:305
+#: vigiboard/controllers/root.py:310
 msgid "Updated successfully"
 msgstr "Mise à jour réussie"
 
-#: vigiboard/controllers/vigiboardrequest.py:276
-msgid "Date<br />[Duration]"
+#: vigiboard/controllers/vigiboard_controller.py:41
+msgid "Only for managers"
+msgstr ""
+
+#: vigiboard/controllers/vigiboard_controller.py:47
+msgid "Only for the editor"
+msgstr ""
+
+#: vigiboard/controllers/vigiboard_controller.py:57
+msgid "Wrong credentials"
+msgstr ""
+
+#: vigiboard/controllers/vigiboard_controller.py:72
+#, python-format
+msgid "Welcome back, %s!"
+msgstr ""
+
+#: vigiboard/controllers/vigiboard_controller.py:82
+msgid "We hope to see you soon!"
+msgstr ""
+
+#: vigiboard/controllers/vigiboardrequest.py:279
+msgid "Date"
+msgstr ""
+
+#: vigiboard/controllers/vigiboardrequest.py:280
+#, fuzzy
+msgid "<br />[Duration]"
 msgstr "Date<br />[Durée]"
 
-#: vigiboard/controllers/vigiboardrequest.py:276
-#: vigiboard/templates/vigiboard_history_table.html:16
-#: vigiboard/widgets/edit_event.py:41
+#: vigiboard/controllers/vigiboardrequest.py:282
+msgid "Nombre d'occurrences"
+msgstr ""
+
+#: vigiboard/controllers/vigiboardrequest.py:283
+#: vigiboard/widgets/edit_event.py:40
 msgid "Host"
 msgstr "Hôte"
 
-#: vigiboard/controllers/vigiboardrequest.py:277
+#: vigiboard/controllers/vigiboardrequest.py:284
 msgid "Service Type<br />Service Name"
 msgstr "Type de service<br />Nom du service"
 
-#: vigiboard/controllers/vigiboardrequest.py:277
-#: vigiboard/widgets/edit_event.py:43
+#: vigiboard/controllers/vigiboardrequest.py:286
+#: vigiboard/widgets/edit_event.py:42
 msgid "Output"
 msgstr "Sortie d'erreur"
 
-#: vigiboard/controllers/vigiboardrequest.py:419
+#: vigiboard/controllers/vigiboardrequest.py:289
+msgid "[TT]"
+msgstr ""
+
+#: vigiboard/controllers/vigiboardrequest.py:289
+#: vigiboard/widgets/edit_event.py:26 vigiboard/widgets/edit_event.py:43
+msgid "Trouble Ticket"
+msgstr "Ticket d'incidence"
+
+#: vigiboard/controllers/vigiboardrequest.py:426
 msgid "Edit Event"
 msgstr "Edition d'évènements"
 
-#: vigiboard/controllers/vigiboardrequest.py:425
+#: vigiboard/controllers/vigiboardrequest.py:432
 msgid "Search Event"
 msgstr "Recherche d'évènements"
 
-#: vigiboard/controllers/vigiboardrequest.py:429
+#: vigiboard/controllers/vigiboardrequest.py:436
 msgid "History"
 msgstr "Historique"
 
-#: vigiboard/controllers/vigiboard_plugin/__init__.py:36
+#: vigiboard/controllers/vigiboard_plugin/__init__.py:42
 msgid "Error"
 msgstr "Erreur"
 
-#: vigiboard/controllers/vigiboard_plugin/shn.py:24
-msgid "SHNs impacté"
+#: vigiboard/controllers/vigiboard_plugin/shn.py:29
+msgid "SHNs impactés"
 msgstr ""
 
-#: vigiboard/templates/vigiboard.html:12
+#: vigiboard/controllers/vigiboard_plugin/shn.py:55
+msgid "Service de haut niveau"
+msgstr ""
+
+#: vigiboard/templates/about.html:11
+msgid "Learning TurboGears 2.0: Quick guide to the Quickstart pages."
+msgstr ""
+
+#: vigiboard/templates/about.html:18
+msgid "Architectural basics of a quickstart TG2 site."
+msgstr ""
+
+#: vigiboard/templates/about.html:19
+msgid ""
+"The TG2 quickstart command produces this basic TG site.  Here's how it "
+"works."
+msgstr ""
+
+#: vigiboard/templates/about.html:22
+msgid "Code my data model"
+msgstr ""
+
+#: vigiboard/templates/about.html:23
+msgid ""
+"When you want a model for storing favorite links or wiki content, \n"
+"            the"
+msgstr ""
+
+#: vigiboard/templates/about.html:24
+msgid "/model"
+msgstr ""
+
+#: vigiboard/templates/about.html:24
+msgid "folder in your site is ready to go."
+msgstr ""
+
+#: vigiboard/templates/about.html:25
+msgid ""
+"You can build a dynamic site without any data model at all. There \n"
+"            still be a default data-model template for you if you didn't "
+"enable \n"
+"            authentication and authorization in quickstart. If you "
+"enabled\n"
+"            it, you got auth data-model made for you."
+msgstr ""
+
+#: vigiboard/templates/about.html:31
+msgid "Design my URL structure"
+msgstr ""
+
+#: vigiboard/templates/about.html:32
+msgid "The \""
+msgstr ""
+
+#: vigiboard/templates/about.html:32
+msgid "root.py"
+msgstr ""
+
+#: vigiboard/templates/about.html:32
+msgid "\" file under the"
+msgstr ""
+
+#: vigiboard/templates/about.html:33
+msgid "/controllers"
+msgstr ""
+
+#: vigiboard/templates/about.html:33
+msgid ""
+"folder has your URLs.  When you \n"
+"            called this url ("
+msgstr ""
+
+#: vigiboard/templates/about.html:34 vigiboard/templates/about.html:36
+msgid "about"
+msgstr ""
+
+#: vigiboard/templates/about.html:34
+msgid ""
+"), \n"
+"            the command went through the RootController class to the"
+msgstr ""
+
+#: vigiboard/templates/about.html:36
+msgid "method."
+msgstr ""
+
+#: vigiboard/templates/about.html:37
+msgid ""
+"Those Python methods are responsible to create the dictionary of\n"
+"             variables that will be used in your web views (template)."
+msgstr ""
+
+#: vigiboard/templates/about.html:41
+msgid "Reuse the web page elements"
+msgstr ""
+
+#: vigiboard/templates/about.html:42
+msgid ""
+"A web page viewed by user could be constructed by single or \n"
+"            several reusable templates under"
+msgstr ""
+
+#: vigiboard/templates/about.html:43
+msgid "/templates"
+msgstr ""
+
+#: vigiboard/templates/about.html:43
+msgid ""
+". \n"
+"            Take 'about' page for example, each reusable templates "
+"generating \n"
+"            a part of the page. We'll cover them in the order of where "
+"they are \n"
+"            found, listed near the top of the about.html template"
+msgstr ""
+
+#: vigiboard/templates/about.html:47
+msgid "header.html"
+msgstr ""
+
+#: vigiboard/templates/about.html:47
+msgid ""
+"- The \n"
+"            \"header.html\" template contains the HTML code to display "
+"the \n"
+"            'header': The blue gradient, TG2 logo, and some site text at "
+"the \n"
+"            top of every page it is included on. When the \"about.html\" "
+"template \n"
+"            is called, it includes this \"header.html\" template (and the"
+" others) \n"
+"            with a"
+msgstr ""
+
+#: vigiboard/templates/about.html:52
+msgid "<xi:include />"
+msgstr ""
+
+#: vigiboard/templates/about.html:52
+msgid ""
+"tag, part of \n"
+"            the Genshi templating system. The \"header.html\" template is"
+" not a \n"
+"            completely static HTML -- it also dynamically displays the "
+"current \n"
+"            page name with a Genshi template method called \"replace\" "
+"with the \n"
+"            code:"
+msgstr ""
+
+#: vigiboard/templates/about.html:56
+msgid "<span py:replace=\"page\"/>"
+msgstr ""
+
+#: vigiboard/templates/about.html:56
+msgid ""
+". \n"
+"            It means replace this"
+msgstr ""
+
+#: vigiboard/templates/about.html:57
+msgid "<span />"
+msgstr ""
+
+#: vigiboard/templates/about.html:57
+msgid ""
+"region with the contents found in the variable 'page' that has \n"
+"            been sent in the dictionary to this \"about.html\" template, "
+"and is \n"
+"            available through that namespace for use by this "
+"\"header.html\" \n"
+"            template.  That's how it changes in the header depending on "
+"what \n"
+"            page you are visiting."
+msgstr ""
+
+#: vigiboard/templates/about.html:64
+msgid "sidebars.html"
+msgstr ""
+
+#: vigiboard/templates/about.html:64
+msgid ""
+"- The\n"
+"             sidebars (navigation areas on the right side of the page) "
+"are \n"
+"             generated as two separate"
+msgstr ""
+
+#: vigiboard/templates/about.html:66 vigiboard/templates/about.html:67
+msgid "py:def"
+msgstr ""
+
+#: vigiboard/templates/about.html:66
+msgid ""
+"blocks \n"
+"             in the \"sidebars.html\" template.  The"
+msgstr ""
+
+#: vigiboard/templates/about.html:67
+msgid ""
+"construct is best thought of as a \"macro\" code... a simple way to \n"
+"             separate and reuse common code snippets.  All it takes to "
+"include \n"
+"             these on the \"about.html\" page template is to write"
+msgstr ""
+
+#: vigiboard/templates/about.html:73
+msgid "${sidebar_top()}"
+msgstr ""
+
+#: vigiboard/templates/about.html:75
+msgid "${sidebar_bottom()}"
+msgstr ""
+
+#: vigiboard/templates/about.html:77
+msgid ""
+"in the page where they are wanted.  CSS styling (in \n"
+"        \"/public/css/style.css\") floats them off to the right side.  "
+"You can \n"
+"        remove a sidebar or add more of them, and the CSS will place them"
+" one \n"
+"        atop the other."
+msgstr ""
+
+#: vigiboard/templates/about.html:81
+msgid ""
+"This is, of course, also exactly how the header and footer \n"
+"            templates are also displayed in their proper places, but "
+"we'll \n"
+"            cover that in the \"master.html\" template below."
+msgstr ""
+
+#: vigiboard/templates/about.html:84
+msgid ""
+"Oh, and in sidebar_top we've added a dynamic menu that shows the \n"
+"            link to this page at the top when you're at the \"index\" "
+"page, and \n"
+"            shows a link to the Home (index) page when you're here.  "
+"Study the \n"
+"            \"sidebars.html\" template to see how we used"
+msgstr ""
+
+#: vigiboard/templates/about.html:88
+msgid "py:choose"
+msgstr ""
+
+#: vigiboard/templates/about.html:88
+msgid "for that."
+msgstr ""
+
+#: vigiboard/templates/about.html:89
+msgid "footer.html"
+msgstr ""
+
+#: vigiboard/templates/about.html:89
+msgid ""
+"- The \n"
+"            \"footer.html\" block is simple, but also utilizes a special"
+" \n"
+"            \"replace\" method to set the current YEAR in the footer "
+"copyright \n"
+"            message. The code is:"
+msgstr ""
+
+#: vigiboard/templates/about.html:93
+msgid "<span py:replace=\"now.strftime('%Y')\">"
+msgstr ""
+
+#: vigiboard/templates/about.html:94
+msgid ""
+"and it uses the variable \"now\" that was passed \n"
+"            in with the dictionary of variables.  But because \"now\" is "
+"a \n"
+"            datetime object, we can use the Python"
+msgstr ""
+
+#: vigiboard/templates/about.html:97
+msgid "\"strftime()\""
+msgstr ""
+
+#: vigiboard/templates/about.html:97
+msgid ""
+"method with the \"replace\" \n"
+"            call to say \"Just Display The Year Here\".  Simple, elegant;"
+" we \n"
+"            format the date display in the template (the View in the \n"
+"            Model/View/Controller architecture) rather than formatting it"
+" in \n"
+"            the Controller method and sending it to the template as a "
+"string \n"
+"            variable."
+msgstr ""
+
+#: vigiboard/templates/about.html:103
+msgid "master.html"
+msgstr ""
+
+#: vigiboard/templates/about.html:103
+msgid ""
+"- The \n"
+"            \"master.html\" template is called last, by design.  The "
+"\"master.html\" \n"
+"            template controls the overall design of the page we're "
+"looking at, \n"
+"            calling first the \"header\" py:def macro, then the putting "
+"everything \n"
+"            from this \"about.html\" template into the \"content\" div, "
+"and \n"
+"            then calling the \"footer\" macro at the end.  Thus the "
+"\"master.html\" \n"
+"            template provides the overall architecture for each page in "
+"this \n"
+"            site."
+msgstr ""
+
+#: vigiboard/templates/about.html:111
+msgid ""
+"But why then shouldn't we call it first?  Isn't it the most \n"
+"            important?  Perhaps, but that's precisely why we call it "
+"LAST. \n"
+"            The \"master.html\" template needs to know where to find "
+"everything \n"
+"            else, everything that it will use in py:def macros to build "
+"the\n"
+"             page.  So that means we call the other templates first, and "
+"then \n"
+"             call \"master.html\"."
+msgstr ""
+
+#: vigiboard/templates/about.html:117
+msgid ""
+"There's more to the \"master.html\" template... study it to see how \n"
+"           the <title> tags and static JS and CSS files are brought into"
+" \n"
+"           the page.  Templating with Genshi is a powerful tool and we've"
+" only \n"
+"           scratched the surface.  There are also a few little CSS tricks"
+" \n"
+"           hidden in these pages, like the use of a \"clearingdiv\" to "
+"make \n"
+"           sure that your footer stays below the sidebars and always "
+"looks \n"
+"           right.  That's not TG2 at work, just CSS.  You'll need all "
+"your \n"
+"           skills to build a fine web app, but TG2 will make the hard "
+"parts \n"
+"           easier so that you can concentrate more on good design and "
+"content \n"
+"           rather than struggling with mechanics."
+msgstr ""
+
+#: vigiboard/templates/about.html:129
+msgid "Good luck with TurboGears 2!"
+msgstr ""
+
+#: vigiboard/templates/authentication.html:11
+msgid "Learning TurboGears 2.0: Quick guide to authentication."
+msgstr ""
+
+#: vigiboard/templates/authentication.html:18
+msgid "Authentication & Authorization in a TG2 site."
+msgstr ""
+
+#: vigiboard/templates/authentication.html:19
+msgid ""
+"If you have access to this page, this means you have enabled "
+"authentication and authorization\n"
+"    in the quickstart to create your project."
+msgstr ""
+
+#: vigiboard/templates/authentication.html:21
+msgid ""
+"The paster command will have created a few specific controllers for you. "
+"But before you\n"
+"    go to play with those controllers you'll need to make sure your "
+"application has been\n"
+"    properly bootstapped.\n"
+"    This is dead easy, here is how to do this:"
+msgstr ""
+
+#: vigiboard/templates/authentication.html:28
+msgid "paster setup-app development.ini"
+msgstr ""
+
+#: vigiboard/templates/authentication.html:32
+msgid ""
+"inside your application's folder and you'll get a database setup (using "
+"the preferences you have\n"
+"    set in your development.ini file). This database will also have been "
+"prepopulated with some\n"
+"    default logins/passwords so that you can test the secured controllers"
+" and methods."
+msgstr ""
+
+#: vigiboard/templates/authentication.html:37
+msgid ""
+"To change the comportement of this setup-app command you just need to "
+"edit the"
+msgstr ""
+
+#: vigiboard/templates/authentication.html:38
+msgid "websetup.py"
+msgstr ""
+
+#: vigiboard/templates/authentication.html:38
+msgid "file."
+msgstr ""
+
+#: vigiboard/templates/authentication.html:40
+msgid "Now try to visiting the"
+msgstr ""
+
+#: vigiboard/templates/authentication.html:41
+msgid "manage_permission_only"
+msgstr ""
+
+#: vigiboard/templates/authentication.html:41
+msgid "URL. You will be challenged with a login/password form."
+msgstr ""
+
+#: vigiboard/templates/authentication.html:43
+msgid ""
+"Only managers are authorized to visit this method. You will need to log-"
+"in using:"
+msgstr ""
+
+#: vigiboard/templates/authentication.html:46
+msgid "login: manager"
+msgstr ""
+
+#: vigiboard/templates/authentication.html:51
+msgid "password: managepass"
+msgstr ""
+
+#: vigiboard/templates/authentication.html:56
+msgid "Another protected resource is"
+msgstr ""
+
+#: vigiboard/templates/authentication.html:57
+msgid "editor_user_only"
+msgstr ""
+
+#: vigiboard/templates/authentication.html:57
+msgid ""
+". This one is protected by a different set of permissions.\n"
+"    You will need to be"
+msgstr ""
+
+#: vigiboard/templates/authentication.html:58
+#, fuzzy
+msgid "editor"
+msgstr "Historique"
+
+#: vigiboard/templates/authentication.html:58
+msgid "with a password of"
+msgstr ""
+
+#: vigiboard/templates/authentication.html:58
+msgid "editpass"
+msgstr ""
+
+#: vigiboard/templates/authentication.html:58
+msgid "to be able to access it."
+msgstr ""
+
+#: vigiboard/templates/authentication.html:60
+msgid ""
+"The last kind of protected resource in this quickstarted app is a full so"
+" called"
+msgstr ""
+
+#: vigiboard/templates/authentication.html:61
+msgid "secure controller"
+msgstr ""
+
+#: vigiboard/templates/authentication.html:61
+msgid ""
+". This controller is protected globally.\n"
+"    Instead of having a @require decorator on each method, we have set an"
+" allow_only attribute at the class level. All the methods in this "
+"controller will\n"
+"    require the same level of access. You need to be manager to access"
+msgstr ""
+
+#: vigiboard/templates/authentication.html:63
+msgid "secc"
+msgstr ""
+
+#: vigiboard/templates/authentication.html:63
+msgid "or"
+msgstr ""
+
+#: vigiboard/templates/authentication.html:63
+msgid "secc/some_where"
+msgstr ""
+
+#: vigiboard/templates/debug.html:11
+msgid "Sample Template, for looking at template locals"
+msgstr ""
+
+#: vigiboard/templates/debug.html:15
+msgid "All objects from locals():"
+msgstr ""
+
+#: vigiboard/templates/error.html:11
+#, python-format
+msgid "A %(error_code)d Error has Occurred"
+msgstr "Une erreur %(error_code)d est survenue"
+
+#: vigiboard/templates/error.html:15
+#, python-format
+msgid "Error %(error_code)d"
+msgstr "Erreur %(error_code)d"
+
+#: vigiboard/templates/footer.html:7
+msgid "TurboGears"
+msgstr ""
+
+#: vigiboard/templates/footer.html:8
+msgid "Powered by TurboGears 2"
+msgstr ""
+
+#: vigiboard/templates/footer.html:11
+msgid ""
+"TurboGears is a open source front-to-back web development\n"
+"      framework written in Python. Copyright (c) 2005-2008"
+msgstr ""
+
+#: vigiboard/templates/header.html:6
+msgid "Welcome to TurboGears 2"
+msgstr ""
+
+#: vigiboard/templates/header.html:8
+msgid "The Python web metaframework"
+msgstr ""
+
+#: vigiboard/templates/index.html:11
+msgid ""
+"Welcome to TurboGears 2.0, standing on the \n"
+"  shoulders of giants, since 2007"
+msgstr ""
+
+#: vigiboard/templates/index.html:18
+msgid "Presentation"
+msgstr ""
+
+#: vigiboard/templates/index.html:19
+msgid ""
+"TurboGears 2 is rapid web application development toolkit designed to "
+"make your life easier."
+msgstr ""
+
+#: vigiboard/templates/index.html:22
+msgid "Code your data model"
+msgstr ""
+
+#: vigiboard/templates/index.html:23
+msgid "Design your data model, Create the database, and Add some bootstrap data."
+msgstr ""
+
+#: vigiboard/templates/index.html:26
+msgid "Design your URL architecture"
+msgstr ""
+
+#: vigiboard/templates/index.html:27
+msgid ""
+"Decide your URLs, Program your controller methods, Design your \n"
+"            templates, and place some static files (CSS and/or "
+"JavaScript)."
+msgstr ""
+
+#: vigiboard/templates/index.html:31
+msgid "Distribute your app"
+msgstr ""
+
+#: vigiboard/templates/index.html:32
+msgid "Test your source, Generate project documents, Build a distribution."
+msgstr ""
+
+#: vigiboard/templates/index.html:37
+msgid "Thank you for choosing TurboGears."
+msgstr ""
+
+#: vigiboard/templates/login.html:11
+msgid "Login Form"
+msgstr ""
+
+#: vigiboard/templates/login.html:17 vigiboard/templates/master.html:26
+msgid "Login"
+msgstr ""
+
+#: vigiboard/templates/login.html:18
+msgid "Username:"
+msgstr ""
+
+#: vigiboard/templates/login.html:19
+msgid "Password:"
+msgstr ""
+
+#: vigiboard/templates/master.html:20
+msgid "Welcome"
+msgstr ""
+
+#: vigiboard/templates/master.html:21
+msgid "About"
+msgstr ""
+
+#: vigiboard/templates/master.html:22
+msgid "Authentication"
+msgstr ""
+
+#: vigiboard/templates/master.html:23
+msgid "Contact"
+msgstr ""
+
+#: vigiboard/templates/master.html:24 vigiboard/templates/vigiboard.html:11
 msgid "Vigiboard"
 msgstr ""
 
-#: vigiboard/templates/vigiboard_event_table.html:22
-msgid "Showing rows"
-msgstr "Lignes"
+#: vigiboard/templates/master.html:27
+msgid "Logout"
+msgstr ""
 
-#: vigiboard/templates/vigiboard_event_table.html:22
-msgid "to"
-msgstr "à"
+#: vigiboard/templates/master.html:28
+msgid "Admin"
+msgstr ""
 
-#: vigiboard/templates/vigiboard_event_table.html:22
-msgid "of"
-msgstr "sur"
+#: vigiboard/templates/master.html:33
+msgid "Now Viewing:"
+msgstr ""
 
-#: vigiboard/templates/vigiboard_event_table.html:22
+#: vigiboard/templates/sidebars.html:7
+msgid "Get Started with TG2"
+msgstr ""
+
+#: vigiboard/templates/sidebars.html:11
+msgid "About this page"
+msgstr ""
+
+#: vigiboard/templates/sidebars.html:11
+msgid "A quick guide to this TG2 site"
+msgstr ""
+
+#: vigiboard/templates/sidebars.html:14
+msgid "Home"
+msgstr ""
+
+#: vigiboard/templates/sidebars.html:14
+msgid "Back to your Quickstart Home page"
+msgstr ""
+
+#: vigiboard/templates/sidebars.html:16
+msgid "TG2 Documents"
+msgstr ""
+
+#: vigiboard/templates/sidebars.html:16
+msgid "- Read everything in the Getting Started section"
+msgstr ""
+
+#: vigiboard/templates/sidebars.html:17
+msgid "TG1 docs"
+msgstr ""
+
+#: vigiboard/templates/sidebars.html:17
+msgid "(still useful, although a lot has changed for TG2)"
+msgstr ""
+
+#: vigiboard/templates/sidebars.html:18
+msgid "Join the TG Mail List"
+msgstr ""
+
+#: vigiboard/templates/sidebars.html:18
+msgid "for general TG use/topics"
+msgstr ""
+
+#: vigiboard/templates/sidebars.html:25
+msgid "Developing TG2"
+msgstr ""
+
+#: vigiboard/templates/sidebars.html:27
+msgid "More TG2 Documents"
+msgstr ""
+
+#: vigiboard/templates/sidebars.html:27
+msgid "in progress"
+msgstr ""
+
+#: vigiboard/templates/sidebars.html:28
+msgid "TG2 Trac tickets"
+msgstr ""
+
+#: vigiboard/templates/sidebars.html:28
+msgid "What's happening now in TG2 development"
+msgstr ""
+
+#: vigiboard/templates/sidebars.html:29
+msgid "TG Dev timeline"
+msgstr ""
+
+#: vigiboard/templates/sidebars.html:29
+msgid "(recent ticket updates, svn checkins, wiki changes)"
+msgstr ""
+
+#: vigiboard/templates/sidebars.html:30
+msgid "TG2 SVN repository"
+msgstr ""
+
+#: vigiboard/templates/sidebars.html:30
+msgid "For checking out a copy"
+msgstr ""
+
+#: vigiboard/templates/sidebars.html:31
+msgid "Follow these instructions"
+msgstr ""
+
+#: vigiboard/templates/sidebars.html:31
+msgid "For installing your copy"
+msgstr ""
+
+#: vigiboard/templates/sidebars.html:32
+msgid "TG2 Trac's svn view"
+msgstr ""
+
+#: vigiboard/templates/sidebars.html:32
+msgid "In case you need a quick look"
+msgstr ""
+
+#: vigiboard/templates/sidebars.html:33
+msgid "Join the TG-Trunk Mail List"
+msgstr ""
+
+#: vigiboard/templates/sidebars.html:33
+msgid "for TG2 discuss/dev"
+msgstr ""
+
+#: vigiboard/templates/vigiboard.html:17
+msgid "Barre Outils"
+msgstr ""
+
+#: vigiboard/templates/vigiboard.html:20 vigiboard/templates/vigiboard.html:21
+msgid "logo"
+msgstr ""
+
+#: vigiboard/templates/vigiboard.html:20 vigiboard/templates/vigiboard.html:21
+msgid "Logo"
+msgstr ""
+
+#: vigiboard/templates/vigiboard.html:21
+msgid "v"
+msgstr ""
+
+#: vigiboard/templates/vigiboard.html:24
+msgid "Mode recherche,"
+msgstr ""
+
+#: vigiboard/templates/vigiboard.html:25
+msgid "cliquer ici"
+msgstr ""
+
+#: vigiboard/templates/vigiboard.html:25
+msgid "pour revenir au mode initial."
+msgstr ""
+
+#: vigiboard/templates/vigiboard.html:30
+msgid "Never"
+msgstr ""
+
+#: vigiboard/templates/vigiboard.html:31
+msgid "30 Secondes"
+msgstr ""
+
+#: vigiboard/templates/vigiboard.html:32
+msgid "1 Minute"
+msgstr ""
+
+#: vigiboard/templates/vigiboard.html:33
+msgid "5 Minutes"
+msgstr ""
+
+#: vigiboard/templates/vigiboard.html:34
+msgid "10 Minutes"
+msgstr ""
+
+#: vigiboard/templates/vigiboard.html:39
+msgid "Default font size"
+msgstr ""
+
+#: vigiboard/templates/vigiboard.html:40
+msgid "Medium font size"
+msgstr ""
+
+#: vigiboard/templates/vigiboard.html:41
+msgid "Large font size"
+msgstr ""
+
+#: vigiboard/templates/vigiboard.html:45
+msgid "Accueil"
+msgstr ""
+
+#: vigiboard/templates/vigiboard.html:48
+msgid "Filtrer"
+msgstr ""
+
+#: vigiboard/templates/vigiboard.html:51
+msgid "Déconnexion"
+msgstr ""
+
+#: vigiboard/templates/vigiboard_event_table.html:12
+msgid "Tableau des évènements"
+msgstr ""
+
+#: vigiboard/templates/vigiboard_event_table.html:17
+#: vigiboard/templates/vigiboard_event_table.html:18
+msgid "Précédente"
+msgstr ""
+
+#: vigiboard/templates/vigiboard_event_table.html:17
+#: vigiboard/templates/vigiboard_event_table.html:18
+#: vigiboard/templates/vigiboard_event_table.html:165
+msgid "Page précédente"
+msgstr ""
+
+#: vigiboard/templates/vigiboard_event_table.html:20
+#, python-format
+msgid "Showing rows %(id_first_row)d to %(id_last_row)d of %(total_rows)d"
+msgstr ""
+
+#: vigiboard/templates/vigiboard_event_table.html:21
 msgid "Pages"
 msgstr "Pages"
 
-#: vigiboard/templates/vigiboard_event_table.html:123
+#: vigiboard/templates/vigiboard_event_table.html:28
+#: vigiboard/templates/vigiboard_event_table.html:29
+msgid "Suivante"
+msgstr ""
+
+#: vigiboard/templates/vigiboard_event_table.html:28
+#: vigiboard/templates/vigiboard_event_table.html:29
+#: vigiboard/templates/vigiboard_event_table.html:171
+msgid "Page suivante"
+msgstr ""
+
+#: vigiboard/templates/vigiboard_event_table.html:37
+msgid "Edit all selected events"
+msgstr ""
+
+#: vigiboard/templates/vigiboard_event_table.html:38
+msgid "Sélectioner tout"
+msgstr ""
+
+#: vigiboard/templates/vigiboard_event_table.html:46
+msgid "detail"
+msgstr ""
+
+#: vigiboard/templates/vigiboard_event_table.html:46
+msgid "Détails sur l'évènement"
+msgstr ""
+
+#: vigiboard/templates/vigiboard_event_table.html:59
+msgid "statut"
+msgstr ""
+
+#: vigiboard/templates/vigiboard_event_table.html:59
+msgid "Statut de l'évènement"
+msgstr ""
+
+#: vigiboard/templates/vigiboard_event_table.html:60
+msgid "edit"
+msgstr ""
+
+#: vigiboard/templates/vigiboard_event_table.html:60
+msgid "Editer cet élément"
+msgstr ""
+
+#: vigiboard/templates/vigiboard_event_table.html:138
 msgid "Initial State:"
 msgstr "Statut initial:"
 
-#: vigiboard/templates/vigiboard_event_table.html:124
+#: vigiboard/templates/vigiboard_event_table.html:139
 msgid "Current State:"
 msgstr "Statut actuel:"
 
-#: vigiboard/templates/vigiboard_event_table.html:127
+#: vigiboard/templates/vigiboard_event_table.html:142
 msgid "Detailed history for this event"
 msgstr "Historique détaillé pour cet évènement"
 
-#: vigiboard/templates/vigiboard_event_table.html:128
+#: vigiboard/templates/vigiboard_event_table.html:143
 msgid "Detailed history for this host/service"
 msgstr "Historique détaillé pour ce hôte / service"
 
-#: vigiboard/templates/vigiboard_event_table.html:129
-msgid "Nagios host details"
-msgstr "Détails de l'hôte par Nagios"
+#: vigiboard/templates/vigiboard_event_table.html:165
+msgid "up"
+msgstr ""
 
-#: vigiboard/templates/vigiboard_event_table.html:130
-msgid "Metrology details"
-msgstr "Détails de métrologie"
+#: vigiboard/templates/vigiboard_event_table.html:167
+#, fuzzy
+msgid "Showing rows 0 to 0 of 0"
+msgstr "Lignes"
 
-#: vigiboard/templates/vigiboard_event_table.html:131
-msgid "Security details"
-msgstr "Détails de sécurité"
+#: vigiboard/templates/vigiboard_event_table.html:167
+msgid "Page 0"
+msgstr ""
 
-#: vigiboard/templates/vigiboard_event_table.html:132
-msgid "Service Type"
-msgstr "Type de service"
+#: vigiboard/templates/vigiboard_event_table.html:171
+msgid "down"
+msgstr ""
 
-#: vigiboard/templates/vigiboard_event_table.html:146
+#: vigiboard/templates/vigiboard_event_table.html:179
+msgid "edit_all"
+msgstr ""
+
+#: vigiboard/templates/vigiboard_event_table.html:179
+msgid "Editer tous les évènements sélectionnés"
+msgstr ""
+
+#: vigiboard/templates/vigiboard_event_table.html:185
 msgid "Aucun évènement disponible."
 msgstr ""
 
@@ -173,32 +1074,27 @@ msgstr ""
 msgid "There is no history."
 msgstr "Il n'y a pas d'historique"
 
+#: vigiboard/templates/vigiboard_history_table.html:12
+msgid "Historique de l'élément"
+msgstr ""
+
 #: vigiboard/templates/vigiboard_history_table.html:15
-msgid "ID"
-msgstr ""
-
-#: vigiboard/templates/vigiboard_history_table.html:17
-#: vigiboard/widgets/edit_event.py:42
-msgid "Service"
-msgstr ""
-
-#: vigiboard/templates/vigiboard_history_table.html:18
 msgid "Time"
 msgstr "Temps"
 
-#: vigiboard/templates/vigiboard_history_table.html:19
+#: vigiboard/templates/vigiboard_history_table.html:16
 msgid "User"
 msgstr "Utilisateur"
 
-#: vigiboard/templates/vigiboard_history_table.html:20
+#: vigiboard/templates/vigiboard_history_table.html:17
 msgid "Type"
 msgstr ""
 
-#: vigiboard/templates/vigiboard_history_table.html:21
+#: vigiboard/templates/vigiboard_history_table.html:18
 msgid "Value"
 msgstr "Valeur"
 
-#: vigiboard/templates/vigiboard_history_table.html:22
+#: vigiboard/templates/vigiboard_history_table.html:19
 msgid "Text"
 msgstr ""
 
@@ -218,17 +1114,13 @@ msgstr "Changer en Pris en compte"
 msgid "Change to Closed"
 msgstr "Changer en Fermé"
 
-#: vigiboard/widgets/edit_event.py:26
-msgid "Touble Ticket"
-msgstr "Ticket d'incidence"
-
-#: vigiboard/widgets/edit_event.py:30
+#: vigiboard/widgets/edit_event.py:29
 msgid "Apply"
 msgstr "Appliquer"
 
-#: vigiboard/widgets/edit_event.py:44
-msgid "Trouble Ticket"
-msgstr "Ticket d'incidence"
+#: vigiboard/widgets/edit_event.py:41
+msgid "Service"
+msgstr ""
 
 #: vigiboard/widgets/edit_event.py:47
 msgid "Search"

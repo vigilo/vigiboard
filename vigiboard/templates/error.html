@@ -8,11 +8,11 @@
 
 <head>
   <meta content="text/html; charset=UTF-8" http-equiv="content-type" py:replace="''"/>
-  <title>A ${code} Error has Occurred </title>
+  <title>${_('A %(error_code)d Error has Occurred') % {'error_code': code}}</title>
 </head>
 
 <body>
-<h1>Error ${code}</h1>
+<h1>${_('Error %(error_code)d') % {'error_code': code}}</h1>
 
 <div>${XML(message)}</div>
 </body>

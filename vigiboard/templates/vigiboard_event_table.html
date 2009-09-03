@@ -5,7 +5,7 @@
 
   <xi:include href="vigiboard_history_table.html" />
 
-<py:def function="event_table(events,page,pages,id_first_row,id_last_row,total_row,edit_event_status_options,history,hist_error,search)">
+<py:def function="event_table(events,page,pages,rows_info,edit_event_status_options,history,hist_error,search)">
 <?python from genshi import HTML ?>
 
 <py:if test="len(events) > 1">
@@ -14,10 +14,10 @@
 	<thead>
 		<tr >
 			<td style="width:26px;border-right: solid 1px #4682b4">
-				<a py:if="page > pages[0]" href="${tg.url('/%d' % (page-1))}"><img src="${tg.url('/images/fleche_up.png')}" alt="Précédent" title="Page précédente"/></a>
-				<img py:if="page == pages[0]" src="${tg.url('/images/fleche_up.png')}" alt="Précédent" title="Page précédente" />
+				<a py:if="page > pages[0]" href="${tg.url('/%d' % (page-1))}"><img src="${tg.url('/images/fleche_up.png')}" alt="Précédente" title="Page précédente"/></a>
+				<img py:if="page == pages[0]" src="${tg.url('/images/fleche_up.png')}" alt="Précédente" title="Page précédente" />
 			</td>
-			<td colspan="${8+len(events[1][6])}" style="color: white;background-color: #4682b4" >Showing rows ${id_first_row} to ${id_last_row} of ${total_row}<br />
+			<td colspan="${8+len(events[1][6])}" style="color: white;background-color: #4682b4" >${_('Showing rows %(id_first_row)d to %(id_last_row)d of %(total_rows)d') % rows_info} <br />
 				Pages <py:for each="p in pages">
 				<a py:if="p != page" href="${tg.url('/%d' % p)}" py:content="p" />
 				<span py:if="p == page" py:replace="p" />
@@ -25,7 +25,7 @@
 			</td>
 			<td style="width:26px;border-left: solid 1px #4682b4">
 				<a py:if="pages[-1] > page" href="${tg.url('/%d' % (page+1))}"><img src="${tg.url('/images/fleche_down.png')}" alt="Suivante" title="Page suivante"/></a>
-				<img py:if="page == pages[-1]" src="${tg.url('/images/fleche_down.png')}"  alt="" title="Page suivante" />
+				<img py:if="page == pages[-1]" src="${tg.url('/images/fleche_down.png')}"  alt="Suivante" title="Page suivante" />
 			</td>
 		</tr>
 

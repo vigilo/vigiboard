@@ -4,9 +4,9 @@
 import logging
 
 import transaction
-from tg import config
 
 from vigiboard.config.environment import load_environment
+from vigiboard.config.vigiboard_cfg import vigiboard_config
 
 __all__ = ['setup_app']
 
@@ -23,7 +23,6 @@ def setup_app(command, conf, variables):
     # Create tables
     print "Creating tables"
     model.metadata.create_all()
-    print "Successfully created tables"
 
     # Create a test used called "manager".
     manager = model.User()
@@ -56,6 +55,7 @@ def setup_app(command, conf, variables):
     group = model.UserGroup()
     group.group_name = u'editors'
     group.users.append(editor)
+    group.users.append(manager)
     model.DBSession.add(group)
 
     # Create a test permission called "edit"
@@ -64,6 +64,11 @@ def setup_app(command, conf, variables):
     permission.permission_name = u'edit'
     permission.usergroups.append(group)
     model.DBSession.add(permission)
+
+    version = model.Version()
+    version.name = u'vigiboard'
+    version.version = vigiboard_config['vigiboard_version']
+    model.DBSession.add(version)
 
     model.DBSession.flush()
     transaction.commit()

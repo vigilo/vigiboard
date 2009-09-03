@@ -2,29 +2,17 @@
 # vim:set expandtab tabstop=4 shiftwidth=4: 
 """Vigiboard Controller"""
 
-import tg
-
-from tg import expose, flash, require, request, redirect, \
-                validate, tmpl_context, session
-
+from tg import expose, validate, require, flash, \
+    tmpl_context, request, config, session, redirect
 from tw.forms import validators 
-
 from pylons.i18n import ugettext as _
-
+from pylons.controllers.util import abort
 from sqlalchemy import asc
-
 from vigiboard.model import DBSession
-
-from vigiboard.model import HostGroups, Events, EventHistory
-
+from vigiboard.model import Events, EventHistory, Host, User, HostGroups
 from repoze.what.predicates import Any, not_anonymous
-
 from vigiboard.widgets.edit_event import edit_event_status_options
-
-from vigiboard.controllers.userutils import get_user_groups
-from vigiboard.controllers.vigiboardrequest import \
-        VigiboardRequest
-
+from vigiboard.controllers.vigiboardrequest import VigiboardRequest
 from vigiboard.controllers.vigiboard_controller import VigiboardRootController
 
 __all__ = ['RootController']
@@ -35,25 +23,22 @@ class RootController(VigiboardRootController):
     Le controller général de vigiboard
     """
 
-    @expose()
-    def process_form_errors (self, *argv, **kwargv):
-
+    def process_form_errors(self, *argv, **kwargv):
         """
         Gestion des erreurs de validation : On affiche les erreurs
         puis on redirige vers la dernière page accédée.
         """
-        flash(tmpl_context.form_errors, 'error')
+        for k in tmpl_context.form_errors:
+            flash("'%s': %s" % (k, tmpl_context.form_errors[k]), 'error')
         if request.environ.get('HTTP_REFERER') :
             redirect(request.environ.get('HTTP_REFERER'
                 ).split(request.environ.get('HTTP_HOST'))[1])
         else :
             redirect('/')
 
-    @validate(validators={'page':validators.Int(not_empty=False)},
-            error_handler=process_form_errors)
     @expose('vigiboard.templates.vigiboard')
     @require(Any(not_anonymous(), msg="You need to be authenticated"))
-    def default(self, page = 1, host = None, service = None, output = None,
+    def default(self, page = None, host = None, service = None, output = None,
             trouble_ticket=None,*argv,**krgv):
             
         """
@@ -69,8 +54,15 @@ class RootController(VigiboardRootController):
         @param output: Idem que host mais sur le text explicatif
         @param trouble_ticket: Idem que host mais sur les tickets attribués
         """
+        if page is None:
+            page = 1
 
-        if page < 1 :
+        try:
+            page = int(page)
+        except ValueError:
+            abort(404)
+
+        if page < 1:
             page = 1
 
         events = VigiboardRequest()
@@ -92,30 +84,31 @@ class RootController(VigiboardRootController):
                 '%%%s%%' % trouble_ticket))
 
         # Calcul des éléments à afficher et du nombre de pages possibles
-        total_row = events.num_rows()
+        total_rows = events.num_rows()
        
-        item_per_page = int(tg.config['vigiboard_item_per_page'])
+        item_per_page = int(config['vigiboard_item_per_page'])
 
-        if total_row <= item_per_page * (page-1) :
+        if total_rows <= item_per_page * (page-1) :
             page = 1
         id_first_row = item_per_page * (page-1)
-        id_last_row = min(id_first_row + item_per_page, total_row)
+        id_last_row = min(id_first_row + item_per_page, total_rows)
 
         events.format_events(id_first_row, id_last_row)
         events.generate_tmpl_context() 
         return dict(
                events = events.events,
-               id_first_row = id_first_row + 1,
-               id_last_row = id_last_row,
-               total_row = total_row,
-               pages = range(1, (total_row / item_per_page) + 2),
+               rows_info = {
+                'id_first_row': id_first_row + 1,
+                'id_last_row': id_last_row,
+                'total_rows': total_rows,
+               },
+               pages = range(1, (total_rows / item_per_page) + 2),
                page = page,
                event_edit_status_options = edit_event_status_options,
                history = [],
                hist_error = False,
                plugin_context = events.context_fct,
-               search = search
-               
+               search = search,
             )
       
     @validate(validators={'idevent':validators.Int(not_empty=True)},
@@ -133,10 +126,14 @@ class RootController(VigiboardRootController):
         """
 
         # Obtention de données sur l'évènement et sur son historique
+        username = request.environ.get('repoze.who.identity'
+                    ).get('repoze.who.userid')
+        user = User.by_user_name(username)
+
         events = DBSession.query(Events.severity, Events.idevent,
                         Events.hostname, Events.servicename
                  ).join(( HostGroups , Events.hostname == HostGroups.hostname )
-                 ).filter(HostGroups.groupname.in_(get_user_groups())
+                 ).filter(HostGroups.groupname.in_(user.groups())
                  ).filter(Events.idevent == idevent)[0]
         initial_state = DBSession.query(EventHistory
                  ).filter(EventHistory.idevent == idevent
@@ -155,7 +152,7 @@ class RootController(VigiboardRootController):
                 6: _('Major'), 7: _('Critical') }
         eventdetails = {}
         for edname, edlink in \
-                tg.config['vigiboard_links.eventdetails'].iteritems():
+                config['vigiboard_links.eventdetails'].iteritems():
 
             eventdetails[edname] = edlink[1] % {
                     'idevent': events.idevent,
@@ -314,18 +311,18 @@ class RootController(VigiboardRootController):
 	# Redirection vers la dernière page accédée
         redirect(request.environ.get('HTTP_REFERER').split(
                     request.environ.get('HTTP_HOST') + \
-                    tg.config['base_url_filter.base_url'])[1])
+                    config['base_url_filter.base_url'])[1])
 
 
     @validate(validators={"plugin_name":validators.OneOf(
-        [i for [i,j] in tg.config['vigiboard_plugins']])},
+        [i for [i,j] in config['vigiboard_plugins']])},
                 error_handler = process_form_errors)
     @expose('json')
     def get_plugin_value(self, plugin_name, *arg, **krgv):
         """
         Permet aux plugins de pouvoir récupérer des valeurs Json
         """
-        plugin = [i for i in tg.config['vigiboard_plugins'] \
+        plugin = [i for i in config['vigiboard_plugins'] \
                             if i[0] == plugin_name][0]
         try:
             mypac = __import__(

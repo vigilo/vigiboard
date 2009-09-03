@@ -23,7 +23,7 @@ class EditEventForm(TableForm):
 
     fields = [
 	    HiddenField('id'),
-		TextField('trouble_ticket',label_text=_('Touble Ticket')),
+		TextField('trouble_ticket',label_text=_('Trouble Ticket')),
 		SingleSelectField('status',options=edit_event_status_options)
 		]
     submit_text = _('Apply')

@@ -30,7 +30,7 @@ class VigiboardRequestPlugin(object):
 
         """
         Permet d'éviter toutes erreurs d'affichage.
-        C'est la fonction appelé par le formateur d'évènements.
+        C'est la fonction appelée par le formateur d'évènements.
         """
 
         show = self.show(event)
@@ -45,7 +45,7 @@ class VigiboardRequestPlugin(object):
 
         """
         Fonction qui affichera par défaut une chaîne de
-        caractères vide dans la colonne attribué au plugin.
+        caractères vide dans la colonne attribuée au plugin.
 
         En général, les plugins devront redéfinir cette fonction
         pour afficher ce qu'ils souhaitent.

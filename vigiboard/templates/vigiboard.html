@@ -12,7 +12,7 @@
   <link rel="stylesheet" type="text/css" href="${tg.url('/css/vigiboard_style.css')}" />
 </head>
 
-<body style="font-size:${tg.session.get('fontsize',tg.config['vigiboard_font.size'])}px">
+<body style="font-size:${tg.session.get('fontsize',tg.config['vigiboard_font.size'])}">
 	
 <table class="table_top" summary="Barre Outils">
 	<tr>
@@ -36,16 +36,19 @@
 			<input type="button" id="refresh_button" class="refresh_button" onclick="javascript:change_refresh($('#refresh_time').val())" value="[Start]" />
 			</td>
 			<td style="width: 100px;text-align: right;">
-			<a href="javascript:change_fontsize(5)"><img alt="Default font size" title="Default font size" src="${tg.url('/images/icn_text_sm.png')}" /></a>
-			<a href="javascript:change_fontsize(10)"><img alt="Medium font size" title="Medium font size" src="${tg.url('/images/icn_text_md.png')}" /></a>
-			<a href="javascript:change_fontsize(25)"><img alt="Large font size" title="Large font size" src="${tg.url('/images/icn_text_lg.png')}" /></a>
+			<a href="javascript:change_fontsize('5px')"><img alt="Default font size" title="Default font size" src="${tg.url('/images/icn_text_sm.png')}" /></a>
+			<a href="javascript:change_fontsize('10px')"><img alt="Medium font size" title="Medium font size" src="${tg.url('/images/icn_text_md.png')}" /></a>
+			<a href="javascript:change_fontsize('25px')"><img alt="Large font size" title="Large font size" src="${tg.url('/images/icn_text_lg.png')}" /></a>
 		</td>
 			<td style="width: 100px;text-align: right;">
 			<a href="${tg.url('/')}">
-				<img alt="accueil" title="Accueil" src="${tg.url('/images/home.gif')}" />
+				<img src="${tg.url('/images/home.gif')}" alt="Accueil" title="Accueil" />
 			</a>
 			<a id="SearchLien" href="javascript:vigiboard_searchdialog()">
-				<img src="${tg.url('/images/filter.png')}" alt="filtrer" title="Filtrer"/>
+				<img src="${tg.url('/images/filter.png')}" alt="Filtrer" title="Filtrer"/>
+			</a>
+			<a href="${tg.url('/logout_handler')}">
+				<img src="${tg.url('/images/logout.png')}" alt="Déconnexion" title="Déconnexion"/>
 			</a>
 		</td>
 	</tr>
@@ -55,23 +58,23 @@
 <div py:if="flash" py:content="XML(flash)" />
 </py:with>
 <div class="main_content">
-	${event_table(events,page,pages,id_first_row,id_last_row,total_row,event_edit_status_options,history,hist_error,search)}
+	${event_table(events,page,pages,rows_info,event_edit_status_options,history,hist_error,search)}
 </div>
 <script type="text/javascript">
 	$("#flash").show("slow",function(){
 		setTimeout('$("#flash").hide("slow")',5000);
 			});
 	function change_fontsize(size) {
-		document.body.style.fontSize = size + "px";
+		document.body.style.fontSize = size;
 		$.getJSON("${tg.url('/set_fontsize')}",{'fontsize':size},function(json){
-			if ( json.ret == 'fail' )
+			if (json.ret == 'fail')
 				alert("Can't save preferences");
 		})
 	}		
 	var refresh_timeout;
-	function change_refresh_rate (timeout) {
-		if ( timeout != 0 ) {
-			if ( refresh_timeout ) {
+	function change_refresh_rate(timeout) {
+		if (timeout != 0) {
+			if (refresh_timeout) {
 				clearTimeout(refresh_timeout);
 				refresh_timeout = null;
 				$('#refresh_time').removeAttr('disabled');

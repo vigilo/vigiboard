@@ -3,13 +3,12 @@
 """Gestion de la requête, des plugins et de l'affichage du Vigiboard"""
 
 from vigiboard.model import Events, Host, Service, \
-        HostGroups, ServiceGroups, EventHistory
-from tg import tmpl_context, url, config
+        HostGroups, ServiceGroups, EventHistory, User
+from tg import tmpl_context, url, config, request
 from vigiboard.model import DBSession
 from sqlalchemy import not_ , and_ , asc , desc
 from tw.jquery.ui_dialog import JQueryUIDialog
 from vigiboard.widgets.edit_event import EditEventForm , SearchForm
-from vigiboard.controllers.userutils import get_user_groups
 from vigiboard.controllers.vigiboard_plugin import VigiboardRequestPlugin
 from pylons.i18n import ugettext as _
 
@@ -29,7 +28,8 @@ class VigiboardRequest():
         plugins appliqués.
         """
 
-        self.user_groups = get_user_groups()
+        username = request.environ['repoze.who.identity']['repoze.who.userid']
+        self.user_groups = User.by_user_name(username).groups
         self.bouton_severity = { 0: 'Minor', 1: 'Minor', 2: 'Minor',
                 3: 'Minor', 4: 'Minor', 5: 'Minor', 6: 'Major', 7: 'Critical' }
         self.class_severity = { 0: 'None', 1: 'None', 2: 'None', 3: 'None',
