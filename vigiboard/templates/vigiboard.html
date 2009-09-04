@@ -14,18 +14,39 @@
 
 <body style="font-size:${tg.session.get('fontsize',tg.config['vigiboard_font.size'])}">
 	
-<table class="table_top" summary="Barre Outils">
+<table class="table_top" summary="Toolbar">
 	<tr>
-		<td style="width: 20%;text-align: left;">
-			<a py:if="tg.config['vigiboard_links.logo'] != ''" href="${tg.config['vigiboard_links.logo']}"><img alt="logo" title="Logo" src="${tg.url('/images/vigilo.png')}" style="width:58px;"/></a>
-			<a py:if="tg.config['vigiboard_links.logo'] == ''" href="${tg.url('/')}"><img alt="logo" title="Logo" src="${tg.url('/images/vigilo.png')}" style="width:58px;"/></a>
-			v${tg.config['vigiboard_version']}</td>
+		<td>
+			<a py:if="tg.config.get('vigiboard_links.logo')" href="${tg.config['vigiboard_links.logo']}"><img alt="" src="${tg.url('/images/vigilo.png')}" style="width:58px;"/></a>
+			<a py:if="not tg.config.get('vigiboard_links.logo')" href="${tg.url('/')}"><img alt="" src="${tg.url('/images/vigilo.png')}" style="width:58px;"/></a>
+			v${tg.config['vigiboard_version']}
+		</td>
+
 		<td style="text-align: center">
-			<span py:if="search['host'] != '' or search['service'] != '' or search['output'] != '' or search['tt'] != ''" style="color:rgb(70, 130, 180)">
-				Mode recherche, <a href="${tg.url('/')}" style="color:rgb(70, 130, 180); text-decoration: underline;">cliquer ici</a> pour revenir au mode initial.
+			<span py:if="search['host'] or search['service'] or search['output'] or search['tt']" style="color: rgb(70, 130, 180)">
+				<a href="${tg.url('/')}" style="color:rgb(70, 130, 180); text-decoration: underline;">${_('You are in Search mode, click here to return to the initial mode.')}</a>
 			</span>
 		</td>
-		<td style="width: 200px;text-align: right;">
+
+		<td style="margin-left: 30px; float: right">
+			<a href="${tg.url('/')}">
+				<img src="${tg.url('/images/home.gif')}" alt="Home" title="Home" />
+			</a>
+			<a id="SearchLien" href="javascript:vigiboard_searchdialog()">
+				<img src="${tg.url('/images/filter.png')}" alt="Filter display" title="Filter display"/>
+			</a>
+			<a href="${tg.url('/logout_handler')}">
+				<img src="${tg.url('/images/logout.png')}" alt="Log out" title="Log out"/>
+			</a>
+		</td>
+
+		<td style="margin-left: 30px; margin-top: 4px; float: right">
+			<a href="javascript:change_fontsize('5px')"><img alt="Default font size" title="Default font size" src="${tg.url('/images/icn_text_sm.png')}" /></a>
+			<a href="javascript:change_fontsize('10px')"><img alt="Medium font size" title="Medium font size" src="${tg.url('/images/icn_text_md.png')}" /></a>
+			<a href="javascript:change_fontsize('25px')"><img alt="Large font size" title="Large font size" src="${tg.url('/images/icn_text_lg.png')}" /></a>
+		</td>
+
+		<td style="margin-left: 30px; float: right">
 			<select id="refresh_time" class="refresh_select">
 				<option value="0">Never</option>
 				<option value="30000">30 Secondes</option>
@@ -33,23 +54,7 @@
 				<option value="300000">5 Minutes</option>
 				<option value="600000">10 Minutes</option>
 			</select>
-			<input type="button" id="refresh_button" class="refresh_button" onclick="javascript:change_refresh($('#refresh_time').val())" value="[Start]" />
-			</td>
-			<td style="width: 100px;text-align: right;">
-			<a href="javascript:change_fontsize('5px')"><img alt="Default font size" title="Default font size" src="${tg.url('/images/icn_text_sm.png')}" /></a>
-			<a href="javascript:change_fontsize('10px')"><img alt="Medium font size" title="Medium font size" src="${tg.url('/images/icn_text_md.png')}" /></a>
-			<a href="javascript:change_fontsize('25px')"><img alt="Large font size" title="Large font size" src="${tg.url('/images/icn_text_lg.png')}" /></a>
-		</td>
-			<td style="width: 100px;text-align: right;">
-			<a href="${tg.url('/')}">
-				<img src="${tg.url('/images/home.gif')}" alt="Accueil" title="Accueil" />
-			</a>
-			<a id="SearchLien" href="javascript:vigiboard_searchdialog()">
-				<img src="${tg.url('/images/filter.png')}" alt="Filtrer" title="Filtrer"/>
-			</a>
-			<a href="${tg.url('/logout_handler')}">
-				<img src="${tg.url('/images/logout.png')}" alt="Déconnexion" title="Déconnexion"/>
-			</a>
+			<input type="button" id="refresh_button" class="refresh_button" onclick="javascript:change_refresh($('#refresh_time').val())" value="[${_('Start')}]" />
 		</td>
 	</tr>
 </table>	
@@ -68,7 +73,7 @@
 		document.body.style.fontSize = size;
 		$.getJSON("${tg.url('/set_fontsize')}",{'fontsize':size},function(json){
 			if (json.ret == 'fail')
-				alert("Can't save preferences");
+				alert("${_('Unable to save preferences')}");
 		})
 	}		
 	var refresh_timeout;
@@ -82,7 +87,7 @@
 			} else {
 				refresh_timeout = setTimeout('window.location.reload(true)',timeout);
 				$('#refresh_time').attr("disabled", "disabled");
-				$('#refresh_button').attr('value','[Stop]');
+				$('#refresh_button').attr('value','[${_('Stop')}]');
 			}
 		}
 	}

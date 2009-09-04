@@ -7,13 +7,13 @@ Controller for authentification
 from tg import expose, flash, require, url, request, redirect
 
 from pylons.i18n import ugettext as _, lazy_ugettext as l_
-from catwalk.tg2 import Catwalk
 from repoze.what import predicates
 
 from vigiboard.lib.base import BaseController
 from vigiboard.model import DBSession 
 from vigiboard.controllers.error import ErrorController
 from vigiboard import model
+
 class VigiboardRootController(BaseController):
     """
     The root controller for the vigiboard application.
@@ -26,28 +26,9 @@ class VigiboardRootController(BaseController):
     
     Keep in mind that WSGI applications shouldn't be mounted directly: They
     must be wrapped around with :class:`tg.controllers.WSGIAppController`.
-    
     """
-    admin = Catwalk(model, DBSession)
-    
+
     error = ErrorController()
-
-    @expose('vigiboard.templates.authentication')
-    def auth(self):
-        """Display some information about auth* on this application."""
-        return dict(page='auth')
-
-    @expose('vigiboard.templates.index')
-    @require(predicates.has_permission('manage', msg=l_('Only for managers')))
-    def manage_permission_only(self, **kw):
-        """Illustrate how a page for managers only works."""
-        return dict(page='managers stuff')
-
-    @expose('vigiboard.templates.index')
-    @require(predicates.is_user('editor', msg=l_('Only for the editor')))
-    def editor_user_only(self, **kw):
-        """Illustrate how a page exclusive for the editor works."""
-        return dict(page='editor stuff')
 
     @expose('vigiboard.templates.login')
     def login(self, came_from=url('/')):
@@ -57,13 +38,12 @@ class VigiboardRootController(BaseController):
             flash(_('Wrong credentials'), 'warning')
         return dict(page='login', login_counter=str(login_counter),
                     came_from=came_from)
-    
+
     @expose()
     def post_login(self, came_from=url('/')):
         """
         Redirect the user to the initially requested page on successful
         authentication or redirect her back to the login page if login failed.
-        
         """
         if not request.identity:
             login_counter = request.environ['repoze.who.logins'] + 1
@@ -77,7 +57,6 @@ class VigiboardRootController(BaseController):
         """
         Redirect the user to the initially requested page on logout and say
         goodbye as well.
-        
         """
         flash(_('We hope to see you soon!'))
         redirect(came_from)

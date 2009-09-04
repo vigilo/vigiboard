@@ -277,16 +277,16 @@ class VigiboardRequest():
         lst_title = [
                 ['',{}],
                 [_('Date')+ '<span style="font-weight:normal">' + \
-                        _('<br />[Duration]') + '</span>',
+                        '<br />['+_('Duration') + ']</span>',
                         {'style':'text-align:left'}],
-                ['#', {'title':_('Nombre d\'occurrences')}],
+                ['#', {'title':_('Occurrence count')}],
                 [_('Host'), {'style':'text-align:left'}],
-                [_('Service Type<br />Service Name'),
+                [_('Service Type')+'<br />'+_('Service Name'),
                     {'style':'text-align:left'}], 
                 [_('Output'), {'style':'text-align:left'}]
                 ]
         lst_title.extend([[plug.name, plug.style] for plug in self.plugin])
-        lst_title.extend([[_('[TT]'), {'title': _('Trouble Ticket')}],
+        lst_title.extend([['['+_('TT')+']', {'title': _('Trouble Ticket')}],
                             ['', {}]])
         events = [lst_title]
         i = 0

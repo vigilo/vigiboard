@@ -25,7 +25,8 @@ vigiboard_config = {
     # Version de Vigiboard
     'vigiboard_version': u'0.1',
 
-    # URL pour le logo Vigilo, si vide on renvoi sur /
+    # URL du lien présent sur le logo Vigilo.
+    # Si absent ou vide, on redirige vers la racine de Vigiboard.
     'vigiboard_links.logo': '',
 
     # URL des tickets, possibilités:
