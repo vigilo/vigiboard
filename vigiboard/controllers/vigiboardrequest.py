@@ -95,7 +95,7 @@ class VigiboardRequest():
         Génération de la requête avec l'ensemble des données stockées
         et la place dans la variable rq de la classe
         """
-        for plug in config['vigiboard_plugins']:
+        for plug in config.get('vigiboard_plugins', []):
             try:
                 mypac = __import__(
                     'vigiboard.controllers.vigiboard_plugin.' +\

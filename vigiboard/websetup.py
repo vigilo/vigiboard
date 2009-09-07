@@ -4,9 +4,9 @@
 import logging
 
 import transaction
+from tg import config
 
 from vigiboard.config.environment import load_environment
-from vigiboard.config.vigiboard_cfg import vigiboard_config
 
 __all__ = ['setup_app']
 
@@ -67,7 +67,7 @@ def setup_app(command, conf, variables):
 
     version = model.Version()
     version.name = u'vigiboard'
-    version.version = vigiboard_config['vigiboard_version']
+    version.version = config['vigiboard_version']
     model.DBSession.add(version)
 
     model.DBSession.flush()

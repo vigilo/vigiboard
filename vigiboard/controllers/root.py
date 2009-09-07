@@ -39,7 +39,7 @@ class RootController(VigiboardRootController):
     @expose('vigiboard.templates.vigiboard')
     @require(Any(not_anonymous(), msg="You need to be authenticated"))
     def default(self, page = None, host = None, service = None, output = None,
-            trouble_ticket=None,*argv,**krgv):
+            trouble_ticket=None, *argv, **krgv):
             
         """
         Page d'accueil de Vigiboard. Elle affiche, suivant la page demandée (page 1 par
@@ -133,7 +133,7 @@ class RootController(VigiboardRootController):
         events = DBSession.query(Events.severity, Events.idevent,
                         Events.hostname, Events.servicename
                  ).join(( HostGroups , Events.hostname == HostGroups.hostname )
-                 ).filter(HostGroups.groupname.in_(user.groups())
+                 ).filter(HostGroups.groupname.in_(user.groups)
                  ).filter(Events.idevent == idevent)[0]
         initial_state = DBSession.query(EventHistory
                  ).filter(EventHistory.idevent == idevent
@@ -146,7 +146,7 @@ class RootController(VigiboardRootController):
                     break
         else :
             initial_state = 0
-        
+
         severity = { 0: _('None'), 1: _('OK'), 2: _('Suppressed'),
                 3: _('Initial'), 4: _('Maintenance'), 5: _('Minor'),
                 6: _('Major'), 7: _('Critical') }
@@ -315,15 +315,18 @@ class RootController(VigiboardRootController):
 
 
     @validate(validators={"plugin_name":validators.OneOf(
-        [i for [i,j] in config['vigiboard_plugins']])},
+        [i for [i,j] in config.get('vigiboard_plugins', [])])},
                 error_handler = process_form_errors)
     @expose('json')
     def get_plugin_value(self, plugin_name, *arg, **krgv):
         """
         Permet aux plugins de pouvoir récupérer des valeurs Json
         """
-        plugin = [i for i in config['vigiboard_plugins'] \
-                            if i[0] == plugin_name][0]
+        plugins = config['vigiboard_plugins']
+        if plugins is None:
+            return
+
+        plugin = [i for i in plugins if i[0] == plugin_name][0]
         try:
             mypac = __import__(
                 'vigiboard.controllers.vigiboard_plugin.' + plugin[0],
