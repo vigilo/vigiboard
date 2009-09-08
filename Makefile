@@ -15,10 +15,12 @@ clean:
 buildclean: clean
 	rm -rf eggs develop-eggs parts .installed.cfg bin
 
+EPYDOC := $(shell [ -f $(BUILDENV)/bin/epydoc ] && echo $(BUILDENV)/bin/epydoc || echo $(PYTHON) /usr/bin/epydoc)
 apidoc: doc/apidoc/index.html
 doc/apidoc/index.html: $(PYTHON) $(NAME)
 	rm -rf $(CURDIR)/doc/apidoc/*
-	PYTHONPATH=$(BUILDENV):src $(PYTHON) "$$(which epydoc)" -o $(dir $@) -v \
+	VIGILO_SETTINGS=$(BUILDENV)/settings.py PYTHONPATH=src \
+		$(EPYDOC) -o $(dir $@) -v \
 		   --name Vigilo --url http://www.projet-vigilo.org \
 		   --docformat=epytext $(NAME)
 
@@ -26,8 +28,8 @@ lint: $(PYTHON)
 	$(PYTHON) ./pylint_vigiboard.py $(NAME)
 
 tests: $(PYTHON)
-	VIGILO_SETTINGS_MODULE=settings_tests \
-		PYTHONPATH=$(BUILDENV) $(BUILDENV)/bin/runtests-$(NAME)
+	VIGILO_SETTINGS=$(BUILDENV)/settings.py \
+		$(BUILDENV)/bin/runtests-$(NAME)
 
 
 .PHONY: all clean buildclean apidoc lint tests
