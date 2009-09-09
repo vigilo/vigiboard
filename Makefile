@@ -1,36 +1,8 @@
-NAME = vigiboard
-BUILDENV = ../glue
-PYTHON = $(BUILDENV)/bin/python
-
-all:
-	@echo "Template Makefile, to be filled with build and install targets"
-
-$(PYTHON):
-	make -C $(BUILDENV) bin/python
-
-clean:
-	find $(CURDIR) \( -name "*.pyc" -o -name "*~" \) -delete
-	rm -rf data # temporary: sessions
-
-buildclean: clean
-	rm -rf eggs develop-eggs parts .installed.cfg bin
-
-EPYDOC := $(shell [ -f $(BUILDENV)/bin/epydoc ] && echo $(BUILDENV)/bin/epydoc || echo $(PYTHON) /usr/bin/epydoc)
-apidoc: doc/apidoc/index.html
-doc/apidoc/index.html: $(PYTHON) $(NAME)
-	rm -rf $(CURDIR)/doc/apidoc/*
-	VIGILO_SETTINGS=$(BUILDENV)/settings.py PYTHONPATH=src \
-		$(EPYDOC) -o $(dir $@) -v \
-		   --name Vigilo --url http://www.projet-vigilo.org \
-		   --docformat=epytext $(NAME)
-
-lint: $(PYTHON)
-	$(PYTHON) ./pylint_vigiboard.py $(NAME)
-
-tests: $(PYTHON)
-	VIGILO_SETTINGS=$(BUILDENV)/settings.py \
-		$(BUILDENV)/bin/runtests-$(NAME)
-
-
-.PHONY: all clean buildclean apidoc lint tests
+NAME := vigiboard
+include ../glue/Makefile.common
+all: build
+MODULE := $(NAME)
+CODEPATH := $(NAME)
+lint: lint_pylint
+tests: tests_runtests
 

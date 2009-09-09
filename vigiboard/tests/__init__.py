@@ -12,6 +12,7 @@ from webtest import TestApp
 import nose
 from nose.tools import eq_, nottest
 
+from vigilo.common.conf import settings
 from vigiboard import model
 
 __all__ = ['setup_db', 'teardown_db', 'TestController', 'url_for']
