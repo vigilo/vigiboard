@@ -9,7 +9,7 @@ from pylons.i18n import ugettext as _
 from pylons.controllers.util import abort
 from sqlalchemy import asc
 from vigiboard.model import DBSession
-from vigiboard.model import Events, EventHistory, Host, User, HostGroups
+from vigiboard.model import Event, EventHistory, Host, User, HostGroup
 from repoze.what.predicates import Any, not_anonymous
 from vigiboard.widgets.edit_event import edit_event_status_options
 from vigiboard.controllers.vigiboardrequest import VigiboardRequest
@@ -71,16 +71,16 @@ class RootController(VigiboardRootController):
         # Application des filtres si nécessaire
         if host :
             search['host'] = host
-            events.add_filter(Events.hostname.like('%%%s%%' % host))
+            events.add_filter(Event.hostname.like('%%%s%%' % host))
         if service :
             search['service'] = service
-            events.add_filter(Events.servicename.like('%%%s%%' % service))
+            events.add_filter(Event.servicename.like('%%%s%%' % service))
         if output :
             search['output'] = output
-            events.add_filter(Events.output.like('%%%s%%' % output))
+            events.add_filter(Event.output.like('%%%s%%' % output))
         if trouble_ticket :
             search['tt'] = trouble_ticket
-            events.add_filter(Events.trouble_ticket.like(
+            events.add_filter(Event.trouble_ticket.like(
                 '%%%s%%' % trouble_ticket))
 
         # Calcul des éléments à afficher et du nombre de pages possibles
@@ -130,11 +130,11 @@ class RootController(VigiboardRootController):
                     ).get('repoze.who.userid')
         user = User.by_user_name(username)
 
-        events = DBSession.query(Events.severity, Events.idevent,
-                        Events.hostname, Events.servicename
-                 ).join(( HostGroups , Events.hostname == HostGroups.hostname )
-                 ).filter(HostGroups.groupname.in_(user.groups)
-                 ).filter(Events.idevent == idevent)[0]
+        events = DBSession.query(Event.severity, Event.idevent,
+                        Event.hostname, Event.servicename
+                 ).join(( HostGroup , Event.hostname == HostGroup.hostname )
+                 ).filter(HostGroup.groupname.in_(user.groups)
+                 ).filter(Event.idevent == idevent)[0]
         initial_state = DBSession.query(EventHistory
                  ).filter(EventHistory.idevent == idevent
                  ).order_by(asc(EventHistory.timestamp)
@@ -182,7 +182,7 @@ class RootController(VigiboardRootController):
         """
 
         events = VigiboardRequest()
-        events.add_filter(Events.idevent == idevent)
+        events.add_filter(Event.idevent == idevent)
         
         # Vérification que l'évènement existe
         if events.num_rows() != 1 :
@@ -223,8 +223,8 @@ class RootController(VigiboardRootController):
         """
 
         events = VigiboardRequest()
-        events.add_filter(Events.hostname == host,
-                Events.servicename == service)
+        events.add_filter(Event.hostname == host,
+                Event.servicename == service)
         del events.filter[2]
 
         # Vérification qu'il y a au moins 1 évènement qui correspond
@@ -275,7 +275,7 @@ class RootController(VigiboardRootController):
             ids = ids[:-1]
         
         events = VigiboardRequest()
-        events.add_filter(Events.idevent.in_(ids))
+        events.add_filter(Event.idevent.in_(ids))
         
         # Vérification que au moins un des identifiants existe et est éditable
         if events.num_rows() <= 0 :
@@ -289,7 +289,7 @@ class RootController(VigiboardRootController):
                 ).get('repoze.who.userid')
 
         for req in events.req :
-            if isinstance(req, Events):
+            if isinstance(req, Event):
                 event = req
             else:
                 event = req[0]

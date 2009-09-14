@@ -2,8 +2,8 @@
 # vim:set expandtab tabstop=4 shiftwidth=4: 
 """Gestion de la requête, des plugins et de l'affichage du Vigiboard"""
 
-from vigiboard.model import Events, Host, Service, \
-        HostGroups, ServiceGroups, EventHistory, User
+from vigiboard.model import Event, Host, Service, \
+        HostGroup, ServiceGroup, EventHistory, User
 from tg import tmpl_context, url, config, request
 from vigiboard.model import DBSession
 from sqlalchemy import not_ , and_ , asc , desc
@@ -41,25 +41,25 @@ class VigiboardRequest():
         self.class_ack = {'Acknowledged': 'Ack', 'None': '', 'AAClosed': 'Ack'}
 
         self.generaterq = False
-        self.table = [Events]
-        self.join = [( Host, Events.hostname == Host.name ),
-                ( Service, Events.servicename == Service.name ),
-                ( HostGroups , Host.name == HostGroups.hostname ),
-                ( ServiceGroups , Service.name == ServiceGroups.servicename )
+        self.table = [Event]
+        self.join = [( Host, Event.hostname == Host.name ),
+                ( Service, Event.servicename == Service.name ),
+                ( HostGroup , Host.name == HostGroup.hostname ),
+                ( ServiceGroup , Service.name == ServiceGroup.servicename )
                 ]
         self.outerjoin = []
-        self.filter = [HostGroups.groupname.in_(self.user_groups),
-                 ServiceGroups.groupname.in_(self.user_groups),
-                 not_(and_(Events.active == False,
-                     Events.status == 'AAClosed')),
-                 Events.timestamp_active != None#,
-                 #not_(Events.timestamp_active.like('0000-00-00 00:00:00'))
+        self.filter = [HostGroup.groupname.in_(self.user_groups),
+                 ServiceGroup.groupname.in_(self.user_groups),
+                 not_(and_(Event.active == False,
+                     Event.status == 'AAClosed')),
+                 Event.timestamp_active != None#,
+                 #not_(Event.timestamp_active.like('0000-00-00 00:00:00'))
                  ]
-        self.orderby = [desc(Events.status),
-                                desc(Events.active),
-                                desc(Events.severity),
-                                asc(Events.hostname),
-                                desc(Events.timestamp)]
+        self.orderby = [desc(Event.status),
+                                desc(Event.active),
+                                desc(Event.severity),
+                                asc(Event.hostname),
+                                desc(Event.timestamp)]
         self.groupby = []
         self.plugin = []
         self.events = []
@@ -298,7 +298,7 @@ class VigiboardRequest():
             # rq devient une liste plutôt que d'être directement la
             # table souhaité
             
-            if isinstance(req, Events) :
+            if isinstance(req, Event) :
                 event = req
             else :
                 event = req[0]

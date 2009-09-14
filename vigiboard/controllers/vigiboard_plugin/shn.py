@@ -6,7 +6,7 @@ Plugin SHN : High level service
 
 from vigiboard.controllers.vigiboard_plugin import \
         VigiboardRequestPlugin
-from vigiboard.model import DBSession, ServiceHautNiveau, Events
+from vigiboard.model import DBSession, ServiceHautNiveau, Event
 from sqlalchemy import sql
 from pylons.i18n import gettext as _
 from tg import tmpl_context, url
@@ -22,10 +22,10 @@ class PluginSHN(VigiboardRequestPlugin):
     def __init__(self):
         super(PluginSHN, self).__init__(
             table = [ServiceHautNiveau.servicename_dep,
-                sql.func.count(Events.idevent)],
+                sql.func.count(Event.idevent)],
             outerjoin = [(ServiceHautNiveau,
-                ServiceHautNiveau.servicename_dep == Events.servicename)],
-            groupby = [(Events),(ServiceHautNiveau.servicename_dep)],
+                ServiceHautNiveau.servicename_dep == Event.servicename)],
+            groupby = [(Event),(ServiceHautNiveau.servicename_dep)],
             name = _(u'Impacted HLS'),
             style = {'title': _(u'Impacted High-Level Services'),
                 'style': 'text-align:center'},
@@ -59,8 +59,8 @@ class PluginSHN(VigiboardRequestPlugin):
     def controller(self, *argv, **krgv):
         """Ajout de fonctionnalités au contrôleur"""
         idevent = krgv['idevent']
-        service = DBSession.query(Events.servicename
-                ).filter(Events.idevent == idevent).one().servicename
+        service = DBSession.query(Event.servicename
+                ).filter(Event.idevent == idevent).one().servicename
 
         shns = DBSession.query(ServiceHautNiveau.servicename
                 ).filter(ServiceHautNiveau.servicename_dep == service)

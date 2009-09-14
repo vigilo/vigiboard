@@ -6,8 +6,8 @@ Test de la classe Vigiboard Request
 from nose.tools import assert_true
 
 from vigiboard.model import DBSession, \
-    Events, EventHistory, Permission, \
-    Groups, Host, HostGroups, Service, ServiceGroups
+    Event, EventHistory, Permission, \
+    Group, Host, HostGroup, Service, ServiceGroup
 from vigiboard.tests import TestController
 from vigiboard.controllers.vigiboardrequest import VigiboardRequest
 from vigiboard.controllers.vigiboard_plugin.tests import MonPlugin
@@ -29,8 +29,8 @@ class TestVigiboardRequest(TestController):
         # On commence par peupler la base de donnée actuellement vide
 
         # les groups et leurs dépendances
-        hostmanagers = Groups(name=u'hostmanagers')
-        hosteditors = Groups(name=u'hosteditors', parent=hostmanagers)
+        hostmanagers = Group(name=u'hostmanagers')
+        hosteditors = Group(name=u'hosteditors', parent=hostmanagers)
         DBSession.add(hostmanagers)
         DBSession.add(hosteditors)
 
@@ -47,10 +47,10 @@ class TestVigiboardRequest(TestController):
         DBSession.add(Host(name = "monhostuser"))
         DBSession.add(Service(name = "monserviceuser"))
         DBSession.flush()
-        event1 = Events(hostname = "monhost", servicename = "monservice")
-        event2 = Events(hostname = "monhostuser", servicename = "monservice")
-        event3 = Events(hostname = "monhost", servicename = "monserviceuser")
-        event4 = Events(hostname = "monhostuser",
+        event1 = Event(hostname = "monhost", servicename = "monservice")
+        event2 = Event(hostname = "monhostuser", servicename = "monservice")
+        event3 = Event(hostname = "monhost", servicename = "monserviceuser")
+        event4 = Event(hostname = "monhostuser",
                 servicename = "monserviceuser")
 
         # Les historiques
@@ -77,13 +77,13 @@ class TestVigiboardRequest(TestController):
             idevent = event4.idevent))
         
         # Table de jointure entre les hôtes et services et les groups
-        DBSession.add(HostGroups(hostname = "monhost",
+        DBSession.add(HostGroup(hostname = "monhost",
             groupname = "hostmanagers"))
-        DBSession.add(HostGroups(hostname = "monhostuser",
+        DBSession.add(HostGroup(hostname = "monhostuser",
             groupname = "hosteditors"))
-        DBSession.add(ServiceGroups(servicename = "monservice",
+        DBSession.add(ServiceGroup(servicename = "monservice",
             groupname = "hostmanagers"))
-        DBSession.add(ServiceGroups(servicename = "monserviceuser",
+        DBSession.add(ServiceGroup(servicename = "monserviceuser",
             groupname = "hosteditors"))
         DBSession.flush()
 

@@ -6,7 +6,7 @@ Plugin for tests
 
 from vigiboard.controllers.vigiboard_plugin.shn import \
 	        PluginSHN
-from vigiboard.model import EventHistory, Events
+from vigiboard.model import EventHistory, Event
 
 class MonPlugin(PluginSHN):
     """Plugin de test"""
@@ -15,7 +15,7 @@ class MonPlugin(PluginSHN):
         PluginSHN.__init__(
             self,
             table = [EventHistory.idevent],
-            join = [(EventHistory, EventHistory.idevent == Events.idevent)]
+            join = [(EventHistory, EventHistory.idevent == Event.idevent)]
         )
 
     def show(self, req):

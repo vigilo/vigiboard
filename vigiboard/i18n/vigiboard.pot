@@ -448,7 +448,7 @@ msgid "Stop"
 msgstr ""
 
 #: vigiboard/templates/vigiboard_event_table.html:12
-msgid "Events table"
+msgid "Event table"
 msgstr ""
 
 #: vigiboard/templates/vigiboard_event_table.html:17

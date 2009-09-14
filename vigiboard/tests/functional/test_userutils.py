@@ -5,7 +5,7 @@ Test de la classe User Utils
 """
 from nose.tools import assert_true
 
-from vigiboard.model import DBSession, Groups, Permission
+from vigiboard.model import DBSession, Group, Permission
 from vigiboard.tests import TestController
 from vigiboard.tests import teardown_db
 import tg
@@ -25,10 +25,10 @@ class TestUserUtils(TestController):
         raise SkipTest
 #        
         # On commence par peupler la base
-        hostmanagers = Groups(name=u'hostmanagers', parent=None)
+        hostmanagers = Group(name=u'hostmanagers', parent=None)
         DBSession.add(hostmanagers)
 
-        hosteditors = Groups(name=u'hosteditors', parent=hostmanagers)
+        hosteditors = Group(name=u'hosteditors', parent=hostmanagers)
         DBSession.add(hosteditors)
 
         manage_perm = Permission.by_permission_name(u'manage')
