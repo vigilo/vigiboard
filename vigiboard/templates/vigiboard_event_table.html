@@ -17,7 +17,13 @@
 				<a py:if="page > pages[0]" href="${tg.url('/%d' % (page-1))}"><img src="${tg.url('/images/fleche_up.png')}" alt="Previous" title="Previous page"/></a>
 				<img py:if="page == pages[0]" src="${tg.url('/images/fleche_up.png')}" alt="Previous" title="Previous page" />
 			</td>
-			<td colspan="${8+len(events[1][6])}" style="color: white;background-color: #4682b4" >${_('Showing rows %(id_first_row)d to %(id_last_row)d of %(total_rows)d') % rows_info} <br />
+			<!--!
+				8 = nombre de champs affichés en permanence.
+				events[1][6] contient une liste des en-têtes générés par les plugins.
+				La somme est calculée de sorte que le bandeau de changement de pages
+				soit aligné sur le reste du tableau (les alertes).
+			-->
+    		<td colspan="${8+len(events[1][6])}" style="color: white;background-color: #4682b4" >${_('Showing rows %(id_first_row)d to %(id_last_row)d of %(total_rows)d') % rows_info} <br />
 				Pages <py:for each="p in pages">
 				<a py:if="p != page" href="${tg.url('/%d' % p)}" py:content="p" />
 				<span py:if="p == page" py:replace="p" />
@@ -39,32 +45,31 @@
 	</thead>
 	
 	<tbody>
-	
 		<py:for each="(event,class_tr,class_td_severity,class_td_date,img_fleche,img_statu,plugin) in events[1:]">
 		<tr py:attrs="class_tr">
-			<td style="padding: 3px;" py:attrs="class_td_severity"><a href="javascript:vigiboard_historydialog('${event.idevent}')" class="HistoryLien"><img src="${tg.url(img_fleche['src'])}" style="width:20px" alt="Details" title="Event details" /></a></td>
+			<td style="padding: 3px;" py:attrs="class_td_severity"><a href="javascript:vigiboard_historydialog('${event.idcause}')" class="HistoryLien"><img src="${tg.url(img_fleche['src'])}" style="width:20px" alt="Details" title="Event details" /></a></td>
 			<td py:attrs="class_td_date"><span style="font-weight: bold;">${event.get_date('timestamp_active')}</span><br />[${event.get_since_date('timestamp_active')}]</td>
-			<td py:attrs="class_td_date" style="text-align:center">${event.occurence}</td>
-			<td>${event.hostname}</td>
-			<td>${event.servicename}</td>
-			<td>${event.output}</td>
+			<td py:attrs="class_td_date" style="text-align:center">${event.occurrences}</td>
+			<td>${event.cause.hostname}</td>
+			<td>${event.cause.servicename}</td>
+			<td>${event.cause.message}</td>
 			<td py:for="plug in plugin" py:attrs="plug[1]">${HTML(plug[0])}</td>
 			<td style="text-align: center"><a py:if="event.trouble_ticket is not None" href="${
 					tg.config['vigiboard_links.tt'] % {
-						'idevent' : event.idevent,
-						'host' : event.hostname,
-						'service' : event.servicename,
+						'idevent' : event.idcause,
+						'host' : event.cause.hostname,
+						'service' : event.cause.servicename,
 						'tt' : event.trouble_ticket }}">[${event.trouble_ticket}]</a></td>
 			<td style="text-align: center"><img py:attrs="img_statu" py:if="img_statu != None" alt="Status" title="Event status"/></td>
-			<td py:attrs="class_td_date" style="padding: 0px;text-align: center"><a class="Edit_EventsLien" href="javascript:vigiboard_edit_eventdialog('${event.idevent}')"><img src="${tg.url('/images/icon_page_edit.png')}" alt="Edit" title="Edit this event"/></a></td>
-			<td py:attrs="class_td_date" style="padding:0px;text-align: center"><input type="checkbox" class="Edit_EventsCheckBox" value="${event.idevent}"/></td>
-
+			<td py:attrs="class_td_date" style="padding: 0px;text-align: center"><a class="Edit_EventsLien" href="javascript:vigiboard_edit_eventdialog('${event.idcause}')"><img src="${tg.url('/images/icon_page_edit.png')}" alt="Edit" title="Edit this event"/></a></td>
+			<td py:attrs="class_td_date" style="padding:0px;text-align: center"><input type="checkbox" class="Edit_EventsCheckBox" value="${event.idcause}"/></td>
 		</tr>
-		<py:if test="hist_error == True">
-			<tr><td colspan="${10+len(plugin)}">
-					${history_table(history[event.idevent],hist_error)}	
+
+    		<py:if test="hist_error == True">
+			<tr><td colspan="10+len(plugin)">
+				${history_table(history[event.idcause],hist_error)}	
 			</td></tr>
-		</py:if>
+		    </py:if>
 		</py:for>
 	
 	</tbody>

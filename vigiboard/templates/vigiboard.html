@@ -22,12 +22,6 @@
 			v${tg.config['vigiboard_version']}
 		</td>
 
-		<td style="text-align: center">
-			<span py:if="search['host'] or search['service'] or search['output'] or search['tt']" style="color: rgb(70, 130, 180)">
-				<a href="${tg.url('/')}" style="color:rgb(70, 130, 180); text-decoration: underline;">${_('You are in Search mode, click here to return to the initial mode.')}</a>
-			</span>
-		</td>
-
 		<td style="margin-left: 30px; float: right">
 			<a href="${tg.url('/')}">
 				<img src="${tg.url('/images/home.gif')}" alt="Home" title="Home" />
@@ -55,6 +49,12 @@
 				<option value="600000">10 Minutes</option>
 			</select>
 			<input type="button" id="refresh_button" class="refresh_button" onclick="javascript:change_refresh($('#refresh_time').val())" value="[${_('Start')}]" />
+		</td>
+
+		<td style="margin-top: 8px; float: right">
+			<span py:if="search['host'] or search['service'] or search['output'] or search['tt']" style="color: rgb(70, 130, 180)">
+				<a href="${tg.url('/')}" style="color:rgb(70, 130, 180); text-decoration: underline;">${_('You are in Search mode, click here to return to the initial mode.')}</a>
+			</span>
 		</td>
 	</tr>
 </table>	

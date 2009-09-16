@@ -2,8 +2,8 @@
 # vim:set expandtab tabstop=4 shiftwidth=4: 
 """Gestion de la requête, des plugins et de l'affichage du Vigiboard"""
 
-from vigiboard.model import Event, Host, Service, \
-        HostGroup, ServiceGroup, EventHistory, User
+from vigiboard.model import Event, EventsAggregate, EventHistory, \
+        Host, HostGroup, Service, ServiceGroup, User
 from tg import tmpl_context, url, config, request
 from vigiboard.model import DBSession
 from sqlalchemy import not_ , and_ , asc , desc
@@ -30,37 +30,70 @@ class VigiboardRequest():
 
         username = request.environ['repoze.who.identity']['repoze.who.userid']
         self.user_groups = User.by_user_name(username).groups
-        self.bouton_severity = { 0: 'Minor', 1: 'Minor', 2: 'Minor',
-                3: 'Minor', 4: 'Minor', 5: 'Minor', 6: 'Major', 7: 'Critical' }
-        self.class_severity = { 0: 'None', 1: 'None', 2: 'None', 3: 'None',
-                4: 'None', 5: 'Minor', 6: 'Major', 7: 'Critical' }
-        self.severity = { 0: _('None'), 1: _('OK'), 2: _('Suppressed'),
-                3: _('Initial'), 4: _('Maintenance'), 5: _('Minor'),
-                6: _('Major'), 7: _('Critical') }
 
-        self.class_ack = {'Acknowledged': 'Ack', 'None': '', 'AAClosed': 'Ack'}
+        self.bouton_severity = (
+                'Minor', 'Minor', 'Minor', 'Minor',
+                'Minor', 'Minor', 'Major', 'Critical'
+            )
+
+        self.class_severity = (
+                'None', 'None', 'None', 'None',
+                'None', 'Minor', 'Major', 'Critical'
+            )
+
+        self.severity = (
+                _('None'),          # 0
+                _('OK'),
+                _('Suppressed'),
+                _('Initial'),
+                _('Maintenance'),
+                _('Minor'),
+                _('Major'),
+                _('Critical'),      # 7
+            )
+
+        self.class_ack = {
+                'Acknowledged': 'Ack',
+                'None': '',
+                'AAClosed': 'Ack'
+            }
 
         self.generaterq = False
-        self.table = [Event]
-        self.join = [( Host, Event.hostname == Host.name ),
-                ( Service, Event.servicename == Service.name ),
-                ( HostGroup , Host.name == HostGroup.hostname ),
-                ( ServiceGroup , Service.name == ServiceGroup.servicename )
-                ]
+
+        self.table = [EventsAggregate]
+
+        self.join = [
+                (Event, EventsAggregate.idcause == Event.idevent),
+                (Host, Event.hostname == Host.name),
+                (Service, Event.servicename == Service.name),
+                (HostGroup, Host.name == HostGroup.hostname),
+                (ServiceGroup, Service.name == ServiceGroup.servicename),
+            ]
+
         self.outerjoin = []
-        self.filter = [HostGroup.groupname.in_(self.user_groups),
-                 ServiceGroup.groupname.in_(self.user_groups),
-                 not_(and_(Event.active == False,
-                     Event.status == 'AAClosed')),
-                 Event.timestamp_active != None#,
-                 #not_(Event.timestamp_active.like('0000-00-00 00:00:00'))
-                 ]
-        self.orderby = [desc(Event.status),
-                                desc(Event.active),
-                                desc(Event.severity),
-                                asc(Event.hostname),
-                                desc(Event.timestamp)]
-        self.groupby = []
+
+        self.filter = [
+                HostGroup.groupname.in_(self.user_groups),
+                ServiceGroup.groupname.in_(self.user_groups),
+                not_(and_(Event.active == False,
+                    EventsAggregate.status == 'AAClosed')),
+                EventsAggregate.timestamp_active != None#,
+                #not_(Event.timestamp_active.like('0000-00-00 00:00:00'))
+            ]
+
+        self.orderby = [
+                desc(EventsAggregate.status),
+                desc(Event.active),
+                desc(EventsAggregate.severity),
+                asc(Event.hostname),
+                desc(Event.timestamp),
+            ]
+
+        self.groupby = [
+                EventsAggregate.idaggregate,
+                EventsAggregate,
+            ]
+
         self.plugin = []
         self.events = []
         self.idevents = []
@@ -141,8 +174,8 @@ class VigiboardRequest():
         @param argv: Liste des tables à ajouter
         """
         
-        #On vérifi qu'il n'y a pas de doublons dans la liste des
-        #tables finale
+        # On vérifie qu'il n'y a pas de doublons dans la liste finale
+        # des tables.
         
         for i in argv :
             for j in self.table:
@@ -159,8 +192,8 @@ class VigiboardRequest():
         @param argv: Liste des jointures à ajouter
         """
         
-        #On vérifi qu'il n'y a pas de doublons dans la liste des
-        #jointures finale
+        # On vérifie qu'il n'y a pas de doublons dans la liste finale
+        # des jointures.
         
         for i in argv:
             for j in self.join:
@@ -177,8 +210,8 @@ class VigiboardRequest():
         @param argv: Liste des jointures externes à ajouter
         """
         
-        #On vérifi qu'il n'y a pas de doublons dans la liste des
-        #jointures externes finale
+        # On vérifie qu'il n'y a pas de doublons dans la liste finale
+        # des jointures externes.
         
         for i in argv:
             for j in self.outerjoin:
@@ -194,8 +227,8 @@ class VigiboardRequest():
         @param argv: Liste des filtres à ajouter
         """
         
-        #On vérifi qu'il n'y a pas de doublons dans la liste des
-        #filtres finale
+        # On vérifie qu'il n'y a pas de doublons dans la liste finale
+        # des filtres.
         
         for i in argv:
             for j in self.filter:
@@ -211,8 +244,8 @@ class VigiboardRequest():
         @param argv: Liste des groupements à ajouter
         """
         
-        #On vérifi qu'il n'y a pas de doublons dans la liste des
-        #groupements finale
+        # On vérifie qu'il n'y a pas de doublons dans la liste finale
+        # des groupements.
         
         for i in argv:
             for j in self.groupby:
@@ -228,8 +261,8 @@ class VigiboardRequest():
         @param argv: Liste des ordres à ajouter
         """
         
-        #On vérifi qu'il n'y a pas de doublons dans la liste des
-        #ordres finale
+        # On vérifie qu'il n'y a pas de doublons dans la liste finale
+        # des ordres.
         
         for i in argv:
             for j in self.orderby:
@@ -237,7 +270,7 @@ class VigiboardRequest():
                     break
             self.orderby.append(i)
 
-    def format_events_img_statu (self, event):
+    def format_events_img_status(self, event):
         
         """
         Suivant l'état de l'évènement, retourne la classe à appliquer
@@ -248,7 +281,7 @@ class VigiboardRequest():
         @return: Dictionnaire représentant la classe à appliquer
         """
 
-        if event.active and event.status == 'AAClosed':
+        if event.cause.active and event.status == 'AAClosed':
             return { 'src': url('/images/crossed.png') }
         elif event.status == 'Acknowledged' :
             return { 'src': url('/images/checked.png') }
@@ -298,11 +331,11 @@ class VigiboardRequest():
             # rq devient une liste plutôt que d'être directement la
             # table souhaité
             
-            if isinstance(req, Event) :
+            if isinstance(req, EventsAggregate) :
                 event = req
-            else :
+            else:
                 event = req[0]
-            ids.append(event.idevent)
+            ids.append(event.idcause)
 
             # La liste pour l'évènement actuel comporte dans l'ordre :
             #   L'évènment en lui même
@@ -310,36 +343,36 @@ class VigiboardRequest():
             #       couleurs suivant les lignes)
             #   La classe pour la case comportant la flèche de détails
             #   La classe pour la date, l'occurrence et l'édition
-            #   L'image a affiche pour la flèche de détails
+            #   L'image à afficher pour la flèche de détails
             #   Une liste (une case par plugin) de ce que le plugin souhaite
             #       afficher en fonction de l'évènement
 
-            if event.active :
+            if event.cause.active:
                 events.append([
-                    event,
-                    {'class': class_tr[i%2]},
-                    {'class' : self.bouton_severity[event.severity] + \
-                            self.class_ack[event.status]},
-                    {'class' : self.bouton_severity[event.severity] + \
-                            self.class_ack[event.status] },
-                    {'src' : '/images/%s2.png' % \
-                            self.bouton_severity[event.severity].upper()},
-                    self.format_events_img_statu(event),
-                    [[j.__show__(req), j.style] for j in self.plugin]
+                        event,
+                        {'class': class_tr[i%2]},
+                        {'class' : self.bouton_severity[event.severity] + \
+                                self.class_ack[event.status]},
+                        {'class' : self.bouton_severity[event.severity] + \
+                                self.class_ack[event.status]},
+                        {'src' : '/images/%s2.png' % \
+                                self.bouton_severity[event.severity].upper()},
+                        self.format_events_img_status(event),
+                        [[j.__show__(req), j.style] for j in self.plugin]
                     ])
-            else :
+            else:
                 events.append([
-                    event,
-                    {'class': class_tr[i%2]},
-                    {'class' : self.bouton_severity[event.severity] + \
-                            self.class_ack[event.status] },
-                    {'class' : 'Cleared' + self.class_ack[event.status] },
-                    {'src' : '/images/%s2.png' % \
-                            self.bouton_severity[event.severity].upper()},
-                    self.format_events_img_statu(event),
-                    [[j.__show__(req), j.style] for j in self.plugin]
+                        event,
+                        {'class': class_tr[i%2]},
+                        {'class' : self.bouton_severity[event.severity] + \
+                                self.class_ack[event.status] },
+                        {'class' : 'Cleared' + self.class_ack[event.status] },
+                        {'src' : '/images/%s2.png' % \
+                                self.bouton_severity[event.severity].upper()},
+                        self.format_events_img_status(event),
+                        [[j.__show__(req), j.style] for j in self.plugin]
                     ])
-            i = i + 1
+            i += 1
 
         # On sauvegarde la liste précédemment créée puis rempli
         # le TmplContext
@@ -347,13 +380,13 @@ class VigiboardRequest():
         self.events = events
         self.idevents = ids
 
-    def format_history (self):
+    def format_history(self):
         
         """
         Formate les historiques correspondant aux évènements sélectionnés
         pour un affichage simple du résultat par Genshi.
-        On génère une liste de liste, chaqu'une étant la description de l'affichage pour un
-        historique donné.
+        On génère une liste de liste, chaqu'une étant la description
+        de l'affichage pour un historique donné.
         """
 
         history = DBSession.query(EventHistory
@@ -407,7 +440,7 @@ class VigiboardRequest():
                     {'class' : class_tr[i%2]},
                     {'class':self.class_severity[0]}
                 ])    
-            i = i + 1
+            i += 1
         
         hists[last_idevent] = hist_tmp
         self.hist = hists

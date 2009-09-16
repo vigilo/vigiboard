@@ -36,12 +36,12 @@ class PluginSHN(VigiboardRequestPlugin):
         """Fonction d'affichage"""
         if not req[1] is None:
             dico = {
-                'baseurl': url(''),
-                'idevent': req[0].idevent,
+                'baseurl': url('/'),
+                'idevent': req[0].idcause,
                 'impacted_hls': req[2],
             }
             return '<a href="javascript:vigiboard_shndialog(\'%(baseurl)s\','\
-                    '\'%(idevent)d\')" class="SHNLien">%(impacted_hls)d</a>' % \
+                    '\'%(idevent)s\')" class="SHNLien">%(impacted_hls)d</a>' % \
                     dico
         else:
             return ""
