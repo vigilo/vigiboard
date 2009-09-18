@@ -3,8 +3,8 @@
 """Gestion de la requête, des plugins et de l'affichage du Vigiboard"""
 
 from vigiboard.model import Event, EventsAggregate, EventHistory, \
-        Host, HostGroup, Service, ServiceGroup, User
-from tg import tmpl_context, url, config, request
+        Host, HostGroup, Service, ServiceGroup
+from tg import tmpl_context, url, config
 from vigiboard.model import DBSession
 from sqlalchemy import not_ , and_ , asc , desc
 from tw.jquery.ui_dialog import JQueryUIDialog
@@ -19,7 +19,7 @@ class VigiboardRequest():
     le préformatage des évènements et celui des historiques
     """
 
-    def __init__(self):
+    def __init__(self, user):
 
         """
         Initialisation de toutes les variables nécessaires: Liste des groupes de
@@ -28,8 +28,7 @@ class VigiboardRequest():
         plugins appliqués.
         """
 
-        username = request.environ['repoze.who.identity']['repoze.who.userid']
-        self.user_groups = User.by_user_name(username).groups
+        self.user_groups = user.groups
 
         self.bouton_severity = (
                 'Minor', 'Minor', 'Minor', 'Minor',
@@ -92,6 +91,9 @@ class VigiboardRequest():
         self.groupby = [
                 EventsAggregate.idaggregate,
                 EventsAggregate,
+                Event.active,
+                Event.hostname,
+                Event.timestamp,
             ]
 
         self.plugin = []
@@ -102,7 +104,7 @@ class VigiboardRequest():
         self.context_fct = []
 
     def add_plugin(self, *argv):
-        
+
         """
         Ajout d'un plugin, on lui prélève ses ajouts dans la requête
         """
@@ -136,7 +138,7 @@ class VigiboardRequest():
                 self.add_plugin(getattr(mypac, plug[1])())
             except:
                 raise
-        
+
         # query et join ont besoin de referrence
         self.req = self.req.query(*self.table)
         self.req = self.req.join(*self.join)
@@ -289,7 +291,6 @@ class VigiboardRequest():
             return None
 
     def format_events(self, first_row, last_row):
-        
         """
         Formate la réponse de la requête et y applique les plugins
         pour un affichage simple du résultat par Genshi.
@@ -326,7 +327,6 @@ class VigiboardRequest():
         class_tr = ['odd', 'even']
         ids = []
         for req in self.req[first_row : last_row]:
-
             # Si il y a plus d'un élément dans la liste des tables,
             # rq devient une liste plutôt que d'être directement la
             # table souhaité
@@ -338,11 +338,11 @@ class VigiboardRequest():
             ids.append(event.idcause)
 
             # La liste pour l'évènement actuel comporte dans l'ordre :
-            #   L'évènment en lui même
+            #   L'évènement en lui-même
             #   La classe à appliquer sur la ligne (permet d'alterner les
             #       couleurs suivant les lignes)
             #   La classe pour la case comportant la flèche de détails
-            #   La classe pour la date, l'occurrence et l'édition
+            #   La classe pour la date, l'occurence et l'édition
             #   L'image à afficher pour la flèche de détails
             #   Une liste (une case par plugin) de ce que le plugin souhaite
             #       afficher en fonction de l'évènement
@@ -350,7 +350,7 @@ class VigiboardRequest():
             if event.cause.active:
                 events.append([
                         event,
-                        {'class': class_tr[i%2]},
+                        {'class': class_tr[i % 2]},
                         {'class' : self.bouton_severity[event.severity] + \
                                 self.class_ack[event.status]},
                         {'class' : self.bouton_severity[event.severity] + \
@@ -360,10 +360,11 @@ class VigiboardRequest():
                         self.format_events_img_status(event),
                         [[j.__show__(req), j.style] for j in self.plugin]
                     ])
+
             else:
                 events.append([
                         event,
-                        {'class': class_tr[i%2]},
+                        {'class': class_tr[i % 2]},
                         {'class' : self.bouton_severity[event.severity] + \
                                 self.class_ack[event.status] },
                         {'class' : 'Cleared' + self.class_ack[event.status] },
@@ -374,9 +375,8 @@ class VigiboardRequest():
                     ])
             i += 1
 
-        # On sauvegarde la liste précédemment créée puis rempli
+        # On sauvegarde la liste précédemment créée puis on remplit
         # le TmplContext
-
         self.events = events
         self.idevents = ids
 
@@ -427,9 +427,10 @@ class VigiboardRequest():
                     hist.type_action,
                     self.severity[min(int(hist.value),7)],
                     hist.text,
-                    {'class' : class_tr[i%2]},
-                    {'class':self.class_severity[min(int(hist.value),7)]}
+                    {'class': class_tr[i%2]},
+                    {'class': self.class_severity[min(int(hist.value),7)]}
                 ])
+
             else:
                 hist_tmp.append([
                     hist.timestamp,
@@ -437,8 +438,8 @@ class VigiboardRequest():
                     hist.type_action,
                     self.severity[0],
                     hist.text,
-                    {'class' : class_tr[i%2]},
-                    {'class':self.class_severity[0]}
+                    {'class': class_tr[i%2]},
+                    {'class': self.class_severity[0]}
                 ])    
             i += 1
         
@@ -462,12 +463,13 @@ class VigiboardRequest():
         tmpl_context.search_form = SearchForm('search_form',
                 action=url('/'))
         tmpl_context.searchdialog = JQueryUIDialog(id='SearchDialog',
-                autoOpen=False,title=_('Search Event'))
+                autoOpen=False, title=_('Search Event'))
         
         # Dialogue de détail d'un évènement
         tmpl_context.historydialog = JQueryUIDialog(id='HistoryDialog',
-                autoOpen=False,title=_('History'))
+                autoOpen=False, title=_('History'))
 
         # Exécution des contexts des plugins
         for j in self.plugin:
             j.context(self.context_fct)
+

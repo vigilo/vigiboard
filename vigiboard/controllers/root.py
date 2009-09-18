@@ -39,18 +39,19 @@ class RootController(VigiboardRootController):
             redirect('/')
 
     @expose('vigiboard.templates.vigiboard')
-#    @require(Any(not_anonymous(), msg=_("You need to be authenticated")))
+    @require(Any(not_anonymous(), msg=_("You need to be authenticated")))
     def default(self, page = None, host = None, service = None, output = None,
             trouble_ticket=None, *argv, **krgv):
             
         """
-        Page d'accueil de Vigiboard. Elle affiche, suivant la page demandée (page 1 par
-        defaut), la liste des évènements, rangé par ordre de prise en compte puis de sévérité.
+        Page d'accueil de Vigiboard. Elle affiche, suivant la page demandée
+        (page 1 par defaut), la liste des évènements, rangés par ordre de prise
+        en compte, puis de sévérité.
         Pour accéder à cette page, l'utilisateur doit être authentifié.
 
-        @param page: numéro de la page souhaité, commence à 1
+        @param page: Numéro de la page souhaitée, commence à 1
         @param host: Si l'utilisateur souhaite sélectionner seulement certains
-                     évènments suivant leur hôte, il peut placer une expression
+                     évènements suivant leur hôte, il peut placer une expression
                      ici en suivant la structure du LIKE en SQL
         @param service: Idem que host mais sur les services
         @param output: Idem que host mais sur le text explicatif
@@ -67,21 +68,38 @@ class RootController(VigiboardRootController):
         if page < 1:
             page = 1
 
-        events = VigiboardRequest()
+        username = request.environ['repoze.who.identity']['repoze.who.userid']
+        events = VigiboardRequest(User.by_user_name(username))
         
-        search = {'host':'', 'service':'', 'output':'', 'tt':''}
+        search = {
+            'host': '',
+            'service': '',
+            'output': '',
+            'tt': ''
+        }
         # Application des filtres si nécessaire
         if host :
             search['host'] = host
+            host = host.replace('%', '\\%').replace('_', '\\_') \
+                    .replace('*', '%').replace('?', '_')
             events.add_filter(Event.hostname.like('%%%s%%' % host))
+
         if service :
             search['service'] = service
+            service = service.replace('%', '\\%').replace('_', '\\_') \
+                    .replace('*', '%').replace('?', '_')
             events.add_filter(Event.servicename.like('%%%s%%' % service))
+
         if output :
             search['output'] = output
+            output = output.replace('%', '\\%').replace('_', '\\_') \
+                    .replace('*', '%').replace('?', '_')
             events.add_filter(Event.message.like('%%%s%%' % output))
+
         if trouble_ticket :
             search['tt'] = trouble_ticket
+            trouble_ticket = trouble_ticket.replace('%', '\\%') \
+                    .replace('_', '\\_').replace('*', '%').replace('?', '_')
             events.add_filter(EventsAggregate.trouble_ticket.like(
                 '%%%s%%' % trouble_ticket))
 
@@ -156,9 +174,10 @@ class RootController(VigiboardRootController):
         else :
             initial_state = 0
 
-        severity = { 0: _('None'), 1: _('OK'), 2: _('Suppressed'),
-                3: _('Initial'), 4: _('Maintenance'), 5: _('Minor'),
-                6: _('Major'), 7: _('Critical') }
+        severity = (
+                _('None'), _('OK'), _('Suppressed'), _('Initial'),
+                _('Maintenance'), _('Minor'), _('Major'), _('Critical')
+            )
         eventdetails = {}
         for edname, edlink in \
                 config['vigiboard_links.eventdetails'].iteritems():
@@ -190,7 +209,8 @@ class RootController(VigiboardRootController):
         @param idevent: identifiant de l'évènement souhaité
         """
 
-        events = VigiboardRequest()
+        username = request.environ['repoze.who.identity']['repoze.who.userid']
+        events = VigiboardRequest(User.by_user_name(username))
         events.add_filter(EventsAggregate.idcause == idevent)
         
         # Vérification que l'évènement existe
@@ -230,15 +250,16 @@ class RootController(VigiboardRootController):
     def host_service(self, host, service):
         
         """
-        Affichage de l'historique de l'ensemble des évènements correspondant au
-        host et service demandé.
+        Affichage de l'historique de l'ensemble des évènements correspondant
+        au host et service demandé.
         Pour accéder à cette page, l'utilisateur doit être authentifié.
 
         @param host: Nom de l'hôte souhaité.
         @param service: Nom du service souhaité
         """
 
-        events = VigiboardRequest()
+        username = request.environ['repoze.who.identity']['repoze.who.userid']
+        events = VigiboardRequest(User.by_user_name(username))
         events.add_filter(Event.hostname == host,
                 Event.servicename == service)
         del events.filter[2]
@@ -297,7 +318,8 @@ class RootController(VigiboardRootController):
         if len(ids) > 1 :
             ids = ids[:-1]
         
-        events = VigiboardRequest()
+        username = request.environ['repoze.who.identity']['repoze.who.userid']
+        events = VigiboardRequest(User.by_user_name(username))
         events.add_filter(EventsAggregate.idcause.in_(ids))
         
         # Vérification que au moins un des identifiants existe et est éditable

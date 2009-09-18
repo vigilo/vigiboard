@@ -72,6 +72,6 @@ def runtests():
     sys.argv[1:0] = ['--with-pylons', '../vigiboard/test.ini', 
                      '--with-coverage', '--cover-inclusive',
                      '--cover-erase', '--cover-package', 'vigiboard',
-                     'vigiboard.tests' ]
+                     'vigiboard/tests' ]
     nose.main()
 

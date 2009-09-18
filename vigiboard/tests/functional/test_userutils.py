@@ -5,7 +5,7 @@ Test de la classe User Utils
 """
 from nose.tools import assert_true
 
-from vigiboard.model import DBSession, Group, Permission
+from vigiboard.model import DBSession, Group, Permission, User
 from vigiboard.tests import TestController
 from vigiboard.tests import teardown_db
 import tg
@@ -15,55 +15,67 @@ from nose.plugins.skip import SkipTest
 class TestUserUtils(TestController):
     """Test retrieval of groups of hosts/services."""
 
-    def test_get_user_groups(self):
-        """
-        Manager est dans le group hostmanagers et hosteditors
-        et Editor seulement dans hosteditors
-        """
+    def setUp(self):
+        TestController.setUp(self)
 
-#        # XXX This test has some issues, skip it until it gets fixed.
-        raise SkipTest
-#        
-        # On commence par peupler la base
-        hostmanagers = Group(name=u'hostmanagers', parent=None)
-        DBSession.add(hostmanagers)
+        # On commence par peupler la base.
+        # Les groupes.
+        self.hosteditors = Group(name=u'hosteditors', parent=None)
+        DBSession.add(self.hosteditors)
+        DBSession.flush()        
 
-        hosteditors = Group(name=u'hosteditors', parent=hostmanagers)
-        DBSession.add(hosteditors)
+        self.hostmanagers = Group(name=u'hostmanagers', parent=self.hosteditors)
+        DBSession.add(self.hostmanagers)
+        DBSession.flush()
 
+        # L'attribution des permissions.
         manage_perm = Permission.by_permission_name(u'manage')
         edit_perm = Permission.by_permission_name(u'edit')
 
-        manage_perm.groups.append(hostmanagers)
-        edit_perm.groups.append(hosteditors)
+        manage_perm.groups.append(self.hostmanagers)
+        edit_perm.groups.append(self.hosteditors)
         DBSession.flush()
         transaction.commit()
-        
-        # On obtient les variables de sessions comme si on était loggué
-        # en tant que manager
 
-        environ = {'REMOTE_USER': u'manager'}
+
+    def tearDown(self):
+        DBSession.delete(self.hostmanagers)
+        DBSession.flush()
+        transaction.commit()
+
+        DBSession.delete(self.hosteditors)
+        DBSession.flush()
+        transaction.commit()
+        TestController.tearDown(self)
+
+
+    def test_groups_inheritance(self):
+        """
+        S'assure que les groupes sont correctement hérités.
+        """
+
+        # On obtient les variables de session comme si on était loggué
+        # en tant que manager.
+        environ = {'REMOTE_USER': 'manager'}
         response = self.app.get('/', extra_environ=environ)
         
-        # On récupère la liste des groups auquel on appartient
-        
-        user = response.request.environ.get('repoze.who.identity')
-        grp = user.groups()
-        print grp
-        # On vérifie que la liste est correcte (vérifie la gestion des
-        # groupes sous forme d'arbre)
+        # On récupère la liste des groups auxquels l'utilisateur appartient.
+        username = response.request.environ['repoze.who.identity']['repoze.who.userid']
+        grp = User.by_user_name(username).groups
 
+        # On vérifie que la liste est correcte : le manager doit avoir accès
+        # aux groupes 'hostmanagers' & 'hosteditors' (dont il hérite).
         assert_true( u'hostmanagers' in grp and u'hosteditors' in grp ,
             msg = "il est dans %s" % grp)
 
-        # On recommence pour l'utilisateur editor
-        
-        environ = {'REMOTE_USER': u'editor'}
+        # On recommence avec l'utilisateur editor.
+        environ = {'REMOTE_USER': 'editor'}
         response = self.app.get('/', extra_environ=environ)
-        
-        user = response.request.environ.get('repoze.who.identity')
-        grp = user.groups()
-        
+
+        username = response.request.environ['repoze.who.identity']['repoze.who.userid']
+        grp = User.by_user_name(username).groups
+
+        # L'utilisateur editor ne doit avoir accès qu'au groupe 'hosteditors'.
         assert_true( not(u'hostmanagers' in grp) and u'hosteditors' in grp,
             msg = "il est dans %s" % grp)
 
