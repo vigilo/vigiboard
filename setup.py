@@ -18,6 +18,7 @@ setup(
     author="""Thomas ANDREJAK""",
     author_email="""thomas.andrejak@gmail.com""",
     install_requires=[
+        "tg.devtools",
         "TurboGears2 >= 2.0b7",
         "Catwalk >= 2.0.2",
         "Babel >=0.9.4",
@@ -29,6 +30,8 @@ setup(
         "tw.jquery >= 0.9.5",
         "vigilo-models",
         "PasteScript >= 1.7", # setup_requires has issues
+        "PasteDeploy",
+        "Paste",
         "decorator != 3.1.0", # Blacklist bad version
         ],
     paster_plugins=['PasteScript', 'Pylons', 'TurboGears2', 'tg.devtools'],
