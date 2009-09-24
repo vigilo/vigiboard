@@ -66,7 +66,7 @@ class TestController(object):
         teardown_db()
         del self.app
 
-def runtests():
+def runtests(args=[]):
     """This is the method called when running unit tests."""
     # XXX hard-coded path.
     sys.argv[1:0] = ['--with-pylons', '../vigiboard/test.ini', 
