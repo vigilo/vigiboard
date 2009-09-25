@@ -59,7 +59,7 @@ setup(
             'main = pylons.util:PylonsInstaller',
             ],
         'console_scripts': [
-            'runtests-vigiboard = vigiboard.tests:runtests [tests]',
+            'runtests-vigiboard = vigiboard.tests:runtests',
             ],
         },
 )

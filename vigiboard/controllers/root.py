@@ -3,7 +3,7 @@
 """Vigiboard Controller"""
 
 from tg import expose, validate, require, flash, \
-    tmpl_context, request, config, session, redirect
+    tmpl_context, request, config, session, redirect, url
 from tw.forms import validators 
 from pylons.i18n import ugettext as _
 from pylons.controllers.util import abort
@@ -361,10 +361,7 @@ class RootController(VigiboardRootController):
                 DBSession.add(history)
        
         flash(_('Updated successfully'))
-	# Redirection vers la dernière page accédée
-        redirect(request.environ.get('HTTP_REFERER').split(
-                    request.environ.get('HTTP_HOST') + \
-                    config['base_url_filter.base_url'])[1])
+        redirect(request.environ.get('HTTP_REFERER', url('/')))
 
 
     @validate(validators={"plugin_name":validators.OneOf(

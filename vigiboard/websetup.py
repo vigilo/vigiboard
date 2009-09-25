@@ -55,7 +55,6 @@ def setup_app(command, conf, variables):
     group = model.UserGroup()
     group.group_name = u'editors'
     group.users.append(editor)
-    group.users.append(manager)
     model.DBSession.add(group)
 
     # Create a test permission called "edit"

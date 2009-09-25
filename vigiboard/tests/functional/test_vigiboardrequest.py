@@ -5,9 +5,9 @@ Test de la classe Vigiboard Request
 """
 
 from nose.tools import assert_true
-import transaction
 from datetime import datetime
-import tg 
+import tg
+import transaction
 
 from vigiboard.model import DBSession, \
     Event, EventHistory, EventsAggregate, \
@@ -138,7 +138,10 @@ class TestVigiboardRequest(TestController):
 
 
     def tearDown(self):
-        # XXX On ne devrait pas avoir à faire ça.
+        # This operation is only necessary for DBMS which are
+        # really strict about table locks, such as PostgreSQL.
+        # For our tests, we use an (in-memory) SQLite database,
+        # so we're unaffected. This is done only for completeness.
         DBSession.delete(self.aggregate1)
         DBSession.delete(self.aggregate1)
         DBSession.flush()

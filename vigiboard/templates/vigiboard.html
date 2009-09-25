@@ -83,9 +83,9 @@
 				clearTimeout(refresh_timeout);
 				refresh_timeout = null;
 				$('#refresh_time').removeAttr('disabled');
-				$('#refresh_button').attr('value','[Start]');
+				$('#refresh_button').attr('value','[${_('Start')}]');
 			} else {
-				refresh_timeout = setTimeout('window.location.reload(true)',timeout);
+				refresh_timeout = setTimeout('window.location.reload(true);', timeout);
 				$('#refresh_time').attr("disabled", "disabled");
 				$('#refresh_button').attr('value','[${_('Stop')}]');
 			}

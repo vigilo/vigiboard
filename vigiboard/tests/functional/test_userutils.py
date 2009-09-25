@@ -3,14 +3,12 @@
 """
 Test de la classe User Utils
 """
+import tg
+import transaction
 from nose.tools import assert_true
 
 from vigiboard.model import DBSession, Group, Permission, User
 from vigiboard.tests import TestController
-from vigiboard.tests import teardown_db
-import tg
-import transaction
-from nose.plugins.skip import SkipTest
 
 class TestUserUtils(TestController):
     """Test retrieval of groups of hosts/services."""
@@ -39,6 +37,10 @@ class TestUserUtils(TestController):
 
 
     def tearDown(self):
+        # This operation is only necessary for DBMS which are
+        # really strict about table locks, such as PostgreSQL.
+        # For our tests, we use an (in-memory) SQLite database,
+        # so we're unaffected. This is done only for completeness.
         DBSession.delete(self.hostmanagers)
         DBSession.flush()
         transaction.commit()
@@ -60,7 +62,9 @@ class TestUserUtils(TestController):
         response = self.app.get('/', extra_environ=environ)
         
         # On récupère la liste des groups auxquels l'utilisateur appartient.
-        username = response.request.environ['repoze.who.identity']['repoze.who.userid']
+        username = response.request.environ \
+            ['repoze.who.identity'] \
+            ['repoze.who.userid']
         grp = User.by_user_name(username).groups
 
         # On vérifie que la liste est correcte : le manager doit avoir accès
@@ -72,7 +76,9 @@ class TestUserUtils(TestController):
         environ = {'REMOTE_USER': 'editor'}
         response = self.app.get('/', extra_environ=environ)
 
-        username = response.request.environ['repoze.who.identity']['repoze.who.userid']
+        username = response.request.environ \
+            ['repoze.who.identity'] \
+            ['repoze.who.userid']
         grp = User.by_user_name(username).groups
 
         # L'utilisateur editor ne doit avoir accès qu'au groupe 'hosteditors'.
