@@ -44,7 +44,9 @@ setup(
         },
     package_data={'vigiboard': ['i18n/*/LC_MESSAGES/*.mo',
                                  'templates/*/*',
-                                 'public/*/*']},
+                                 'public/css/*',
+                                 'public/images/*',
+                                 'public/javascript/vigiboard_plugin/*']},
     message_extractors={'vigiboard': [
             ('**.py', 'python', None),
             ('templates/**.mako', 'mako', None),
