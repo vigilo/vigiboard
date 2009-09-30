@@ -10,7 +10,6 @@
 
 <py:if test="len(events) > 1">
 <table class="vigitable" summary="Event table">
-	
 	<thead>
 		<tr >
 			<td style="width:26px;border-right: solid 1px #4682b4">
@@ -47,8 +46,13 @@
 	<tbody>
 		<py:for each="(event,class_tr,class_td_severity,class_td_date,img_fleche,img_statu,plugin) in events[1:]">
 		<tr py:attrs="class_tr">
-			<td style="padding: 3px;" py:attrs="class_td_severity"><a href="javascript:vigiboard_historydialog('${event.idcause}')" class="HistoryLien"><img src="${tg.url(img_fleche['src'])}" style="width:20px" alt="Details" title="Event details" /></a></td>
-			<td py:attrs="class_td_date"><span style="font-weight: bold;">${event.get_date('timestamp_active')}</span><br />[${event.get_since_date('timestamp_active')}]</td>
+			<td style="padding: 3px;" py:attrs="class_td_severity">
+			    <a href="javascript:vigiboard_historydialog('${event.idaggregate}')" class="HistoryLien"><img src="${tg.url(img_fleche['src'])}" style="width:20px" alt="Details" title="Event details" /></a>
+		    </td>
+			<td py:attrs="class_td_date">
+			    <span style="font-weight: bold;">${event.get_date('timestamp_active')}</span>
+			    <br />[${event.get_since_date('timestamp_active')}]
+			 </td>
 			<td py:attrs="class_td_date" style="text-align:center">${event.occurrences}</td>
 			<td>${event.cause.hostname}</td>
 			<td>${event.cause.servicename}</td>
@@ -56,13 +60,13 @@
 			<td py:for="plug in plugin" py:attrs="plug[1]">${HTML(plug[0])}</td>
 			<td style="text-align: center"><a py:if="event.trouble_ticket is not None" href="${
 					tg.config['vigiboard_links.tt'] % {
-						'idevent' : event.idcause,
-						'host' : event.cause.hostname,
-						'service' : event.cause.servicename,
-						'tt' : event.trouble_ticket }}">[${event.trouble_ticket}]</a></td>
+						'idaggregate': event.idaggregate,
+						'host': event.cause.hostname,
+						'service': event.cause.servicename,
+						'tt': event.trouble_ticket }}">[${event.trouble_ticket}]</a></td>
 			<td style="text-align: center"><img py:attrs="img_statu" py:if="img_statu != None" alt="Status" title="Event status"/></td>
-			<td py:attrs="class_td_date" style="padding: 0px;text-align: center"><a class="Edit_EventsLien" href="javascript:vigiboard_edit_eventdialog('${event.idcause}')"><img src="${tg.url('/images/icon_page_edit.png')}" alt="Edit" title="Edit this event"/></a></td>
-			<td py:attrs="class_td_date" style="padding:0px;text-align: center"><input type="checkbox" class="Edit_EventsCheckBox" value="${event.idcause}"/></td>
+			<td py:attrs="class_td_date" style="padding: 0px;text-align: center"><a class="Edit_EventsLien" href="javascript:vigiboard_edit_eventdialog('${event.idaggregate}')"><img src="${tg.url('/images/icon_page_edit.png')}" alt="Edit" title="Edit this event"/></a></td>
+			<td py:attrs="class_td_date" style="padding:0px;text-align: center"><input type="checkbox" class="Edit_EventsCheckBox" value="${event.idaggregate}"/></td>
 		</tr>
 
     		<py:if test="hist_error == True">
@@ -86,10 +90,10 @@ ${tmpl_context.historydialog}
 
 <script type="text/javascript">
 	function vigiboard_historydialog(idd) {
-		$.getJSON("${tg.url('/history_dialog')}",{idevent:idd},function(json){
+		$.getJSON("${tg.url('/history_dialog')}",{idaggregate:idd},function(json){
 			$('#HistoryDialog_initial_state').html(json.initial_state);
 			$('#HistoryDialog_current_state').html(json.current_state);
-			$('#HistoryDialog_detailed_event').attr('href' , '${tg.url('/event/')}' + json.idevent);
+			$('#HistoryDialog_detailed_event').attr('href', '${tg.url('/event/')}' + json.idaggregate);
 			$('#HistoryDialog_detailed_host').attr('href', '${tg.url('/host_service/')}' + json.host + "/" + json.service);
 			<py:for each="edname, edit in tg.config['vigiboard_links.eventdetails'].iteritems()">
 			$('#HistoryDialog_${edname}').attr('href', json.eventdetails['${edname}']);

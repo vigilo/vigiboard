@@ -26,22 +26,22 @@ class VigiboardRequestPlugin(object):
         self.style = style
         self.object_name = object_name
 
-    def __show__ (self, event):
+    def __show__ (self, aggregate):
 
         """
         Permet d'éviter toutes erreurs d'affichage.
         C'est la fonction appelée par le formateur d'évènements.
         """
 
-        show = self.show(event)
+        show = self.show(aggregate)
 
-        if show != None :
+        if show != None:
             try:
                 return str(show)
             except:
                 return _('Error')
 
-    def show(self, event):
+    def show(self, aggregate):
 
         """
         Fonction qui affichera par défaut une chaîne de

@@ -19,7 +19,7 @@ class MonPlugin(VigiboardRequestPlugin):
             groupby=[EventHistory.idevent],
         )
 
-    def show(self, req):
+    def show(self, aggregate):
         """Fonction d'affichage"""
-        return req[1]
+        return aggregate
 

@@ -6,7 +6,7 @@ from vigiboard.model import Event, EventsAggregate, EventHistory, \
         Host, HostGroup, Service, ServiceGroup
 from tg import tmpl_context, url, config
 from vigiboard.model import DBSession
-from sqlalchemy import not_ , and_ , asc , desc
+from sqlalchemy import not_, and_, asc, desc, sql
 from tw.jquery.ui_dialog import JQueryUIDialog
 from vigiboard.widgets.edit_event import EditEventForm , SearchForm
 from vigiboard.controllers.vigiboard_plugin import VigiboardRequestPlugin
@@ -59,7 +59,10 @@ class VigiboardRequest():
 
         self.generaterq = False
 
-        self.table = [EventsAggregate]
+        self.table = [
+            EventsAggregate,
+            sql.func.count(EventsAggregate.idaggregate)
+        ]
 
         self.join = [
                 (Event, EventsAggregate.idcause == Event.idevent),
@@ -75,7 +78,7 @@ class VigiboardRequest():
                 HostGroup.groupname.in_(self.user_groups),
                 ServiceGroup.groupname.in_(self.user_groups),
                 not_(and_(Event.active == False,
-                    EventsAggregate.status == 'AAClosed')),
+                    EventsAggregate.status == u'AAClosed')),
                 EventsAggregate.timestamp_active != None#,
                 #not_(Event.timestamp_active.like('0000-00-00 00:00:00'))
             ]
@@ -134,7 +137,7 @@ class VigiboardRequest():
             try:
                 mypac = __import__(
                     'vigiboard.controllers.vigiboard_plugin.' +\
-                            plug[0],globals(), locals(), [plug[1]],-1)
+                            plug[0], globals(), locals(), [plug[1]], -1)
                 self.add_plugin(getattr(mypac, plug[1])())
             except:
                 raise
@@ -162,7 +165,7 @@ class VigiboardRequest():
         @return: Nombre de ligne
         """
 
-        if not self.generaterq :
+        if not self.generaterq:
             self.generate_request()
             self.generaterq = True
         return self.req.count()
@@ -329,9 +332,9 @@ class VigiboardRequest():
         for req in self.req[first_row : last_row]:
             # Si il y a plus d'un élément dans la liste des tables,
             # rq devient une liste plutôt que d'être directement la
-            # table souhaité
-            
-            if isinstance(req, EventsAggregate) :
+            # table souhaitée
+
+            if isinstance(req, EventsAggregate):
                 event = req
             else:
                 event = req[0]
@@ -358,7 +361,7 @@ class VigiboardRequest():
                         {'src' : '/images/%s2.png' % \
                                 self.bouton_severity[event.severity].upper()},
                         self.format_events_img_status(event),
-                        [[j.__show__(req), j.style] for j in self.plugin]
+                        [[j.__show__(event), j.style] for j in self.plugin]
                     ])
 
             else:
@@ -371,7 +374,7 @@ class VigiboardRequest():
                         {'src' : '/images/%s2.png' % \
                                 self.bouton_severity[event.severity].upper()},
                         self.format_events_img_status(event),
-                        [[j.__show__(req), j.style] for j in self.plugin]
+                        [[j.__show__(event), j.style] for j in self.plugin]
                     ])
             i += 1
 

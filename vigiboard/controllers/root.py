@@ -17,7 +17,7 @@ from vigiboard.widgets.edit_event import edit_event_status_options
 from vigiboard.controllers.vigiboardrequest import VigiboardRequest
 from vigiboard.controllers.vigiboard_controller import VigiboardRootController
 
-__all__ = ['RootController']
+__all__ = ('RootController', )
 
 class RootController(VigiboardRootController):
     
@@ -69,7 +69,7 @@ class RootController(VigiboardRootController):
             page = 1
 
         username = request.environ['repoze.who.identity']['repoze.who.userid']
-        events = VigiboardRequest(User.by_user_name(username))
+        aggregates = VigiboardRequest(User.by_user_name(username))
         
         search = {
             'host': '',
@@ -82,60 +82,60 @@ class RootController(VigiboardRootController):
             search['host'] = host
             host = host.replace('%', '\\%').replace('_', '\\_') \
                     .replace('*', '%').replace('?', '_')
-            events.add_filter(Event.hostname.like('%%%s%%' % host))
+            aggregates.add_filter(Event.hostname.like('%%%s%%' % host))
 
         if service :
             search['service'] = service
             service = service.replace('%', '\\%').replace('_', '\\_') \
                     .replace('*', '%').replace('?', '_')
-            events.add_filter(Event.servicename.like('%%%s%%' % service))
+            aggregates.add_filter(Event.servicename.like('%%%s%%' % service))
 
         if output :
             search['output'] = output
             output = output.replace('%', '\\%').replace('_', '\\_') \
                     .replace('*', '%').replace('?', '_')
-            events.add_filter(Event.message.like('%%%s%%' % output))
+            aggregates.add_filter(Event.message.like('%%%s%%' % output))
 
         if trouble_ticket :
             search['tt'] = trouble_ticket
             trouble_ticket = trouble_ticket.replace('%', '\\%') \
                     .replace('_', '\\_').replace('*', '%').replace('?', '_')
-            events.add_filter(EventsAggregate.trouble_ticket.like(
+            aggregates.add_filter(EventsAggregate.trouble_ticket.like(
                 '%%%s%%' % trouble_ticket))
 
         # Calcul des éléments à afficher et du nombre de pages possibles
-        total_rows = events.num_rows()
-       
+        total_rows = aggregates.num_rows()
         item_per_page = int(config['vigiboard_item_per_page'])
 
-        if total_rows <= item_per_page * (page-1) :
+        if total_rows <= item_per_page * (page-1):
             page = 1
         id_first_row = item_per_page * (page-1)
         id_last_row = min(id_first_row + item_per_page, total_rows)
 
-        events.format_events(id_first_row, id_last_row)
-        events.generate_tmpl_context() 
+        aggregates.format_events(id_first_row, id_last_row)
+        aggregates.generate_tmpl_context()
+
         return dict(
-               events = events.events,
+               events = aggregates.events,
                rows_info = {
-                'id_first_row': id_first_row + 1,
-                'id_last_row': id_last_row,
-                'total_rows': total_rows,
+                   'id_first_row': id_first_row + 1,
+                   'id_last_row': id_last_row,
+                   'total_rows': total_rows,
                },
                pages = range(1, (total_rows / item_per_page) + 2),
                page = page,
                event_edit_status_options = edit_event_status_options,
                history = [],
                hist_error = False,
-               plugin_context = events.context_fct,
+               plugin_context = aggregates.context_fct,
                search = search,
             )
       
-    @validate(validators={'idevent':validators.String(not_empty=True)},
+    @validate(validators={'idaggregate':validators.Int(not_empty=True)},
             error_handler=process_form_errors)
     @expose('json')
     @require(Any(not_anonymous(), msg=_("You need to be authenticated")))
-    def history_dialog(self, idevent):
+    def history_dialog(self, idaggregate):
         
         """
         JSon renvoyant les éléments pour l'affichage de la fenêtre de dialogue
@@ -154,15 +154,16 @@ class RootController(VigiboardRootController):
                         EventsAggregate.severity,
                         Event.hostname,
                         Event.servicename,
+                        Event.idevent
                  ).join(
                     (Event, EventsAggregate.idcause == Event.idevent),
                     (HostGroup, Event.hostname == HostGroup.hostname),
                  ).filter(HostGroup.groupname.in_(user.groups)
-                 ).filter(EventsAggregate.idcause == idevent).one()
+                 ).filter(EventsAggregate.idaggregate == idaggregate).one()
 
         initial_state = DBSession.query(
                     EventHistory,
-                 ).filter(EventHistory.idevent == idevent
+                 ).filter(EventHistory.idevent == event.idevent
                  ).order_by(asc(EventHistory.timestamp)
                  ).order_by(asc(EventHistory.type_action))
 
@@ -183,7 +184,7 @@ class RootController(VigiboardRootController):
                 config['vigiboard_links.eventdetails'].iteritems():
 
             eventdetails[edname] = edlink[1] % {
-                    'idevent': idevent,
+                    'idaggregate': idaggregate,
                     'host': event.hostname,
                     'service': event.servicename
                     }
@@ -191,17 +192,17 @@ class RootController(VigiboardRootController):
         return dict(
                 initial_state = severity[int(initial_state)],
                 current_state = severity[event.severity],
-                idevent = idevent,
+                idaggregate = idaggregate,
                 host = event.hostname,
                 service = event.servicename,
                 eventdetails = eventdetails
             )
 
-    @validate(validators={'idevent':validators.String(not_empty=True)},
+    @validate(validators={'idaggregate':validators.Int(not_empty=True)},
             error_handler=process_form_errors)
     @expose('vigiboard.templates.vigiboard')
     @require(Any(not_anonymous(), msg=_("You need to be authenticated")))
-    def event(self, idevent):
+    def event(self, idaggregate):
         """
         Affichage de l'historique d'un évènement.
         Pour accéder à cette page, l'utilisateur doit être authentifié.
@@ -211,7 +212,7 @@ class RootController(VigiboardRootController):
 
         username = request.environ['repoze.who.identity']['repoze.who.userid']
         events = VigiboardRequest(User.by_user_name(username))
-        events.add_filter(EventsAggregate.idcause == idevent)
+        events.add_filter(EventsAggregate.idaggregate == idaggregate)
         
         # Vérification que l'évènement existe
         if events.num_rows() != 1 :
@@ -293,8 +294,8 @@ class RootController(VigiboardRootController):
                 )
 
     @validate(validators={
-        "id":validators.Regex(r'^[^,]+(,[^,]*)*,?$'),
-        "trouble_ticket":validators.Regex(r'^[0-9]*$'),
+        "id":validators.Regex(r'^[0-9]+(,[0-9]*)*,?$'),
+#        "trouble_ticket":validators.Regex(r'^[0-9]*$'),
         "status":validators.OneOf(['NoChange', 'None', 'Acknowledged',
                 'AAClosed'])
         }, error_handler=process_form_errors)
@@ -320,7 +321,7 @@ class RootController(VigiboardRootController):
         
         username = request.environ['repoze.who.identity']['repoze.who.userid']
         events = VigiboardRequest(User.by_user_name(username))
-        events.add_filter(EventsAggregate.idcause.in_(ids))
+        events.add_filter(EventsAggregate.idaggregate.in_(ids))
         
         # Vérification que au moins un des identifiants existe et est éditable
         if events.num_rows() <= 0 :
@@ -332,7 +333,7 @@ class RootController(VigiboardRootController):
         
         username = request.environ['repoze.who.identity']['repoze.who.userid']
 
-        for req in events.req :
+        for req in events.req:
             if isinstance(req, EventsAggregate):
                 event = req
             else:
@@ -359,13 +360,14 @@ class RootController(VigiboardRootController):
                         username=username,
                     )
                 DBSession.add(history)
-       
+
+        DBSession.flush()       
         flash(_('Updated successfully'))
         redirect(request.environ.get('HTTP_REFERER', url('/')))
 
 
     @validate(validators={"plugin_name":validators.OneOf(
-        [i for [i,j] in config.get('vigiboard_plugins', [])])},
+        [i for [i, j] in config.get('vigiboard_plugins', [])])},
                 error_handler = process_form_errors)
     @expose('json')
     def get_plugin_value(self, plugin_name, *arg, **krgv):

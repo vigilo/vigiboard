@@ -88,10 +88,10 @@ base_config['vigiboard_version'] = u'0.1'
 # Links configuration
 # XXX Should be part of ini settings.
 base_config['vigiboard_links.eventdetails'] = {
-        'nagios': ['Nagios host details', 'http://example1.com/%(idevent)s'],
-        'metrology': ['Metrology details', 'http://example2.com/%(idevent)s'],
-        'security': ['Security details', 'http://example3.com/%(idevent)s'],
-        'servicetype': ['Service Type', 'http://example4.com/%(idevent)s'],
+    'nagios': ['Nagios host details', 'http://example1.com/%(idaggregate)d'],
+    'metrology': ['Metrology details', 'http://example2.com/%(idaggregate)d'],
+    'security': ['Security details', 'http://example3.com/%(idaggregate)d'],
+    'servicetype': ['Service Type', 'http://example4.com/%(idaggregate)d'],
 }
 
 # Plugins to use

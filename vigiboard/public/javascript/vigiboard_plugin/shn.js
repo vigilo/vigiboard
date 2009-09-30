@@ -1,6 +1,6 @@
 
 function vigiboard_shndialog(url,idd) {
-	$.getJSON(url+'/get_plugin_value',{plugin_name:'shn',idevent:idd},function(json){ 				
+	$.getJSON(url+'get_plugin_value',{plugin_name:'shn',idaggregate:idd},function(json){ 				
 		var ht = '';
 		for (var i = 0; i < json.shns.length; i++) {
 			ht += '<li>' + json.shns[i] + '</li>';

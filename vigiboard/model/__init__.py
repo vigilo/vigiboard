@@ -12,6 +12,5 @@ from vigilo.models import Event, EventHistory, EventsAggregate
 from vigilo.models import Graph, GraphGroup, GraphToGroups
 from vigilo.models import Version, PerfDataSource, Group
 from vigilo.models import Host, HostGroup
-from vigilo.models import Service, ServiceGroup, \
-                            ServiceHautNiveau, ServiceTopo
+from vigilo.models import Service, ServiceGroup, HighLevelService
 
