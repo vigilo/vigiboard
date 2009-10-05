@@ -131,7 +131,7 @@ class RootController(VigiboardRootController):
                search = search,
             )
       
-    @validate(validators={'idaggregate':validators.Int(not_empty=True)},
+    @validate(validators={'idaggregate':validators.String(not_empty=True)},
             error_handler=process_form_errors)
     @expose('json')
     @require(Any(not_anonymous(), msg=_("You need to be authenticated")))
@@ -179,6 +179,11 @@ class RootController(VigiboardRootController):
                 _('None'), _('OK'), _('Suppressed'), _('Initial'),
                 _('Maintenance'), _('Minor'), _('Major'), _('Critical')
             )
+        if event.severity is None:
+            current_state = _('Unknown')
+        else:
+            current_state = severity[event.severity]
+
         eventdetails = {}
         for edname, edlink in \
                 config['vigiboard_links.eventdetails'].iteritems():
@@ -191,14 +196,14 @@ class RootController(VigiboardRootController):
 
         return dict(
                 initial_state = severity[int(initial_state)],
-                current_state = severity[event.severity],
+                current_state = current_state,
                 idaggregate = idaggregate,
                 host = event.hostname,
                 service = event.servicename,
-                eventdetails = eventdetails
+                eventdetails = eventdetails,
             )
 
-    @validate(validators={'idaggregate':validators.Int(not_empty=True)},
+    @validate(validators={'idaggregate':validators.String(not_empty=True)},
             error_handler=process_form_errors)
     @expose('vigiboard.templates.vigiboard')
     @require(Any(not_anonymous(), msg=_("You need to be authenticated")))
@@ -294,7 +299,7 @@ class RootController(VigiboardRootController):
                 )
 
     @validate(validators={
-        "id":validators.Regex(r'^[0-9]+(,[0-9]*)*,?$'),
+        "id":validators.Regex(r'^[^,]+(,[^,]*)*,?$'),
 #        "trouble_ticket":validators.Regex(r'^[0-9]*$'),
         "status":validators.OneOf(['NoChange', 'None', 'Acknowledged',
                 'AAClosed'])

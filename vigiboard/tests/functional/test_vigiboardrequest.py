@@ -84,13 +84,13 @@ class TestVigiboardRequest(TestController):
             'message': u'foo',
         }
 
-        event1 = Event(hostname=u'monhost',
+        event1 = Event(idevent=u'event1', hostname=u'monhost',
             servicename=u'monservice', **event_template)
-        event2 = Event(hostname=u'monhostuser',
+        event2 = Event(idevent=u'event2', hostname=u'monhostuser',
             servicename=u'monservice', **event_template)
-        event3 = Event(hostname=u'monhost',
+        event3 = Event(idevent=u'event3', hostname=u'monhost',
             servicename=u'monserviceuser', **event_template)
-        event4 = Event(hostname=u'monhostuser',
+        event4 = Event(idevent=u'event4', hostname=u'monhostuser',
             servicename=u'monserviceuser', **event_template)
 
         DBSession.add(event1)
@@ -126,8 +126,10 @@ class TestVigiboardRequest(TestController):
             'status': u'None',
         }
         self.aggregate1 = EventsAggregate(
+            idaggregate=u'foo',
             idcause=event1.idevent, **aggregate_template)
         self.aggregate2 = EventsAggregate(
+            idaggregate=u'bar',
             idcause=event4.idevent, **aggregate_template)
 
         self.aggregate1.events.append(event1)

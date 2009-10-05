@@ -31,12 +31,12 @@ class PluginSHN(VigiboardRequestPlugin):
         dico = {
             'baseurl': url('/'),
             'idaggregate': aggregate.idaggregate,
-            'impacted_hls': len(aggregate.highlevel),
+            'impacted_hls': len(aggregate.high_level_services),
         }
         # XXX Il faudrait échapper l'URL contenue dans baseurl
         # pour éviter des attaques de type XSS.
         res = ('<a href="javascript:vigiboard_shndialog(' + \
-                '\'%(baseurl)s\',\'%(idaggregate)d\')" ' + \
+                '\'%(baseurl)s\',\'%(idaggregate)s\')" ' + \
                 'class="SHNLien">%(impacted_hls)d</a>') % dico
         return res
 

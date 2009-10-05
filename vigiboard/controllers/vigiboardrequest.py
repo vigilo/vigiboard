@@ -22,8 +22,8 @@ class VigiboardRequest():
     def __init__(self, user):
 
         """
-        Initialisation de toutes les variables nécessaires: Liste des groupes de
-        l'utilisateur, les classes à appliquer suivant la sévérité, les
+        Initialisation de toutes les variables nécessaires: Liste des groupes
+        de l'utilisateur, les classes à appliquer suivant la sévérité, les
         différentes étapes de la génération de la requête et la liste des
         plugins appliqués.
         """
@@ -105,6 +105,11 @@ class VigiboardRequest():
         self.hist = []
         self.req = DBSession
         self.context_fct = []
+
+    def get_bouton_severity(self, severity):
+        if severity is None:
+            return 'Unknown'
+        return self.bouton_severity[severity]
 
     def add_plugin(self, *argv):
 
@@ -331,7 +336,7 @@ class VigiboardRequest():
         ids = []
         for req in self.req[first_row : last_row]:
             # Si il y a plus d'un élément dans la liste des tables,
-            # rq devient une liste plutôt que d'être directement la
+            # req devient une liste plutôt que d'être directement la
             # table souhaitée
 
             if isinstance(req, EventsAggregate):
@@ -354,12 +359,12 @@ class VigiboardRequest():
                 events.append([
                         event,
                         {'class': class_tr[i % 2]},
-                        {'class' : self.bouton_severity[event.severity] + \
-                                self.class_ack[event.status]},
-                        {'class' : self.bouton_severity[event.severity] + \
-                                self.class_ack[event.status]},
-                        {'src' : '/images/%s2.png' % \
-                                self.bouton_severity[event.severity].upper()},
+                        {'class': self.get_bouton_severity(event.severity) + \
+                            self.class_ack[event.status]},
+                        {'class': self.get_bouton_severity(event.severity) + \
+                            self.class_ack[event.status]},
+                        {'src': '/images/%s2.png' % \
+                            self.get_bouton_severity(event.severity).upper()},
                         self.format_events_img_status(event),
                         [[j.__show__(event), j.style] for j in self.plugin]
                     ])
@@ -368,11 +373,11 @@ class VigiboardRequest():
                 events.append([
                         event,
                         {'class': class_tr[i % 2]},
-                        {'class' : self.bouton_severity[event.severity] + \
-                                self.class_ack[event.status] },
-                        {'class' : 'Cleared' + self.class_ack[event.status] },
-                        {'src' : '/images/%s2.png' % \
-                                self.bouton_severity[event.severity].upper()},
+                        {'class': self.get_bouton_severity(event.severity) + \
+                            self.class_ack[event.status] },
+                        {'class': 'Cleared' + self.class_ack[event.status]},
+                        {'src': '/images/%s2.png' % \
+                            self.get_bouton_severity(event.severity).upper()},
                         self.format_events_img_status(event),
                         [[j.__show__(event), j.style] for j in self.plugin]
                     ])
@@ -428,10 +433,10 @@ class VigiboardRequest():
                     hist.timestamp,
                     hist.username,
                     hist.type_action,
-                    self.severity[min(int(hist.value),7)],
+                    self.severity[min(int(hist.value), 7)],
                     hist.text,
-                    {'class': class_tr[i%2]},
-                    {'class': self.class_severity[min(int(hist.value),7)]}
+                    {'class': class_tr[i % 2]},
+                    {'class': self.class_severity[min(int(hist.value), 7)]}
                 ])
 
             else:
@@ -441,7 +446,7 @@ class VigiboardRequest():
                     hist.type_action,
                     self.severity[0],
                     hist.text,
-                    {'class': class_tr[i%2]},
+                    {'class': class_tr[i % 2]},
                     {'class': self.class_severity[0]}
                 ])    
             i += 1
