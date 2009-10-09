@@ -4,5 +4,5 @@ all: build
 MODULE := $(NAME)
 CODEPATH := $(NAME)
 lint: lint_pylint
-tests: tests_runtests
+tests: tests_tg
 
