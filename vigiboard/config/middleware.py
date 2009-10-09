@@ -5,6 +5,10 @@
 from vigiboard.config.app_cfg import base_config
 from vigiboard.config.environment import load_environment
 
+from pkg_resources import resource_filename
+from paste.cascade import Cascade
+from paste.urlparser import StaticURLParser
+
 __all__ = ['make_app']
 
 # Use base_config to setup the necessary PasteDeploy application factory. 
@@ -30,9 +34,17 @@ def make_app(global_conf, full_stack=True, **app_conf):
     @return: The vigiboard application with all the relevant middleware
         loaded.
     """
-    app = make_base_app(global_conf, full_stack=True, **app_conf)
+    app = make_base_app(global_conf, full_stack=full_stack, **app_conf)
 
-    # Wrap your base TurboGears 2 application with custom middleware here
+    # On définit 2 middlewares pour fichiers statiques qui cherchent
+    # les fichiers dans le thème actuellement chargé.
+    # Le premier va les chercher dans le dossier des fichiers spécifiques
+    # à l'application, le second cherche dans les fichiers communs.
+    app_static = StaticURLParser(resource_filename(
+        'vigilo.themes.public', 'vigiboard'))
+    common_static = StaticURLParser(resource_filename(
+        'vigilo.themes.public', 'common'))
+    app = Cascade([app_static, common_static, app])
 
     return app
 

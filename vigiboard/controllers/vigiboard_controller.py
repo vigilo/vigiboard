@@ -30,7 +30,7 @@ class VigiboardRootController(BaseController):
 
     error = ErrorController()
 
-    @expose('vigiboard.templates.login')
+    @expose('login.html')
     def login(self, came_from=url('/')):
         """Start the user login."""
         login_counter = request.environ['repoze.who.logins']

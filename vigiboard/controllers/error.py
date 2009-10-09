@@ -18,7 +18,7 @@ class ErrorController(object):
     
     """
 
-    @expose('vigiboard.templates.error')
+    @expose('error.html')
     def document(self, *args, **kwargs):
         """Render the error document"""
         resp = request.environ.get('pylons.original_response')

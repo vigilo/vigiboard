@@ -29,6 +29,7 @@ setup(
         "psycopg2",
         "tw.jquery >= 0.9.5",
         "vigilo-models",
+        "vigilo-themes-default",
         "PasteScript >= 1.7", # setup_requires has issues
         "PasteDeploy",
         "Paste",

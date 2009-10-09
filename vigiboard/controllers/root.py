@@ -38,7 +38,7 @@ class RootController(VigiboardRootController):
         else :
             redirect('/')
 
-    @expose('vigiboard.templates.vigiboard')
+    @expose('vigiboard.html')
     @require(Any(not_anonymous(), msg=_("You need to be authenticated")))
     def default(self, page = None, host = None, service = None, output = None,
             trouble_ticket=None, *argv, **krgv):
@@ -205,7 +205,7 @@ class RootController(VigiboardRootController):
 
     @validate(validators={'idaggregate':validators.String(not_empty=True)},
             error_handler=process_form_errors)
-    @expose('vigiboard.templates.vigiboard')
+    @expose('vigiboard.html')
     @require(Any(not_anonymous(), msg=_("You need to be authenticated")))
     def event(self, idaggregate):
         """
@@ -251,7 +251,7 @@ class RootController(VigiboardRootController):
 
     @validate(validators={'host':validators.NotEmpty(),
         'service':validators.NotEmpty()}, error_handler=process_form_errors)
-    @expose('vigiboard.templates.vigiboard')
+    @expose('vigiboard.html')
     @require(Any(not_anonymous(), msg=_("You need to be authenticated")))
     def host_service(self, host, service):
         
