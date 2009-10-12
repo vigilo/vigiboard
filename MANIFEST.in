@@ -1,4 +1,1 @@
-recursive-include vigiboard/public *
-include vigiboard/public/favicon.ico
 recursive-include vigiboard/i18n *
-recursive-include vigiboard/templates *

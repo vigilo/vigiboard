@@ -43,16 +43,12 @@ setup(
     extras_require={
         'tests': tests_require,
         },
-    package_data={'vigiboard': ['i18n/*/LC_MESSAGES/*.mo',
-                                 'templates/*/*',
-                                 'public/css/*',
-                                 'public/images/*',
-                                 'public/javascript/vigiboard_plugin/*']},
+    package_data={'vigiboard': [
+            'i18n/*/LC_MESSAGES/*.mo',
+        ]},
     message_extractors={'vigiboard': [
             ('**.py', 'python', None),
-            ('templates/**.mako', 'mako', None),
-            ('templates/**.html', 'genshi', None),
-            ('public/**', 'ignore', None)]},
+        ]},
 
     entry_points={
         'paste.app_factory': [
