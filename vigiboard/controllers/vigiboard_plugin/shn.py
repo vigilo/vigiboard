@@ -57,7 +57,7 @@ class PluginSHN(VigiboardRequestPlugin):
         idaggregate = krgv['idaggregate']
         aggregate = DBSession.query(EventsAggregate) \
                 .filter(EventsAggregate.idaggregate == idaggregate).one()
-        shns = aggregate.highlevel
+        shns = aggregate.high_level_services
 
         return dict(shns=[shn.servicename for shn in shns]) 
 

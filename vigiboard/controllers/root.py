@@ -8,6 +8,9 @@ from tw.forms import validators
 from pylons.i18n import ugettext as _
 from pylons.controllers.util import abort
 from sqlalchemy import asc
+from datetime import datetime
+import math
+
 from vigiboard.model import DBSession
 from vigiboard.model import Event, EventHistory, EventsAggregate, \
                             Host, HostGroup, \
@@ -105,15 +108,16 @@ class RootController(VigiboardRootController):
 
         # Calcul des éléments à afficher et du nombre de pages possibles
         total_rows = aggregates.num_rows()
-        item_per_page = int(config['vigiboard_item_per_page'])
+        items_per_page = int(config['vigiboard_items_per_page'])
 
-        if total_rows <= item_per_page * (page-1):
+        if total_rows <= items_per_page * (page-1):
             page = 1
-        id_first_row = item_per_page * (page-1)
-        id_last_row = min(id_first_row + item_per_page, total_rows)
+        id_first_row = items_per_page * (page-1)
+        id_last_row = min(id_first_row + items_per_page, total_rows)
 
         aggregates.format_events(id_first_row, id_last_row)
         aggregates.generate_tmpl_context()
+        nb_pages = int(math.ceil(total_rows / (items_per_page + 0.0)))
 
         return dict(
                events = aggregates.events,
@@ -122,7 +126,7 @@ class RootController(VigiboardRootController):
                    'id_last_row': id_last_row,
                    'total_rows': total_rows,
                },
-               pages = range(1, (total_rows / item_per_page) + 2),
+               pages = range(1, nb_pages + 1),
                page = page,
                event_edit_status_options = edit_event_status_options,
                history = [],
@@ -151,38 +155,28 @@ class RootController(VigiboardRootController):
         user = User.by_user_name(username)
 
         event = DBSession.query(
-                        EventsAggregate.severity,
+                        EventsAggregate.initial_severity,
+                        EventsAggregate.current_severity,
+                        EventsAggregate.peak_severity,
                         Event.hostname,
                         Event.servicename,
-                        Event.idevent
+                        Event.idevent,
                  ).join(
                     (Event, EventsAggregate.idcause == Event.idevent),
                     (HostGroup, Event.hostname == HostGroup.hostname),
                  ).filter(HostGroup.groupname.in_(user.groups)
-                 ).filter(EventsAggregate.idaggregate == idaggregate).one()
+                 ).filter(EventsAggregate.idaggregate == idaggregate
+                 ).one()
 
-        initial_state = DBSession.query(
+        history = DBSession.query(
                     EventHistory,
                  ).filter(EventHistory.idevent == event.idevent
                  ).order_by(asc(EventHistory.timestamp)
-                 ).order_by(asc(EventHistory.type_action))
+                 ).order_by(asc(EventHistory.type_action)).all()
 
-        if initial_state.count() > 0 :
-            for i in initial_state:
-                if i.value != '' and i.value is not None:
-                    initial_state = i.value
-                    break
-        else :
-            initial_state = 0
-
-        severity = (
-                _('None'), _('OK'), _('Suppressed'), _('Initial'),
-                _('Maintenance'), _('Minor'), _('Major'), _('Critical')
-            )
-        if event.severity is None:
-            current_state = _('Unknown')
-        else:
-            current_state = severity[event.severity]
+        current_severity = VigiboardRequest.get_severity(event.current_severity)
+        initial_severity = VigiboardRequest.get_severity(event.initial_severity)
+        peak_severity = VigiboardRequest.get_severity(event.peak_severity)
 
         eventdetails = {}
         for edname, edlink in \
@@ -195,8 +189,9 @@ class RootController(VigiboardRootController):
                     }
 
         return dict(
-                initial_state = severity[int(initial_state)],
-                current_state = current_state,
+                initial_state = VigiboardRequest.severity[initial_severity],
+                current_state = VigiboardRequest.severity[current_severity],
+                peak_state = VigiboardRequest.severity[peak_severity],
                 idaggregate = idaggregate,
                 host = event.hostname,
                 service = event.servicename,
@@ -273,10 +268,11 @@ class RootController(VigiboardRootController):
         # Vérification qu'il y a au moins 1 évènement qui correspond
         if events.num_rows() == 0 :
             redirect('/')
-       
+
         events.format_events(0, events.num_rows())
         events.format_history()
-        events.generate_tmpl_context() 
+        events.generate_tmpl_context()
+
         return dict(
                     events = events.events,
                     rows_info = {
@@ -345,26 +341,32 @@ class RootController(VigiboardRootController):
                 event = req[0]
 
             if krgv['trouble_ticket'] != '' :
-                event.trouble_ticket = krgv['trouble_ticket']
                 history = EventHistory(
                         type_action="Ticket change",
                         idevent=event.idcause,
-                        value='',
-                        text='',
+                        value=krgv['trouble_ticket'],
+                        text=_("Changed trouble ticket from '%s' to '%s'") % (
+                            event.trouble_ticket, krgv['trouble_ticket']
+                        ),
                         username=username,
+                        timestamp=datetime.now(),
                     )
                 DBSession.add(history)   
+                event.trouble_ticket = krgv['trouble_ticket']
 
             if krgv['status'] != 'NoChange' :
-                event.status = krgv['status']
                 history = EventHistory(
                         type_action="Acknowlegement change state",
                         idevent=event.idcause,
-                        value='',
-                        text='',
+                        value=krgv['status'],
+                        text=_("Changed acknowledgement status from '%s' to '%s'") % (
+                            event.status, krgv['status']
+                        ),
                         username=username,
+                        timestamp=datetime.now(),
                     )
                 DBSession.add(history)
+                event.status = krgv['status']
 
         DBSession.flush()       
         flash(_('Updated successfully'))

@@ -13,7 +13,35 @@ from vigiboard.controllers.vigiboard_plugin import VigiboardRequestPlugin
 from pylons.i18n import ugettext as _
 
 class VigiboardRequest():
-    
+    class_ack = {
+        'Acknowledged': 'Ack',
+        'None': '',
+        'AAClosed': 'Ack'
+    }
+
+    severity = (
+        _('OK'),            # 0
+        _('Suppressed'),
+        _('Initial'),
+        _('Maintenance'),
+        _('Minor'),
+        _('Major'),
+        _('Critical'),      # 6
+    )
+
+    bouton_severity = (
+        'OK', 'Minor', 'Minor',
+        'Minor', 'Minor', 'Major',
+        'Critical',
+    )
+
+    @classmethod
+    def get_severity(cls, severity):
+        if not severity:
+            severity = 0
+        return int(severity)
+
+
     """
     Classe gérant la génération de la requête finale,
     le préformatage des évènements et celui des historiques
@@ -29,34 +57,6 @@ class VigiboardRequest():
         """
 
         self.user_groups = user.groups
-
-        self.bouton_severity = (
-                'Minor', 'Minor', 'Minor', 'Minor',
-                'Minor', 'Minor', 'Major', 'Critical'
-            )
-
-        self.class_severity = (
-                'None', 'None', 'None', 'None',
-                'None', 'Minor', 'Major', 'Critical'
-            )
-
-        self.severity = (
-                _('None'),          # 0
-                _('OK'),
-                _('Suppressed'),
-                _('Initial'),
-                _('Maintenance'),
-                _('Minor'),
-                _('Major'),
-                _('Critical'),      # 7
-            )
-
-        self.class_ack = {
-                'Acknowledged': 'Ack',
-                'None': '',
-                'AAClosed': 'Ack'
-            }
-
         self.generaterq = False
 
         self.table = [
@@ -77,16 +77,18 @@ class VigiboardRequest():
         self.filter = [
                 HostGroup.groupname.in_(self.user_groups),
                 ServiceGroup.groupname.in_(self.user_groups),
-                not_(and_(Event.active == False,
+
+                # On masque les évènements marqués comme OK
+                # (current_severity == 0) et déjà traités
+                # (status == 'AAClosed').
+                not_(and_(EventsAggregate.current_severity == 0,
                     EventsAggregate.status == u'AAClosed')),
-                EventsAggregate.timestamp_active != None#,
-                #not_(Event.timestamp_active.like('0000-00-00 00:00:00'))
+                EventsAggregate.timestamp_active != None,
             ]
 
         self.orderby = [
-                desc(EventsAggregate.status),
-                desc(Event.active),
-                desc(EventsAggregate.severity),
+                desc(EventsAggregate.status),   # None, Acknowledged, AAClosed
+                desc(EventsAggregate.current_severity), # Code pour Minor, etc.
                 asc(Event.hostname),
                 desc(Event.timestamp),
             ]
@@ -94,7 +96,6 @@ class VigiboardRequest():
         self.groupby = [
                 EventsAggregate.idaggregate,
                 EventsAggregate,
-                Event.active,
                 Event.hostname,
                 Event.timestamp,
             ]
@@ -105,11 +106,6 @@ class VigiboardRequest():
         self.hist = []
         self.req = DBSession
         self.context_fct = []
-
-    def get_bouton_severity(self, severity):
-        if severity is None:
-            return 'Unknown'
-        return self.bouton_severity[severity]
 
     def add_plugin(self, *argv):
 
@@ -291,7 +287,7 @@ class VigiboardRequest():
         @return: Dictionnaire représentant la classe à appliquer
         """
 
-        if event.cause.active and event.status == 'AAClosed':
+        if event.status == 'AAClosed':
             return { 'src': url('/images/crossed.png') }
         elif event.status == 'Acknowledged' :
             return { 'src': url('/images/checked.png') }
@@ -328,7 +324,7 @@ class VigiboardRequest():
                 [_('Output'), {'style':'text-align:left'}]
                 ]
         lst_title.extend([[plug.name, plug.style] for plug in self.plugin])
-        lst_title.extend([['['+_('TT')+']', {'title': _('Trouble Ticket')}],
+        lst_title.extend([['[' + _('TT') + ']', {'title': _('Trouble Ticket')}],
                             ['', {}]])
         events = [lst_title]
         i = 0
@@ -355,32 +351,21 @@ class VigiboardRequest():
             #   Une liste (une case par plugin) de ce que le plugin souhaite
             #       afficher en fonction de l'évènement
 
-            if event.cause.active:
-                events.append([
-                        event,
-                        {'class': class_tr[i % 2]},
-                        {'class': self.get_bouton_severity(event.severity) + \
-                            self.class_ack[event.status]},
-                        {'class': self.get_bouton_severity(event.severity) + \
-                            self.class_ack[event.status]},
-                        {'src': '/images/%s2.png' % \
-                            self.get_bouton_severity(event.severity).upper()},
-                        self.format_events_img_status(event),
-                        [[j.__show__(event), j.style] for j in self.plugin]
-                    ])
+            current_severity = self.get_severity(event.current_severity)
+            initial_severity = self.get_severity(event.initial_severity)
 
-            else:
-                events.append([
-                        event,
-                        {'class': class_tr[i % 2]},
-                        {'class': self.get_bouton_severity(event.severity) + \
-                            self.class_ack[event.status] },
-                        {'class': 'Cleared' + self.class_ack[event.status]},
-                        {'src': '/images/%s2.png' % \
-                            self.get_bouton_severity(event.severity).upper()},
-                        self.format_events_img_status(event),
-                        [[j.__show__(event), j.style] for j in self.plugin]
-                    ])
+            events.append([
+                    event,
+                    {'class': class_tr[i % 2]},
+                    {'class': self.bouton_severity[initial_severity] + \
+                        self.class_ack[event.status]},
+                    {'class': self.bouton_severity[current_severity] + \
+                        self.class_ack[event.status]},
+                    {'src': '/images/%s2.png' % \
+                        self.bouton_severity[current_severity].upper()},
+                    self.format_events_img_status(event),
+                    [[j.__show__(event), j.style] for j in self.plugin]
+                ])
             i += 1
 
         # On sauvegarde la liste précédemment créée puis on remplit
@@ -397,7 +382,8 @@ class VigiboardRequest():
         de l'affichage pour un historique donné.
         """
 
-        history = DBSession.query(EventHistory
+        history = DBSession.query(
+                    EventHistory,
                 ).filter(EventHistory.idevent.in_(self.idevents)
                 ).order_by(desc(EventHistory.timestamp)
                 ).order_by(desc(EventHistory.idhistory))
@@ -406,52 +392,34 @@ class VigiboardRequest():
             for i in self.idevents:
                 self.hist[i] = []
             return
+
         hists = {}
         i = 0
         class_tr = ['odd', 'even']
-        hist_tmp = []
-        last_idevent = history[0].idevent
-        for hist in history :
-            
-            if last_idevent != hist.idevent:
-                hists[last_idevent] = hist_tmp
-                last_idevent = hist.idevent
-                hist_tmp = []
+
+        for hist in history:
+            if not hist.idevent in hists:
+                hists[hist.idevent] = []
 
             # La liste pour l'historique actuel comporte dans l'ordre :
             #   Le moment où il a été généré
             #   Qui l'a généré
             #   Le type d'action qui a été appliqué
-            #   La sévérité de l'action si besoin est
+            #   La valeur de l'action
             #   Le détail de l'action
-            #   La classe à appliquer à la ligne (permet d'alterner
-            #       les couleurs)
-            #   La classe de la sévérité s'il y a
+            #   La classe à appliquer à la ligne
+            #       (permet d'alterner les couleurs)
 
-            if hist.value :
-                hist_tmp.append([
-                    hist.timestamp,
-                    hist.username,
-                    hist.type_action,
-                    self.severity[min(int(hist.value), 7)],
-                    hist.text,
-                    {'class': class_tr[i % 2]},
-                    {'class': self.class_severity[min(int(hist.value), 7)]}
-                ])
-
-            else:
-                hist_tmp.append([
-                    hist.timestamp,
-                    hist.username,
-                    hist.type_action,
-                    self.severity[0],
-                    hist.text,
-                    {'class': class_tr[i % 2]},
-                    {'class': self.class_severity[0]}
-                ])    
+            hists[hist.idevent].append([
+                hist.timestamp,
+                hist.username,
+                hist.type_action,
+                hist.value,
+                hist.text,
+                {'class': class_tr[i % 2]},
+            ])
             i += 1
         
-        hists[last_idevent] = hist_tmp
         self.hist = hists
 
     def generate_tmpl_context(self):

@@ -24,10 +24,6 @@ class TestVigiboardRequest(TestController):
     def setUp(self):
         TestController.setUp(self)
 
-        if self.__dict__.get('is_setup', False):
-            return
-        self.is_setup = True
-
         # On peuple la base de données.
 
         # Les groupes et leurs dépendances
@@ -80,7 +76,6 @@ class TestVigiboardRequest(TestController):
 
         # Les évènements eux-mêmes
         event_template = {
-            'active': True,
             'message': u'foo',
         }
 
@@ -122,7 +117,9 @@ class TestVigiboardRequest(TestController):
         # Les évènements corrélés
         aggregate_template = {
             'timestamp_active': datetime.now(),
-            'severity': 0,
+            'current_severity': 1,
+            'initial_severity': 1,
+            'peak_severity': 1,
             'status': u'None',
         }
         self.aggregate1 = EventsAggregate(
