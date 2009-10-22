@@ -315,6 +315,10 @@ class RootController(VigiboardRootController):
         # Si l'utilisateur édite plusieurs évènements à la fois,
         # il nous faut chacun des identifiants
 
+        if krgv['id'] is None:
+            flash(_('No event has been selected'), 'warning')
+            raise redirect(request.environ.get('HTTP_REFERER', url('/')))
+
         ids = krgv['id'].split(',')
        
         if len(ids) > 1 :
@@ -368,7 +372,7 @@ class RootController(VigiboardRootController):
                 DBSession.add(history)
                 event.status = krgv['status']
 
-        DBSession.flush()       
+        DBSession.flush()
         flash(_('Updated successfully'))
         redirect(request.environ.get('HTTP_REFERER', url('/')))
 
@@ -416,3 +420,4 @@ class RootController(VigiboardRootController):
         session['refresh'] = refresh
         session.save()
         return dict(ret= 'ok')
+

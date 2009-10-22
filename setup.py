@@ -34,6 +34,7 @@ setup(
         "PasteDeploy",
         "Paste",
         "decorator != 3.1.0", # Blacklist bad version
+        "vigilo-turbogears",
         ],
     paster_plugins=['PasteScript', 'Pylons', 'TurboGears2', 'tg.devtools'],
     packages=find_packages(exclude=['ez_setup']),

@@ -48,7 +48,7 @@ class PluginSHN(VigiboardRequestPlugin):
         # de l'espace occupé par la croix permettant de fermer le dialogue.
         # Du coup, elle se retrouve superposée au titre de la boîte.
         tmpl_context.shndialog = JQueryUIDialog(id='SHNDialog',
-                autoOpen=False, title='%s%s' % (_(u'High-Level Service'),
+                autoOpen=False, title='%s%s' % (_(u'High-Level Services'),
                 '&#160;' * 10))
         context.append([tmpl_context.shndialog, self.object_name])
 
