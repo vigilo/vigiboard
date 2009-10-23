@@ -32,8 +32,7 @@ class TestAuthentication(TestController):
         form = resp.form
         # Submitting the login form:
         form['login'] = u'manager'
-        # XXX Use '42' as the password until remote password validation gets in.
-        form['password'] = '42'
+        form['password'] = u'managepass'
         post_login = form.submit(status=302)
         # Being redirected to the home page:
         assert post_login.location.startswith('http://localhost/post_login')
@@ -45,8 +44,7 @@ class TestAuthentication(TestController):
     def test_logout(self):
         """Logouts must work correctly"""
         # Logging in voluntarily the quick way:
-        # XXX Use '42' as the password until remote password validation gets in.
-        resp = self.app.get('/login_handler?login=manager&password=42',
+        resp = self.app.get('/login_handler?login=manager&password=managepass',
                             status=302)
         resp = resp.follow(status=302)
         assert 'authtkt' in resp.request.cookies, \

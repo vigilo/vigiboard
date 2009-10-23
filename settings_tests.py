@@ -5,3 +5,5 @@ VIGILO_SQLALCHEMY = {
     'url': 'sqlite:///:memory:',
 }
 
+USE_KERBEROS = False
+
