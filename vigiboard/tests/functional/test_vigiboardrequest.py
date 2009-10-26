@@ -77,6 +77,7 @@ class TestVigiboardRequest(TestController):
         # Les évènements eux-mêmes
         event_template = {
             'message': u'foo',
+            'state': u'WARNING',
         }
 
         event1 = Event(idevent=u'event1', hostname=u'monhost',
@@ -117,9 +118,7 @@ class TestVigiboardRequest(TestController):
         # Les évènements corrélés
         aggregate_template = {
             'timestamp_active': datetime.now(),
-            'current_severity': 1,
-            'initial_severity': 1,
-            'peak_severity': 1,
+            'priority': 1,
             'status': u'None',
         }
         self.aggregate1 = EventsAggregate(

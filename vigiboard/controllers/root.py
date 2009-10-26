@@ -155,12 +155,8 @@ class RootController(VigiboardRootController):
         user = User.by_user_name(username)
 
         event = DBSession.query(
-                        EventsAggregate.initial_severity,
-                        EventsAggregate.current_severity,
-                        EventsAggregate.peak_severity,
-                        Event.hostname,
-                        Event.servicename,
-                        Event.idevent,
+                        EventsAggregate.priority,
+                        Event,
                  ).join(
                     (Event, EventsAggregate.idcause == Event.idevent),
                     (HostGroup, Event.hostname == HostGroup.hostname),
@@ -170,13 +166,9 @@ class RootController(VigiboardRootController):
 
         history = DBSession.query(
                     EventHistory,
-                 ).filter(EventHistory.idevent == event.idevent
+                 ).filter(EventHistory.idevent == event[1].idevent
                  ).order_by(asc(EventHistory.timestamp)
                  ).order_by(asc(EventHistory.type_action)).all()
-
-        current_severity = VigiboardRequest.get_severity(event.current_severity)
-        initial_severity = VigiboardRequest.get_severity(event.initial_severity)
-        peak_severity = VigiboardRequest.get_severity(event.peak_severity)
 
         eventdetails = {}
         for edname, edlink in \
@@ -184,17 +176,17 @@ class RootController(VigiboardRootController):
 
             eventdetails[edname] = edlink[1] % {
                     'idaggregate': idaggregate,
-                    'host': event.hostname,
-                    'service': event.servicename
+                    'host': event[1].hostname,
+                    'service': event[1].servicename
                     }
 
         return dict(
-                initial_state = VigiboardRequest.severity[initial_severity],
-                current_state = VigiboardRequest.severity[current_severity],
-                peak_state = VigiboardRequest.severity[peak_severity],
+                current_state = event[1].state,
+                initial_state = event[1].initial_state,
+                peak_state = event[1].peak_state,
                 idaggregate = idaggregate,
-                host = event.hostname,
-                service = event.servicename,
+                host = event[1].hostname,
+                service = event[1].servicename,
                 eventdetails = eventdetails,
             )
 

@@ -2,8 +2,8 @@
 # vim:set expandtab tabstop=4 shiftwidth=4: 
 """Gestion de la requête, des plugins et de l'affichage du Vigiboard"""
 
-from vigiboard.model import Event, EventsAggregate, EventHistory, \
-        Host, HostGroup, Service, ServiceGroup
+from vigiboard.model import Event, EventsAggregate, EventHistory, State, \
+                            Host, HostGroup, Service, ServiceGroup
 from tg import tmpl_context, url, config
 from vigiboard.model import DBSession
 from sqlalchemy import not_, and_, asc, desc, sql
@@ -14,33 +14,10 @@ from pylons.i18n import ugettext as _
 
 class VigiboardRequest():
     class_ack = {
-        'Acknowledged': 'Ack',
         'None': '',
-        'AAClosed': 'Ack'
+        'Acknowledged': '_Ack',
+        'AAClosed': '_Ack',
     }
-
-    severity = (
-        _('OK'),            # 0
-        _('Suppressed'),
-        _('Initial'),
-        _('Maintenance'),
-        _('Minor'),
-        _('Major'),
-        _('Critical'),      # 6
-    )
-
-    bouton_severity = (
-        'OK', 'Minor', 'Minor',
-        'Minor', 'Minor', 'Major',
-        'Critical',
-    )
-
-    @classmethod
-    def get_severity(cls, severity):
-        if not severity:
-            severity = 0
-        return int(severity)
-
 
     """
     Classe gérant la génération de la requête finale,
@@ -78,17 +55,20 @@ class VigiboardRequest():
                 HostGroup.groupname.in_(self.user_groups),
                 ServiceGroup.groupname.in_(self.user_groups),
 
-                # On masque les évènements marqués comme OK
-                # (current_severity == 0) et déjà traités
-                # (status == 'AAClosed').
-                not_(and_(EventsAggregate.current_severity == 0,
-                    EventsAggregate.status == u'AAClosed')),
+                # On masque les évènements avec l'état OK
+                # et traités (status == u'AAClosed').
+                not_(and_(
+                    Event.numeric_current_state ==
+                        State.names_mapping().index('OK'),
+                    EventsAggregate.status == u'AAClosed'
+                )),
                 EventsAggregate.timestamp_active != None,
             ]
 
         self.orderby = [
-                desc(EventsAggregate.status),   # None, Acknowledged, AAClosed
-                desc(EventsAggregate.current_severity), # Code pour Minor, etc.
+                desc(EventsAggregate.status),       # None, Acknowledged, AAClosed
+                desc(EventsAggregate.priority),     # Priorité ITIL (entier).
+                desc(Event.numeric_current_state),  # Etat courant (entier).
                 asc(Event.hostname),
                 desc(Event.timestamp),
             ]
@@ -97,6 +77,7 @@ class VigiboardRequest():
                 EventsAggregate.idaggregate,
                 EventsAggregate,
                 Event.hostname,
+                Event.numeric_current_state,
                 Event.timestamp,
             ]
 
@@ -112,19 +93,19 @@ class VigiboardRequest():
         """
         Ajout d'un plugin, on lui prélève ses ajouts dans la requête
         """
-        for i in argv :
+        for i in argv:
             if isinstance(i, VigiboardRequestPlugin):
-                if i.table :
+                if i.table:
                     self.add_table(*i.table)
-                if i.join :
+                if i.join:
                     self.add_join(*i.join)
-                if i.outerjoin :
+                if i.outerjoin:
                     self.add_outer_join(*i.outerjoin)
-                if i.filter :
+                if i.filter:
                     self.add_filter(*i.filter)
-                if i.groupby :    
+                if i.groupby:    
                     self.add_group_by(*i.groupby)
-                if i.orderby :
+                if i.orderby:
                     self.add_order_by(*i.orderby)
                 self.plugin.append(i)
 
@@ -255,8 +236,13 @@ class VigiboardRequest():
         
         for i in argv:
             for j in self.groupby:
-                if str(i) == str(j):
-                    break
+                try:
+                    if str(i) == str(j):
+                        break
+                # SQLAlchemy lève cette exception pour certains attributes,
+                # par exemple les attributs définis avec synonym().
+                except AttributeError:
+                    pass
             self.groupby.append(i)
 
     def add_order_by(self, *argv):
@@ -317,6 +303,7 @@ class VigiboardRequest():
                 [_('Date')+ '<span style="font-weight:normal">' + \
                         '<br />['+_('Duration') + ']</span>',
                         {'style':'text-align:left'}],
+                ['Priority', {'title':_('ITIL Priority')}],
                 ['#', {'title':_('Occurrence count')}],
                 [_('Host'), {'style':'text-align:left'}],
                 [_('Service Type')+'<br />'+_('Service Name'),
@@ -351,18 +338,13 @@ class VigiboardRequest():
             #   Une liste (une case par plugin) de ce que le plugin souhaite
             #       afficher en fonction de l'évènement
 
-            current_severity = self.get_severity(event.current_severity)
-            initial_severity = self.get_severity(event.initial_severity)
-
             events.append([
                     event,
                     {'class': class_tr[i % 2]},
-                    {'class': self.bouton_severity[initial_severity] + \
+                    {'class': event.cause.initial_state + \
                         self.class_ack[event.status]},
-                    {'class': self.bouton_severity[current_severity] + \
-                        self.class_ack[event.status]},
-                    {'src': '/images/%s2.png' % \
-                        self.bouton_severity[current_severity].upper()},
+                    {'class': event.cause.state + self.class_ack[event.status]},
+                    {'src': '/images/%s2.png' % event.cause.state},
                     self.format_events_img_status(event),
                     [[j.__show__(event), j.style] for j in self.plugin]
                 ])
