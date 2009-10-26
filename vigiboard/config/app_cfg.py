@@ -23,17 +23,6 @@ from vigiboard.lib import app_globals, helpers
 base_config = VigiloAppConfig('vigiboard')
 base_config.renderers = []
 
-# Pour gérer les thèmes, la notation "pointée" n'est pas utilisée.
-# À la place, on indique le nom complet du template (ex: "index.html")
-# lors de l'appel au décorateur @expose.
-base_config.use_dotted_templatenames = False
-
-# On définit la variable à False. En réalité, le comportement
-# est le même que si elle valait toujours True, sauf que l'on
-# met en place les middlewares nous même pour pouvoir gérer les
-# thèmes (cf. ./middleware.py).
-base_config.serve_static = False
-
 base_config.package = vigiboard
 
 #Set the default renderer
@@ -80,7 +69,7 @@ base_config.sa_auth.post_logout_url = '/post_logout'
 ##################################
 
 # Vigiboard version
-base_config['vigiboard_version'] = u'0.1'
+base_config['vigiboard_version'] = u'2.0-pre0.1'
 
 # Links configuration
 # XXX Should be part of ini settings.
