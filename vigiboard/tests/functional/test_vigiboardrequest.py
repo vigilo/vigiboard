@@ -45,11 +45,11 @@ class TestVigiboardRequest(TestController):
         # Les dépendances des évènements
         host_template = {
             'checkhostcmd': u'halt',
-            'community': u'public',
+            'snmpcommunity': u'public',
             'fqhn': u'localhost',
             'hosttpl': u'/dev/null',
             'mainip': u'192.168.1.1',
-            'port': 42,
+            'snmpport': 42,
         }
 
         service_template = {
