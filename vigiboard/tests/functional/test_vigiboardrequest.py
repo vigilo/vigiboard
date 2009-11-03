@@ -12,7 +12,7 @@ import transaction
 from vigiboard.model import DBSession, \
     Event, EventHistory, EventsAggregate, \
     Permission, User, \
-    Group, Host, HostGroup, Service, ServiceGroup
+    Group, Host, HostGroup, ServiceLowLevel, ServiceGroup
 from vigiboard.tests import TestController
 from vigiboard.controllers.vigiboardrequest import VigiboardRequest
 from vigiboard.controllers.vigiboard_plugin.tests import MonPlugin
@@ -55,12 +55,13 @@ class TestVigiboardRequest(TestController):
         service_template = {
             'servicetype': u'foo',
             'command': u'halt',
+            'op_dep': u'+',
         }
 
         DBSession.add(Host(name=u'monhost', **host_template))
-        DBSession.add(Service(name=u'monservice', **service_template))
+        DBSession.add(ServiceLowLevel(name=u'monservice', **service_template))
         DBSession.add(Host(name=u'monhostuser', **host_template))
-        DBSession.add(Service(name=u'monserviceuser', **service_template))
+        DBSession.add(ServiceLowLevel(name=u'monserviceuser', **service_template))
         DBSession.flush()
 
         # Table de jointure entre les hôtes/services et les groupes
@@ -77,16 +78,16 @@ class TestVigiboardRequest(TestController):
         # Les évènements eux-mêmes
         event_template = {
             'message': u'foo',
-            'state': u'WARNING',
+            'current_state': u'WARNING',
         }
 
-        event1 = Event(idevent=u'event1', hostname=u'monhost',
+        event1 = Event(idevent=41, hostname=u'monhost',
             servicename=u'monservice', **event_template)
-        event2 = Event(idevent=u'event2', hostname=u'monhostuser',
+        event2 = Event(idevent=42, hostname=u'monhostuser',
             servicename=u'monservice', **event_template)
-        event3 = Event(idevent=u'event3', hostname=u'monhost',
+        event3 = Event(idevent=43, hostname=u'monhost',
             servicename=u'monserviceuser', **event_template)
-        event4 = Event(idevent=u'event4', hostname=u'monhostuser',
+        event4 = Event(idevent=44, hostname=u'monhostuser',
             servicename=u'monserviceuser', **event_template)
 
         DBSession.add(event1)
@@ -122,10 +123,10 @@ class TestVigiboardRequest(TestController):
             'status': u'None',
         }
         self.aggregate1 = EventsAggregate(
-            idaggregate=u'foo',
+            idaggregate=42,
             idcause=event1.idevent, **aggregate_template)
         self.aggregate2 = EventsAggregate(
-            idaggregate=u'bar',
+            idaggregate=43,
             idcause=event4.idevent, **aggregate_template)
 
         self.aggregate1.events.append(event1)

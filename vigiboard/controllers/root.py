@@ -7,14 +7,14 @@ from tg import expose, validate, require, flash, \
 from tw.forms import validators 
 from pylons.i18n import ugettext as _
 from pylons.controllers.util import abort
-from sqlalchemy import asc
+from sqlalchemy import not_, and_, asc
 from datetime import datetime
 import math
 
 from vigiboard.model import DBSession
 from vigiboard.model import Event, EventHistory, EventsAggregate, \
                             Host, HostGroup, \
-                            User
+                            State, User
 from repoze.what.predicates import Any, not_anonymous
 from vigiboard.widgets.edit_event import edit_event_status_options
 from vigiboard.controllers.vigiboardrequest import VigiboardRequest
@@ -181,7 +181,7 @@ class RootController(VigiboardRootController):
                     }
 
         return dict(
-                current_state = event[1].state,
+                current_state = event[1].current_state,
                 initial_state = event[1].initial_state,
                 peak_state = event[1].peak_state,
                 idaggregate = idaggregate,
@@ -255,7 +255,11 @@ class RootController(VigiboardRootController):
         events = VigiboardRequest(User.by_user_name(username))
         events.add_filter(Event.hostname == host,
                 Event.servicename == service)
-        del events.filter[2]
+        # XXX On devrait avoir une autre API que ça !!!
+        # Supprime le filtre qui empêche d'obtenir des évènements fermés
+        # (ie: ayant l'état Nagios 'OK' et le statut 'AAClosed').
+        if len(events.filter) > 2:
+            del events.filter[2]
 
         # Vérification qu'il y a au moins 1 évènement qui correspond
         if events.num_rows() == 0 :
@@ -326,8 +330,7 @@ class RootController(VigiboardRootController):
             redirect('/')
         
         # Modification des évènements et création d'un historique
-        # pour chacun d'eux
-        
+        # pour chacun d'eux.
         username = request.environ['repoze.who.identity']['repoze.who.userid']
 
         for req in events.req:

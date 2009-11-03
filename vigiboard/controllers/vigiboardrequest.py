@@ -3,7 +3,7 @@
 """Gestion de la requête, des plugins et de l'affichage du Vigiboard"""
 
 from vigiboard.model import Event, EventsAggregate, EventHistory, State, \
-                            Host, HostGroup, Service, ServiceGroup
+                            Host, HostGroup, ServiceLowLevel, ServiceGroup
 from tg import tmpl_context, url, config
 from vigiboard.model import DBSession
 from sqlalchemy import not_, and_, asc, desc, sql
@@ -44,9 +44,9 @@ class VigiboardRequest():
         self.join = [
                 (Event, EventsAggregate.idcause == Event.idevent),
                 (Host, Event.hostname == Host.name),
-                (Service, Event.servicename == Service.name),
+                (ServiceLowLevel, Event.servicename == ServiceLowLevel.name),
                 (HostGroup, Host.name == HostGroup.hostname),
-                (ServiceGroup, Service.name == ServiceGroup.servicename),
+                (ServiceGroup, ServiceLowLevel.name == ServiceGroup.servicename),
             ]
 
         self.outerjoin = []
@@ -343,8 +343,9 @@ class VigiboardRequest():
                     {'class': class_tr[i % 2]},
                     {'class': event.cause.initial_state + \
                         self.class_ack[event.status]},
-                    {'class': event.cause.state + self.class_ack[event.status]},
-                    {'src': '/images/%s2.png' % event.cause.state},
+                    {'class': event.cause.current_state + \
+                        self.class_ack[event.status]},
+                    {'src': '/images/%s2.png' % event.cause.current_state},
                     self.format_events_img_status(event),
                     [[j.__show__(event), j.style] for j in self.plugin]
                 ])
@@ -415,7 +416,7 @@ class VigiboardRequest():
         tmpl_context.edit_event_form = EditEventForm('edit_event_form',
                 action=url('/update'))
         tmpl_context.edit_eventdialog = JQueryUIDialog(id='Edit_EventsDialog',
-                autoOpen=False,title=_('Edit Event'))
+                autoOpen=False, title=_('Edit Event'))
     
         # Dialogue de recherche
         tmpl_context.search_form = SearchForm('search_form',

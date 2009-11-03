@@ -33,7 +33,8 @@ class SearchForm(TableForm):
     """
     Formulaire de recherche dans les évènements
 
-    Affiche un champ texte pour l'hôte, le service, la sortie et le trouble ticket
+    Affiche un champ texte pour l'hôte, le service, la sortie
+    et le ticket d'incidence.
     """
 
     fields = [
