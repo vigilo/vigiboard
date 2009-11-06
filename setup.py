@@ -12,12 +12,12 @@ tests_require = ['WebTest', 'BeautifulSoup']
 setup(
     name='vigiboard',
     version='0.1',
-    description="""
-    IHM Module for the Dashboard
-    """,
+    description='IHM Module for the Dashboard',
     author="""Thomas ANDREJAK""",
     author_email="""thomas.andrejak@gmail.com""",
+    zip_safe=False,
     install_requires=[
+        "cheetah >= 2.0",
         "tg.devtools",
         "TurboGears2 >= 2.0b7",
         "Catwalk >= 2.0.2",
@@ -35,7 +35,9 @@ setup(
         "Paste",
         "decorator != 3.1.0", # Blacklist bad version
         "vigilo-turbogears",
+        #"modwsgideploy",
         ],
+
     paster_plugins=['PasteScript', 'Pylons', 'TurboGears2', 'tg.devtools'],
     packages=find_packages(exclude=['ez_setup']),
     include_package_data=True,
@@ -60,6 +62,7 @@ setup(
             ],
         'console_scripts': [
             'runtests-vigiboard = vigiboard.tests:runtests',
+            'paster = paste.script.command:run',
             ],
         },
 )

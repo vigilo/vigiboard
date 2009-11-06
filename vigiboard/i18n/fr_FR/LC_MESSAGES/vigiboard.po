@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: vigiboard 0.1\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2009-07-06 11:19+0200\n"
-"PO-Revision-Date: 2009-09-04 11:27+0200\n"
+"PO-Revision-Date: 2009-11-06 13:22+0100\n"
 "Last-Translator: Thomas ANDREJAK <thomas.andrejak@c-s.fr>\n"
 "Language-Team: fr_FR <LL@li.org>\n"
 "Plural-Forms: nplurals=2; plural=(n > 1)\n"
@@ -17,125 +17,107 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 0.9.4\n"
 
-#: vigiboard/controllers/root.py:117 vigiboard/controllers/root.py:175
-#: vigiboard/controllers/root.py:213 vigiboard/controllers/root.py:257
+#: vigiboard/controllers/error.py:26
+msgid "We're sorry but we weren't able to process this request."
+msgstr "Désolé mais nous n'avons pas pu traiter votre requête."
+
+#: vigiboard/controllers/root.py:45 vigiboard/controllers/root.py:141
+#: vigiboard/controllers/root.py:196 vigiboard/controllers/root.py:242
+#: vigiboard/controllers/root.py:295
 msgid "You need to be authenticated"
 msgstr "Vous devez être authentifié"
 
-#: vigiboard/controllers/root.py:150
-#: vigiboard/controllers/vigiboardrequest.py:37
-msgid "None"
-msgstr "Aucun"
-
-#: vigiboard/controllers/root.py:150
-#: vigiboard/controllers/vigiboardrequest.py:37
-msgid "OK"
-msgstr ""
-
-#: vigiboard/controllers/root.py:150
-#: vigiboard/controllers/vigiboardrequest.py:37
-msgid "Suppressed"
-msgstr "Supprimé"
-
-#: vigiboard/controllers/root.py:151
-#: vigiboard/controllers/vigiboardrequest.py:38
-msgid "Initial"
-msgstr ""
-
-#: vigiboard/controllers/root.py:151
-#: vigiboard/controllers/vigiboardrequest.py:38
-msgid "Maintenance"
-msgstr ""
-
-#: vigiboard/controllers/root.py:151
-#: vigiboard/controllers/vigiboardrequest.py:38
-msgid "Minor"
-msgstr "Mineur"
-
-#: vigiboard/controllers/root.py:152
-#: vigiboard/controllers/vigiboardrequest.py:39
-msgid "Major"
-msgstr "Majeur"
-
-#: vigiboard/controllers/root.py:152
-#: vigiboard/controllers/vigiboardrequest.py:39
-msgid "Critical"
-msgstr "Critique"
-
-#: vigiboard/controllers/root.py:189
+#: vigiboard/controllers/root.py:211
 msgid "Error in DB"
 msgstr "Erreur dans la base de données"
 
-#: vigiboard/controllers/root.py:282
+#: vigiboard/controllers/root.py:311
+msgid "No event has been selected"
+msgstr "Aucun évènement sélectionné"
+
+#: vigiboard/controllers/root.py:325
 msgid "No access to this event"
 msgstr "Accès à cet évènement refusé"
 
-#: vigiboard/controllers/root.py:310
+#: vigiboard/controllers/root.py:344
+#, python-format
+msgid "Changed trouble ticket from '%s' to '%s'"
+msgstr "A changé le ticket d'incidence de '%s' en '%s'"
+
+#: vigiboard/controllers/root.py:358
+#, python-format
+msgid "Changed acknowledgement status from '%s' to '%s'"
+msgstr "A changé l'état d'acquittement de '%s' en '%s'"
+
+#: vigiboard/controllers/root.py:368
 msgid "Updated successfully"
 msgstr "Mise à jour réussie"
 
-#: vigiboard/controllers/vigiboard_controller.py:38
+#: vigiboard/controllers/vigiboard_controller.py:37
 msgid "Wrong credentials"
 msgstr "Identifiant ou mot de passe incorrect"
 
 #: vigiboard/controllers/vigiboard_controller.py:52
 #, python-format
 msgid "Welcome back, %s!"
-msgstr ""
+msgstr "Bienvenue, %s!"
 
-#: vigiboard/controllers/vigiboard_controller.py:61
+#: vigiboard/controllers/vigiboard_controller.py:64
 msgid "We hope to see you soon!"
-msgstr ""
+msgstr "Nous espérons vous revoir bientôt!"
 
-#: vigiboard/controllers/vigiboardrequest.py:279
+#: vigiboard/controllers/vigiboardrequest.py:303
 msgid "Date"
-msgstr ""
+msgstr "Date"
 
-#: vigiboard/controllers/vigiboardrequest.py:280
+#: vigiboard/controllers/vigiboardrequest.py:304
 msgid "Duration"
 msgstr "Durée"
 
-#: vigiboard/controllers/vigiboardrequest.py:282
+#: vigiboard/controllers/vigiboardrequest.py:306
+msgid "ITIL Priority"
+msgstr "Priorité ITIL"
+
+#: vigiboard/controllers/vigiboardrequest.py:307
 msgid "Occurrence count"
 msgstr "Nombre d'occurrences"
 
-#: vigiboard/controllers/vigiboardrequest.py:283
+#: vigiboard/controllers/vigiboardrequest.py:308
 #: vigiboard/widgets/edit_event.py:40
 msgid "Host"
 msgstr "Hôte"
 
-#: vigiboard/controllers/vigiboardrequest.py:284
+#: vigiboard/controllers/vigiboardrequest.py:309
 msgid "Service Type"
 msgstr "Type de service"
 
-#: vigiboard/controllers/vigiboardrequest.py:284
+#: vigiboard/controllers/vigiboardrequest.py:309
 msgid "Service Name"
 msgstr "Nom du service"
 
-#: vigiboard/controllers/vigiboardrequest.py:286
+#: vigiboard/controllers/vigiboardrequest.py:311
 #: vigiboard/widgets/edit_event.py:42
 msgid "Output"
 msgstr "Sortie d'erreur"
 
-#: vigiboard/controllers/vigiboardrequest.py:289
+#: vigiboard/controllers/vigiboardrequest.py:314
 msgid "TT"
-msgstr ""
+msgstr "TT"
 
-#: vigiboard/controllers/vigiboardrequest.py:289
+#: vigiboard/controllers/vigiboardrequest.py:314
 #: vigiboard/widgets/edit_event.py:26 vigiboard/widgets/edit_event.py:43
 msgid "Trouble Ticket"
 msgstr "Ticket d'incidence"
 
-#: vigiboard/controllers/vigiboardrequest.py:426
+#: vigiboard/controllers/vigiboardrequest.py:418
 msgid "Edit Event"
 msgstr "Edition d'évènements"
 
-#: vigiboard/controllers/vigiboardrequest.py:432
+#: vigiboard/controllers/vigiboardrequest.py:424
 msgid "Search Event"
 msgstr "Recherche d'évènements"
 
-#: vigiboard/controllers/vigiboardrequest.py:436
-#: vigiboard/templates/vigiboard_history_table.html:12
+#: vigiboard/controllers/vigiboardrequest.py:428
 msgid "History"
 msgstr "Historique"
 
@@ -143,451 +125,22 @@ msgstr "Historique"
 msgid "Error"
 msgstr "Erreur"
 
-#: vigiboard/controllers/vigiboard_plugin/shn.py:29
+#: vigiboard/controllers/vigiboard_plugin/shn.py:23
 msgid "Impacted HLS"
 msgstr "SHN impactés"
 
-#: vigiboard/controllers/vigiboard_plugin/shn.py:30
+#: vigiboard/controllers/vigiboard_plugin/shn.py:24
 msgid "Impacted High-Level Services"
 msgstr "Services de Haut Niveau impactes"
 
-#: vigiboard/controllers/vigiboard_plugin/shn.py:55
-msgid "High-Level Service"
+#: vigiboard/controllers/vigiboard_plugin/shn.py:51
+#, fuzzy
+msgid "High-Level Services"
 msgstr "Service de Haut Niveau"
-
-#: vigiboard/templates/debug.html:11
-msgid "Sample Template, for looking at template locals"
-msgstr ""
-
-#: vigiboard/templates/debug.html:15
-msgid "All objects from locals():"
-msgstr ""
-
-#: vigiboard/templates/error.html:11
-#, python-format
-msgid "A %(error_code)d Error has Occurred"
-msgstr "Une erreur %(error_code)d est survenue"
-
-#: vigiboard/templates/error.html:15
-#, python-format
-msgid "Error %(error_code)d"
-msgstr "Erreur %(error_code)d"
-
-#: vigiboard/templates/footer.html:7
-msgid "TurboGears"
-msgstr ""
-
-#: vigiboard/templates/footer.html:8
-msgid "Powered by TurboGears 2"
-msgstr ""
-
-#: vigiboard/templates/footer.html:11
-msgid ""
-"TurboGears is a open source front-to-back web development\n"
-"      framework written in Python. Copyright (c) 2005-2008"
-msgstr ""
-
-#: vigiboard/templates/header.html:6
-msgid "Welcome to TurboGears 2"
-msgstr ""
-
-#: vigiboard/templates/header.html:8
-msgid "The Python web metaframework"
-msgstr ""
-
-#: vigiboard/templates/index.html:11
-msgid ""
-"Welcome to TurboGears 2.0, standing on the \n"
-"  shoulders of giants, since 2007"
-msgstr ""
-
-#: vigiboard/templates/index.html:18
-msgid "Presentation"
-msgstr ""
-
-#: vigiboard/templates/index.html:19
-msgid ""
-"TurboGears 2 is rapid web application development toolkit designed to "
-"make your life easier."
-msgstr ""
-
-#: vigiboard/templates/index.html:22
-msgid "Code your data model"
-msgstr ""
-
-#: vigiboard/templates/index.html:23
-msgid "Design your data model, Create the database, and Add some bootstrap data."
-msgstr ""
-
-#: vigiboard/templates/index.html:26
-msgid "Design your URL architecture"
-msgstr ""
-
-#: vigiboard/templates/index.html:27
-msgid ""
-"Decide your URLs, Program your controller methods, Design your \n"
-"            templates, and place some static files (CSS and/or "
-"JavaScript)."
-msgstr ""
-
-#: vigiboard/templates/index.html:31
-msgid "Distribute your app"
-msgstr ""
-
-#: vigiboard/templates/index.html:32
-msgid "Test your source, Generate project documents, Build a distribution."
-msgstr ""
-
-#: vigiboard/templates/index.html:37
-msgid "Thank you for choosing TurboGears."
-msgstr ""
-
-#: vigiboard/templates/login.html:11
-msgid "Login Form"
-msgstr ""
-
-#: vigiboard/templates/login.html:17 vigiboard/templates/master.html:26
-msgid "Login"
-msgstr ""
-
-#: vigiboard/templates/login.html:18
-msgid "Username:"
-msgstr ""
-
-#: vigiboard/templates/login.html:19
-msgid "Password:"
-msgstr ""
-
-#: vigiboard/templates/master.html:20
-msgid "Welcome"
-msgstr ""
-
-#: vigiboard/templates/master.html:21
-msgid "About"
-msgstr ""
-
-#: vigiboard/templates/master.html:22
-msgid "Authentication"
-msgstr ""
-
-#: vigiboard/templates/master.html:23
-msgid "Contact"
-msgstr ""
-
-#: vigiboard/templates/master.html:24 vigiboard/templates/vigiboard.html:11
-msgid "Vigiboard"
-msgstr ""
-
-#: vigiboard/templates/master.html:27
-msgid "Logout"
-msgstr ""
-
-#: vigiboard/templates/master.html:28
-msgid "Admin"
-msgstr ""
-
-#: vigiboard/templates/master.html:33
-msgid "Now Viewing:"
-msgstr ""
-
-#: vigiboard/templates/sidebars.html:7
-msgid "Get Started with TG2"
-msgstr ""
-
-#: vigiboard/templates/sidebars.html:11
-msgid "About this page"
-msgstr ""
-
-#: vigiboard/templates/sidebars.html:11
-msgid "A quick guide to this TG2 site"
-msgstr ""
-
-#: vigiboard/templates/sidebars.html:14 vigiboard/templates/vigiboard.html:33
-msgid "Home"
-msgstr ""
-
-#: vigiboard/templates/sidebars.html:14
-msgid "Back to your Quickstart Home page"
-msgstr ""
-
-#: vigiboard/templates/sidebars.html:16
-msgid "TG2 Documents"
-msgstr ""
-
-#: vigiboard/templates/sidebars.html:16
-msgid "- Read everything in the Getting Started section"
-msgstr ""
-
-#: vigiboard/templates/sidebars.html:17
-msgid "TG1 docs"
-msgstr ""
-
-#: vigiboard/templates/sidebars.html:17
-msgid "(still useful, although a lot has changed for TG2)"
-msgstr ""
-
-#: vigiboard/templates/sidebars.html:18
-msgid "Join the TG Mail List"
-msgstr ""
-
-#: vigiboard/templates/sidebars.html:18
-msgid "for general TG use/topics"
-msgstr ""
-
-#: vigiboard/templates/sidebars.html:25
-msgid "Developing TG2"
-msgstr ""
-
-#: vigiboard/templates/sidebars.html:27
-msgid "More TG2 Documents"
-msgstr ""
-
-#: vigiboard/templates/sidebars.html:27
-msgid "in progress"
-msgstr ""
-
-#: vigiboard/templates/sidebars.html:28
-msgid "TG2 Trac tickets"
-msgstr ""
-
-#: vigiboard/templates/sidebars.html:28
-msgid "What's happening now in TG2 development"
-msgstr ""
-
-#: vigiboard/templates/sidebars.html:29
-msgid "TG Dev timeline"
-msgstr ""
-
-#: vigiboard/templates/sidebars.html:29
-msgid "(recent ticket updates, svn checkins, wiki changes)"
-msgstr ""
-
-#: vigiboard/templates/sidebars.html:30
-msgid "TG2 SVN repository"
-msgstr ""
-
-#: vigiboard/templates/sidebars.html:30
-msgid "For checking out a copy"
-msgstr ""
-
-#: vigiboard/templates/sidebars.html:31
-msgid "Follow these instructions"
-msgstr ""
-
-#: vigiboard/templates/sidebars.html:31
-msgid "For installing your copy"
-msgstr ""
-
-#: vigiboard/templates/sidebars.html:32
-msgid "TG2 Trac's svn view"
-msgstr ""
-
-#: vigiboard/templates/sidebars.html:32
-msgid "In case you need a quick look"
-msgstr ""
-
-#: vigiboard/templates/sidebars.html:33
-msgid "Join the TG-Trunk Mail List"
-msgstr ""
-
-#: vigiboard/templates/sidebars.html:33
-msgid "for TG2 discuss/dev"
-msgstr ""
-
-#: vigiboard/templates/vigiboard.html:17
-msgid "Toolbar"
-msgstr "Barre d'outils"
-
-#: vigiboard/templates/vigiboard.html:21
-msgid "v"
-msgstr ""
-
-#: vigiboard/templates/vigiboard.html:27
-msgid "You are in Search mode, click here to return to the initial mode."
-msgstr "Mode recherche, cliquez ici pour revenir au mode initial."
-
-#: vigiboard/templates/vigiboard.html:36
-msgid "Filter display"
-msgstr "Filtrer la vue"
-
-#: vigiboard/templates/vigiboard.html:39
-msgid "Log out"
-msgstr "Déconnexion"
-
-#: vigiboard/templates/vigiboard.html:44
-msgid "Default font size"
-msgstr "Petite police"
-
-#: vigiboard/templates/vigiboard.html:45
-msgid "Medium font size"
-msgstr "Police moyenne"
-
-#: vigiboard/templates/vigiboard.html:46
-msgid "Large font size"
-msgstr "Police importante"
-
-#: vigiboard/templates/vigiboard.html:51
-msgid "Never"
-msgstr "Jamais"
-
-#: vigiboard/templates/vigiboard.html:52
-msgid "30 Secondes"
-msgstr ""
-
-#: vigiboard/templates/vigiboard.html:53
-msgid "1 Minute"
-msgstr ""
-
-#: vigiboard/templates/vigiboard.html:54
-msgid "5 Minutes"
-msgstr ""
-
-#: vigiboard/templates/vigiboard.html:55
-msgid "10 Minutes"
-msgstr ""
-
-#: vigiboard/templates/vigiboard.html:57
-msgid "Start"
-msgstr "Démarrer"
-
-#: vigiboard/templates/vigiboard.html:76
-msgid "Unable to save preferences"
-msgstr "Impossible de sauver les préférences"
-
-#: vigiboard/templates/vigiboard.html:90
-msgid "Stop"
-msgstr "Arrêter"
-
-#: vigiboard/templates/vigiboard_event_table.html:12
-msgid "Event table"
-msgstr "Table des évènements"
-
-#: vigiboard/templates/vigiboard_event_table.html:17
-#: vigiboard/templates/vigiboard_event_table.html:18
-#: vigiboard/templates/vigiboard_event_table.html:164
-msgid "Previous"
-msgstr "Précédente"
-
-#: vigiboard/templates/vigiboard_event_table.html:17
-#: vigiboard/templates/vigiboard_event_table.html:18
-#: vigiboard/templates/vigiboard_event_table.html:164
-msgid "Previous page"
-msgstr "Page précédente"
-
-#: vigiboard/templates/vigiboard_event_table.html:20
-#, python-format
-msgid "Showing rows %(id_first_row)d to %(id_last_row)d of %(total_rows)d"
-msgstr "Lignes %(id_first_row)d à %(id_last_row)d sur %(total_rows)d"
-
-#: vigiboard/templates/vigiboard_event_table.html:20
-msgid "Pages"
-msgstr ""
-
-#: vigiboard/templates/vigiboard_event_table.html:27
-#: vigiboard/templates/vigiboard_event_table.html:28
-#: vigiboard/templates/vigiboard_event_table.html:170
-msgid "Next"
-msgstr "Suivante"
-
-#: vigiboard/templates/vigiboard_event_table.html:27
-#: vigiboard/templates/vigiboard_event_table.html:28
-#: vigiboard/templates/vigiboard_event_table.html:170
-msgid "Next page"
-msgstr "Page suivante"
-
-#: vigiboard/templates/vigiboard_event_table.html:36
-#: vigiboard/templates/vigiboard_event_table.html:178
-msgid "Edit selected"
-msgstr "Éditer la sélection"
-
-#: vigiboard/templates/vigiboard_event_table.html:36
-#: vigiboard/templates/vigiboard_event_table.html:178
-msgid "Edit all selected events"
-msgstr "Éditer tous les évènements sélectionnés"
-
-#: vigiboard/templates/vigiboard_event_table.html:37
-msgid "Select/Unselect all"
-msgstr "Sélectionner/Déselectionner tout"
-
-#: vigiboard/templates/vigiboard_event_table.html:45
-msgid "Details"
-msgstr "Détails"
-
-#: vigiboard/templates/vigiboard_event_table.html:45
-msgid "Event details"
-msgstr "Détails de l'évènement"
-
-#: vigiboard/templates/vigiboard_event_table.html:58
-msgid "Status"
-msgstr "Statut"
-
-#: vigiboard/templates/vigiboard_event_table.html:58
-msgid "Event status"
-msgstr "Statut de l'évènement"
-
-#: vigiboard/templates/vigiboard_event_table.html:59
-msgid "Edit"
-msgstr "Éditer"
-
-#: vigiboard/templates/vigiboard_event_table.html:59
-msgid "Edit this event"
-msgstr "Éditer cet évènement"
-
-#: vigiboard/templates/vigiboard_event_table.html:137
-msgid "Initial State:"
-msgstr "État initial :"
-
-#: vigiboard/templates/vigiboard_event_table.html:138
-msgid "Current State:"
-msgstr "État actuel :"
-
-#: vigiboard/templates/vigiboard_event_table.html:141
-msgid "Detailed history for this event"
-msgstr "Historique détaillé pour cet évènement"
-
-#: vigiboard/templates/vigiboard_event_table.html:142
-msgid "Detailed history for this host/service"
-msgstr "Historique détaillé pour cet hôte / ce service"
-
-#: vigiboard/templates/vigiboard_event_table.html:166
-msgid "Showing rows 0 to 0 of 0"
-msgstr "Lignes 0 à 0 sur 0"
-
-#: vigiboard/templates/vigiboard_event_table.html:166
-msgid "Page 0"
-msgstr ""
-
-#: vigiboard/templates/vigiboard_event_table.html:184
-msgid "No event"
-msgstr "Aucun événement disponible"
-
-#: vigiboard/templates/vigiboard_history_table.html:8
-msgid "There is no history."
-msgstr "Il n'y a pas d'historique"
-
-#: vigiboard/templates/vigiboard_history_table.html:15
-msgid "Time"
-msgstr "Temps"
-
-#: vigiboard/templates/vigiboard_history_table.html:16
-msgid "User"
-msgstr "Utilisateur"
-
-#: vigiboard/templates/vigiboard_history_table.html:17
-msgid "Type"
-msgstr ""
-
-#: vigiboard/templates/vigiboard_history_table.html:18
-msgid "Value"
-msgstr "Valeur"
-
-#: vigiboard/templates/vigiboard_history_table.html:19
-msgid "Text"
-msgstr "Texte"
 
 #: vigiboard/widgets/edit_event.py:9
 msgid "No change"
-msgstr "Sans changement"
+msgstr "Pas de changement"
 
 #: vigiboard/widgets/edit_event.py:10
 msgid "Change to None"
@@ -607,7 +160,7 @@ msgstr "Appliquer"
 
 #: vigiboard/widgets/edit_event.py:41
 msgid "Service"
-msgstr ""
+msgstr "Service"
 
 #: vigiboard/widgets/edit_event.py:47
 msgid "Search"
