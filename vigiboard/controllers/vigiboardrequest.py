@@ -52,8 +52,8 @@ class VigiboardRequest():
         self.outerjoin = []
 
         self.filter = [
-                HostGroup.groupname.in_(self.user_groups),
-                ServiceGroup.groupname.in_(self.user_groups),
+                HostGroup.idgroup.in_(self.user_groups),
+                ServiceGroup.idgroup.in_(self.user_groups),
 
                 # On masque les évènements avec l'état OK
                 # et traités (status == u'AAClosed').
@@ -303,7 +303,7 @@ class VigiboardRequest():
                 [_('Date')+ '<span style="font-weight:normal">' + \
                         '<br />['+_('Duration') + ']</span>',
                         {'style':'text-align:left'}],
-                ['Priority', {'title':_('ITIL Priority')}],
+                [_('Priority'), {'title':_('ITIL Priority')}],
                 ['#', {'title':_('Occurrence count')}],
                 [_('Host'), {'style':'text-align:left'}],
                 [_('Service Type')+'<br />'+_('Service Name'),
@@ -341,11 +341,11 @@ class VigiboardRequest():
             events.append([
                     event,
                     {'class': class_tr[i % 2]},
-                    {'class': event.cause.initial_state + \
+                    {'class': event.cause.first().initial_state + \
                         self.class_ack[event.status]},
-                    {'class': event.cause.current_state + \
+                    {'class': event.cause.first().current_state + \
                         self.class_ack[event.status]},
-                    {'src': '/images/%s2.png' % event.cause.current_state},
+                    {'src': '/images/%s2.png' % event.cause.first().current_state},
                     self.format_events_img_status(event),
                     [[j.__show__(event), j.style] for j in self.plugin]
                 ])

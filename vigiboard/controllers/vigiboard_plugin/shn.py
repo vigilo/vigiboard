@@ -31,7 +31,7 @@ class PluginSHN(VigiboardRequestPlugin):
         dico = {
             'baseurl': url('/'),
             'idaggregate': aggregate.idaggregate,
-            'impacted_hls': len(aggregate.high_level_services),
+            'impacted_hls': aggregate.high_level_services.count(),
         }
         # XXX Il faudrait échapper l'URL contenue dans baseurl
         # pour éviter des attaques de type XSS.
@@ -59,5 +59,5 @@ class PluginSHN(VigiboardRequestPlugin):
                 .filter(EventsAggregate.idaggregate == idaggregate).one()
         shns = aggregate.high_level_services
 
-        return dict(shns=[shn.servicename for shn in shns]) 
+        return dict(shns=[shn.name for shn in shns]) 
 

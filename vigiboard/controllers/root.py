@@ -160,7 +160,7 @@ class RootController(VigiboardRootController):
                  ).join(
                     (Event, EventsAggregate.idcause == Event.idevent),
                     (HostGroup, Event.hostname == HostGroup.hostname),
-                 ).filter(HostGroup.groupname.in_(user.groups)
+                 ).filter(HostGroup.idgroup.in_(user.groups)
                  ).filter(EventsAggregate.idaggregate == idaggregate
                  ).one()
 

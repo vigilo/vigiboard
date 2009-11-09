@@ -38,8 +38,8 @@ class TestVigiboardRequest(TestController):
         manage_perm = Permission.by_permission_name(u'manage')
         edit_perm = Permission.by_permission_name(u'edit')
 
-        manage_perm.groups.append(hostmanagers)
-        edit_perm.groups.append(hosteditors)
+        hostmanagers.permissions.append(manage_perm)
+        hosteditors.permissions.append(edit_perm)
         DBSession.flush()
 
         # Les dépendances des évènements
@@ -66,13 +66,13 @@ class TestVigiboardRequest(TestController):
 
         # Table de jointure entre les hôtes/services et les groupes
         DBSession.add(HostGroup(hostname = u"monhost",
-            groupname = u"hostmanagers"))
+            idgroup=hostmanagers.idgroup))
         DBSession.add(HostGroup(hostname = u"monhostuser",
-            groupname = u"hosteditors"))
+            idgroup=hosteditors.idgroup))
         DBSession.add(ServiceGroup(servicename = u"monservice",
-            groupname = u"hostmanagers"))
+            idgroup=hostmanagers.idgroup))
         DBSession.add(ServiceGroup(servicename = u"monserviceuser",
-            groupname = u"hosteditors"))
+            idgroup=hosteditors.idgroup))
         DBSession.flush()
 
         # Les évènements eux-mêmes
@@ -99,21 +99,21 @@ class TestVigiboardRequest(TestController):
 
         # Les historiques
         DBSession.add(EventHistory(type_action = u'Nagios update state',
-            idevent = event1.idevent))
+            idevent=event1.idevent, timestamp=datetime.now()))
         DBSession.add(EventHistory(type_action = u'Acknowlegement change state',
-            idevent = event1.idevent))
+            idevent=event1.idevent, timestamp=datetime.now()))
         DBSession.add(EventHistory(type_action = u'Nagios update state',
-            idevent = event2.idevent))
+            idevent=event2.idevent, timestamp=datetime.now()))
         DBSession.add(EventHistory(type_action = u'Acknowlegement change state',
-            idevent = event2.idevent))
+            idevent=event2.idevent, timestamp=datetime.now()))
         DBSession.add(EventHistory(type_action = u'Nagios update state',
-            idevent = event3.idevent))
+            idevent=event3.idevent, timestamp=datetime.now()))
         DBSession.add(EventHistory(type_action = u'Acknowlegement change state',
-            idevent = event3.idevent))
+            idevent=event3.idevent, timestamp=datetime.now()))
         DBSession.add(EventHistory(type_action = u'Nagios update state',
-            idevent = event4.idevent))
+            idevent=event4.idevent, timestamp=datetime.now()))
         DBSession.add(EventHistory(type_action = u'Acknowlegement change state',
-            idevent = event4.idevent))
+            idevent=event4.idevent, timestamp=datetime.now()))
         DBSession.flush()
 
         # Les évènements corrélés
@@ -123,10 +123,8 @@ class TestVigiboardRequest(TestController):
             'status': u'None',
         }
         self.aggregate1 = EventsAggregate(
-            idaggregate=42,
             idcause=event1.idevent, **aggregate_template)
         self.aggregate2 = EventsAggregate(
-            idaggregate=43,
             idcause=event4.idevent, **aggregate_template)
 
         self.aggregate1.events.append(event1)
@@ -138,16 +136,11 @@ class TestVigiboardRequest(TestController):
         DBSession.flush()
         transaction.commit()
 
-
     def tearDown(self):
         # This operation is only necessary for DBMS which are
         # really strict about table locks, such as PostgreSQL.
         # For our tests, we use an (in-memory) SQLite database,
         # so we're unaffected. This is done only for completeness.
-        DBSession.delete(self.aggregate1)
-        DBSession.delete(self.aggregate1)
-        DBSession.flush()
-        transaction.commit()
         TestController.tearDown(self)
 
 
@@ -173,14 +166,16 @@ class TestVigiboardRequest(TestController):
         assert_true(num_rows == 1, msg = "1 historique devrait " +
                 "etre disponible pour l'utilisateur 'editor' mais il " +
                 "y en a %d" % num_rows)
+
         vigi_req.format_events(0, 10)
         vigi_req.format_history()
+        print vigi_req.events
         assert_true(len(vigi_req.events) == 1 + 1,
                 msg = "1 evenement devrait etre disponible pour " +
                         "l'utilisateur 'editor' mais il y en a %d" %
-                        len(vigi_req.events))
+                        (len(vigi_req.events) - 1))
         assert_true(vigi_req.events[1][6][0][0] != 'Error', 
-                msg = "Probleme d'execution des plugins ou de " +
+                    msg = "Probleme d'execution des plugins ou de " +
                         "formatage des evenements") 
 
         # On recommence les tests précédents avec l'utilisateur
@@ -202,7 +197,7 @@ class TestVigiboardRequest(TestController):
         assert_true(len(vigi_req.events) == 2 + 1, 
                 msg = "2 evenements devraient être disponibles pour " +
                         "l'utilisateur 'manager' mais il y en a %d" %
-                        len(vigi_req.events))
+                        (len(vigi_req.events) - 1))
         assert_true(vigi_req.events[1][6][0][0] != 'Error', 
                 msg = "Probleme d'execution des plugins")
 

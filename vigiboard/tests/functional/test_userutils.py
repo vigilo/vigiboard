@@ -13,48 +13,26 @@ from vigiboard.tests import TestController
 class TestUserUtils(TestController):
     """Test retrieval of groups of hosts/services."""
 
-    def setUp(self):
-        TestController.setUp(self)
+    def test_groups_inheritance(self):
+        """
+        S'assure que les groupes sont correctement hérités.
+        """
 
-        # On commence par peupler la base.
-        # Les groupes.
-        self.hosteditors = Group(name=u'hosteditors', parent=None)
-        DBSession.add(self.hosteditors)
-        DBSession.flush()        
+        # Création de 2 groupes d'utilisateurs.
+        hosteditors = Group(name=u'hosteditors', parent=None)
+        DBSession.add(hosteditors)
 
-        self.hostmanagers = Group(name=u'hostmanagers', parent=self.hosteditors)
-        DBSession.add(self.hostmanagers)
-        DBSession.flush()
+        hostmanagers = Group(name=u'hostmanagers', parent=hosteditors)
+        DBSession.add(hostmanagers)
 
         # L'attribution des permissions.
         manage_perm = Permission.by_permission_name(u'manage')
         edit_perm = Permission.by_permission_name(u'edit')
 
-        manage_perm.groups.append(self.hostmanagers)
-        edit_perm.groups.append(self.hosteditors)
+        manage_perm.groups.append(hostmanagers)
+        edit_perm.groups.append(hosteditors)
         DBSession.flush()
         transaction.commit()
-
-
-    def tearDown(self):
-        # This operation is only necessary for DBMS which are
-        # really strict about table locks, such as PostgreSQL.
-        # For our tests, we use an (in-memory) SQLite database,
-        # so we're unaffected. This is done only for completeness.
-        DBSession.delete(self.hostmanagers)
-        DBSession.flush()
-        transaction.commit()
-
-        DBSession.delete(self.hosteditors)
-        DBSession.flush()
-        transaction.commit()
-        TestController.tearDown(self)
-
-
-    def test_groups_inheritance(self):
-        """
-        S'assure que les groupes sont correctement hérités.
-        """
 
         # On obtient les variables de session comme si on était loggué
         # en tant que manager.
@@ -67,9 +45,14 @@ class TestUserUtils(TestController):
             ['repoze.who.userid']
         grp = User.by_user_name(username).groups
 
+        # Permet de rafraîchir les instances.
+        DBSession.add(hostmanagers)
+        DBSession.add(hosteditors)
+
         # On vérifie que la liste est correcte : le manager doit avoir accès
         # aux groupes 'hostmanagers' & 'hosteditors' (dont il hérite).
-        assert_true( u'hostmanagers' in grp and u'hosteditors' in grp ,
+        assert_true(hostmanagers.idgroup in grp and
+            hosteditors.idgroup in grp,
             msg = "il est dans %s" % grp)
 
         # On recommence avec l'utilisateur editor.
@@ -82,6 +65,7 @@ class TestUserUtils(TestController):
         grp = User.by_user_name(username).groups
 
         # L'utilisateur editor ne doit avoir accès qu'au groupe 'hosteditors'.
-        assert_true( not(u'hostmanagers' in grp) and u'hosteditors' in grp,
+        assert_true(not(hostmanagers.idgroup in grp) and
+            hosteditors.idgroup in grp,
             msg = "il est dans %s" % grp)
 

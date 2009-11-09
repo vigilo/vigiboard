@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: vigiboard 0.1\n"
 "Report-Msgid-Bugs-To: contact@projet-vigilo.org\n"
-"POT-Creation-Date: 2009-11-06 13:22+0100\n"
+"POT-Creation-Date: 2009-11-09 10:03+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,7 +23,7 @@ msgstr ""
 
 #: vigiboard/controllers/root.py:45 vigiboard/controllers/root.py:141
 #: vigiboard/controllers/root.py:196 vigiboard/controllers/root.py:242
-#: vigiboard/controllers/root.py:295
+#: vigiboard/controllers/root.py:299
 msgid "You need to be authenticated"
 msgstr ""
 
@@ -31,25 +31,25 @@ msgstr ""
 msgid "Error in DB"
 msgstr ""
 
-#: vigiboard/controllers/root.py:311
+#: vigiboard/controllers/root.py:315
 msgid "No event has been selected"
 msgstr ""
 
-#: vigiboard/controllers/root.py:325
+#: vigiboard/controllers/root.py:329
 msgid "No access to this event"
 msgstr ""
 
-#: vigiboard/controllers/root.py:344
+#: vigiboard/controllers/root.py:347
 #, python-format
 msgid "Changed trouble ticket from '%s' to '%s'"
 msgstr ""
 
-#: vigiboard/controllers/root.py:358
+#: vigiboard/controllers/root.py:361
 #, python-format
 msgid "Changed acknowledgement status from '%s' to '%s'"
 msgstr ""
 
-#: vigiboard/controllers/root.py:368
+#: vigiboard/controllers/root.py:371
 msgid "Updated successfully"
 msgstr ""
 
@@ -75,6 +75,10 @@ msgid "Duration"
 msgstr ""
 
 #: vigiboard/controllers/vigiboardrequest.py:306
+msgid "Priority"
+msgstr ""
+
+#: vigiboard/controllers/vigiboardrequest.py:306
 msgid "ITIL Priority"
 msgstr ""
 
@@ -82,7 +86,7 @@ msgstr ""
 msgid "Occurrence count"
 msgstr ""
 
-#: vigiboard/controllers/vigiboardrequest.py:308 vigiboard/widgets/edit_event.py:40
+#: vigiboard/controllers/vigiboardrequest.py:308 vigiboard/widgets/edit_event.py:41
 msgid "Host"
 msgstr ""
 
@@ -94,7 +98,7 @@ msgstr ""
 msgid "Service Name"
 msgstr ""
 
-#: vigiboard/controllers/vigiboardrequest.py:311 vigiboard/widgets/edit_event.py:42
+#: vigiboard/controllers/vigiboardrequest.py:311 vigiboard/widgets/edit_event.py:43
 msgid "Output"
 msgstr ""
 
@@ -103,19 +107,19 @@ msgid "TT"
 msgstr ""
 
 #: vigiboard/controllers/vigiboardrequest.py:314 vigiboard/widgets/edit_event.py:26
-#: vigiboard/widgets/edit_event.py:43
+#: vigiboard/widgets/edit_event.py:44
 msgid "Trouble Ticket"
 msgstr ""
 
-#: vigiboard/controllers/vigiboardrequest.py:418
+#: vigiboard/controllers/vigiboardrequest.py:419
 msgid "Edit Event"
 msgstr ""
 
-#: vigiboard/controllers/vigiboardrequest.py:424
+#: vigiboard/controllers/vigiboardrequest.py:425
 msgid "Search Event"
 msgstr ""
 
-#: vigiboard/controllers/vigiboardrequest.py:428
+#: vigiboard/controllers/vigiboardrequest.py:429
 msgid "History"
 msgstr ""
 
@@ -155,11 +159,11 @@ msgstr ""
 msgid "Apply"
 msgstr ""
 
-#: vigiboard/widgets/edit_event.py:41
+#: vigiboard/widgets/edit_event.py:42
 msgid "Service"
 msgstr ""
 
-#: vigiboard/widgets/edit_event.py:47
+#: vigiboard/widgets/edit_event.py:48
 msgid "Search"
 msgstr ""
 
