@@ -33,11 +33,11 @@ msgstr "Erreur dans la base de données"
 
 #: vigiboard/controllers/root.py:315
 msgid "No event has been selected"
-msgstr "Aucun évènement sélectionné"
+msgstr "Aucun événement sélectionné"
 
 #: vigiboard/controllers/root.py:329
 msgid "No access to this event"
-msgstr "Accès à cet évènement refusé"
+msgstr "Accès à cet événement refusé"
 
 #: vigiboard/controllers/root.py:347
 #, python-format
@@ -115,11 +115,11 @@ msgstr "Ticket d'incidence"
 
 #: vigiboard/controllers/vigiboardrequest.py:419
 msgid "Edit Event"
-msgstr "Edition d'évènements"
+msgstr "Edition d'événements"
 
 #: vigiboard/controllers/vigiboardrequest.py:425
 msgid "Search Event"
-msgstr "Recherche d'évènements"
+msgstr "Recherche d'événements"
 
 #: vigiboard/controllers/vigiboardrequest.py:429
 msgid "History"
