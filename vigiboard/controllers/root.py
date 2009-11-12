@@ -14,7 +14,7 @@ import math
 from vigiboard.model import DBSession
 from vigiboard.model import Event, EventHistory, EventsAggregate, \
                             Host, HostGroup, \
-                            State, User
+                            State, Statename, User
 from repoze.what.predicates import Any, not_anonymous
 from vigiboard.widgets.edit_event import edit_event_status_options
 from vigiboard.controllers.vigiboardrequest import VigiboardRequest
@@ -72,7 +72,8 @@ class RootController(VigiboardRootController):
             page = 1
 
         username = request.environ['repoze.who.identity']['repoze.who.userid']
-        aggregates = VigiboardRequest(User.by_user_name(username))
+        user = User.by_user_name(username)
+        aggregates = VigiboardRequest(user)
         
         search = {
             'host': '',
@@ -181,9 +182,12 @@ class RootController(VigiboardRootController):
                     }
 
         return dict(
-                current_state = event[1].current_state,
-                initial_state = event[1].initial_state,
-                peak_state = event[1].peak_state,
+                current_state = Statename.value_to_statename(
+                                    event[1].current_state),
+                initial_state = Statename.value_to_statename(
+                                    event[1].initial_state),
+                peak_state = Statename.value_to_statename(
+                                    event[1].peak_state),
                 idaggregate = idaggregate,
                 host = event[1].hostname,
                 service = event[1].servicename,
