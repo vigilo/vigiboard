@@ -48,13 +48,13 @@ class RootController(VigiboardRootController):
             
         """
         Page d'accueil de Vigiboard. Elle affiche, suivant la page demandée
-        (page 1 par defaut), la liste des évènements, rangés par ordre de prise
+        (page 1 par defaut), la liste des événements, rangés par ordre de prise
         en compte, puis de sévérité.
         Pour accéder à cette page, l'utilisateur doit être authentifié.
 
         @param page: Numéro de la page souhaitée, commence à 1
         @param host: Si l'utilisateur souhaite sélectionner seulement certains
-                     évènements suivant leur hôte, il peut placer une expression
+                     événements suivant leur hôte, il peut placer une expression
                      ici en suivant la structure du LIKE en SQL
         @param service: Idem que host mais sur les services
         @param output: Idem que host mais sur le text explicatif
@@ -85,25 +85,25 @@ class RootController(VigiboardRootController):
             search['host'] = host
             host = host.replace('%', '\\%').replace('_', '\\_') \
                     .replace('*', '%').replace('?', '_')
-            aggregates.add_filter(Event.hostname.like('%%%s%%' % host))
+            aggregates.add_filter(Event.hostname.ilike('%%%s%%' % host))
 
         if service :
             search['service'] = service
             service = service.replace('%', '\\%').replace('_', '\\_') \
                     .replace('*', '%').replace('?', '_')
-            aggregates.add_filter(Event.servicename.like('%%%s%%' % service))
+            aggregates.add_filter(Event.servicename.ilike('%%%s%%' % service))
 
         if output :
             search['output'] = output
             output = output.replace('%', '\\%').replace('_', '\\_') \
                     .replace('*', '%').replace('?', '_')
-            aggregates.add_filter(Event.message.like('%%%s%%' % output))
+            aggregates.add_filter(Event.message.ilike('%%%s%%' % output))
 
         if trouble_ticket :
             search['tt'] = trouble_ticket
             trouble_ticket = trouble_ticket.replace('%', '\\%') \
                     .replace('_', '\\_').replace('*', '%').replace('?', '_')
-            aggregates.add_filter(EventsAggregate.trouble_ticket.like(
+            aggregates.add_filter(EventsAggregate.trouble_ticket.ilike(
                 '%%%s%%' % trouble_ticket))
 
         # Calcul des éléments à afficher et du nombre de pages possibles
@@ -146,10 +146,10 @@ class RootController(VigiboardRootController):
         contenant des liens internes et externes.
         Pour accéder à cette page, l'utilisateur doit être authentifié.
 
-        @param id: identifiant de l'évènement
+        @param id: identifiant de l'événement
         """
 
-        # Obtention de données sur l'évènement et sur son historique
+        # Obtention de données sur l'événement et sur son historique
         username = request.environ.get('repoze.who.identity'
                     ).get('repoze.who.userid')
         user = User.by_user_name(username)
@@ -196,17 +196,17 @@ class RootController(VigiboardRootController):
     @require(Any(not_anonymous(), msg=_("You need to be authenticated")))
     def event(self, idaggregate):
         """
-        Affichage de l'historique d'un évènement.
+        Affichage de l'historique d'un événement.
         Pour accéder à cette page, l'utilisateur doit être authentifié.
 
-        @param idevent: identifiant de l'évènement souhaité
+        @param idevent: identifiant de l'événement souhaité
         """
 
         username = request.environ['repoze.who.identity']['repoze.who.userid']
         events = VigiboardRequest(User.by_user_name(username))
         events.add_filter(EventsAggregate.idaggregate == idaggregate)
         
-        # Vérification que l'évènement existe
+        # Vérification que l'événement existe
         if events.num_rows() != 1 :
             flash(_('Error in DB'), 'error')
             redirect('/')
@@ -243,7 +243,7 @@ class RootController(VigiboardRootController):
     def host_service(self, host, service):
         
         """
-        Affichage de l'historique de l'ensemble des évènements correspondant
+        Affichage de l'historique de l'ensemble des événements correspondant
         au host et service demandé.
         Pour accéder à cette page, l'utilisateur doit être authentifié.
 
@@ -256,12 +256,12 @@ class RootController(VigiboardRootController):
         events.add_filter(Event.hostname == host,
                 Event.servicename == service)
         # XXX On devrait avoir une autre API que ça !!!
-        # Supprime le filtre qui empêche d'obtenir des évènements fermés
+        # Supprime le filtre qui empêche d'obtenir des événements fermés
         # (ie: ayant l'état Nagios 'OK' et le statut 'AAClosed').
         if len(events.filter) > 2:
             del events.filter[2]
 
-        # Vérification qu'il y a au moins 1 évènement qui correspond
+        # Vérification qu'il y a au moins 1 événement qui correspond
         if events.num_rows() == 0 :
             redirect('/')
 
@@ -300,15 +300,15 @@ class RootController(VigiboardRootController):
     def update(self,**krgv):
         
         """
-        Mise à jour d'un évènement suivant les arguments passés.
+        Mise à jour d'un événement suivant les arguments passés.
         Cela peut être un changement de ticket ou un changement de statut.
         
-        @param krgv['id']: Le ou les identifiants des évènements à traiter
+        @param krgv['id']: Le ou les identifiants des événements à traiter
         @param krgv['tt']: Nouveau numéro du ticket associé.
-        @param krgv['status']: Nouveau status de/des évènements.
+        @param krgv['status']: Nouveau status de/des événements.
         """
         
-        # Si l'utilisateur édite plusieurs évènements à la fois,
+        # Si l'utilisateur édite plusieurs événements à la fois,
         # il nous faut chacun des identifiants
 
         if krgv['id'] is None:
@@ -329,7 +329,7 @@ class RootController(VigiboardRootController):
             flash(_('No access to this event'), 'error')
             redirect('/')
         
-        # Modification des évènements et création d'un historique
+        # Modification des événements et création d'un historique
         # pour chacun d'eux.
         username = request.environ['repoze.who.identity']['repoze.who.userid']
 

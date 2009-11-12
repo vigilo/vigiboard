@@ -30,7 +30,7 @@ class VigiboardRequestPlugin(object):
 
         """
         Permet d'éviter toutes erreurs d'affichage.
-        C'est la fonction appelée par le formateur d'évènements.
+        C'est la fonction appelée par le formateur d'événements.
         """
 
         show = self.show(aggregate)
@@ -56,7 +56,7 @@ class VigiboardRequestPlugin(object):
     def context(self, context):
 
         """
-        Fonction permettant de rajouter du context à la page d'évènements,
+        Fonction permettant de rajouter du context à la page d'événements,
         comme par exemple un css ou une fonction Javascript
         """
 

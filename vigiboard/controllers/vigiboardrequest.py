@@ -3,7 +3,8 @@
 """Gestion de la requête, des plugins et de l'affichage du Vigiboard"""
 
 from vigiboard.model import Event, EventsAggregate, EventHistory, State, \
-                            Host, HostGroup, ServiceLowLevel, ServiceGroup
+                            Host, HostGroup, ServiceLowLevel, ServiceGroup, \
+                            Statename
 from tg import tmpl_context, url, config
 from vigiboard.model import DBSession
 from sqlalchemy import not_, and_, asc, desc, sql
@@ -21,7 +22,7 @@ class VigiboardRequest():
 
     """
     Classe gérant la génération de la requête finale,
-    le préformatage des évènements et celui des historiques
+    le préformatage des événements et celui des historiques
     """
 
     def __init__(self, user):
@@ -47,6 +48,7 @@ class VigiboardRequest():
                 (ServiceLowLevel, Event.servicename == ServiceLowLevel.name),
                 (HostGroup, Host.name == HostGroup.hostname),
                 (ServiceGroup, ServiceLowLevel.name == ServiceGroup.servicename),
+                (Statename, Statename.idstatename == Event.current_state),
             ]
 
         self.outerjoin = []
@@ -55,11 +57,10 @@ class VigiboardRequest():
                 HostGroup.idgroup.in_(self.user_groups),
                 ServiceGroup.idgroup.in_(self.user_groups),
 
-                # On masque les évènements avec l'état OK
+                # On masque les événements avec l'état OK
                 # et traités (status == u'AAClosed').
                 not_(and_(
-                    Event.numeric_current_state ==
-                        State.names_mapping().index('OK'),
+                    Statename.statename == u'OK',
                     EventsAggregate.status == u'AAClosed'
                 )),
                 EventsAggregate.timestamp_active != None,
@@ -68,7 +69,7 @@ class VigiboardRequest():
         self.orderby = [
                 desc(EventsAggregate.status),       # None, Acknowledged, AAClosed
                 desc(EventsAggregate.priority),     # Priorité ITIL (entier).
-                desc(Event.numeric_current_state),  # Etat courant (entier).
+                desc(Statename.order),              # Etat courant (entier).
                 asc(Event.hostname),
                 desc(Event.timestamp),
             ]
@@ -77,7 +78,7 @@ class VigiboardRequest():
                 EventsAggregate.idaggregate,
                 EventsAggregate,
                 Event.hostname,
-                Event.numeric_current_state,
+                Statename.order,
                 Event.timestamp,
             ]
 
@@ -265,10 +266,10 @@ class VigiboardRequest():
     def format_events_img_status(self, event):
         
         """
-        Suivant l'état de l'évènement, retourne la classe à appliquer
-        à l'image indiquant si l'évènement est pris en compte ou non.
+        Suivant l'état de l'événement, retourne la classe à appliquer
+        à l'image indiquant si l'événement est pris en compte ou non.
 
-        @param event: l'évènement à analyser
+        @param event: l'événement à analyser
 
         @return: Dictionnaire représentant la classe à appliquer
         """
@@ -285,10 +286,10 @@ class VigiboardRequest():
         Formate la réponse de la requête et y applique les plugins
         pour un affichage simple du résultat par Genshi.
         On génère une liste de liste, chaqu'une étant la description de
-        l'affichage pour un évènement donné.
+        l'affichage pour un événement donné.
 
-        @param first_row: Indice de début de la liste des évènements
-        @param last_row: Indice de fin de la liste des évènements
+        @param first_row: Indice de début de la liste des événements
+        @param last_row: Indice de fin de la liste des événements
         """
         
         # Si la requête n'est pas générée, on le fait
@@ -328,24 +329,30 @@ class VigiboardRequest():
                 event = req[0]
             ids.append(event.idcause)
 
-            # La liste pour l'évènement actuel comporte dans l'ordre :
-            #   L'évènement en lui-même
+            # La liste pour l'événement actuel comporte dans l'ordre :
+            #   L'événement en lui-même
             #   La classe à appliquer sur la ligne (permet d'alterner les
             #       couleurs suivant les lignes)
             #   La classe pour la case comportant la flèche de détails
             #   La classe pour la date, l'occurence et l'édition
             #   L'image à afficher pour la flèche de détails
             #   Une liste (une case par plugin) de ce que le plugin souhaite
-            #       afficher en fonction de l'évènement
+            #       afficher en fonction de l'événement
+
+            cause = event.cause.first()
 
             events.append([
                     event,
                     {'class': class_tr[i % 2]},
-                    {'class': event.cause.first().initial_state + \
+                    {'class': Statename.value_to_statename(
+                        cause.initial_state) +
                         self.class_ack[event.status]},
-                    {'class': event.cause.first().current_state + \
+                    {'class': Statename.value_to_statename(
+                        cause.current_state) +
                         self.class_ack[event.status]},
-                    {'src': '/images/%s2.png' % event.cause.first().current_state},
+                    {'src': '/images/%s2.png' %
+                        Statename.value_to_statename(
+                        cause.current_state)},
                     self.format_events_img_status(event),
                     [[j.__show__(event), j.style] for j in self.plugin]
                 ])
@@ -359,7 +366,7 @@ class VigiboardRequest():
     def format_history(self):
         
         """
-        Formate les historiques correspondant aux évènements sélectionnés
+        Formate les historiques correspondant aux événements sélectionnés
         pour un affichage simple du résultat par Genshi.
         On génère une liste de liste, chaqu'une étant la description
         de l'affichage pour un historique donné.
@@ -424,7 +431,7 @@ class VigiboardRequest():
         tmpl_context.searchdialog = JQueryUIDialog(id='SearchDialog',
                 autoOpen=False, title=_('Search Event'))
         
-        # Dialogue de détail d'un évènement
+        # Dialogue de détail d'un événement
         tmpl_context.historydialog = JQueryUIDialog(id='HistoryDialog',
                 autoOpen=False, title=_('History'))
 

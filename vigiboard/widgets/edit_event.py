@@ -15,7 +15,7 @@ edit_event_status_options = [
 class EditEventForm(TableForm):
     
     """
-    Formulaire d'édition d'évènement
+    Formulaire d'édition d'événement
 
     Affiche une zone de texte pour le Trouble Ticket et une
     liste déroulante pour le nouveau status
@@ -31,7 +31,7 @@ class EditEventForm(TableForm):
 class SearchForm(TableForm):
     
     """
-    Formulaire de recherche dans les évènements
+    Formulaire de recherche dans les événements
 
     Affiche un champ texte pour l'hôte, le service, la sortie
     et le ticket d'incidence.

@@ -73,6 +73,10 @@ base_config['vigiboard_version'] = u'2.0-pre0.1'
 
 # Links configuration
 # XXX Should be part of ini settings.
+# Les elements suivants peuvent etre utilises dans la chaine de formatage :
+# - idaggregate : identifiant de l'aggregat (alerte correlee)
+# - host : le nom de l'hote concerne par l'alerte
+# - service : le nom du service concerne par l'alerte
 base_config['vigiboard_links.eventdetails'] = {
     'nagios': ['Nagios host details', 'http://example1.com/%(idaggregate)s'],
     'metrology': ['Metrology details', 'http://example2.com/%(idaggregate)s'],
