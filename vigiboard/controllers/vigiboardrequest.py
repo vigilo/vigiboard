@@ -66,12 +66,18 @@ class VigiboardRequest():
                 EventsAggregate.timestamp_active != None,
             ]
 
+        # Permet de définir le sens de tri pour la priorité.
+        if config['vigiboard_priority_order'] == 'asc':
+            priority_order = asc(EventsAggregate.priority)
+        else:
+            priority_order = desc(EventsAggregate.priority)
+
         self.orderby = [
-                desc(EventsAggregate.status),       # None, Acknowledged, AAClosed
-                desc(EventsAggregate.priority),     # Priorité ITIL (entier).
-                desc(Statename.order),              # Etat courant (entier).
-                asc(Event.hostname),
+                desc(EventsAggregate.status),   # None, Acknowledged, AAClosed
+                priority_order,                 # Priorité ITIL (entier).
+                desc(Statename.order),          # Etat courant (entier).
                 desc(Event.timestamp),
+                asc(Event.hostname),
             ]
 
         self.groupby = [
