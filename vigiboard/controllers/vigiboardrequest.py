@@ -4,7 +4,7 @@
 
 from vigiboard.model import Event, EventsAggregate, EventHistory, State, \
                             Host, HostGroup, ServiceLowLevel, ServiceGroup, \
-                            Statename
+                            StateName
 from tg import tmpl_context, url, config
 from vigiboard.model import DBSession
 from sqlalchemy import not_, and_, asc, desc, sql
@@ -48,7 +48,7 @@ class VigiboardRequest():
                 (ServiceLowLevel, Event.servicename == ServiceLowLevel.name),
                 (HostGroup, Host.name == HostGroup.hostname),
                 (ServiceGroup, ServiceLowLevel.name == ServiceGroup.servicename),
-                (Statename, Statename.idstatename == Event.current_state),
+                (StateName, StateName.idstatename == Event.current_state),
             ]
 
         self.outerjoin = []
@@ -60,7 +60,7 @@ class VigiboardRequest():
                 # On masque les événements avec l'état OK
                 # et traités (status == u'AAClosed').
                 not_(and_(
-                    Statename.statename == u'OK',
+                    StateName.statename == u'OK',
                     EventsAggregate.status == u'AAClosed'
                 )),
                 EventsAggregate.timestamp_active != None,
@@ -75,7 +75,7 @@ class VigiboardRequest():
         self.orderby = [
                 desc(EventsAggregate.status),   # None, Acknowledged, AAClosed
                 priority_order,                 # Priorité ITIL (entier).
-                desc(Statename.order),          # Etat courant (entier).
+                desc(StateName.order),          # Etat courant (entier).
                 desc(Event.timestamp),
                 asc(Event.hostname),
             ]
@@ -84,7 +84,7 @@ class VigiboardRequest():
                 EventsAggregate.idaggregate,
                 EventsAggregate,
                 Event.hostname,
-                Statename.order,
+                StateName.order,
                 Event.timestamp,
             ]
 
@@ -350,14 +350,14 @@ class VigiboardRequest():
             events.append([
                     event,
                     {'class': class_tr[i % 2]},
-                    {'class': Statename.value_to_statename(
+                    {'class': StateName.value_to_statename(
                         cause.initial_state) +
                         self.class_ack[event.status]},
-                    {'class': Statename.value_to_statename(
+                    {'class': StateName.value_to_statename(
                         cause.current_state) +
                         self.class_ack[event.status]},
                     {'src': '/images/%s2.png' %
-                        Statename.value_to_statename(
+                        StateName.value_to_statename(
                         cause.current_state)},
                     self.format_events_img_status(event),
                     [[j.__show__(event), j.style] for j in self.plugin]
