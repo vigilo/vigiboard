@@ -17,7 +17,6 @@ setup(
     author_email="""thomas.andrejak@gmail.com""",
     zip_safe=False,
     install_requires=[
-        "cheetah >= 2.0",
         "tg.devtools",
         "TurboGears2 >= 2.0b7",
         "Catwalk >= 2.0.2",
