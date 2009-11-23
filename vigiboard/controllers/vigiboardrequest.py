@@ -43,15 +43,16 @@ class VigiboardRequest():
         ]
 
         self.join = [
-                (Event, EventsAggregate.idcause == Event.idevent),
-                (Host, Event.hostname == Host.name),
-                (ServiceLowLevel, Event.servicename == ServiceLowLevel.name),
-                (HostGroup, Host.name == HostGroup.hostname),
-                (ServiceGroup, ServiceLowLevel.name == ServiceGroup.servicename),
-                (StateName, StateName.idstatename == Event.current_state),
-            ]
+            (Event, EventsAggregate.idcause == Event.idevent),
+            (Host, Event.hostname == Host.name),
+            (ServiceLowLevel, Event.servicename == ServiceLowLevel.name),
+            (HostGroup, Host.name == HostGroup.hostname),
+            (ServiceGroup, ServiceLowLevel.name == ServiceGroup.servicename),
+            (StateName, StateName.idstatename == Event.current_state),
+        ]
 
-        self.outerjoin = []
+        self.outerjoin = [
+        ]
 
         self.filter = [
                 HostGroup.idgroup.in_(self.user_groups),

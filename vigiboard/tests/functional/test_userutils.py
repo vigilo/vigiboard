@@ -12,7 +12,6 @@ from vigiboard.tests import TestController
 
 class TestUserUtils(TestController):
     """Test retrieval of groups of hosts/services."""
-
     def test_groups_inheritance(self):
         """
         S'assure que les groupes sont correctement hérités.
@@ -46,8 +45,10 @@ class TestUserUtils(TestController):
         grp = User.by_user_name(username).groups
 
         # Permet de rafraîchir les instances.
-        DBSession.add(hostmanagers)
-        DBSession.add(hosteditors)
+        hostmanagers = DBSession.query(Group).filter(
+                            Group.name==u'hostmanagers').one()
+        hosteditors = DBSession.query(Group).filter(
+                            Group.name==u'hosteditors').one()
 
         # On vérifie que la liste est correcte : le manager doit avoir accès
         # aux groupes 'hostmanagers' & 'hosteditors' (dont il hérite).

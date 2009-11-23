@@ -11,7 +11,7 @@ import transaction
 
 from vigiboard.model import DBSession, \
     Event, EventHistory, EventsAggregate, \
-    Permission, User, \
+    Permission, User, StateName, \
     Group, Host, HostGroup, ServiceLowLevel, ServiceGroup
 from vigiboard.tests import TestController
 from vigiboard.controllers.vigiboardrequest import VigiboardRequest
@@ -22,27 +22,33 @@ class TestVigiboardRequest(TestController):
     """Test de la classe Vigiboard Request"""
 
     def setUp(self):
-        TestController.setUp(self)
+        super(TestVigiboardRequest, self).setUp()
+
+        # Les noms d'états.
+        DBSession.add(StateName(statename=u'OK', order=0))
+        DBSession.add(StateName(statename=u'WARNING', order=2))
+        DBSession.flush()
+        transaction.commit()
 
         # On peuple la base de données.
 
         # Les groupes et leurs dépendances
-        hosteditors = Group(name=u'hosteditors')
-        DBSession.add(hosteditors)
+        self.editorsgroup = Group(name=u'editorsgroup')
+        DBSession.add(self.editorsgroup)
         DBSession.flush()
 
-        hostmanagers = Group(name=u'hostmanagers', parent=hosteditors)
-        DBSession.add(hostmanagers)
+        self.managersgroup = Group(name=u'managersgroup', parent=self.editorsgroup)
+        DBSession.add(self.managersgroup)
         DBSession.flush()
 
         manage_perm = Permission.by_permission_name(u'manage')
         edit_perm = Permission.by_permission_name(u'edit')
 
-        hostmanagers.permissions.append(manage_perm)
-        hosteditors.permissions.append(edit_perm)
+        self.managersgroup.permissions.append(manage_perm)
+        self.editorsgroup.permissions.append(edit_perm)
         DBSession.flush()
 
-        # Les dépendances des évènements
+        # Les dépendances des événements
         host_template = {
             'checkhostcmd': u'halt',
             'snmpcommunity': u'public',
@@ -53,42 +59,41 @@ class TestVigiboardRequest(TestController):
         }
 
         service_template = {
-            'servicetype': u'foo',
             'command': u'halt',
             'op_dep': u'+',
         }
 
-        DBSession.add(Host(name=u'monhost', **host_template))
-        DBSession.add(ServiceLowLevel(name=u'monservice', **service_template))
-        DBSession.add(Host(name=u'monhostuser', **host_template))
-        DBSession.add(ServiceLowLevel(name=u'monserviceuser', **service_template))
+        DBSession.add(Host(name=u'managerhost', **host_template))
+        DBSession.add(ServiceLowLevel(name=u'managerservice', **service_template))
+        DBSession.add(Host(name=u'editorhost', **host_template))
+        DBSession.add(ServiceLowLevel(name=u'editorservice', **service_template))
         DBSession.flush()
 
         # Table de jointure entre les hôtes/services et les groupes
-        DBSession.add(HostGroup(hostname = u"monhost",
-            idgroup=hostmanagers.idgroup))
-        DBSession.add(HostGroup(hostname = u"monhostuser",
-            idgroup=hosteditors.idgroup))
-        DBSession.add(ServiceGroup(servicename = u"monservice",
-            idgroup=hostmanagers.idgroup))
-        DBSession.add(ServiceGroup(servicename = u"monserviceuser",
-            idgroup=hosteditors.idgroup))
+        DBSession.add(HostGroup(hostname = u"managerhost",
+            idgroup=self.managersgroup.idgroup))
+        DBSession.add(HostGroup(hostname = u"editorhost",
+            idgroup=self.editorsgroup.idgroup))
+        DBSession.add(ServiceGroup(servicename = u"managerservice",
+            idgroup=self.managersgroup.idgroup))
+        DBSession.add(ServiceGroup(servicename = u"editorservice",
+            idgroup=self.editorsgroup.idgroup))
         DBSession.flush()
 
-        # Les évènements eux-mêmes
+        # Les événements eux-mêmes
         event_template = {
             'message': u'foo',
-            'current_state': u'WARNING',
+            'current_state': StateName.statename_to_value(u'WARNING'),
         }
 
-        event1 = Event(idevent=41, hostname=u'monhost',
-            servicename=u'monservice', **event_template)
-        event2 = Event(idevent=42, hostname=u'monhostuser',
-            servicename=u'monservice', **event_template)
-        event3 = Event(idevent=43, hostname=u'monhost',
-            servicename=u'monserviceuser', **event_template)
-        event4 = Event(idevent=44, hostname=u'monhostuser',
-            servicename=u'monserviceuser', **event_template)
+        event1 = Event(hostname=u'managerhost',
+            servicename=u'managerservice', **event_template)
+        event2 = Event(hostname=u'editorhost',
+            servicename=u'managerservice', **event_template)
+        event3 = Event(hostname=u'managerhost',
+            servicename=u'editorservice', **event_template)
+        event4 = Event(hostname=u'editorhost',
+            servicename=u'editorservice', **event_template)
 
         DBSession.add(event1)
         DBSession.add(event2)
@@ -116,7 +121,7 @@ class TestVigiboardRequest(TestController):
             idevent=event4.idevent, timestamp=datetime.now()))
         DBSession.flush()
 
-        # Les évènements corrélés
+        # Les événements corrélés
         aggregate_template = {
             'timestamp_active': datetime.now(),
             'priority': 1,
@@ -134,6 +139,17 @@ class TestVigiboardRequest(TestController):
         DBSession.add(self.aggregate1)
         DBSession.add(self.aggregate2)
         DBSession.flush()
+
+        for e in DBSession.query(Event).all():
+            print "Event", e.idevent, e.hostname, e.servicename, e.current_state
+        for ea in DBSession.query(EventsAggregate).all():
+            print "EAggr", ea.idcause, ea.status
+        for g in DBSession.query(Group).all():
+            print "Group", g.idgroup, g.name, repr(g.idparent)
+        for hg in DBSession.query(HostGroup).all():
+            print "HGrup", hg.idgroup, hg.hostname
+        for sg in DBSession.query(ServiceGroup).all():
+            print "SGrup", sg.idgroup, sg.servicename
         transaction.commit()
 
     def tearDown(self):
@@ -158,7 +174,7 @@ class TestVigiboardRequest(TestController):
         vigi_req = VigiboardRequest(User.by_user_name(u'editor'))
 
         # On effectue les tests suivants :
-        #   le nombre de lignes (historique et évènements) doivent
+        #   le nombre de lignes (historique et événements) doivent
         #       correspondre (vérification des droits imposés par les groupes)
         #   le plugin fonctionne correctement
 
