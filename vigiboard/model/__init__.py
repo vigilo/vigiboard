@@ -10,7 +10,7 @@ metadata.bind = DBSession.bind
 from vigilo.models import User, UserGroup, Permission
 from vigilo.models import Event, EventHistory, EventsAggregate
 from vigilo.models import Graph, GraphGroup, GraphToGroups
-from vigilo.models import Version, State, StateName
+from vigilo.models import Version, HostState, ServiceState, StateName
 from vigilo.models import Host, HostGroup
 from vigilo.models import ServiceLowLevel, ServiceHighLevel, ServiceGroup
 from vigilo.models import Access
