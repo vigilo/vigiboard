@@ -6,6 +6,7 @@ from tg import expose, validate, require, flash, \
     tmpl_context, request, config, session, redirect, url
 from tw.forms import validators
 from pylons.i18n import ugettext as _
+from pylons.i18n import lazy_ugettext as l_
 from pylons.controllers.util import abort
 from sqlalchemy import not_, and_, asc
 from datetime import datetime
@@ -23,10 +24,18 @@ from vigiboard.controllers.vigiboard_controller import VigiboardRootController
 __all__ = ('RootController', )
 
 class RootController(VigiboardRootController):
-    
     """
     Le controller général de vigiboard
     """
+
+    # XXX Mettre ça dans un fichier de configuration.
+    refresh_times = (
+        (0, l_('Never')),
+        (30, l_('30 seconds')),
+        (60, l_('1 minute')),
+        (300, l_('5 minutes')),
+        (600, l_('10 minutes')),
+    )
 
     def process_form_errors(self, *argv, **kwargv):
         """
@@ -121,20 +130,21 @@ class RootController(VigiboardRootController):
         nb_pages = int(math.ceil(total_rows / (items_per_page + 0.0)))
 
         return dict(
-               events = aggregates.events,
-               rows_info = {
-                   'id_first_row': id_first_row + 1,
-                   'id_last_row': id_last_row,
-                   'total_rows': total_rows,
-               },
-               pages = range(1, nb_pages + 1),
-               page = page,
-               event_edit_status_options = edit_event_status_options,
-               history = [],
-               hist_error = False,
-               plugin_context = aggregates.context_fct,
-               search = search,
-            )
+                   events = aggregates.events,
+                   rows_info = {
+                       'id_first_row': id_first_row + 1,
+                       'id_last_row': id_last_row,
+                       'total_rows': total_rows,
+                   },
+                   pages = range(1, nb_pages + 1),
+                   page = page,
+                   event_edit_status_options = edit_event_status_options,
+                   history = [],
+                   hist_error = False,
+                   plugin_context = aggregates.context_fct,
+                   search = search,
+                   refresh_times=self.refresh_times,
+                )
       
     @validate(validators={'idaggregate':validators.String(not_empty=True)},
             error_handler=process_form_errors)
@@ -237,7 +247,8 @@ class RootController(VigiboardRootController):
                         'service': None,
                         'output': None,
                         'tt': None
-                    }
+                    },
+                   refresh_times=self.refresh_times,
                 )
 
     @validate(validators={'host':validators.NotEmpty(),
@@ -291,7 +302,8 @@ class RootController(VigiboardRootController):
                         'service': None,
                         'output': None,
                         'tt': None
-                    }
+                    },
+                    refresh_times=self.refresh_times,
                 )
 
     @validate(validators={

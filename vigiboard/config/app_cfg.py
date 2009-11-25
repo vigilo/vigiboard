@@ -69,7 +69,7 @@ base_config.sa_auth.post_logout_url = '/post_logout'
 ##################################
 
 # Vigiboard version
-base_config['vigiboard_version'] = u'2.0-pre0.1'
+base_config['vigilo_version'] = u'2.0-pre0.1'
 
 # Links configuration
 # XXX Should be part of ini settings.
