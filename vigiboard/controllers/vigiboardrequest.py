@@ -2,36 +2,39 @@
 # vim:set expandtab tabstop=4 shiftwidth=4: 
 """Gestion de la requête, des plugins et de l'affichage du Vigiboard"""
 
-from vigiboard.model import Event, EventsAggregate, EventHistory, State, \
+from vigiboard.model import Event, EventsAggregate, EventHistory, \
                             Host, HostGroup, ServiceLowLevel, ServiceGroup, \
                             StateName
+from vigilo.models.secondary_tables import HOST_GROUP_TABLE, \
+                                            SERVICE_GROUP_TABLE
 from tg import tmpl_context, url, config
 from vigiboard.model import DBSession
 from sqlalchemy import not_, and_, asc, desc, sql
+from sqlalchemy.orm import aliased
 from tw.jquery.ui_dialog import JQueryUIDialog
 from vigiboard.widgets.edit_event import EditEventForm , SearchForm
 from vigiboard.controllers.vigiboard_plugin import VigiboardRequestPlugin
 from pylons.i18n import ugettext as _
 
 class VigiboardRequest():
+    """
+    Classe gérant la génération de la requête finale,
+    le préformatage des événements et celui des historiques
+    """
+
     class_ack = {
         'None': '',
         'Acknowledged': '_Ack',
         'AAClosed': '_Ack',
     }
 
-    """
-    Classe gérant la génération de la requête finale,
-    le préformatage des événements et celui des historiques
-    """
-
     def __init__(self, user):
 
         """
-        Initialisation de toutes les variables nécessaires: Liste des groupes
-        de l'utilisateur, les classes à appliquer suivant la sévérité, les
-        différentes étapes de la génération de la requête et la liste des
-        plugins appliqués.
+        Initialisation de toutes les variables nécessaires :
+        - la liste des groupes de l'utilisateur,
+        - les différentes étapes de la génération de la requête,
+        - la liste des plugins à appliquer.
         """
 
         self.user_groups = user.groups
@@ -39,24 +42,25 @@ class VigiboardRequest():
 
         self.table = [
             EventsAggregate,
-            sql.func.count(EventsAggregate.idaggregate)
+            sql.func.count(EventsAggregate.idaggregate),
         ]
 
         self.join = [
             (Event, EventsAggregate.idcause == Event.idevent),
-            (Host, Event.hostname == Host.name),
-            (ServiceLowLevel, Event.servicename == ServiceLowLevel.name),
-            (HostGroup, Host.name == HostGroup.hostname),
-            (ServiceGroup, ServiceLowLevel.name == ServiceGroup.servicename),
+            (ServiceLowLevel, Event._idservice == ServiceLowLevel.idservice),
+            (Host, Host.name == ServiceLowLevel.hostname),
             (StateName, StateName.idstatename == Event.current_state),
+            (HOST_GROUP_TABLE, HOST_GROUP_TABLE.c.hostname == Host.name),
+            (SERVICE_GROUP_TABLE, SERVICE_GROUP_TABLE.c.idservice == \
+                ServiceLowLevel.idservice),
         ]
 
         self.outerjoin = [
         ]
 
         self.filter = [
-                HostGroup.idgroup.in_(self.user_groups),
-                ServiceGroup.idgroup.in_(self.user_groups),
+                HOST_GROUP_TABLE.c.idgroup.in_(self.user_groups),
+                SERVICE_GROUP_TABLE.c.idgroup.in_(self.user_groups),
 
                 # On masque les événements avec l'état OK
                 # et traités (status == u'AAClosed').
@@ -78,13 +82,13 @@ class VigiboardRequest():
                 priority_order,                 # Priorité ITIL (entier).
                 desc(StateName.order),          # Etat courant (entier).
                 desc(Event.timestamp),
-                asc(Event.hostname),
+                asc(ServiceLowLevel.hostname),
             ]
 
         self.groupby = [
                 EventsAggregate.idaggregate,
                 EventsAggregate,
-                Event.hostname,
+                ServiceLowLevel.hostname,
                 StateName.order,
                 Event.timestamp,
             ]

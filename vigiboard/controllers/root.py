@@ -14,7 +14,7 @@ import math
 from vigiboard.model import DBSession
 from vigiboard.model import Event, EventHistory, EventsAggregate, \
                             Host, HostGroup, \
-                            State, StateName, User
+                            StateName, User
 from repoze.what.predicates import Any, not_anonymous
 from vigiboard.widgets.edit_event import edit_event_status_options
 from vigiboard.controllers.vigiboardrequest import VigiboardRequest

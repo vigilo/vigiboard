@@ -7,7 +7,7 @@ import tg
 import transaction
 from nose.tools import assert_true
 
-from vigiboard.model import DBSession, Group, Permission, User
+from vigiboard.model import DBSession, HostGroup, Permission, User
 from vigiboard.tests import TestController
 
 class TestUserUtils(TestController):
@@ -18,18 +18,18 @@ class TestUserUtils(TestController):
         """
 
         # Création de 2 groupes d'utilisateurs.
-        hosteditors = Group(name=u'hosteditors', parent=None)
+        hosteditors = HostGroup(name=u'hosteditors', parent=None)
         DBSession.add(hosteditors)
 
-        hostmanagers = Group(name=u'hostmanagers', parent=hosteditors)
+        hostmanagers = HostGroup(name=u'hostmanagers', parent=hosteditors)
         DBSession.add(hostmanagers)
 
         # L'attribution des permissions.
         manage_perm = Permission.by_permission_name(u'manage')
         edit_perm = Permission.by_permission_name(u'edit')
 
-        manage_perm.groups.append(hostmanagers)
-        edit_perm.groups.append(hosteditors)
+        manage_perm.hostgroups.append(hostmanagers)
+        edit_perm.hostgroups.append(hosteditors)
         DBSession.flush()
         transaction.commit()
 
@@ -45,10 +45,10 @@ class TestUserUtils(TestController):
         grp = User.by_user_name(username).groups
 
         # Permet de rafraîchir les instances.
-        hostmanagers = DBSession.query(Group).filter(
-                            Group.name==u'hostmanagers').one()
-        hosteditors = DBSession.query(Group).filter(
-                            Group.name==u'hosteditors').one()
+        hostmanagers = DBSession.query(HostGroup).filter(
+                            HostGroup.name==u'hostmanagers').one()
+        hosteditors = DBSession.query(HostGroup).filter(
+                            HostGroup.name==u'hosteditors').one()
 
         # On vérifie que la liste est correcte : le manager doit avoir accès
         # aux groupes 'hostmanagers' & 'hosteditors' (dont il hérite).
