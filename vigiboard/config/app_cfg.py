@@ -74,14 +74,14 @@ base_config['vigilo_version'] = u'2.0-pre0.1'
 # Links configuration
 # XXX Should be part of ini settings.
 # Les elements suivants peuvent etre utilises dans la chaine de formatage :
-# - idaggregate : identifiant de l'aggregat (alerte correlee)
+# - idcorrevent : identifiant de l'aggregat (alerte correlee)
 # - host : le nom de l'hote concerne par l'alerte
 # - service : le nom du service concerne par l'alerte
 base_config['vigiboard_links.eventdetails'] = {
-    'nagios': ['Nagios host details', 'http://example1.com/%(idaggregate)s'],
-    'metrology': ['Metrology details', 'http://example2.com/%(idaggregate)s'],
-    'security': ['Security details', 'http://example3.com/%(idaggregate)s'],
-    'servicetype': ['Service Type', 'http://example4.com/%(idaggregate)s'],
+    'nagios': ['Nagios host details', 'http://example1.com/%(idcorrevent)d'],
+    'metrology': ['Metrology details', 'http://example2.com/%(idcorrevent)d'],
+    'security': ['Security details', 'http://example3.com/%(idcorrevent)d'],
+    'servicetype': ['Service Type', 'http://example4.com/%(idcorrevent)d'],
 }
 
 # Plugins to use

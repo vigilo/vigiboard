@@ -146,11 +146,11 @@ class RootController(VigiboardRootController):
                    refresh_times=self.refresh_times,
                 )
       
-    @validate(validators={'idaggregate':validators.String(not_empty=True)},
+    @validate(validators={'idcorrevent':validators.String(not_empty=True)},
             error_handler=process_form_errors)
     @expose('json')
     @require(Any(not_anonymous(), msg=_("You need to be authenticated")))
-    def history_dialog(self, idaggregate):
+    def history_dialog(self, idcorrevent):
         
         """
         JSon renvoyant les éléments pour l'affichage de la fenêtre de dialogue
@@ -172,7 +172,7 @@ class RootController(VigiboardRootController):
                     (Event, CorrEvent.idcause == Event.idevent),
                     (HostGroup, Event.hostname == HostGroup.hostname),
                  ).filter(HostGroup.idgroup.in_(user.groups)
-                 ).filter(CorrEvent.idcorrevent == idaggregate
+                 ).filter(CorrEvent.idcorrevent == idcorrevent
                  ).one()
 
         history = DBSession.query(
@@ -186,7 +186,7 @@ class RootController(VigiboardRootController):
                 config['vigiboard_links.eventdetails'].iteritems():
 
             eventdetails[edname] = edlink[1] % {
-                    'idaggregate': idaggregate,
+                    'idcorrevent': idcorrevent,
                     'host': event[1].hostname,
                     'service': event[1].servicename
                     }
@@ -198,17 +198,17 @@ class RootController(VigiboardRootController):
                                     event[1].initial_state),
                 peak_state = StateName.value_to_statename(
                                     event[1].peak_state),
-                idaggregate = idaggregate,
+                idcorrevent = idcorrevent,
                 host = event[1].hostname,
                 service = event[1].servicename,
                 eventdetails = eventdetails,
             )
 
-    @validate(validators={'idaggregate':validators.String(not_empty=True)},
+    @validate(validators={'idcorrevent':validators.String(not_empty=True)},
             error_handler=process_form_errors)
     @expose('vigiboard.html')
     @require(Any(not_anonymous(), msg=_("You need to be authenticated")))
-    def event(self, idaggregate):
+    def event(self, idcorrevent):
         """
         Affichage de l'historique d'un événement.
         Pour accéder à cette page, l'utilisateur doit être authentifié.
@@ -218,7 +218,7 @@ class RootController(VigiboardRootController):
 
         username = request.environ['repoze.who.identity']['repoze.who.userid']
         events = VigiboardRequest(User.by_user_name(username))
-        events.add_filter(CorrEvent.idcorrevent == idaggregate)
+        events.add_filter(CorrEvent.idcorrevent == idcorrevent)
         
         # Vérification que l'événement existe
         if events.num_rows() != 1 :

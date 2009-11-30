@@ -30,13 +30,13 @@ class PluginSHN(VigiboardRequestPlugin):
         """Fonction d'affichage"""
         dico = {
             'baseurl': url('/'),
-            'idaggregate': aggregate.idcorrevent,
+            'idcorrevent': aggregate.idcorrevent,
             'impacted_hls': aggregate.high_level_services.count(),
         }
         # XXX Il faudrait échapper l'URL contenue dans baseurl
         # pour éviter des attaques de type XSS.
         res = ('<a href="javascript:vigiboard_shndialog(' + \
-                '\'%(baseurl)s\',\'%(idaggregate)s\')" ' + \
+                '\'%(baseurl)s\',\'%(idcorrevent)d\')" ' + \
                 'class="SHNLien">%(impacted_hls)d</a>') % dico
         return res
 
@@ -54,9 +54,9 @@ class PluginSHN(VigiboardRequestPlugin):
 
     def controller(self, *argv, **krgv):
         """Ajout de fonctionnalités au contrôleur"""
-        idaggregate = krgv['idaggregate']
+        idcorrevent = krgv['idcorrevent']
         correvent = DBSession.query(CorrEvent) \
-                .filter(CorrEvent.idcorrevent == idaggregate).one()
+                .filter(CorrEvent.idcorrevent == idcorrevent).one()
         shns = correvent.high_level_services
 
         return dict(shns=[shn.name for shn in shns]) 
