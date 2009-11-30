@@ -74,25 +74,25 @@ class TestVigiboardRequest(TestController):
         }
 
         service1 = ServiceLowLevel(
-            hostname=managerhost.name,
+            host=managerhost,
             servicename=u'managerservice',
             **service_template
         )
 
         service2 = ServiceLowLevel(
-            hostname=editorhost.name,
+            host=editorhost,
             servicename=u'managerservice',
             **service_template
         )
 
         service3 = ServiceLowLevel(
-            hostname=managerhost.name,
+            host=managerhost,
             servicename=u'editorservice',
             **service_template
         )
 
         service4 = ServiceLowLevel(
-            hostname=editorhost.name,
+            host=editorhost,
             servicename=u'editorservice',
             **service_template
         )
@@ -118,10 +118,10 @@ class TestVigiboardRequest(TestController):
             'current_state': StateName.statename_to_value(u'WARNING'),
         }
 
-        event1 = Event(service=service1, **event_template)
-        event2 = Event(service=service2, **event_template)
-        event3 = Event(service=service3, **event_template)
-        event4 = Event(service=service4, **event_template)
+        event1 = Event(supitem=service1, **event_template)
+        event2 = Event(supitem=service2, **event_template)
+        event3 = Event(supitem=service3, **event_template)
+        event4 = Event(supitem=service4, **event_template)
 
         DBSession.add(event1)
         DBSession.add(event2)

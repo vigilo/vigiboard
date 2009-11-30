@@ -47,10 +47,10 @@ class VigiboardRequest():
 
         self.join = [
             (Event, CorrEvent.idcause == Event.idevent),
-            (ServiceLowLevel, Event._idservice == ServiceLowLevel.idservice),
-            (Host, Host.name == ServiceLowLevel.hostname),
+            (ServiceLowLevel, Event.idsupitem == ServiceLowLevel.idservice),
+            (Host, Host.idhost == ServiceLowLevel.idhost),
             (StateName, StateName.idstatename == Event.current_state),
-            (HOST_GROUP_TABLE, HOST_GROUP_TABLE.c.hostname == Host.name),
+            (HOST_GROUP_TABLE, HOST_GROUP_TABLE.c.idhost == Host.idhost),
             (SERVICE_GROUP_TABLE, SERVICE_GROUP_TABLE.c.idservice == \
                 ServiceLowLevel.idservice),
         ]
@@ -82,13 +82,13 @@ class VigiboardRequest():
                 priority_order,                 # Priorité ITIL (entier).
                 desc(StateName.order),          # Etat courant (entier).
                 desc(Event.timestamp),
-                asc(ServiceLowLevel.hostname),
+                asc(Host.name),
             ]
 
         self.groupby = [
                 CorrEvent.idcorrevent,
                 CorrEvent,
-                ServiceLowLevel.hostname,
+                Host.name,
                 StateName.order,
                 Event.timestamp,
             ]
