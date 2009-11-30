@@ -2,7 +2,7 @@
 # vim:set expandtab tabstop=4 shiftwidth=4: 
 """Gestion de la requête, des plugins et de l'affichage du Vigiboard"""
 
-from vigiboard.model import Event, EventsAggregate, EventHistory, \
+from vigiboard.model import Event, CorrEvent, EventHistory, \
                             Host, HostGroup, ServiceLowLevel, ServiceGroup, \
                             StateName
 from vigilo.models.secondary_tables import HOST_GROUP_TABLE, \
@@ -41,12 +41,12 @@ class VigiboardRequest():
         self.generaterq = False
 
         self.table = [
-            EventsAggregate,
-            sql.func.count(EventsAggregate.idaggregate),
+            CorrEvent,
+            sql.func.count(CorrEvent.idcorrevent),
         ]
 
         self.join = [
-            (Event, EventsAggregate.idcause == Event.idevent),
+            (Event, CorrEvent.idcause == Event.idevent),
             (ServiceLowLevel, Event._idservice == ServiceLowLevel.idservice),
             (Host, Host.name == ServiceLowLevel.hostname),
             (StateName, StateName.idstatename == Event.current_state),
@@ -66,19 +66,19 @@ class VigiboardRequest():
                 # et traités (status == u'AAClosed').
                 not_(and_(
                     StateName.statename == u'OK',
-                    EventsAggregate.status == u'AAClosed'
+                    CorrEvent.status == u'AAClosed'
                 )),
-                EventsAggregate.timestamp_active != None,
+                CorrEvent.timestamp_active != None,
             ]
 
         # Permet de définir le sens de tri pour la priorité.
         if config['vigiboard_priority_order'] == 'asc':
-            priority_order = asc(EventsAggregate.priority)
+            priority_order = asc(CorrEvent.priority)
         else:
-            priority_order = desc(EventsAggregate.priority)
+            priority_order = desc(CorrEvent.priority)
 
         self.orderby = [
-                desc(EventsAggregate.status),   # None, Acknowledged, AAClosed
+                desc(CorrEvent.status),   # None, Acknowledged, AAClosed
                 priority_order,                 # Priorité ITIL (entier).
                 desc(StateName.order),          # Etat courant (entier).
                 desc(Event.timestamp),
@@ -86,8 +86,8 @@ class VigiboardRequest():
             ]
 
         self.groupby = [
-                EventsAggregate.idaggregate,
-                EventsAggregate,
+                CorrEvent.idcorrevent,
+                CorrEvent,
                 ServiceLowLevel.hostname,
                 StateName.order,
                 Event.timestamp,
@@ -334,7 +334,7 @@ class VigiboardRequest():
             # req devient une liste plutôt que d'être directement la
             # table souhaitée
 
-            if isinstance(req, EventsAggregate):
+            if isinstance(req, CorrEvent):
                 event = req
             else:
                 event = req[0]

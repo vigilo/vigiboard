@@ -13,7 +13,7 @@ from datetime import datetime
 import math
 
 from vigiboard.model import DBSession
-from vigiboard.model import Event, EventHistory, EventsAggregate, \
+from vigiboard.model import Event, EventHistory, CorrEvent, \
                             Host, HostGroup, \
                             StateName, User
 from repoze.what.predicates import Any, not_anonymous
@@ -113,7 +113,7 @@ class RootController(VigiboardRootController):
             search['tt'] = trouble_ticket
             trouble_ticket = trouble_ticket.replace('%', '\\%') \
                     .replace('_', '\\_').replace('*', '%').replace('?', '_')
-            aggregates.add_filter(EventsAggregate.trouble_ticket.ilike(
+            aggregates.add_filter(CorrEvent.trouble_ticket.ilike(
                 '%%%s%%' % trouble_ticket))
 
         # Calcul des éléments à afficher et du nombre de pages possibles
@@ -166,13 +166,13 @@ class RootController(VigiboardRootController):
         user = User.by_user_name(username)
 
         event = DBSession.query(
-                        EventsAggregate.priority,
+                        CorrEvent.priority,
                         Event,
                  ).join(
-                    (Event, EventsAggregate.idcause == Event.idevent),
+                    (Event, CorrEvent.idcause == Event.idevent),
                     (HostGroup, Event.hostname == HostGroup.hostname),
                  ).filter(HostGroup.idgroup.in_(user.groups)
-                 ).filter(EventsAggregate.idaggregate == idaggregate
+                 ).filter(CorrEvent.idcorrevent == idaggregate
                  ).one()
 
         history = DBSession.query(
@@ -218,7 +218,7 @@ class RootController(VigiboardRootController):
 
         username = request.environ['repoze.who.identity']['repoze.who.userid']
         events = VigiboardRequest(User.by_user_name(username))
-        events.add_filter(EventsAggregate.idaggregate == idaggregate)
+        events.add_filter(CorrEvent.idcorrevent == idaggregate)
         
         # Vérification que l'événement existe
         if events.num_rows() != 1 :
@@ -338,7 +338,7 @@ class RootController(VigiboardRootController):
         
         username = request.environ['repoze.who.identity']['repoze.who.userid']
         events = VigiboardRequest(User.by_user_name(username))
-        events.add_filter(EventsAggregate.idaggregate.in_(ids))
+        events.add_filter(CorrEvent.idcorrevent.in_(ids))
         
         # Vérification que au moins un des identifiants existe et est éditable
         if events.num_rows() <= 0 :
@@ -350,7 +350,7 @@ class RootController(VigiboardRootController):
         username = request.environ['repoze.who.identity']['repoze.who.userid']
 
         for req in events.req:
-            if isinstance(req, EventsAggregate):
+            if isinstance(req, CorrEvent):
                 event = req
             else:
                 event = req[0]

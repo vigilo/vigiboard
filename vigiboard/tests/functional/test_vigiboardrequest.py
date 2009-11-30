@@ -10,7 +10,7 @@ import tg
 import transaction
 
 from vigiboard.model import DBSession, \
-    Event, EventHistory, EventsAggregate, \
+    Event, EventHistory, CorrEvent, \
     Permission, User, StateName, \
     Host, HostGroup, ServiceLowLevel, ServiceGroup
 from vigiboard.tests import TestController
@@ -155,9 +155,9 @@ class TestVigiboardRequest(TestController):
             'priority': 1,
             'status': u'None',
         }
-        self.aggregate1 = EventsAggregate(
+        self.aggregate1 = CorrEvent(
             idcause=event1.idevent, **aggregate_template)
-        self.aggregate2 = EventsAggregate(
+        self.aggregate2 = CorrEvent(
             idcause=event4.idevent, **aggregate_template)
 
         self.aggregate1.events.append(event1)
