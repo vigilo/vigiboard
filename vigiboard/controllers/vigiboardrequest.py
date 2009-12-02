@@ -274,21 +274,29 @@ class VigiboardRequest():
                     break
             self.orderby.append(i)
 
-    def format_events_img_status(self, event):
+    def format_events_status(self, event):
         
         """
         Suivant l'état de l'événement, retourne la classe à appliquer
-        à l'image indiquant si l'événement est pris en compte ou non.
+        à l'image indiquant si l'événement est pris en compte ou non,
+        ainsi qu'un texte indiquant l'état.
 
         @param event: l'événement à analyser
 
         @return: Dictionnaire représentant la classe à appliquer
+            et l'état (sous une forme intelligible).
         """
 
         if event.status == 'AAClosed':
-            return { 'src': url('/images/crossed.png') }
-        elif event.status == 'Acknowledged' :
-            return { 'src': url('/images/checked.png') }
+            return {
+                'src': url('/images/crossed.png'),
+                'label': _('Closed'),
+            }
+        elif event.status == 'Acknowledged':
+            return {
+                'src': url('/images/checked.png'),
+                'label': _('Acknowledged'),
+            }
         else:
             return None
 
@@ -364,7 +372,7 @@ class VigiboardRequest():
                     {'src': '/images/%s2.png' %
                         StateName.value_to_statename(
                         cause.current_state)},
-                    self.format_events_img_status(event),
+                    self.format_events_status(event),
                     [[j.__show__(event), j.style] for j in self.plugin]
                 ])
             i += 1

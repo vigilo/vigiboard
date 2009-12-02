@@ -59,5 +59,5 @@ class PluginSHN(VigiboardRequestPlugin):
                 .filter(CorrEvent.idcorrevent == idcorrevent).one()
         shns = correvent.high_level_services
 
-        return dict(shns=[shn.name for shn in shns]) 
+        return dict(shns=[shn.servicename for shn in shns]) 
 

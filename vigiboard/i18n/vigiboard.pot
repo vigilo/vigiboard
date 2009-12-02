@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: vigiboard 0.1\n"
 "Report-Msgid-Bugs-To: contact@projet-vigilo.org\n"
-"POT-Creation-Date: 2009-11-09 10:03+0100\n"
+"POT-Creation-Date: 2009-12-02 12:06+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,35 +21,55 @@ msgstr ""
 msgid "We're sorry but we weren't able to process this request."
 msgstr ""
 
-#: vigiboard/controllers/root.py:45 vigiboard/controllers/root.py:141
-#: vigiboard/controllers/root.py:196 vigiboard/controllers/root.py:242
-#: vigiboard/controllers/root.py:299
+#: vigiboard/controllers/root.py:35
+msgid "Never"
+msgstr ""
+
+#: vigiboard/controllers/root.py:36
+msgid "30 seconds"
+msgstr ""
+
+#: vigiboard/controllers/root.py:37
+msgid "1 minute"
+msgstr ""
+
+#: vigiboard/controllers/root.py:38
+msgid "5 minutes"
+msgstr ""
+
+#: vigiboard/controllers/root.py:39
+msgid "10 minutes"
+msgstr ""
+
+#: vigiboard/controllers/root.py:56 vigiboard/controllers/root.py:157
+#: vigiboard/controllers/root.py:232 vigiboard/controllers/root.py:279
+#: vigiboard/controllers/root.py:340
 msgid "You need to be authenticated"
 msgstr ""
 
-#: vigiboard/controllers/root.py:211
+#: vigiboard/controllers/root.py:247
 msgid "Error in DB"
 msgstr ""
 
-#: vigiboard/controllers/root.py:315
+#: vigiboard/controllers/root.py:356
 msgid "No event has been selected"
 msgstr ""
 
-#: vigiboard/controllers/root.py:329
+#: vigiboard/controllers/root.py:370
 msgid "No access to this event"
 msgstr ""
 
-#: vigiboard/controllers/root.py:347
+#: vigiboard/controllers/root.py:388
 #, python-format
 msgid "Changed trouble ticket from '%s' to '%s'"
 msgstr ""
 
-#: vigiboard/controllers/root.py:361
+#: vigiboard/controllers/root.py:402
 #, python-format
 msgid "Changed acknowledgement status from '%s' to '%s'"
 msgstr ""
 
-#: vigiboard/controllers/root.py:371
+#: vigiboard/controllers/root.py:412
 msgid "Updated successfully"
 msgstr ""
 
@@ -66,60 +86,68 @@ msgstr ""
 msgid "We hope to see you soon!"
 msgstr ""
 
-#: vigiboard/controllers/vigiboardrequest.py:303
+#: vigiboard/controllers/vigiboardrequest.py:293
+msgid "Closed"
+msgstr ""
+
+#: vigiboard/controllers/vigiboardrequest.py:298
+msgid "Acknowledged"
+msgstr ""
+
+#: vigiboard/controllers/vigiboardrequest.py:323
 msgid "Date"
 msgstr ""
 
-#: vigiboard/controllers/vigiboardrequest.py:304
+#: vigiboard/controllers/vigiboardrequest.py:324
 msgid "Duration"
 msgstr ""
 
-#: vigiboard/controllers/vigiboardrequest.py:306
+#: vigiboard/controllers/vigiboardrequest.py:326
 msgid "Priority"
 msgstr ""
 
-#: vigiboard/controllers/vigiboardrequest.py:306
+#: vigiboard/controllers/vigiboardrequest.py:326
 msgid "ITIL Priority"
 msgstr ""
 
-#: vigiboard/controllers/vigiboardrequest.py:307
+#: vigiboard/controllers/vigiboardrequest.py:327
 msgid "Occurrence count"
 msgstr ""
 
-#: vigiboard/controllers/vigiboardrequest.py:308 vigiboard/widgets/edit_event.py:41
+#: vigiboard/controllers/vigiboardrequest.py:328 vigiboard/widgets/edit_event.py:41
 msgid "Host"
 msgstr ""
 
-#: vigiboard/controllers/vigiboardrequest.py:309
+#: vigiboard/controllers/vigiboardrequest.py:329
 msgid "Service Type"
 msgstr ""
 
-#: vigiboard/controllers/vigiboardrequest.py:309
+#: vigiboard/controllers/vigiboardrequest.py:329
 msgid "Service Name"
 msgstr ""
 
-#: vigiboard/controllers/vigiboardrequest.py:311 vigiboard/widgets/edit_event.py:43
+#: vigiboard/controllers/vigiboardrequest.py:331 vigiboard/widgets/edit_event.py:43
 msgid "Output"
 msgstr ""
 
-#: vigiboard/controllers/vigiboardrequest.py:314
+#: vigiboard/controllers/vigiboardrequest.py:334
 msgid "TT"
 msgstr ""
 
-#: vigiboard/controllers/vigiboardrequest.py:314 vigiboard/widgets/edit_event.py:26
+#: vigiboard/controllers/vigiboardrequest.py:334 vigiboard/widgets/edit_event.py:26
 #: vigiboard/widgets/edit_event.py:44
 msgid "Trouble Ticket"
 msgstr ""
 
-#: vigiboard/controllers/vigiboardrequest.py:419
+#: vigiboard/controllers/vigiboardrequest.py:445
 msgid "Edit Event"
 msgstr ""
 
-#: vigiboard/controllers/vigiboardrequest.py:425
+#: vigiboard/controllers/vigiboardrequest.py:451
 msgid "Search Event"
 msgstr ""
 
-#: vigiboard/controllers/vigiboardrequest.py:429
+#: vigiboard/controllers/vigiboardrequest.py:455
 msgid "History"
 msgstr ""
 

@@ -15,11 +15,13 @@ import math
 from vigiboard.model import DBSession
 from vigiboard.model import Event, EventHistory, CorrEvent, \
                             Host, HostGroup, \
-                            StateName, User
+                            StateName, User, ServiceLowLevel
 from repoze.what.predicates import Any, not_anonymous
 from vigiboard.widgets.edit_event import edit_event_status_options
 from vigiboard.controllers.vigiboardrequest import VigiboardRequest
 from vigiboard.controllers.vigiboard_controller import VigiboardRootController
+from vigilo.models.secondary_tables import HOST_GROUP_TABLE, \
+                                            SERVICE_GROUP_TABLE
 
 __all__ = ('RootController', )
 
@@ -120,23 +122,26 @@ class RootController(VigiboardRootController):
         total_rows = aggregates.num_rows()
         items_per_page = int(config['vigiboard_items_per_page'])
 
-        if total_rows <= items_per_page * (page-1):
-            page = 1
         id_first_row = items_per_page * (page-1)
         id_last_row = min(id_first_row + items_per_page, total_rows)
 
         aggregates.format_events(id_first_row, id_last_row)
         aggregates.generate_tmpl_context()
+
         nb_pages = int(math.ceil(total_rows / (items_per_page + 0.0)))
+        if not total_rows:
+            id_first_row = 0
+        else:
+            id_first_row += 1
 
         return dict(
                    events = aggregates.events,
                    rows_info = {
-                       'id_first_row': id_first_row + 1,
+                       'id_first_row': id_first_row,
                        'id_last_row': id_last_row,
                        'total_rows': total_rows,
                    },
-                   pages = range(1, nb_pages + 1),
+                   nb_pages = nb_pages,
                    page = page,
                    event_edit_status_options = edit_event_status_options,
                    history = [],
@@ -146,7 +151,7 @@ class RootController(VigiboardRootController):
                    refresh_times=self.refresh_times,
                 )
       
-    @validate(validators={'idcorrevent':validators.String(not_empty=True)},
+    @validate(validators={'idcorrevent':validators.Int(not_empty=True)},
             error_handler=process_form_errors)
     @expose('json')
     @require(Any(not_anonymous(), msg=_("You need to be authenticated")))
@@ -164,16 +169,33 @@ class RootController(VigiboardRootController):
         username = request.environ.get('repoze.who.identity'
                     ).get('repoze.who.userid')
         user = User.by_user_name(username)
+        user_groups = user.groups
 
+#        try:
         event = DBSession.query(
                         CorrEvent.priority,
                         Event,
                  ).join(
                     (Event, CorrEvent.idcause == Event.idevent),
-                    (HostGroup, Event.hostname == HostGroup.hostname),
-                 ).filter(HostGroup.idgroup.in_(user.groups)
-                 ).filter(CorrEvent.idcorrevent == idcorrevent
-                 ).one()
+                    (ServiceLowLevel, Event.idsupitem == ServiceLowLevel.idservice),
+                    (Host, Host.idhost == ServiceLowLevel.idhost),
+                    (HOST_GROUP_TABLE, HOST_GROUP_TABLE.c.idhost == Host.idhost),
+                    (SERVICE_GROUP_TABLE, SERVICE_GROUP_TABLE.c.idservice == \
+                        ServiceLowLevel.idservice),
+                 ).filter(HOST_GROUP_TABLE.c.idgroup.in_(user_groups)
+                 ).filter(SERVICE_GROUP_TABLE.c.idgroup.in_(user_groups)
+                 ).filter(
+                    # On masque les événements avec l'état OK
+                    # et traités (status == u'AAClosed').
+                    not_(and_(
+                        StateName.statename == u'OK',
+                        CorrEvent.status == u'AAClosed'
+                    ))
+                ).filter(CorrEvent.idcorrevent == idcorrevent
+                ).one()
+#        except:
+#            # XXX Raise some HTTP error.
+#            return None
 
         history = DBSession.query(
                     EventHistory,
@@ -187,8 +209,8 @@ class RootController(VigiboardRootController):
 
             eventdetails[edname] = edlink[1] % {
                     'idcorrevent': idcorrevent,
-                    'host': event[1].hostname,
-                    'service': event[1].servicename
+                    'host': event[1].supitem.host.name,
+                    'service': event[1].supitem.servicename
                     }
 
         return dict(
@@ -199,12 +221,12 @@ class RootController(VigiboardRootController):
                 peak_state = StateName.value_to_statename(
                                     event[1].peak_state),
                 idcorrevent = idcorrevent,
-                host = event[1].hostname,
-                service = event[1].servicename,
+                host = event[1].supitem.host.name,
+                service = event[1].supitem.servicename,
                 eventdetails = eventdetails,
             )
 
-    @validate(validators={'idcorrevent':validators.String(not_empty=True)},
+    @validate(validators={'idcorrevent':validators.Int(not_empty=True)},
             error_handler=process_form_errors)
     @expose('vigiboard.html')
     @require(Any(not_anonymous(), msg=_("You need to be authenticated")))
@@ -236,7 +258,7 @@ class RootController(VigiboardRootController):
                         'id_last_row': 1,
                         'total_rows': 1,
                     },
-                    pages = [1],
+                    nb_pages = 1,
                     page = 1,
                     event_edit_status_options = edit_event_status_options,
                     history = events.hist,
@@ -268,8 +290,11 @@ class RootController(VigiboardRootController):
 
         username = request.environ['repoze.who.identity']['repoze.who.userid']
         events = VigiboardRequest(User.by_user_name(username))
-        events.add_filter(Event.hostname == host,
-                Event.servicename == service)
+        events.add_join((ServiceLowLevel, ServiceLowLevel.idservice == Event.idsupitem))
+        events.add_join((Host, ServiceLowLevel.idhost == Host.idhost))
+        events.add_filter(Host.name == host,
+                ServiceLowLevel.servicename == service)
+
         # XXX On devrait avoir une autre API que ça !!!
         # Supprime le filtre qui empêche d'obtenir des événements fermés
         # (ie: ayant l'état Nagios 'OK' et le statut 'AAClosed').
@@ -291,7 +316,7 @@ class RootController(VigiboardRootController):
                         'id_last_row': 1,
                         'total_rows': 1,
                     },
-                    pages = [1],
+                    nb_pages = 1,
                     page = 1,
                     event_edit_status_options = edit_event_status_options,
                     history = events.hist,
