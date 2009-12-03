@@ -45,7 +45,7 @@ msgstr "10 minutes"
 #: vigiboard/controllers/root.py:232 vigiboard/controllers/root.py:279
 #: vigiboard/controllers/root.py:340
 msgid "You need to be authenticated"
-msgstr "Vous devez être authentifié"
+msgstr "Vous devez vous authentifier"
 
 #: vigiboard/controllers/root.py:247
 msgid "Error in DB"

@@ -71,8 +71,7 @@ base_config.sa_auth.post_logout_url = '/post_logout'
 # Vigiboard version
 base_config['vigilo_version'] = u'2.0-pre0.1'
 
-# Links configuration
-# XXX Should be part of ini settings.
+# Configuration des liens
 # Les elements suivants peuvent etre utilises dans la chaine de formatage :
 # - idcorrevent : identifiant de l'aggregat (alerte correlee)
 # - host : le nom de l'hote concerne par l'alerte
@@ -84,8 +83,14 @@ base_config['vigiboard_links.eventdetails'] = {
     'servicetype': ['Service Type', 'http://example4.com/%(idcorrevent)d'],
 }
 
+# URL des tickets, possibilités:
+# - %(idaggregate)s
+# - %(host)s
+# - %(service)s
+# - %(tt)s
+base_config['vigiboard_links.tt'] = 'http://example4.com/%(idcorrevent)d/%(tt)s'
+
 # Plugins to use
-# XXX Should be part of ini settings.
 base_config['vigiboard_plugins'] = [
     ['shn', 'PluginSHN'],
 ]

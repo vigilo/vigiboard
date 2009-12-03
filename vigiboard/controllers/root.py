@@ -53,7 +53,7 @@ class RootController(VigiboardRootController):
             redirect('/')
 
     @expose('vigiboard.html')
-    @require(Any(not_anonymous(), msg=_("You need to be authenticated")))
+    @require(Any(not_anonymous(), msg=l_("You need to be authenticated")))
     def default(self, page = None, host = None, service = None, output = None,
             trouble_ticket=None, *argv, **krgv):
             
@@ -154,7 +154,7 @@ class RootController(VigiboardRootController):
     @validate(validators={'idcorrevent':validators.Int(not_empty=True)},
             error_handler=process_form_errors)
     @expose('json')
-    @require(Any(not_anonymous(), msg=_("You need to be authenticated")))
+    @require(Any(not_anonymous(), msg=l_("You need to be authenticated")))
     def history_dialog(self, idcorrevent):
         
         """
@@ -229,7 +229,7 @@ class RootController(VigiboardRootController):
     @validate(validators={'idcorrevent':validators.Int(not_empty=True)},
             error_handler=process_form_errors)
     @expose('vigiboard.html')
-    @require(Any(not_anonymous(), msg=_("You need to be authenticated")))
+    @require(Any(not_anonymous(), msg=l_("You need to be authenticated")))
     def event(self, idcorrevent):
         """
         Affichage de l'historique d'un événement.
@@ -276,7 +276,7 @@ class RootController(VigiboardRootController):
     @validate(validators={'host':validators.NotEmpty(),
         'service':validators.NotEmpty()}, error_handler=process_form_errors)
     @expose('vigiboard.html')
-    @require(Any(not_anonymous(), msg=_("You need to be authenticated")))
+    @require(Any(not_anonymous(), msg=l_("You need to be authenticated")))
     def host_service(self, host, service):
         
         """
@@ -337,7 +337,7 @@ class RootController(VigiboardRootController):
         "status":validators.OneOf(['NoChange', 'None', 'Acknowledged',
                 'AAClosed'])
         }, error_handler=process_form_errors)
-    @require(Any(not_anonymous(), msg=_("You need to be authenticated")))
+    @require(Any(not_anonymous(), msg=l_("You need to be authenticated")))
     def update(self,**krgv):
         
         """
