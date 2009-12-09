@@ -8,8 +8,7 @@ from vigiboard.controllers.vigiboard_plugin import \
         VigiboardRequestPlugin
 from vigiboard.model import DBSession, CorrEvent
 from pylons.i18n import gettext as _
-from tg import tmpl_context, url
-from tw.jquery.ui_dialog import JQueryUIDialog
+from tg import url
 
 class PluginSHN(VigiboardRequestPlugin):
 
@@ -35,29 +34,21 @@ class PluginSHN(VigiboardRequestPlugin):
         }
         # XXX Il faudrait échapper l'URL contenue dans baseurl
         # pour éviter des attaques de type XSS.
-        res = ('<a href="javascript:vigiboard_shndialog(' + \
-                '\'%(baseurl)s\',\'%(idcorrevent)d\')" ' + \
-                'class="SHNLien">%(impacted_hls)d</a>') % dico
+        res = ('<a href="javascript:vigiboard_hls_dialog(this,' + \
+                '\'%(baseurl)s\',%(idcorrevent)d)" ' + \
+                'class="hls_link">%(impacted_hls)d</a>') % dico
         return res
 
     def context(self, context):
         """Fonction de context"""
-
-        # On ajoute 10 espaces insécables pour éviter un bug de JQueryUIDialog:
-        # le calcul de la taille de la boîte de dialogue ne tient pas compte
-        # de l'espace occupé par la croix permettant de fermer le dialogue.
-        # Du coup, elle se retrouve superposée au titre de la boîte.
-        tmpl_context.shndialog = JQueryUIDialog(id='SHNDialog',
-                autoOpen=False, title='%s%s' % (_(u'High-Level Services'),
-                '&#160;' * 10))
-        context.append([tmpl_context.shndialog, self.object_name])
+        context.append([None, self.object_name])
 
     def controller(self, *argv, **krgv):
         """Ajout de fonctionnalités au contrôleur"""
         idcorrevent = krgv['idcorrevent']
         correvent = DBSession.query(CorrEvent) \
                 .filter(CorrEvent.idcorrevent == idcorrevent).one()
-        shns = correvent.high_level_services
+        services = correvent.high_level_services
 
-        return dict(shns=[shn.servicename for shn in shns]) 
+        return dict(services=[service.servicename for service in services])
 

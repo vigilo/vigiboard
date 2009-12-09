@@ -7,12 +7,12 @@ from vigiboard.model import Event, CorrEvent, EventHistory, \
                             StateName
 from vigilo.models.secondary_tables import HOST_GROUP_TABLE, \
                                             SERVICE_GROUP_TABLE
-from tg import tmpl_context, url, config
+from tg import url, config, tmpl_context
 from vigiboard.model import DBSession
 from sqlalchemy import not_, and_, asc, desc, sql
 from sqlalchemy.orm import aliased
-from tw.jquery.ui_dialog import JQueryUIDialog
-from vigiboard.widgets.edit_event import EditEventForm , SearchForm
+from vigiboard.widgets.edit_event import EditEventForm
+from vigiboard.widgets.search_form import SearchForm
 from vigiboard.controllers.vigiboard_plugin import VigiboardRequestPlugin
 from pylons.i18n import ugettext as _
 
@@ -441,18 +441,11 @@ class VigiboardRequest():
         # Dialogue d'édition
         tmpl_context.edit_event_form = EditEventForm('edit_event_form',
                 action=url('/update'))
-        tmpl_context.edit_eventdialog = JQueryUIDialog(id='Edit_EventsDialog',
-                autoOpen=False, title=_('Edit Event'))
     
         # Dialogue de recherche
-        tmpl_context.search_form = SearchForm('search_form',
-                action=url('/'))
-        tmpl_context.searchdialog = JQueryUIDialog(id='SearchDialog',
-                autoOpen=False, title=_('Search Event'))
+        tmpl_context.search_form = SearchForm('search_form', action=url('/'))
         
         # Dialogue de détail d'un événement
-        tmpl_context.historydialog = JQueryUIDialog(id='HistoryDialog',
-                autoOpen=False, title=_('History'))
 
         # Exécution des contexts des plugins
         for j in self.plugin:

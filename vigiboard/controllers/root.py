@@ -11,6 +11,7 @@ from pylons.controllers.util import abort
 from sqlalchemy import not_, and_, asc
 from datetime import datetime
 import math
+import urllib
 
 from vigiboard.model import DBSession
 from vigiboard.model import Event, EventHistory, CorrEvent, \
@@ -24,6 +25,10 @@ from vigilo.models.secondary_tables import HOST_GROUP_TABLE, \
                                             SERVICE_GROUP_TABLE
 
 __all__ = ('RootController', )
+
+def sql_escape_like(s):
+    return s.replace('%', '\\%').replace('_', '\\_') \
+                .replace('*', '%').replace('?', '_')
 
 class RootController(VigiboardRootController):
     """
@@ -93,28 +98,24 @@ class RootController(VigiboardRootController):
             'tt': ''
         }
         # Application des filtres si nécessaire
-        if host :
+        if host:
             search['host'] = host
-            host = host.replace('%', '\\%').replace('_', '\\_') \
-                    .replace('*', '%').replace('?', '_')
-            aggregates.add_filter(Event.hostname.ilike('%%%s%%' % host))
+            host = sql_escape_like(host)
+            aggregates.add_filter(Host.name.ilike('%%%s%%' % host))
 
-        if service :
+        if service:
             search['service'] = service
-            service = service.replace('%', '\\%').replace('_', '\\_') \
-                    .replace('*', '%').replace('?', '_')
-            aggregates.add_filter(Event.servicename.ilike('%%%s%%' % service))
+            service = sql_escape_like(service)
+            aggregates.add_filter(ServiceLowLevel.servicename.ilike('%%%s%%' % service))
 
-        if output :
+        if output:
             search['output'] = output
-            output = output.replace('%', '\\%').replace('_', '\\_') \
-                    .replace('*', '%').replace('?', '_')
+            output = sql_escape_like(output)
             aggregates.add_filter(Event.message.ilike('%%%s%%' % output))
 
-        if trouble_ticket :
+        if trouble_ticket:
             search['tt'] = trouble_ticket
-            trouble_ticket = trouble_ticket.replace('%', '\\%') \
-                    .replace('_', '\\_').replace('*', '%').replace('?', '_')
+            trouble_ticket = sql_escape_like(trouble_ticket)
             aggregates.add_filter(CorrEvent.trouble_ticket.ilike(
                 '%%%s%%' % trouble_ticket))
 
@@ -151,7 +152,7 @@ class RootController(VigiboardRootController):
                    refresh_times=self.refresh_times,
                 )
       
-    @validate(validators={'idcorrevent':validators.Int(not_empty=True)},
+    @validate(validators={'idcorrevent': validators.Int(not_empty=True)},
             error_handler=process_form_errors)
     @expose('json')
     @require(Any(not_anonymous(), msg=l_("You need to be authenticated")))
@@ -207,11 +208,15 @@ class RootController(VigiboardRootController):
         for edname, edlink in \
                 config['vigiboard_links.eventdetails'].iteritems():
 
+            # Rappel:
+            # event[0] = priorité de l'alerte corrélée.
+            # event[1] = alerte brute.
             eventdetails[edname] = edlink[1] % {
-                    'idcorrevent': idcorrevent,
-                    'host': event[1].supitem.host.name,
-                    'service': event[1].supitem.servicename
-                    }
+                'idcorrevent': idcorrevent,
+                'host': urllib.quote(event[1].supitem.host.name),
+                'service': urllib.quote(event[1].supitem.servicename),
+                'message': urllib.quote(event[1].message),
+            }
 
         return dict(
                 current_state = StateName.value_to_statename(
@@ -226,7 +231,7 @@ class RootController(VigiboardRootController):
                 eventdetails = eventdetails,
             )
 
-    @validate(validators={'idcorrevent':validators.Int(not_empty=True)},
+    @validate(validators={'idcorrevent': validators.Int(not_empty=True)},
             error_handler=process_form_errors)
     @expose('vigiboard.html')
     @require(Any(not_anonymous(), msg=l_("You need to be authenticated")))
@@ -273,8 +278,8 @@ class RootController(VigiboardRootController):
                    refresh_times=self.refresh_times,
                 )
 
-    @validate(validators={'host':validators.NotEmpty(),
-        'service':validators.NotEmpty()}, error_handler=process_form_errors)
+    @validate(validators={'host': validators.NotEmpty(),
+        'service': validators.NotEmpty()}, error_handler=process_form_errors)
     @expose('vigiboard.html')
     @require(Any(not_anonymous(), msg=l_("You need to be authenticated")))
     def host_service(self, host, service):
@@ -334,9 +339,12 @@ class RootController(VigiboardRootController):
     @validate(validators={
         "id":validators.Regex(r'^[^,]+(,[^,]*)*,?$'),
 #        "trouble_ticket":validators.Regex(r'^[0-9]*$'),
-        "status":validators.OneOf(['NoChange', 'None', 'Acknowledged',
-                'AAClosed'])
-        }, error_handler=process_form_errors)
+        "status": validators.OneOf([
+            'NoChange',
+            'None',
+            'Acknowledged',
+            'AAClosed'
+        ])}, error_handler=process_form_errors)
     @require(Any(not_anonymous(), msg=l_("You need to be authenticated")))
     def update(self,**krgv):
         
@@ -413,7 +421,7 @@ class RootController(VigiboardRootController):
         redirect(request.environ.get('HTTP_REFERER', url('/')))
 
 
-    @validate(validators={"plugin_name":validators.OneOf(
+    @validate(validators={"plugin_name": validators.OneOf(
         [i for [i, j] in config.get('vigiboard_plugins', [])])},
                 error_handler = process_form_errors)
     @expose('json')
@@ -446,8 +454,8 @@ class RootController(VigiboardRootController):
         session.save()
         return dict(ret= 'ok')
 
-    @validate(validators= {"refresh": validators.Int()},
-            error_handler = process_form_errors)
+    @validate(validators={"refresh": validators.Int()},
+            error_handler=process_form_errors)
     @expose('json')
     def set_refresh(self, refresh):
         """
@@ -456,4 +464,20 @@ class RootController(VigiboardRootController):
         session['refresh'] = refresh
         session.save()
         return dict(ret= 'ok')
+
+    @expose('json')
+    def autocomplete_host(self, value):
+        value = sql_escape_like(value)
+        hostnames = DBSession.query(
+                        Host.name.distinct()).filter(
+                        Host.name.ilike('%' + value + '%')).all()
+        return dict(results=[h[0] for h in hostnames])
+
+    @expose('json')
+    def autocomplete_service(self, value):
+        value = sql_escape_like(value)
+        services = DBSession.query(
+                        ServiceLowLevel.servicename.distinct()).filter(
+                        ServiceLowLevel.servicename.ilike('%' + value + '%')).all()
+        return dict(results=[s[0] for s in services])
 

@@ -76,11 +76,13 @@ base_config['vigilo_version'] = u'2.0-pre0.1'
 # - idcorrevent : identifiant de l'aggregat (alerte correlee)
 # - host : le nom de l'hote concerne par l'alerte
 # - service : le nom du service concerne par l'alerte
+# - message : le message transmis par Nagios dans l'alerte
 base_config['vigiboard_links.eventdetails'] = {
     'nagios': ['Nagios host details', 'http://example1.com/%(idcorrevent)d'],
     'metrology': ['Metrology details', 'http://example2.com/%(idcorrevent)d'],
     'security': ['Security details', 'http://example3.com/%(idcorrevent)d'],
     'servicetype': ['Service Type', 'http://example4.com/%(idcorrevent)d'],
+    'documentation': ['Documentation', 'http://doc.example.com/?q=%(message)s'],
 }
 
 # URL des tickets, possibilités:
