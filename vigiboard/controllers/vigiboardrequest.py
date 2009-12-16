@@ -358,7 +358,7 @@ class VigiboardRequest():
             #   Une liste (une case par plugin) de ce que le plugin souhaite
             #       afficher en fonction de l'événement
 
-            cause = event.cause.first()
+            cause = event.cause
 
             events.append([
                     event,

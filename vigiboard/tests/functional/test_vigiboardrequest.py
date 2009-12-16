@@ -59,6 +59,7 @@ class TestVigiboardRequest(TestController):
             'hosttpl': u'/dev/null',
             'mainip': u'192.168.1.1',
             'snmpport': 42,
+            'weight': 42,
         }
 
         managerhost = Host(name=u'managerhost', **host_template)
@@ -71,6 +72,7 @@ class TestVigiboardRequest(TestController):
             'command': u'halt',
             'op_dep': u'+',
             'priority': 1,
+            'weight': 42,
         }
 
         service1 = ServiceLowLevel(

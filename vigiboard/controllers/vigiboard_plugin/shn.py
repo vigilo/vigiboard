@@ -4,11 +4,17 @@
 Plugin SHN : High level service
 """
 
-from vigiboard.controllers.vigiboard_plugin import \
-        VigiboardRequestPlugin
-from vigiboard.model import DBSession, CorrEvent
 from pylons.i18n import gettext as _
 from tg import url
+from sqlalchemy.sql import functions
+
+from vigiboard.controllers.vigiboard_plugin import \
+        VigiboardRequestPlugin
+from vigiboard.model import DBSession, ServiceHighLevel, \
+                            CorrEvent, Event, \
+                            ImpactedHLS, ImpactedPath
+from vigilo.models.supitem import SupItem
+from vigilo.models.secondary_tables import EVENTSAGGREGATE_TABLE
 
 class PluginSHN(VigiboardRequestPlugin):
 
@@ -27,16 +33,29 @@ class PluginSHN(VigiboardRequestPlugin):
     
     def show(self, aggregate):
         """Fonction d'affichage"""
+        supitem = DBSession.query(SupItem).join(
+            (Event, Event.idsupitem == SupItem.idsupitem),
+            (CorrEvent, CorrEvent.idcause == Event.idevent),
+        ).filter(CorrEvent.idcorrevent == aggregate.idcorrevent).first()
+
+        if not supitem:
+            count = 0
+        else:
+            count = supitem.impacted_hls(
+                ServiceHighLevel.idservice
+            ).count()
+
         dico = {
             'baseurl': url('/'),
             'idcorrevent': aggregate.idcorrevent,
-            'impacted_hls': aggregate.high_level_services.count(),
+            'count': count,
         }
+
         # XXX Il faudrait échapper l'URL contenue dans baseurl
         # pour éviter des attaques de type XSS.
         res = ('<a href="javascript:vigiboard_hls_dialog(this,' + \
                 '\'%(baseurl)s\',%(idcorrevent)d)" ' + \
-                'class="hls_link">%(impacted_hls)d</a>') % dico
+                'class="hls_link">%(count)d</a>') % dico
         return res
 
     def context(self, context):
@@ -46,9 +65,20 @@ class PluginSHN(VigiboardRequestPlugin):
     def controller(self, *argv, **krgv):
         """Ajout de fonctionnalités au contrôleur"""
         idcorrevent = krgv['idcorrevent']
-        correvent = DBSession.query(CorrEvent) \
-                .filter(CorrEvent.idcorrevent == idcorrevent).one()
-        services = correvent.high_level_services
+        supitem = DBSession.query(SupItem).join(
+            (Event, Event.idsupitem == SupItem.idsupitem),
+            (CorrEvent, CorrEvent.idcause == Event.idevent),
+        ).filter(CorrEvent.idcorrevent == idcorrevent).first()
+
+        if not supitem:
+            # XXX On devrait afficher une erreur (avec tg.flash()).
+            return []
+
+        services = supitem.impacted_hls(
+            ServiceHighLevel.servicename
+        ).order_by(
+            ServiceHighLevel.servicename.asc()
+        ).all()
 
         return dict(services=[service.servicename for service in services])
 
