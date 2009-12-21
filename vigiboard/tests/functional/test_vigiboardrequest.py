@@ -71,7 +71,6 @@ class TestVigiboardRequest(TestController):
         service_template = {
             'command': u'halt',
             'op_dep': u'+',
-            'priority': 1,
             'weight': 42,
         }
 
