@@ -10,7 +10,7 @@ from pylons.i18n import ugettext as _, lazy_ugettext as l_
 from repoze.what import predicates
 
 from vigiboard.lib.base import BaseController
-from vigiboard.model import DBSession, Access
+from vigiboard.model import DBSession, ApplicationLog
 from vigiboard.controllers.error import ErrorController
 
 class VigiboardRootController(BaseController):
@@ -48,7 +48,7 @@ class VigiboardRootController(BaseController):
             login_counter = request.environ['repoze.who.logins'] + 1
             redirect(url('/login', came_from=came_from, __logins=login_counter))
         userid = request.identity['repoze.who.userid']
-        Access.add_login(userid, request.remote_addr, 'Vigiboard')
+        ApplicationLog.add_login(userid, request.remote_addr, 'Vigiboard')
         flash(_('Welcome back, %s!') % userid)
         redirect(came_from)
 
@@ -60,7 +60,7 @@ class VigiboardRootController(BaseController):
         """
         # XXX Ne fonctionne pas, l'identité est déjà oubliée arrivé ici.
 #        userid = request.identity['repoze.who.userid']
-#        Access.add_logout(userid, request.remote_addr, 'Vigiboard')
+#        ApplicationLog.add_logout(userid, request.remote_addr, 'Vigiboard')
         flash(_('We hope to see you soon!'))
         redirect(came_from)
 
