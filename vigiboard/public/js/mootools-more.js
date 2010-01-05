@@ -23,8 +23,8 @@ provides: [MooTools.More]
 */
 
 MooTools.More = {
-	'version': '1.2.4.2dev',
-	'build': '%build%'
+	'version': '1.2.4.2',
+	'build': 'bd5a93c0913cce25917c48cbdacde568e15e02ef'
 };
 
 /*
@@ -127,6 +127,86 @@ provides: [MooTools.Lang]
 		}
 
 	});
+
+})();
+
+/*
+---
+
+script: Log.js
+
+description: Provides basic logging functionality for plugins to implement.
+
+license: MIT-style license
+
+authors:
+- Guillermo Rauch
+- Thomas Aylott
+- Scott Kyle
+
+requires:
+- core:1.2.4/Class
+- /MooTools.More
+
+provides: [Log]
+
+...
+*/
+
+(function(){
+
+var global = this;
+
+var log = function(){
+	if (global.console && console.log){
+		try {
+			console.log.apply(console, arguments);
+		} catch(e) {
+			console.log(Array.slice(arguments));
+		}
+	} else {
+		Log.logged.push(arguments);
+	}
+	return this;
+};
+
+var disabled = function(){
+	this.logged.push(arguments);
+	return this;
+};
+
+this.Log = new Class({
+	
+	logged: [],
+	
+	log: disabled,
+	
+	resetLog: function(){
+		this.logged.empty();
+		return this;
+	},
+
+	enableLog: function(){
+		this.log = log;
+		this.logged.each(function(args){
+			this.log.apply(this, args);
+		}, this);
+		return this.resetLog();
+	},
+
+	disableLog: function(){
+		this.log = disabled;
+		return this;
+	}
+	
+});
+
+Log.extend(new Log).enableLog();
+
+// legacy
+Log.logger = function(){
+	return this.log.apply(this, arguments);
+};
 
 })();
 
@@ -240,6 +320,67 @@ Class.Occlude = new Class({
 	}
 
 });
+
+/*
+---
+
+script: Chain.Wait.js
+
+description: value, Adds a method to inject pauses between chained events.
+
+license: MIT-style license.
+
+authors:
+- Aaron Newton
+
+requires: 
+- core:1.2.4/Chain 
+- core:1.2.4/Element
+- core:1.2.4/Fx
+- /MooTools.More
+
+provides: [Chain.Wait]
+
+...
+*/
+
+(function(){
+
+	var wait = {
+		wait: function(duration){
+			return this.chain(function(){
+				this.callChain.delay($pick(duration, 500), this);
+			}.bind(this));
+		}
+	};
+
+	Chain.implement(wait);
+
+	if (window.Fx){
+		Fx.implement(wait);
+		['Css', 'Tween', 'Elements'].each(function(cls){
+			if (Fx[cls]) Fx[cls].implement(wait);
+		});
+	}
+
+	Element.implement({
+		chains: function(effects){
+			$splat($pick(effects, ['tween', 'morph', 'reveal'])).each(function(effect){
+				effect = this.get(effect);
+				if (!effect) return;
+				effect.setOptions({
+					link:'chain'
+				});
+			}, this);
+			return this;
+		},
+		pauseFx: function(duration, effect){
+			this.chains(effect).get($pick(effect, 'tween')).wait(duration);
+			return this;
+		}
+	});
+
+})();
 
 /*
 ---
@@ -705,7 +846,8 @@ Date.defineParsers(
 	'%x( %X)?', // "12/31", "12.31.99", "12-31-1999", "12/31/2008 11:59 PM"
 	'%d%o( %b( %Y)?)?( %X)?', // "31st", "31st December", "31 Dec 1999", "31 Dec 1999 11:59pm"
 	'%b( %d%o)?( %Y)?( %X)?', // Same as above with month and day switched
-	'%Y %b( %d%o( %X)?)?' // Same as above with year coming first
+	'%Y %b( %d%o( %X)?)?', // Same as above with year coming first
+	'%o %b %d %X %T %Y' // "Thu Oct 22 08:11:23 +0000 2009"
 );
 
 MooTools.lang.addEvent('langChange', function(language){
@@ -1059,6 +1201,64 @@ Element.implement({
 /*
 ---
 
+script: Element.Shortcuts.js
+
+description: Extends the Element native object to include some shortcut methods.
+
+license: MIT-style license
+
+authors:
+- Aaron Newton
+
+requires:
+- core:1.2.4/Element.Style
+- /MooTools.More
+
+provides: [Element.Shortcuts]
+
+...
+*/
+
+Element.implement({
+
+	isDisplayed: function(){
+		return this.getStyle('display') != 'none';
+	},
+
+	isVisible: function(){
+		var w = this.offsetWidth,
+			h = this.offsetHeight;
+		return (w == 0 && h == 0) ? false : (w > 0 && h > 0) ? true : this.isDisplayed();
+	},
+
+	toggle: function(){
+		return this[this.isDisplayed() ? 'hide' : 'show']();
+	},
+
+	hide: function(){
+		var d;
+		try {
+			// IE fails here if the element is not in the dom
+			if ((d = this.getStyle('display')) == 'none') d = null;
+		} catch(e){}
+		
+		return this.store('originalDisplay', d || 'block').setStyle('display', 'none');
+	},
+
+	show: function(display){
+		return this.setStyle('display', display || this.retrieve('originalDisplay') || 'block');
+	},
+
+	swapClass: function(remove, add){
+		return this.removeClass(remove).addClass(add);
+	}
+
+});
+
+
+/*
+---
+
 script: Fx.Elements.js
 
 description: Effect to change any number of CSS properties of any number of Elements.
@@ -1224,10 +1424,10 @@ var Accordion = Fx.Accordion = new Class({
 	display: function(index, useFx){
 		if (!this.check(index, useFx)) return this;
 		useFx = $pick(useFx, true);
-		if (this.options.returnHeightToAuto) {
+		if (this.options.returnHeightToAuto){
 			var prev = this.elements[this.previous];
-			if (prev) {
-				for (var fx in this.effects) {
+			if (prev && !this.selfHidden){
+				for (var fx in this.effects){
 					prev.setStyle(fx, prev[this.effects[fx]]);
 				}
 			}
@@ -1238,16 +1438,20 @@ var Accordion = Fx.Accordion = new Class({
 		var obj = {};
 		this.elements.each(function(el, i){
 			obj[i] = {};
-			var hide = (i != index) || 
-						(this.options.alwaysHide && ((el.offsetHeight > 0 && this.options.height) || 
-							el.offsetWidth > 0 && this.options.width));
+			var hide;
+			if (i != index){
+				hide = true;
+			} else if (this.options.alwaysHide && ((el.offsetHeight > 0 && this.options.height) || el.offsetWidth > 0 && this.options.width)){
+				hide = true;
+				this.selfHidden = true;
+			}
 			this.fireEvent(hide ? 'background' : 'active', [this.togglers[i], el]);
 			for (var fx in this.effects) obj[i][fx] = hide ? 0 : el[this.effects[fx]];
 		}, this);
 		this.internalChain.chain(function(){
-			if (this.options.returnHeightToAuto) {
+			if (this.options.returnHeightToAuto && !this.selfHidden){
 				var el = this.elements[index];
-				el.setStyle('height', 'auto');
+				if (el) el.setStyle('height', 'auto');
 			};
 		}.bind(this));
 		return useFx ? this.start(obj) : this.set(obj);
@@ -1299,6 +1503,7 @@ var Drag = new Class({
 		handle: false,
 		invert: false,
 		preventDefault: false,
+		stopPropagation: false,
 		modifiers: {x: 'left', y: 'top'}
 	},
 
@@ -1338,6 +1543,7 @@ var Drag = new Class({
 	start: function(event){
 		if (event.rightClick) return;
 		if (this.options.preventDefault) event.preventDefault();
+		if (this.options.stopPropagation) event.stopPropagation();
 		this.mouse.start = event.page;
 		this.fireEvent('beforeStart', this.element);
 		var limit = this.options.limit;
@@ -1992,329 +2198,6 @@ var Group = new Class({
 /*
 ---
 
-script: IframeShim.js
-
-description: Defines IframeShim, a class for obscuring select lists and flash objects in IE.
-
-license: MIT-style license
-
-authors:
-- Aaron Newton
-
-requires:
-- core:1.2.4/Element.Event
-- core:1.2.4/Element.Style
-- core:1.2.4/Options Events
-- /Element.Position
-- /Class.Occlude
-
-provides: [IframeShim]
-
-...
-*/
-
-var IframeShim = new Class({
-
-	Implements: [Options, Events, Class.Occlude],
-
-	options: {
-		className: 'iframeShim',
-		src: 'javascript:false;document.write("");',
-		display: false,
-		zIndex: null,
-		margin: 0,
-		offset: {x: 0, y: 0},
-		browsers: (Browser.Engine.trident4 || (Browser.Engine.gecko && !Browser.Engine.gecko19 && Browser.Platform.mac))
-	},
-
-	property: 'IframeShim',
-
-	initialize: function(element, options){
-		this.element = document.id(element);
-		if (this.occlude()) return this.occluded;
-		this.setOptions(options);
-		this.makeShim();
-		return this;
-	},
-
-	makeShim: function(){
-		if(this.options.browsers){
-			var zIndex = this.element.getStyle('zIndex').toInt();
-
-			if (!zIndex){
-				zIndex = 1;
-				var pos = this.element.getStyle('position');
-				if (pos == 'static' || !pos) this.element.setStyle('position', 'relative');
-				this.element.setStyle('zIndex', zIndex);
-			}
-			zIndex = ($chk(this.options.zIndex) && zIndex > this.options.zIndex) ? this.options.zIndex : zIndex - 1;
-			if (zIndex < 0) zIndex = 1;
-			this.shim = new Element('iframe', {
-				src: this.options.src,
-				scrolling: 'no',
-				frameborder: 0,
-				styles: {
-					zIndex: zIndex,
-					position: 'absolute',
-					border: 'none',
-					filter: 'progid:DXImageTransform.Microsoft.Alpha(style=0,opacity=0)'
-				},
-				'class': this.options.className
-			}).store('IframeShim', this);
-			var inject = (function(){
-				this.shim.inject(this.element, 'after');
-				this[this.options.display ? 'show' : 'hide']();
-				this.fireEvent('inject');
-			}).bind(this);
-			if (IframeShim.ready) window.addEvent('load', inject);
-			else inject();
-		} else {
-			this.position = this.hide = this.show = this.dispose = $lambda(this);
-		}
-	},
-
-	position: function(){
-		if (!IframeShim.ready || !this.shim) return this;
-		var size = this.element.measure(function(){ 
-			return this.getSize(); 
-		});
-		if (this.options.margin != undefined){
-			size.x = size.x - (this.options.margin * 2);
-			size.y = size.y - (this.options.margin * 2);
-			this.options.offset.x += this.options.margin;
-			this.options.offset.y += this.options.margin;
-		}
-		this.shim.set({width: size.x, height: size.y}).position({
-			relativeTo: this.element,
-			offset: this.options.offset
-		});
-		return this;
-	},
-
-	hide: function(){
-		if (this.shim) this.shim.setStyle('display', 'none');
-		return this;
-	},
-
-	show: function(){
-		if (this.shim) this.shim.setStyle('display', 'block');
-		return this.position();
-	},
-
-	dispose: function(){
-		if (this.shim) this.shim.dispose();
-		return this;
-	},
-
-	destroy: function(){
-		if (this.shim) this.shim.destroy();
-		return this;
-	}
-
-});
-
-window.addEvent('load', function(){
-	IframeShim.ready = true;
-});
-
-/*
----
-
-script: Mask.js
-
-description: Creates a mask element to cover another.
-
-license: MIT-style license
-
-authors:
-- Aaron Newton
-
-requires:
-- core:1.2.4/Options
-- core:1.2.4/Events
-- core:1.2.4/Element.Event
-- /Class.Binds
-- /Element.Position
-- /IframeShim
-
-provides: [Mask]
-
-...
-*/
-
-var Mask = new Class({
-
-	Implements: [Options, Events],
-
-	Binds: ['resize'],
-
-	options: {
-		// onShow: $empty,
-		// onHide: $empty,
-		// onDestroy: $empty,
-		// onClick: $empty,
-		//inject: {
-		//  where: 'after',
-		//  target: null,
-		//},
-		// hideOnClick: false,
-		// id: null,
-		// destroyOnHide: false,
-		style: {},
-		'class': 'mask',
-		maskMargins: false,
-		useIframeShim: true
-	},
-
-	initialize: function(target, options){
-		this.target = document.id(target) || document.body;
-		this.target.store('mask', this);
-		this.setOptions(options);
-		this.render();
-		this.inject();
-	},
-	
-	render: function() {
-		this.element = new Element('div', {
-			'class': this.options['class'],
-			id: this.options.id || 'mask-' + $time(),
-			styles: $merge(this.options.style, {
-				display: 'none'
-			}),
-			events: {
-				click: function(){
-					this.fireEvent('click');
-					if (this.options.hideOnClick) this.hide();
-				}.bind(this)
-			}
-		});
-		this.hidden = true;
-	},
-
-	toElement: function(){
-		return this.element;
-	},
-
-	inject: function(target, where){
-		where = where || this.options.inject ? this.options.inject.where : '' || this.target == document.body ? 'inside' : 'after';
-		target = target || this.options.inject ? this.options.inject.target : '' || this.target;
-		this.element.inject(target, where);
-		if (this.options.useIframeShim) {
-			this.shim = new IframeShim(this.element);
-			this.addEvents({
-				show: this.shim.show.bind(this.shim),
-				hide: this.shim.hide.bind(this.shim),
-				destroy: this.shim.destroy.bind(this.shim)
-			});
-		}
-	},
-
-	position: function(){
-		this.resize(this.options.width, this.options.height);
-		this.element.position({
-			relativeTo: this.target,
-			position: 'topLeft',
-			ignoreMargins: !this.options.maskMargins,
-			ignoreScroll: this.target == document.body
-		});
-		return this;
-	},
-
-	resize: function(x, y){
-		var opt = {
-			styles: ['padding', 'border']
-		};
-		if (this.options.maskMargins) opt.styles.push('margin');
-		var dim = this.target.getComputedSize(opt);
-		if (this.target == document.body) {
-			var win = window.getSize();
-			if (dim.totalHeight < win.y) dim.totalHeight = win.y;
-			if (dim.totalWidth < win.x) dim.totalWidth = win.x;
-		}
-		this.element.setStyles({
-			width: $pick(x, dim.totalWidth, dim.x),
-			height: $pick(y, dim.totalHeight, dim.y)
-		});
-		return this;
-	},
-
-	show: function(){
-		if (!this.hidden) return this;
-		this.target.addEvent('resize', this.resize);
-		if (this.target != document.body) document.id(document.body).addEvent('resize', this.resize);
-		this.position();
-		this.showMask.apply(this, arguments);
-		return this;
-	},
-
-	showMask: function(){
-		this.element.setStyle('display', 'block');
-		this.hidden = false;
-		this.fireEvent('show');
-	},
-
-	hide: function(){
-		if (this.hidden) return this;
-		this.target.removeEvent('resize', this.resize);
-		this.hideMask.apply(this, arguments);
-		if (this.options.destroyOnHide) return this.destroy();
-		return this;
-	},
-
-	hideMask: function(){
-		this.element.setStyle('display', 'none');
-		this.hidden = true;
-		this.fireEvent('hide');
-	},
-
-	toggle: function(){
-		this[this.hidden ? 'show' : 'hide']();
-	},
-
-	destroy: function(){
-		this.hide();
-		this.element.destroy();
-		this.fireEvent('destroy');
-		this.target.eliminate('mask');
-	}
-
-});
-
-Element.Properties.mask = {
-
-	set: function(options){
-		var mask = this.retrieve('mask');
-		return this.eliminate('mask').store('mask:options', options);
-	},
-
-	get: function(options){
-		if (options || !this.retrieve('mask')){
-			if (this.retrieve('mask')) this.retrieve('mask').destroy();
-			if (options || !this.retrieve('mask:options')) this.set('mask', options);
-			this.store('mask', new Mask(this, this.retrieve('mask:options')));
-		}
-		return this.retrieve('mask');
-	}
-
-};
-
-Element.implement({
-
-	mask: function(options){
-		this.get('mask', options).show();
-		return this;
-	},
-
-	unmask: function(){
-		this.get('mask').hide();
-		return this;
-	}
-
-});
-
-/*
----
-
 script: Tips.js
 
 description: Class for creating nice tips that follow the mouse cursor when hovering an element.
@@ -2385,7 +2268,6 @@ this.Tips = new Class({
 		return this.tip = new Element('div', {
 			'class': this.options.className,
 			styles: {
-				display: 'none',
 				position: 'absolute',
 				top: 0,
 				left: 0
@@ -2456,11 +2338,12 @@ this.Tips = new Class({
 		this.fireForParent(event, element);
 	},
 
-	fireForParent: function(event, element) {
-			parentNode = element.getParent();
-			if (parentNode == document.body) return;
-			if (parentNode.retrieve('tip:enter')) parentNode.fireEvent('mouseenter', event);
-			else return this.fireForParent(parentNode, event);
+	fireForParent: function(event, element){
+		if (!element) return;
+		parentNode = element.getParent();
+		if (parentNode == document.body) return;
+		if (parentNode.retrieve('tip:enter')) parentNode.fireEvent('mouseenter', event);
+		else this.fireForParent(parentNode, event);
 	},
 
 	elementMove: function(event, element){
@@ -2487,208 +2370,16 @@ this.Tips = new Class({
 	},
 
 	show: function(element){
-		this.fireEvent('show', [element]);
+		this.fireEvent('show', [this.tip, element]);
 	},
 
 	hide: function(element){
-		this.fireEvent('hide', [element]);
+		this.fireEvent('hide', [this.tip, element]);
 	}
 
 });
 
 })();
-
-/*
----
-
-script: Spinner.js
-
-description: Adds a semi-transparent overlay over a dom element with a spinnin ajax icon.
-
-license: MIT-style license
-
-authors:
-- Aaron Newton
-
-requires:
-- core:1.2.4/Fx.Tween
-- /Class.refactor
-- /Mask
-
-provides: [Spinner]
-
-...
-*/
-
-var Spinner = new Class({
-
-	Extends: Mask,
-
-	options: {
-		/*message: false,*/
-		'class':'spinner',
-		containerPosition: {},
-		content: {
-			'class':'spinner-content'
-		},
-		messageContainer: {
-			'class':'spinner-msg'
-		},
-		img: {
-			'class':'spinner-img'
-		},
-		fxOptions: {
-			link: 'chain'
-		}
-	},
-
-	initialize: function(){
-		this.parent.apply(this, arguments);
-		this.target.store('spinner', this);
-
-		//add this to events for when noFx is true; parent methods handle hide/show
-		var deactivate = function(){ this.active = false; }.bind(this);
-		this.addEvents({
-			hide: deactivate,
-			show: deactivate
-		});
-	},
-
-	render: function(){
-		this.parent();
-		this.element.set('id', this.options.id || 'spinner-'+$time());
-		this.content = document.id(this.options.content) || new Element('div', this.options.content);
-		this.content.inject(this.element);
-		if (this.options.message) {
-			this.msg = document.id(this.options.message) || new Element('p', this.options.messageContainer).appendText(this.options.message);
-			this.msg.inject(this.content);
-		}
-		if (this.options.img) {
-			this.img = document.id(this.options.img) || new Element('div', this.options.img);
-			this.img.inject(this.content);
-		}
-		this.element.set('tween', this.options.fxOptions);
-	},
-
-	show: function(noFx){
-		if (this.active) return this.chain(this.show.bind(this));
-		if (!this.hidden) {
-			this.callChain.delay(20, this);
-			return this;
-		}
-		this.active = true;
-		return this.parent(noFx);
-	},
-
-	showMask: function(noFx){
-		var pos = function(){
-			this.content.position($merge({
-				relativeTo: this.element
-			}, this.options.containerPosition));
-		}.bind(this);
-		if (noFx) {
-			this.parent();
-			pos();
-		} else {
-			this.element.setStyles({
-				display: 'block',
-				opacity: 0
-			}).tween('opacity', this.options.style.opacity || 0.9);
-			pos();
-			this.hidden = false;
-			this.fireEvent('show');
-			this.callChain();
-		}
-	},
-
-	hide: function(noFx){
-		if (this.active) return this.chain(this.hide.bind(this));
-		if (this.hidden) {
-			this.callChain.delay(20, this);
-			return this;
-		}
-		this.active = true;
-		return this.parent();
-	},
-
-	hideMask: function(noFx){
-		if (noFx) return this.parent();
-		this.element.tween('opacity', 0).get('tween').chain(function(){
-			this.element.setStyle('display', 'none');
-			this.hidden = true;
-			this.fireEvent('hide');
-			this.callChain();
-		}.bind(this));
-	},
-
-	destroy: function(){
-		this.content.destroy();
-		this.parent();
-		this.target.eliminate('spinner');
-	}
-
-});
-
-Spinner.implement(new Chain);
-
-if (window.Request) {
-	Request = Class.refactor(Request, {
-		options: {
-			useSpinner: false,
-			spinnerOptions: {},
-			spinnerTarget: false
-		},
-		initialize: function(options){
-			this._send = this.send;
-			this.send = function(options){
-				if (this.spinner) this.spinner.chain(this._send.bind(this, options)).show();
-				else this._send(options);
-				return this;
-			};
-			this.previous(options);
-			var update = document.id(this.options.spinnerTarget) || document.id(this.options.update);
-			if (this.options.useSpinner && update) {
-				this.spinner = update.get('spinner', this.options.spinnerOptions);
-				['onComplete', 'onException', 'onCancel'].each(function(event){
-					this.addEvent(event, this.spinner.hide.bind(this.spinner));
-				}, this);
-			}
-		}
-	});
-}
-
-Element.Properties.spinner = {
-
-	set: function(options){
-		var spinner = this.retrieve('spinner');
-		return this.eliminate('spinner').store('spinner:options', options);
-	},
-
-	get: function(options){
-		if (options || !this.retrieve('spinner')){
-			if (this.retrieve('spinner')) this.retrieve('spinner').destroy();
-			if (options || !this.retrieve('spinner:options')) this.set('spinner', options);
-			new Spinner(this, this.retrieve('spinner:options'));
-		}
-		return this.retrieve('spinner');
-	}
-
-};
-
-Element.implement({
-
-	spin: function(options){
-		this.get('spinner', options).show();
-		return this;
-	},
-
-	unspin: function(){
-		var opt = Array.link(arguments, {options: Object.type, callback: Function.type});
-		this.get('spinner', opt.options).hide(opt.callback);
-		return this;
-	}
-
-});
 
 /*
 ---
