@@ -28,16 +28,18 @@ class VigiboardRequest():
         'AAClosed': '_Ack',
     }
 
-    def __init__(self, user):
+    def __init__(self, user, lang):
 
         """
         Initialisation de toutes les variables nécessaires :
         - la liste des groupes de l'utilisateur,
+        - la langue de l'utilisateur
         - les différentes étapes de la génération de la requête,
         - la liste des plugins à appliquer.
         """
 
         self.user_groups = user.groups
+        self.lang = lang
         self.generaterq = False
 
         self.table = [
@@ -443,7 +445,9 @@ class VigiboardRequest():
                 action=url('/update'))
     
         # Dialogue de recherche
-        tmpl_context.search_form = SearchForm('search_form', action=url('/'))
+        tmpl_context.search_form = SearchForm('search_form', lang=self.lang,
+                                              # TRANSLATORS : Format de date  
+                                              date_format=_('%Y-%m-%d %H:%M'))
         
         # Dialogue de détail d'un événement
 

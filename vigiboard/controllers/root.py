@@ -7,6 +7,7 @@ from tg import expose, validate, require, flash, \
 from tw.forms import validators
 from pylons.i18n import ugettext as _
 from pylons.i18n import lazy_ugettext as l_
+from tg.i18n import get_lang
 from pylons.controllers.util import abort
 from sqlalchemy import not_, and_, asc
 from datetime import datetime
@@ -89,7 +90,14 @@ class RootController(VigiboardRootController):
 
         username = request.environ['repoze.who.identity']['repoze.who.userid']
         user = User.by_user_name(username)
-        aggregates = VigiboardRequest(user)
+        
+        # On récupère la langue de l'utilisateur
+        lang = get_lang()
+        if not lang:
+            lang = ['fr']
+        lang = lang[0]
+        
+        aggregates = VigiboardRequest(user, lang)
         
         search = {
             'host': '',
