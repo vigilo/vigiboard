@@ -433,7 +433,7 @@ class VigiboardRequest():
         
         self.hist = hists
 
-    def generate_tmpl_context(self, from_date="", to_date=""):
+    def generate_tmpl_context(self):
         
         """
         Génère et peuple la variable tmpl_context avec les Dialogs et
@@ -446,8 +446,6 @@ class VigiboardRequest():
     
         # Dialogue de recherche
         tmpl_context.search_form = SearchForm('search_form', lang=self.lang,
-                                              from_date = from_date,
-                                              to_date = to_date,
                                               # TRANSLATORS : Format de date  
                                               date_format=_('%Y-%m-%d %I:%M:%S %P'))
         
