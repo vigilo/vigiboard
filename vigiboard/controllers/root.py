@@ -60,8 +60,9 @@ class RootController(VigiboardRootController):
 
     @expose('vigiboard.html')
     @require(Any(not_anonymous(), msg=l_("You need to be authenticated")))
-    def default(self, page = None, host = None, service = None, output = None,
-            trouble_ticket=None, *argv, **krgv):
+    def default(self, page=None, host=None, service=None, output=None,
+            trouble_ticket=None, from_date=None, to_date=None,
+            *argv, **krgv):
             
         """
         Page d'accueil de Vigiboard. Elle affiche, suivant la page demandée
@@ -103,7 +104,9 @@ class RootController(VigiboardRootController):
             'host': '',
             'service': '',
             'output': '',
-            'tt': ''
+            'tt': '',
+            'from_date': '',
+            'to_date': '',
         }
         # Application des filtres si nécessaire
         if host:
@@ -114,7 +117,8 @@ class RootController(VigiboardRootController):
         if service:
             search['service'] = service
             service = sql_escape_like(service)
-            aggregates.add_filter(ServiceLowLevel.servicename.ilike('%%%s%%' % service))
+            aggregates.add_filter(ServiceLowLevel.servicename.ilike(
+                '%%%s%%' % service))
 
         if output:
             search['output'] = output
@@ -126,6 +130,26 @@ class RootController(VigiboardRootController):
             trouble_ticket = sql_escape_like(trouble_ticket)
             aggregates.add_filter(CorrEvent.trouble_ticket.ilike(
                 '%%%s%%' % trouble_ticket))
+
+        if from_date:
+            search['from_date'] = from_date
+            # TRANSLATORS: Format de date et heure.
+            try:
+                from_date = datetime.strptime(
+                    from_date, _('%Y-%m-%d %I:%M:%S %p'))
+            except ValueError:
+                to_date = None
+            aggregates.add_filter(CorrEvent.timestamp_active >= from_date)
+
+        if to_date:
+            search['to_date'] = to_date
+            # TRANSLATORS: Format de date et heure.
+            try:
+                to_date = datetime.strptime(
+                    to_date, _('%Y-%m-%d %I:%M:%S %p'))
+            except ValueError:
+                to_date = None
+            aggregates.add_filter(CorrEvent.timestamp_active <= to_date)
 
         # Calcul des éléments à afficher et du nombre de pages possibles
         total_rows = aggregates.num_rows()
@@ -144,21 +168,21 @@ class RootController(VigiboardRootController):
             id_first_row += 1
 
         return dict(
-                   events = aggregates.events,
-                   rows_info = {
-                       'id_first_row': id_first_row,
-                       'id_last_row': id_last_row,
-                       'total_rows': total_rows,
-                   },
-                   nb_pages = nb_pages,
-                   page = page,
-                   event_edit_status_options = edit_event_status_options,
-                   history = [],
-                   hist_error = False,
-                   plugin_context = aggregates.context_fct,
-                   search = search,
-                   refresh_times=self.refresh_times,
-                )
+            events = aggregates.events,
+            rows_info = {
+                'id_first_row': id_first_row,
+                'id_last_row': id_last_row,
+                'total_rows': total_rows,
+            },
+            nb_pages = nb_pages,
+            page = page,
+            event_edit_status_options = edit_event_status_options,
+            history = [],
+            hist_error = False,
+            plugin_context = aggregates.context_fct,
+            search = search,
+            refresh_times=self.refresh_times,
+        )
       
     @validate(validators={'idcorrevent': validators.Int(not_empty=True)},
             error_handler=process_form_errors)
@@ -281,7 +305,9 @@ class RootController(VigiboardRootController):
                         'host': None,
                         'service': None,
                         'output': None,
-                        'tt': None
+                        'tt': None,
+                        'from_date': None,
+                        'to_date': None,
                     },
                    refresh_times=self.refresh_times,
                 )
@@ -339,7 +365,9 @@ class RootController(VigiboardRootController):
                         'host': None,
                         'service': None,
                         'output': None,
-                        'tt': None
+                        'tt': None,
+                        'from_date': None,
+                        'to_date': None,
                     },
                     refresh_times=self.refresh_times,
                 )

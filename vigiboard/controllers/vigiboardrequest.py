@@ -10,6 +10,7 @@ from vigilo.models.secondary_tables import HOST_GROUP_TABLE, \
 from tg import url, config, tmpl_context
 from vigiboard.model import DBSession
 from sqlalchemy import not_, and_, asc, desc, sql
+from sqlalchemy.sql.expression import or_
 from sqlalchemy.orm import aliased
 from vigiboard.widgets.edit_event import EditEventForm
 from vigiboard.widgets.search_form import SearchForm
@@ -52,17 +53,19 @@ class VigiboardRequest():
             (ServiceLowLevel, Event.idsupitem == ServiceLowLevel.idservice),
             (Host, Host.idhost == ServiceLowLevel.idhost),
             (StateName, StateName.idstatename == Event.current_state),
+        ]
+
+        self.outerjoin = [
             (HOST_GROUP_TABLE, HOST_GROUP_TABLE.c.idhost == Host.idhost),
             (SERVICE_GROUP_TABLE, SERVICE_GROUP_TABLE.c.idservice == \
                 ServiceLowLevel.idservice),
         ]
 
-        self.outerjoin = [
-        ]
-
         self.filter = [
-                HOST_GROUP_TABLE.c.idgroup.in_(self.user_groups),
-                SERVICE_GROUP_TABLE.c.idgroup.in_(self.user_groups),
+                or_(
+                    HOST_GROUP_TABLE.c.idgroup.in_(self.user_groups),
+                    SERVICE_GROUP_TABLE.c.idgroup.in_(self.user_groups),
+                ),
 
                 # On masque les événements avec l'état OK
                 # et traités (status == u'AAClosed').
@@ -446,8 +449,8 @@ class VigiboardRequest():
     
         # Dialogue de recherche
         tmpl_context.search_form = SearchForm('search_form', lang=self.lang,
-                                              # TRANSLATORS : Format de date  
-                                              date_format=_('%Y-%m-%d %I:%M:%S %P'))
+                                        # TRANSLATORS: Format de date et heure.
+                                        date_format=_('%Y-%m-%d %I:%M:%S %p'))
         
         # Dialogue de détail d'un événement
 

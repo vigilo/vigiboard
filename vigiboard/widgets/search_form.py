@@ -33,14 +33,16 @@ class SearchForm(TableForm):
         super(SearchForm, self).__init__(id, *args, **kwargs)
 
         self.children.append(CalendarDateTimePicker(id + '_from_date', 
-                                label_text=l_('From:'),
+                                name = 'from_date',
+                                label_text = l_('From:'),
                                 button_text = l_("Choose"),
                                 date_format = date_format, 
                                 not_empty = False,
                                 calendar_lang=lang))
         
-        self.children.append(CalendarDateTimePicker(id + '_to_date', 
-                                label_text=l_('To:'),
+        self.children.append(CalendarDateTimePicker(id + '_to_date',
+                                name = 'to_date',
+                                label_text = l_('To:'),
                                 button_text = l_("Choose"),
                                 date_format = date_format, 
                                 not_empty = False,
