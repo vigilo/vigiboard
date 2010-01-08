@@ -447,7 +447,7 @@ class VigiboardRequest():
         # Dialogue de recherche
         tmpl_context.search_form = SearchForm('search_form', lang=self.lang,
                                               # TRANSLATORS : Format de date  
-                                              date_format=_('%Y-%m-%d %I:%M:%S %p'))
+                                              date_format=_('%Y-%m-%d %I:%M:%S %P'))
         
         # Dialogue de détail d'un événement
 
