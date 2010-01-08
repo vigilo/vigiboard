@@ -22,15 +22,12 @@ from repoze.what.predicates import Any, not_anonymous
 from vigiboard.widgets.edit_event import edit_event_status_options
 from vigiboard.controllers.vigiboardrequest import VigiboardRequest
 from vigiboard.controllers.vigiboard_controller import VigiboardRootController
+from vigilo.models.functions import sql_escape_like
 from vigilo.models.secondary_tables import HOST_GROUP_TABLE, \
                                             SERVICE_GROUP_TABLE
 from vigilo.common.conf import settings
 
 __all__ = ('RootController', )
-
-def sql_escape_like(s):
-    return s.replace('%', '\\%').replace('_', '\\_') \
-                .replace('*', '%').replace('?', '_')
 
 class RootController(VigiboardRootController):
     """
@@ -61,9 +58,9 @@ class RootController(VigiboardRootController):
 
     @expose('vigiboard.html')
     @require(Any(not_anonymous(), msg=l_("You need to be authenticated")))
-    def default(self, page=None, host=None, service=None, output=None,
-            trouble_ticket=None, from_date=None, to_date=None,
-            *argv, **krgv):
+    def default(self, page=None, hostgroup=None, servicegroup=None,
+            host=None, service=None, output=None, trouble_ticket=None,
+            from_date=None, to_date=None, *argv, **krgv):
             
         """
         Page d'accueil de Vigiboard. Elle affiche, suivant la page demandée
@@ -109,6 +106,8 @@ class RootController(VigiboardRootController):
             'tt': '',
             'from_date': '',
             'to_date': '',
+            'hostgroup': '',
+            'servicegroup': '',
         }
         # Application des filtres si nécessaire
         if host:
@@ -310,6 +309,8 @@ class RootController(VigiboardRootController):
                         'tt': None,
                         'from_date': None,
                         'to_date': None,
+                        'hostgroup': None,
+                        'servicegroup': None,
                     },
                    refresh_times=self.refresh_times,
                 )
@@ -370,6 +371,8 @@ class RootController(VigiboardRootController):
                         'tt': None,
                         'from_date': None,
                         'to_date': None,
+                        'hostgroup': None,
+                        'servicegroup': None,
                     },
                     refresh_times=self.refresh_times,
                 )
@@ -513,6 +516,22 @@ class RootController(VigiboardRootController):
 
     @expose('json')
     def autocomplete_service(self, value):
+        value = sql_escape_like(value)
+        services = DBSession.query(
+                        ServiceLowLevel.servicename.distinct()).filter(
+                        ServiceLowLevel.servicename.ilike('%' + value + '%')).all()
+        return dict(results=[s[0] for s in services])
+
+    @expose('json')
+    def autocomplete_hostgroup(self, value):
+        value = sql_escape_like(value)
+        hostnames = DBSession.query(
+                        Host.name.distinct()).filter(
+                        Host.name.ilike('%' + value + '%')).all()
+        return dict(results=[h[0] for h in hostnames])
+
+    @expose('json')
+    def autocomplete_servicegroup(self, value):
         value = sql_escape_like(value)
         services = DBSession.query(
                         ServiceLowLevel.servicename.distinct()).filter(

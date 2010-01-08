@@ -22,6 +22,8 @@ class SearchForm(TableForm):
     submit_text = None
     action = './'
     fields = [
+        TextField('hostgroup', label_text=l_('Host group')),
+        TextField('servicegroup', label_text=l_('Service group')),
         TextField('host', label_text=l_('Host')),
         TextField('service', label_text=l_('Service')),
         TextField('output', label_text=l_('Output')),
