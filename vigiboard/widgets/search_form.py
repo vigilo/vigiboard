@@ -7,6 +7,8 @@ from tw.forms import TableForm, TextField, CalendarDateTimePicker, SubmitButton
 from tw.api import WidgetsList
 from tg import url
 
+from datetime import datetime
+
 __all__ = ('SearchForm', )
 
 class SearchForm(TableForm):
@@ -28,7 +30,10 @@ class SearchForm(TableForm):
         TextField('trouble_ticket', label_text=l_('Trouble Ticket'))
     ]
     
-    def __init__(self,  id, lang, date_format, *args, **kwargs):
+    def __init__(self,  id, lang, date_format='%Y-%m-%d %I:%M:%S %P', 
+                 start_date=datetime.now().strftime('%Y-%m-%d %I:%M:%S %P'), 
+                 end_date=datetime.now().strftime('%Y-%m-%d %I:%M:%S %P'), 
+                 *args, **kwargs):
         super(SearchForm, self).__init__(id, *args, **kwargs)
 
         self.children.append(CalendarDateTimePicker('from_date', 
@@ -36,14 +41,16 @@ class SearchForm(TableForm):
                                 button_text = l_("Choose"),
                                 date_format = date_format, 
                                 not_empty = False,
+                                attrs = {'value': start_date,},
                                 calendar_lang=lang))
         
         self.children.append(CalendarDateTimePicker('to_date', 
                                 label_text=l_('To:'),
                                 button_text = l_("Choose"),
                                 date_format = date_format, 
+                                attrs = {'value': end_date,},
                                 not_empty = False,
                                 calendar_lang=lang))
 
-        self.children.append(SubmitButton(value=l_('Search')))
+        self.children.append(SubmitButton('search', value=l_('Search')))
 
