@@ -31,9 +31,7 @@ class SearchForm(TableForm):
     ]
     
     def __init__(self,  id, lang, date_format='%Y-%m-%d %I:%M:%S %P', 
-                 start_date=datetime.now().strftime('%Y-%m-%d %I:%M:%S %P'), 
-                 end_date=datetime.now().strftime('%Y-%m-%d %I:%M:%S %P'), 
-                 *args, **kwargs):
+                 start_date="", end_date="", *args, **kwargs):
         super(SearchForm, self).__init__(id, *args, **kwargs)
 
         self.children.append(CalendarDateTimePicker('from_date', 
