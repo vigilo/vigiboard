@@ -20,7 +20,7 @@ class SearchForm(TableForm):
     method = 'GET'
     style = 'display: none'
     submit_text = None
-    action = url('/')
+    action = './'
     fields = [
         TextField('host', label_text=l_('Host')),
         TextField('service', label_text=l_('Service')),

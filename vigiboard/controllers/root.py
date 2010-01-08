@@ -24,6 +24,7 @@ from vigiboard.controllers.vigiboardrequest import VigiboardRequest
 from vigiboard.controllers.vigiboard_controller import VigiboardRootController
 from vigilo.models.secondary_tables import HOST_GROUP_TABLE, \
                                             SERVICE_GROUP_TABLE
+from vigilo.common.conf import settings
 
 __all__ = ('RootController', )
 
@@ -95,8 +96,9 @@ class RootController(VigiboardRootController):
         # On récupère la langue de l'utilisateur
         lang = get_lang()
         if not lang:
-            lang = ['fr']
-        lang = lang[0]
+            lang = settings['VIGILO_ALL_DEFAULT_LANGUAGE']
+        else:
+            lang = lang[0]
         
         aggregates = VigiboardRequest(user, lang)
         
