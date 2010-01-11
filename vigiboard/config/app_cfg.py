@@ -15,6 +15,7 @@ convert them into boolean, for example, you should use the
 """
 
 from vigilo.turbogears import VigiloAppConfig
+from pylons.i18n import lazy_ugettext as l_
 
 import vigiboard
 from vigiboard import model
@@ -96,4 +97,12 @@ base_config['vigiboard_links.tt'] = 'http://example4.com/%(idcorrevent)d/%(tt)s'
 base_config['vigiboard_plugins'] = [
     ['shn', 'PluginSHN'],
 ]
+
+base_config['vigiboard_refresh_times'] = (
+    (0, l_('Never')),
+    (30, l_('30 seconds')),
+    (60, l_('1 minute')),
+    (300, l_('5 minutes')),
+    (600, l_('10 minutes')),
+)
 

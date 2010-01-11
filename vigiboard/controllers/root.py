@@ -22,10 +22,12 @@ from repoze.what.predicates import Any, not_anonymous
 from vigiboard.widgets.edit_event import edit_event_status_options
 from vigiboard.controllers.vigiboardrequest import VigiboardRequest
 from vigiboard.controllers.vigiboard_controller import VigiboardRootController
+from vigilo.turbogears.controllers.autocomplete import AutoCompleteController
 from vigilo.models.functions import sql_escape_like
 from vigilo.models.secondary_tables import HOST_GROUP_TABLE, \
                                             SERVICE_GROUP_TABLE
 from vigilo.common.conf import settings
+from vigiboard.lib.base import BaseController
 
 __all__ = ('RootController', )
 
@@ -33,15 +35,7 @@ class RootController(VigiboardRootController):
     """
     Le controller général de vigiboard
     """
-
-    # XXX Mettre ça dans un fichier de configuration.
-    refresh_times = (
-        (0, l_('Never')),
-        (30, l_('30 seconds')),
-        (60, l_('1 minute')),
-        (300, l_('5 minutes')),
-        (600, l_('10 minutes')),
-    )
+    autocomplete = AutoCompleteController(BaseController)
 
     def process_form_errors(self, *argv, **kwargv):
         """
@@ -89,8 +83,9 @@ class RootController(VigiboardRootController):
 
         username = request.environ['repoze.who.identity']['repoze.who.userid']
         user = User.by_user_name(username)
-        
-        # On récupère la langue de l'utilisateur
+
+        # TODO: Utiliser le champ "language" du modèle pour cet utilisateur ?
+        # On récupère la langue du navigateur de l'utilisateur
         lang = get_lang()
         if not lang:
             lang = settings['VIGILO_ALL_DEFAULT_LANGUAGE']
@@ -109,7 +104,19 @@ class RootController(VigiboardRootController):
             'hostgroup': '',
             'servicegroup': '',
         }
+
         # Application des filtres si nécessaire
+        if hostgroup:
+            search['hostgroup'] = hostgroup
+            hostgroup = sql_escape_like(hostgroup)
+            aggregates.add_filter(HostGroup.name.ilike('%%%s%%' % hostgroup))
+
+        if servicegroup:
+            search['servicegroup'] = servicegroup
+            servicegroup = sql_escape_like(servicegroup)
+            aggregates.add_filter(ServiceGroup.name.ilike(
+                '%%%s%%' % servicegroup))
+
         if host:
             search['host'] = host
             host = sql_escape_like(host)
@@ -182,7 +189,7 @@ class RootController(VigiboardRootController):
             hist_error = False,
             plugin_context = aggregates.context_fct,
             search = search,
-            refresh_times=self.refresh_times,
+            refresh_times = config['vigiboard_refresh_times'],
         )
       
     @validate(validators={'idcorrevent': validators.Int(not_empty=True)},
@@ -312,7 +319,7 @@ class RootController(VigiboardRootController):
                         'hostgroup': None,
                         'servicegroup': None,
                     },
-                   refresh_times=self.refresh_times,
+                   refresh_times=config['vigiboard_refresh_times'],
                 )
 
     @validate(validators={'host': validators.NotEmpty(),
@@ -374,7 +381,7 @@ class RootController(VigiboardRootController):
                         'hostgroup': None,
                         'servicegroup': None,
                     },
-                    refresh_times=self.refresh_times,
+                    refresh_times=config['vigiboard_refresh_times'],
                 )
 
     @validate(validators={
@@ -505,36 +512,4 @@ class RootController(VigiboardRootController):
         session['refresh'] = refresh
         session.save()
         return dict(ret= 'ok')
-
-    @expose('json')
-    def autocomplete_host(self, value):
-        value = sql_escape_like(value)
-        hostnames = DBSession.query(
-                        Host.name.distinct()).filter(
-                        Host.name.ilike('%' + value + '%')).all()
-        return dict(results=[h[0] for h in hostnames])
-
-    @expose('json')
-    def autocomplete_service(self, value):
-        value = sql_escape_like(value)
-        services = DBSession.query(
-                        ServiceLowLevel.servicename.distinct()).filter(
-                        ServiceLowLevel.servicename.ilike('%' + value + '%')).all()
-        return dict(results=[s[0] for s in services])
-
-    @expose('json')
-    def autocomplete_hostgroup(self, value):
-        value = sql_escape_like(value)
-        hostnames = DBSession.query(
-                        Host.name.distinct()).filter(
-                        Host.name.ilike('%' + value + '%')).all()
-        return dict(results=[h[0] for h in hostnames])
-
-    @expose('json')
-    def autocomplete_servicegroup(self, value):
-        value = sql_escape_like(value)
-        services = DBSession.query(
-                        ServiceLowLevel.servicename.distinct()).filter(
-                        ServiceLowLevel.servicename.ilike('%' + value + '%')).all()
-        return dict(results=[s[0] for s in services])
 
