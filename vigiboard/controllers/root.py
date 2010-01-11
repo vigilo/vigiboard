@@ -10,13 +10,14 @@ from pylons.i18n import lazy_ugettext as l_
 from tg.i18n import get_lang
 from pylons.controllers.util import abort
 from sqlalchemy import not_, and_, asc
+from sqlalchemy.orm import aliased
 from datetime import datetime
 import math
 import urllib
 
 from vigiboard.model import DBSession
 from vigiboard.model import Event, EventHistory, CorrEvent, \
-                            Host, HostGroup, \
+                            Host, HostGroup, ServiceGroup, \
                             StateName, User, ServiceLowLevel
 from repoze.what.predicates import Any, not_anonymous
 from vigiboard.widgets.edit_event import edit_event_status_options
@@ -109,12 +110,18 @@ class RootController(VigiboardRootController):
         if hostgroup:
             search['hostgroup'] = hostgroup
             hostgroup = sql_escape_like(hostgroup)
-            aggregates.add_filter(HostGroup.name.ilike('%%%s%%' % hostgroup))
+            hg_alias = aliased(HostGroup)
+            aggregates.add_outer_join((hg_alias, hg_alias.idgroup == \
+                HOST_GROUP_TABLE.c.idgroup))
+            aggregates.add_filter(hg_alias.name.ilike('%%%s%%' % hostgroup))
 
         if servicegroup:
             search['servicegroup'] = servicegroup
             servicegroup = sql_escape_like(servicegroup)
-            aggregates.add_filter(ServiceGroup.name.ilike(
+            sg_alias = aliased(ServiceGroup)
+            aggregates.add_outer_join((sg_alias, sg_alias.idgroup == \
+                SERVICE_GROUP_TABLE.c.idgroup))
+            aggregates.add_filter(sg_alias.name.ilike(
                 '%%%s%%' % servicegroup))
 
         if host:

@@ -30,7 +30,6 @@ class VigiboardRequest():
     }
 
     def __init__(self, user, lang):
-
         """
         Initialisation de toutes les variables nécessaires :
         - la liste des groupes de l'utilisateur,
@@ -154,6 +153,7 @@ class VigiboardRequest():
             self.req = self.req.group_by(i)
         for i in self.orderby:
             self.req = self.req.order_by(i)
+#        raise ValueError, self.req.statement
 
     def num_rows(self):
 
