@@ -543,8 +543,10 @@ def get_last_modification_timestamp(event_id_list):
                                 func.max(EventHistory.timestamp),
                          ).filter(EventHistory.idevent.in_(event_id_list)
                          ).scalar()
-    
-    return last_modification_timestamp
+                         
+    if last_modification_timestamp:
+        return last_modification_timestamp
+    return datetime.now()
     
 def date_to_timestamp(date):
     """
