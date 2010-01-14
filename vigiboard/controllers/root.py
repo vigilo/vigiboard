@@ -507,7 +507,7 @@ class RootController(VigiboardRootController):
         """
         session['fontsize'] = fontsize
         session.save()
-        return dict(ret= 'ok')
+        return dict()
 
     @validate(validators={"refresh": validators.Int()},
             error_handler=process_form_errors)
@@ -518,5 +518,14 @@ class RootController(VigiboardRootController):
         """
         session['refresh'] = refresh
         session.save()
-        return dict(ret= 'ok')
+        return dict()
+
+    @expose('json')
+    def set_theme(self, theme):
+        """
+        Save theme to use time
+        """
+        session['theme'] = theme
+        session.save()
+        return dict()
 
