@@ -7,11 +7,12 @@ from tg import expose, validate, require, flash, \
 from tw.forms import validators
 from pylons.i18n import ugettext as _
 from pylons.i18n import lazy_ugettext as l_
-from tg.i18n import get_lang
 from pylons.controllers.util import abort
 from sqlalchemy import not_, and_, asc
 from sqlalchemy.orm import aliased
+from sqlalchemy.sql import func
 from datetime import datetime
+from time import mktime
 import math
 import urllib
 
@@ -27,10 +28,10 @@ from vigilo.turbogears.controllers.autocomplete import AutoCompleteController
 from vigilo.models.functions import sql_escape_like
 from vigilo.models.secondary_tables import HOST_GROUP_TABLE, \
                                             SERVICE_GROUP_TABLE
-from vigilo.common.conf import settings
 from vigiboard.lib.base import BaseController
 
-__all__ = ('RootController', )
+__all__ = ('RootController', 'get_last_modification_timestamp', 
+           'date_to_timestamp')
 
 class RootController(VigiboardRootController):
     """
@@ -84,16 +85,8 @@ class RootController(VigiboardRootController):
 
         username = request.environ['repoze.who.identity']['repoze.who.userid']
         user = User.by_user_name(username)
-
-        # TODO: Utiliser le champ "language" du modèle pour cet utilisateur ?
-        # On récupère la langue du navigateur de l'utilisateur
-        lang = get_lang()
-        if not lang:
-            lang = settings['VIGILO_ALL_DEFAULT_LANGUAGE']
-        else:
-            lang = lang[0]
         
-        aggregates = VigiboardRequest(user, lang)
+        aggregates = VigiboardRequest(user)
         
         search = {
             'host': '',
@@ -408,18 +401,31 @@ class RootController(VigiboardRootController):
         Cela peut être un changement de ticket ou un changement de statut.
         
         @param krgv['id']: Le ou les identifiants des événements à traiter
+        @param krgv['last_modification']: La date de la dernière modification
+        dont l'utilisateur est au courant.
         @param krgv['tt']: Nouveau numéro du ticket associé.
         @param krgv['status']: Nouveau status de/des événements.
         """
-        
-        # Si l'utilisateur édite plusieurs événements à la fois,
-        # il nous faut chacun des identifiants
 
+        # On vérifie que des identifiants ont bien été transmis via
+        # le formulaire, et on informe l'utilisateur le cas échéant.
         if krgv['id'] is None:
             flash(_('No event has been selected'), 'warning')
             raise redirect(request.environ.get('HTTP_REFERER', url('/')))
-
         ids = krgv['id'].split(',')
+        
+        # Si des changements sont survenus depuis que la 
+        # page est affichée, on en informe l'utilisateur.
+        if datetime.fromtimestamp(float(krgv['last_modification'])) \
+                                        < get_last_modification_timestamp(ids):
+            flash(_('Changes have occurred since the page was displayed, '
+                    'please refresh it.'), 'warning')
+            print "\n\n\n\n ##### ", datetime.fromtimestamp(float(krgv['last_modification'])), " #####"
+            print "##### ", get_last_modification_timestamp(ids), "\n\n\n\n"
+            raise redirect(request.environ.get('HTTP_REFERER', url('/')))
+
+        # Si l'utilisateur édite plusieurs événements à la fois,
+        # il nous faut chacun des identifiants
        
         if len(ids) > 1 :
             ids = ids[:-1]
@@ -435,8 +441,6 @@ class RootController(VigiboardRootController):
         
         # Modification des événements et création d'un historique
         # pour chacun d'eux.
-        username = request.environ['repoze.who.identity']['repoze.who.userid']
-
         for req in events.req:
             if isinstance(req, CorrEvent):
                 event = req
@@ -457,19 +461,19 @@ class RootController(VigiboardRootController):
                 DBSession.add(history)   
                 event.trouble_ticket = krgv['trouble_ticket']
 
-            if krgv['status'] != 'NoChange' :
+            if krgv['ack'] != 'NoChange' :
                 history = EventHistory(
                         type_action="Acknowlegement change state",
                         idevent=event.idcause,
-                        value=krgv['status'],
+                        value=krgv['ack'],
                         text=_("Changed acknowledgement status from '%s' to '%s'") % (
-                            event.status, krgv['status']
+                            event.status, krgv['ack']
                         ),
                         username=username,
                         timestamp=datetime.now(),
                     )
                 DBSession.add(history)
-                event.status = krgv['status']
+                event.status = krgv['ack']
 
         DBSession.flush()
         flash(_('Updated successfully'))
@@ -528,4 +532,22 @@ class RootController(VigiboardRootController):
         session['theme'] = theme
         session.save()
         return dict()
-
+    
+def get_last_modification_timestamp(event_id_list):
+    """
+    Récupère le timestamp de la dernière modification 
+    opérée sur l'un des événements dont l'identifiant
+    fait partie de la liste passée en paramètre.
+    """
+    last_modification_timestamp = DBSession.query(
+                                func.max(EventHistory.timestamp),
+                         ).filter(EventHistory.idevent.in_(event_id_list)
+                         ).scalar()
+    
+    return last_modification_timestamp
+    
+def date_to_timestamp(date):
+    """
+    Convertit une date en timestamp (décimal)
+    """
+    return mktime(date.timetuple()) + date.microsecond / 1000000.0

@@ -15,6 +15,8 @@ from sqlalchemy.orm import aliased
 from vigiboard.widgets.edit_event import EditEventForm
 from vigiboard.widgets.search_form import SearchForm
 from vigiboard.controllers.vigiboard_plugin import VigiboardRequestPlugin
+from vigilo.common.conf import settings
+from tg.i18n import get_lang
 from pylons.i18n import ugettext as _
 
 class VigiboardRequest():
@@ -29,7 +31,7 @@ class VigiboardRequest():
         'AAClosed': '_Ack',
     }
 
-    def __init__(self, user, lang):
+    def __init__(self, user):
         """
         Initialisation de toutes les variables nécessaires :
         - la liste des groupes de l'utilisateur,
@@ -37,6 +39,14 @@ class VigiboardRequest():
         - les différentes étapes de la génération de la requête,
         - la liste des plugins à appliquer.
         """
+
+        # TODO: Utiliser le champ "language" du modèle pour cet utilisateur ?
+        # On récupère la langue du navigateur de l'utilisateur
+        lang = get_lang()
+        if not lang:
+            lang = settings['VIGILO_ALL_DEFAULT_LANGUAGE']
+        else:
+            lang = lang[0]
 
         self.user_groups = user.groups
         self.lang = lang
@@ -443,9 +453,15 @@ class VigiboardRequest():
         formulaires nécessaire au fonctionnement de Vigiboard
         """
 
+        from vigiboard.controllers.root import get_last_modification_timestamp
+        from vigiboard.controllers.root import date_to_timestamp
+        
         # Dialogue d'édition
         tmpl_context.edit_event_form = EditEventForm('edit_event_form',
-                action=url('/update'))
+            last_modification=date_to_timestamp(
+                            get_last_modification_timestamp(self.idevents)),
+            action=url('/update'), 
+            )
     
         # Dialogue de recherche
         tmpl_context.search_form = SearchForm('search_form', lang=self.lang,

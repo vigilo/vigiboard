@@ -36,7 +36,7 @@ class SearchForm(TableForm):
 
         self.children.append(CalendarDateTimePicker(id + '_from_date', 
                                 name = 'from_date',
-                                label_text = l_('From:'),
+                                label_text = l_('From'),
                                 button_text = l_("Choose"),
                                 date_format = date_format, 
                                 not_empty = False,
@@ -44,11 +44,12 @@ class SearchForm(TableForm):
         
         self.children.append(CalendarDateTimePicker(id + '_to_date',
                                 name = 'to_date',
-                                label_text = l_('To:'),
+                                label_text = l_('To'),
                                 button_text = l_("Choose"),
                                 date_format = date_format, 
                                 not_empty = False,
                                 calendar_lang=lang))
 
-        self.children.append(SubmitButton('search', value=l_('Search')))
+        self.children.append(SubmitButton('search',
+                                          attrs={'value':l_('Search')}))
 
