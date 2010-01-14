@@ -544,12 +544,11 @@ def get_last_modification_timestamp(event_id_list):
                          ).filter(EventHistory.idevent.in_(event_id_list)
                          ).scalar()
                          
-    if last_modification_timestamp:
-        return last_modification_timestamp
-    return datetime.now()
-    
-def date_to_timestamp(date):
-    """
-    Convertit une date en timestamp (décimal)
-    """
-    return mktime(date.timetuple()) + date.microsecond / 1000000.0
+    if not last_modification_timestamp:
+        last_modification_timestamp = datetime.now()
+    # On élimine la fraction (microsecondes) de l'objet datetime.
+    # XXX Dans l'idéal, on devrait gérer les microsecondes.
+    # Problème: les erreurs d'arrondis empêchent certaines modifications.
+    return datetime.fromtimestamp(mktime(
+        last_modification_timestamp.timetuple()))
+

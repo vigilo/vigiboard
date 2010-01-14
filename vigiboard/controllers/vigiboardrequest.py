@@ -18,6 +18,7 @@ from vigiboard.controllers.vigiboard_plugin import VigiboardRequestPlugin
 from vigilo.common.conf import settings
 from tg.i18n import get_lang
 from pylons.i18n import ugettext as _
+from time import mktime
 
 class VigiboardRequest():
     """
@@ -454,15 +455,14 @@ class VigiboardRequest():
         """
 
         from vigiboard.controllers.root import get_last_modification_timestamp
-        from vigiboard.controllers.root import date_to_timestamp
         
         # Dialogue d'édition
         tmpl_context.edit_event_form = EditEventForm('edit_event_form',
-            last_modification=date_to_timestamp(
-                            get_last_modification_timestamp(self.idevents)),
+            last_modification=mktime(get_last_modification_timestamp(
+                self.idevents).timetuple()),
             action=url('/update'), 
-            )
-    
+        )
+
         # Dialogue de recherche
         tmpl_context.search_form = SearchForm('search_form', lang=self.lang,
                                         # TRANSLATORS: Format de date et heure.
