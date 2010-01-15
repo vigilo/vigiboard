@@ -310,14 +310,14 @@ class RootController(VigiboardRootController):
                     hist_error = True,
                     plugin_context = events.context_fct,
                     search = {
-                        'host': None,
-                        'service': None,
-                        'output': None,
-                        'tt': None,
-                        'from_date': None,
-                        'to_date': None,
-                        'hostgroup': None,
-                        'servicegroup': None,
+                        'host': '',
+                        'service': '',
+                        'output': '',
+                        'tt': '',
+                        'from_date': '',
+                        'to_date': '',
+                        'hostgroup': '',
+                        'servicegroup': '',
                     },
                    refresh_times=config['vigiboard_refresh_times'],
                 )
@@ -372,26 +372,26 @@ class RootController(VigiboardRootController):
                     hist_error = True,
                     plugin_context = events.context_fct,
                     search = {
-                        'host': None,
-                        'service': None,
-                        'output': None,
-                        'tt': None,
-                        'from_date': None,
-                        'to_date': None,
-                        'hostgroup': None,
-                        'servicegroup': None,
+                        'host': '',
+                        'service': '',
+                        'output': '',
+                        'tt': '',
+                        'from_date': '',
+                        'to_date': '',
+                        'hostgroup': '',
+                        'servicegroup': '',
                     },
                     refresh_times=config['vigiboard_refresh_times'],
                 )
 
     @validate(validators={
-        "id":validators.Regex(r'^[^,]+(,[^,]*)*,?$'),
-#        "trouble_ticket":validators.Regex(r'^[0-9]*$'),
+        "id": validators.Regex(r'^[0-9]+(,[0-9]+)*,?$'),
+#        "trouble_ticket": validators.Regex(r'^[0-9]*$'),
         "status": validators.OneOf([
-            'NoChange',
-            'None',
-            'Acknowledged',
-            'AAClosed'
+            u'NoChange',
+            u'None',
+            u'Acknowledged',
+            u'AAClosed'
         ])}, error_handler=process_form_errors)
     @require(Any(not_anonymous(), msg=l_("You need to be authenticated")))
     def update(self,**krgv):
@@ -501,9 +501,12 @@ class RootController(VigiboardRootController):
             return plug.controller(*arg, **krgv)
         except:
             raise
-    
-#    @validate(validators= {"fontsize": validators.Int()},
-#                    error_handler = process_form_errors)
+
+    @validate(validators={
+        "fontsize": validators.Regex(
+            r'[0-9]+(pt|px|em|%)',
+            regexOps=('I',)
+        )}, error_handler = process_form_errors)
     @expose('json')
     def set_fontsize(self, fontsize):
         """
