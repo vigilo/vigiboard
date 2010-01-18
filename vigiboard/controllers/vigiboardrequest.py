@@ -5,6 +5,7 @@
 from vigiboard.model import Event, CorrEvent, EventHistory, \
                             Host, HostGroup, ServiceLowLevel, ServiceGroup, \
                             StateName
+from vigilo.models import SupItem
 from vigilo.models.secondary_tables import HOST_GROUP_TABLE, \
                                             SERVICE_GROUP_TABLE
 from tg import url, config, tmpl_context
@@ -52,23 +53,51 @@ class VigiboardRequest():
         self.user_groups = user.groups
         self.lang = lang
         self.generaterq = False
+        
+        associated_host = aliased(Host)
+        lls_query = DBSession.query(ServiceLowLevel.idservice.label("idsupitem"),
+                                    ServiceLowLevel.servicename,
+                                    associated_host.name.label("hostname")
+                            ).join((associated_host, 
+                                    associated_host.idhost == ServiceLowLevel.idhost),
+                            )     
+                            
+        host_query = DBSession.query(Host.idhost.label("idsupitem"),
+                                     "NULL",
+                                     Host.name.label("hostname"))  
+        
+        items = lls_query.union(host_query).subquery()
 
         self.table = [
             CorrEvent,
             sql.func.count(CorrEvent.idcorrevent),
+            items.hostname,
+            items.servicename,
         ]
+
+#        self.join = [
+#            (Event, CorrEvent.idcause == Event.idevent),
+#            (ServiceLowLevel, Event.idsupitem == ServiceLowLevel.idservice),
+#            (Host, Host.idhost == ServiceLowLevel.idhost),
+#            (StateName, StateName.idstatename == Event.current_state),
+#        ]
+#
+#        self.outerjoin = [
+#            (HOST_GROUP_TABLE, HOST_GROUP_TABLE.c.idhost == Host.idhost),
+#            (SERVICE_GROUP_TABLE, SERVICE_GROUP_TABLE.c.idservice == \
+#                ServiceLowLevel.idservice),
+#        ]
 
         self.join = [
             (Event, CorrEvent.idcause == Event.idevent),
-            (ServiceLowLevel, Event.idsupitem == ServiceLowLevel.idservice),
-            (Host, Host.idhost == ServiceLowLevel.idhost),
+            (items, Event.idsupitem == items.c.idsupitem),
             (StateName, StateName.idstatename == Event.current_state),
         ]
 
         self.outerjoin = [
-            (HOST_GROUP_TABLE, HOST_GROUP_TABLE.c.idhost == Host.idhost),
+            (HOST_GROUP_TABLE, HOST_GROUP_TABLE.c.idhost == items.c.idsupitem),
             (SERVICE_GROUP_TABLE, SERVICE_GROUP_TABLE.c.idservice == \
-                ServiceLowLevel.idservice),
+                items.c.idsupitem),
         ]
 
         self.filter = [
@@ -97,13 +126,13 @@ class VigiboardRequest():
                 priority_order,                 # Priorité ITIL (entier).
                 desc(StateName.order),          # Etat courant (entier).
                 desc(Event.timestamp),
-                asc(Host.name),
+                asc(items.c.hostname),
             ]
 
         self.groupby = [
                 CorrEvent.idcorrevent,
                 CorrEvent,
-                Host.name,
+                items.c.hostname,
                 StateName.order,
                 Event.timestamp,
             ]
