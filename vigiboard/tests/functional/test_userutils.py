@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # vim:set expandtab tabstop=4 shiftwidth=4:
 """
-Test de la classe User Utils
+Teste l'héritage des permissions sur les groupes d'hôtes/services.
 """
 import tg
 import transaction
@@ -10,7 +10,7 @@ from nose.tools import assert_true
 from vigiboard.model import DBSession, HostGroup, Permission, User
 from vigiboard.tests import TestController
 
-class TestUserUtils(TestController):
+class TestGroupPermissionsInheritance(TestController):
     """Test retrieval of groups of hosts/services."""
     def test_groups_inheritance(self):
         """

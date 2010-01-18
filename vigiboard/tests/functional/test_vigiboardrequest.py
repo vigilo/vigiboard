@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # vim:set expandtab tabstop=4 shiftwidth=4:
 """
-Test de la classe Vigiboard Request
+Tests portant sur la classe VigiboardRequest.
 """
 
 from nose.tools import assert_true
@@ -22,6 +22,7 @@ class TestVigiboardRequest(TestController):
     """Test de la classe Vigiboard Request"""
 
     def setUp(self):
+        """Création de données pour le test."""
         super(TestVigiboardRequest, self).setUp()
 
         # Les noms d'états.
@@ -35,11 +36,13 @@ class TestVigiboardRequest(TestController):
         # Les groupes et leurs dépendances
         self.hosteditors = HostGroup(name=u'editorsgroup')
         DBSession.add(self.hosteditors)
-        self.hostmanagers = HostGroup(name=u'managersgroup', parent=self.hosteditors)
+        self.hostmanagers = HostGroup(name=u'managersgroup',
+            parent=self.hosteditors)
         DBSession.add(self.hostmanagers)
         self.serviceeditors = ServiceGroup(name=u'editorsgroup')
         DBSession.add(self.serviceeditors)
-        self.servicemanagers = ServiceGroup(name=u'managersgroup', parent=self.serviceeditors)
+        self.servicemanagers = ServiceGroup(name=u'managersgroup',
+            parent=self.serviceeditors)
         DBSession.add(self.servicemanagers)
         DBSession.flush()
 
@@ -171,6 +174,7 @@ class TestVigiboardRequest(TestController):
         transaction.commit()
 
     def tearDown(self):
+        """Destruction des données temporaires du test."""
         # This operation is only necessary for DBMS which are
         # really strict about table locks, such as PostgreSQL.
         # For our tests, we use an (in-memory) SQLite database,

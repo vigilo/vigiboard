@@ -218,9 +218,11 @@ class RootController(VigiboardRootController):
                         Event,
                  ).join(
                     (Event, CorrEvent.idcause == Event.idevent),
-                    (ServiceLowLevel, Event.idsupitem == ServiceLowLevel.idservice),
+                    (ServiceLowLevel, Event.idsupitem == \
+                        ServiceLowLevel.idservice),
                     (Host, Host.idhost == ServiceLowLevel.idhost),
-                    (HOST_GROUP_TABLE, HOST_GROUP_TABLE.c.idhost == Host.idhost),
+                    (HOST_GROUP_TABLE, HOST_GROUP_TABLE.c.idhost == \
+                        Host.idhost),
                     (SERVICE_GROUP_TABLE, SERVICE_GROUP_TABLE.c.idservice == \
                         ServiceLowLevel.idservice),
                  ).filter(HOST_GROUP_TABLE.c.idgroup.in_(user_groups)
@@ -339,7 +341,8 @@ class RootController(VigiboardRootController):
 
         username = request.environ['repoze.who.identity']['repoze.who.userid']
         events = VigiboardRequest(User.by_user_name(username))
-        events.add_join((ServiceLowLevel, ServiceLowLevel.idservice == Event.idsupitem))
+        events.add_join((ServiceLowLevel, ServiceLowLevel.idservice == \
+            Event.idsupitem))
         events.add_join((Host, ServiceLowLevel.idhost == Host.idhost))
         events.add_filter(Host.name == host,
                 ServiceLowLevel.servicename == service)
@@ -418,10 +421,8 @@ class RootController(VigiboardRootController):
         # page est affichée, on en informe l'utilisateur.
         if datetime.fromtimestamp(float(krgv['last_modification'])) \
                                         < get_last_modification_timestamp(ids):
-            flash(_('Changes have occurred since the page was displayed, '
-                    'please refresh it.'), 'warning')
-            print "\n\n\n\n ##### ", datetime.fromtimestamp(float(krgv['last_modification'])), " #####"
-            print "##### ", get_last_modification_timestamp(ids), "\n\n\n\n"
+            flash(_('Changes have occurred since the page was last displayed, '
+                    'your changes HAVE NOT been saved.'), 'warning')
             raise redirect(request.environ.get('HTTP_REFERER', url('/')))
 
         # Si l'utilisateur édite plusieurs événements à la fois,
@@ -466,7 +467,8 @@ class RootController(VigiboardRootController):
                         type_action="Acknowlegement change state",
                         idevent=event.idcause,
                         value=krgv['ack'],
-                        text=_("Changed acknowledgement status from '%s' to '%s'") % (
+                        text=_("Changed acknowledgement status "
+                            "from '%s' to '%s'") % (
                             event.status, krgv['ack']
                         ),
                         username=username,
