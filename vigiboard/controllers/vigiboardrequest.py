@@ -11,7 +11,7 @@ from vigilo.models.secondary_tables import HOST_GROUP_TABLE, \
 from tg import url, config, tmpl_context
 from vigiboard.model import DBSession
 from sqlalchemy import not_, and_, asc, desc, sql
-from sqlalchemy.sql.expression import or_
+from sqlalchemy.sql.expression import or_, null as expr_null, union
 from sqlalchemy.orm import aliased
 from vigiboard.widgets.edit_event import EditEventForm
 from vigiboard.widgets.search_form import SearchForm
@@ -54,66 +54,64 @@ class VigiboardRequest():
         self.lang = lang
         self.generaterq = False
         
-        associated_host = aliased(Host)
-        lls_query = DBSession.query(ServiceLowLevel.idservice.label("idsupitem"),
-                                    ServiceLowLevel.servicename,
-                                    associated_host.name.label("hostname")
-                            ).join((associated_host, 
-                                    associated_host.idhost == ServiceLowLevel.idhost),
-                            )     
+        lls_query = DBSession.query(
+            ServiceLowLevel.idservice.label("idsupitem"),
+            ServiceLowLevel.servicename.label("servicename"),
+            Host.name.label("hostname"),
+            SERVICE_GROUP_TABLE.c.idgroup.label("idservicegroup"),
+            HOST_GROUP_TABLE.c.idgroup.label("idhostgroup"),
+        ).join(
+           (Host, Host.idhost == ServiceLowLevel.idhost),
+        ).outerjoin(
+            (HOST_GROUP_TABLE, HOST_GROUP_TABLE.c.idhost == ServiceLowLevel.idservice),
+            (SERVICE_GROUP_TABLE, SERVICE_GROUP_TABLE.c.idservice == ServiceLowLevel.idservice),
+        ).filter(
+            or_(
+                HOST_GROUP_TABLE.c.idgroup.in_(self.user_groups),
+                SERVICE_GROUP_TABLE.c.idgroup.in_(self.user_groups),
+            ),
+        )
                             
-        host_query = DBSession.query(Host.idhost.label("idsupitem"),
-                                     "NULL",
-                                     Host.name.label("hostname"))  
-        
-        items = lls_query.union(host_query).subquery()
+        host_query = DBSession.query(
+            Host.idhost.label("idsupitem"),
+            expr_null().label("servicename"),
+            Host.name.label("hostname"),
+            expr_null().label("idservicegroup"),
+            HOST_GROUP_TABLE.c.idgroup.label('idhostgroup'),
+        ).join((HOST_GROUP_TABLE, HOST_GROUP_TABLE.c.idhost == Host.idhost)
+        ).filter(HOST_GROUP_TABLE.c.idgroup.label('idhostgroup').in_(self.user_groups),
+        )
+
+        # On est obligés d'utiliser sqlalchemy.sql.expression.union
+        # pour indiquer à SQLAlchemy de NE PAS regrouper les tables
+        # dans la requête principale, sans quoi les résultats sont
+        # incorrects.
+        self.items = union(lls_query, host_query, correlate=False).alias()
 
         self.table = [
             CorrEvent,
             sql.func.count(CorrEvent.idcorrevent),
-            items.hostname,
-            items.servicename,
+            self.items.c.hostname,
+            self.items.c.servicename,
         ]
-
-#        self.join = [
-#            (Event, CorrEvent.idcause == Event.idevent),
-#            (ServiceLowLevel, Event.idsupitem == ServiceLowLevel.idservice),
-#            (Host, Host.idhost == ServiceLowLevel.idhost),
-#            (StateName, StateName.idstatename == Event.current_state),
-#        ]
-#
-#        self.outerjoin = [
-#            (HOST_GROUP_TABLE, HOST_GROUP_TABLE.c.idhost == Host.idhost),
-#            (SERVICE_GROUP_TABLE, SERVICE_GROUP_TABLE.c.idservice == \
-#                ServiceLowLevel.idservice),
-#        ]
 
         self.join = [
             (Event, CorrEvent.idcause == Event.idevent),
-            (items, Event.idsupitem == items.c.idsupitem),
+            (self.items, Event.idsupitem == self.items.c.idsupitem),
             (StateName, StateName.idstatename == Event.current_state),
         ]
-
-        self.outerjoin = [
-            (HOST_GROUP_TABLE, HOST_GROUP_TABLE.c.idhost == items.c.idsupitem),
-            (SERVICE_GROUP_TABLE, SERVICE_GROUP_TABLE.c.idservice == \
-                items.c.idsupitem),
-        ]
+        
+        self.outerjoin = []
 
         self.filter = [
-                or_(
-                    HOST_GROUP_TABLE.c.idgroup.in_(self.user_groups),
-                    SERVICE_GROUP_TABLE.c.idgroup.in_(self.user_groups),
-                ),
-
-                # On masque les événements avec l'état OK
-                # et traités (status == u'AAClosed').
-                not_(and_(
-                    StateName.statename == u'OK',
-                    CorrEvent.status == u'AAClosed'
-                )),
-                CorrEvent.timestamp_active != None,
-            ]
+            # On masque les événements avec l'état OK
+            # et traités (status == u'AAClosed').
+            not_(and_(
+                StateName.statename == u'OK',
+                CorrEvent.status == u'AAClosed'
+            )),
+            CorrEvent.timestamp_active != None,
+        ]
 
         # Permet de définir le sens de tri pour la priorité.
         if config['vigiboard_priority_order'] == 'asc':
@@ -122,17 +120,17 @@ class VigiboardRequest():
             priority_order = desc(CorrEvent.priority)
 
         self.orderby = [
-                desc(CorrEvent.status),   # None, Acknowledged, AAClosed
-                priority_order,                 # Priorité ITIL (entier).
-                desc(StateName.order),          # Etat courant (entier).
-                desc(Event.timestamp),
-                asc(items.c.hostname),
-            ]
+            desc(CorrEvent.status),         # None, Acknowledged, AAClosed
+            priority_order,                 # Priorité ITIL (entier).
+            desc(StateName.order),          # Etat courant (entier).
+            desc(Event.timestamp),
+            asc(self.items.c.hostname),
+        ]
 
         self.groupby = [
-                CorrEvent.idcorrevent,
                 CorrEvent,
-                items.c.hostname,
+                self.items.c.hostname,
+                self.items.c.servicename,
                 StateName.order,
                 Event.timestamp,
             ]
@@ -193,7 +191,6 @@ class VigiboardRequest():
             self.req = self.req.group_by(i)
         for i in self.orderby:
             self.req = self.req.order_by(i)
-#        raise ValueError, self.req.statement
 
     def num_rows(self):
 
@@ -391,6 +388,8 @@ class VigiboardRequest():
                 event = req
             else:
                 event = req[0]
+                hostname = req[2]
+                servicename = req[3]
             ids.append(event.idcause)
 
             # La liste pour l'événement actuel comporte dans l'ordre :
@@ -407,6 +406,8 @@ class VigiboardRequest():
 
             events.append([
                     event,
+                    hostname,
+                    servicename,
                     {'class': class_tr[i % 2]},
                     {'class': StateName.value_to_statename(
                         cause.initial_state) +

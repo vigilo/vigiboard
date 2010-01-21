@@ -8,7 +8,7 @@ from tw.forms import validators
 from pylons.i18n import ugettext as _
 from pylons.i18n import lazy_ugettext as l_
 from pylons.controllers.util import abort
-from sqlalchemy import not_, and_, asc
+from sqlalchemy import not_, and_,  or_, asc
 from sqlalchemy.orm import aliased
 from sqlalchemy.sql import func
 from datetime import datetime
@@ -20,6 +20,7 @@ from vigiboard.model import DBSession
 from vigiboard.model import Event, EventHistory, CorrEvent, \
                             Host, HostGroup, ServiceGroup, \
                             StateName, User, ServiceLowLevel
+from vigilo.models import SupItem                    
 from repoze.what.predicates import Any, not_anonymous
 from vigiboard.widgets.edit_event import edit_event_status_options
 from vigiboard.controllers.vigiboardrequest import VigiboardRequest
@@ -103,29 +104,27 @@ class RootController(VigiboardRootController):
         if hostgroup:
             search['hostgroup'] = hostgroup
             hostgroup = sql_escape_like(hostgroup)
-            hg_alias = aliased(HostGroup)
-            aggregates.add_outer_join((hg_alias, hg_alias.idgroup == \
-                HOST_GROUP_TABLE.c.idgroup))
-            aggregates.add_filter(hg_alias.name.ilike('%%%s%%' % hostgroup))
+            aggregates.add_join((HostGroup, HostGroup.idgroup == \
+                aggregates.items.c.idhostgroup))
+            aggregates.add_filter(HostGroup.name.ilike('%%%s%%' % hostgroup))
 
         if servicegroup:
             search['servicegroup'] = servicegroup
             servicegroup = sql_escape_like(servicegroup)
-            sg_alias = aliased(ServiceGroup)
-            aggregates.add_outer_join((sg_alias, sg_alias.idgroup == \
-                SERVICE_GROUP_TABLE.c.idgroup))
-            aggregates.add_filter(sg_alias.name.ilike(
-                '%%%s%%' % servicegroup))
+            aggregates.add_join((ServiceGroup, ServiceGroup.idgroup == \
+                aggregates.items.c.idservicegroup))
+            aggregates.add_filter(ServiceGroup.name.ilike('%%%s%%' % servicegroup))
 
         if host:
             search['host'] = host
             host = sql_escape_like(host)
-            aggregates.add_filter(Host.name.ilike('%%%s%%' % host))
+            aggregates.add_filter(aggregates.items.c.hostname.ilike(
+                '%%%s%%' % host))
 
         if service:
             search['service'] = service
             service = sql_escape_like(service)
-            aggregates.add_filter(ServiceLowLevel.servicename.ilike(
+            aggregates.add_filter(aggregates.items.c.servicename.ilike(
                 '%%%s%%' % service))
 
         if output:
@@ -213,20 +212,41 @@ class RootController(VigiboardRootController):
         user_groups = user.groups
 
 #        try:
+        
+        lls_query = DBSession.query(
+            ServiceLowLevel.idservice.label("idsupitem"),
+            ServiceLowLevel.servicename,
+            Host.name.label("hostname")
+        ).join(
+           (Host, Host.idhost == ServiceLowLevel.idhost),
+        ).outerjoin(
+            (HOST_GROUP_TABLE, HOST_GROUP_TABLE.c.idhost == ServiceLowLevel.idservice),
+            (SERVICE_GROUP_TABLE, SERVICE_GROUP_TABLE.c.idservice == ServiceLowLevel.idservice),
+        ).filter(
+            or_(
+                HOST_GROUP_TABLE.c.idgroup.in_(user_groups),
+                SERVICE_GROUP_TABLE.c.idgroup.in_(user_groups),
+            ),
+        )
+                            
+        host_query = DBSession.query(
+            Host.idhost.label("idsupitem"),
+            "NULL",
+            Host.name.label("hostname")
+        ).join((HOST_GROUP_TABLE, HOST_GROUP_TABLE.c.idhost == Host.idhost)
+        ).filter(HOST_GROUP_TABLE.c.idgroup.in_(user_groups),
+        )
+
+        items = lls_query.union(host_query).subquery()
+                
         event = DBSession.query(
                         CorrEvent.priority,
                         Event,
+                        items.c.hostname,
+                        items.c.servicename,
                  ).join(
                     (Event, CorrEvent.idcause == Event.idevent),
-                    (ServiceLowLevel, Event.idsupitem == \
-                        ServiceLowLevel.idservice),
-                    (Host, Host.idhost == ServiceLowLevel.idhost),
-                    (HOST_GROUP_TABLE, HOST_GROUP_TABLE.c.idhost == \
-                        Host.idhost),
-                    (SERVICE_GROUP_TABLE, SERVICE_GROUP_TABLE.c.idservice == \
-                        ServiceLowLevel.idservice),
-                 ).filter(HOST_GROUP_TABLE.c.idgroup.in_(user_groups)
-                 ).filter(SERVICE_GROUP_TABLE.c.idgroup.in_(user_groups)
+                    (items, Event.idsupitem == items.c.idsupitem),
                  ).filter(
                     # On masque les événements avec l'état OK
                     # et traités (status == u'AAClosed').
@@ -236,6 +256,8 @@ class RootController(VigiboardRootController):
                     ))
                 ).filter(CorrEvent.idcorrevent == idcorrevent
                 ).one()
+                
+                
 #        except:
 #            # XXX Raise some HTTP error.
 #            return None
@@ -253,10 +275,14 @@ class RootController(VigiboardRootController):
             # Rappel:
             # event[0] = priorité de l'alerte corrélée.
             # event[1] = alerte brute.
+            if event[3]:
+                service = urllib.quote(event[3])
+            else:
+                service = None
             eventdetails[edname] = edlink[1] % {
                 'idcorrevent': idcorrevent,
-                'host': urllib.quote(event[1].supitem.host.name),
-                'service': urllib.quote(event[1].supitem.servicename),
+                'host': urllib.quote(event[2]),
+                'service': service,
                 'message': urllib.quote(event[1].message),
             }
 
@@ -268,8 +294,8 @@ class RootController(VigiboardRootController):
                 peak_state = StateName.value_to_statename(
                                     event[1].peak_state),
                 idcorrevent = idcorrevent,
-                host = event[1].supitem.host.name,
-                service = event[1].supitem.servicename,
+                host = event[2],
+                service = event[3],
                 eventdetails = eventdetails,
             )
 
@@ -324,11 +350,15 @@ class RootController(VigiboardRootController):
                    refresh_times=config['vigiboard_refresh_times'],
                 )
 
-    @validate(validators={'host': validators.NotEmpty(),
-        'service': validators.NotEmpty()}, error_handler=process_form_errors)
+    @validate(
+        validators={
+            'host': validators.NotEmpty(),
+#            'service': validators.NotEmpty()
+        }, 
+        error_handler=process_form_errors)
     @expose('vigiboard.html')
     @require(Any(not_anonymous(), msg=l_("You need to be authenticated")))
-    def host_service(self, host, service):
+    def host_service(self, host, service=None):
         
         """
         Affichage de l'historique de l'ensemble des événements correspondant
@@ -339,19 +369,17 @@ class RootController(VigiboardRootController):
         @param service: Nom du service souhaité
         """
 
+        idsupitem = SupItem.get_supitem(host, service)
+
         username = request.environ['repoze.who.identity']['repoze.who.userid']
         events = VigiboardRequest(User.by_user_name(username))
-        events.add_join((ServiceLowLevel, ServiceLowLevel.idservice == \
-            Event.idsupitem))
-        events.add_join((Host, ServiceLowLevel.idhost == Host.idhost))
-        events.add_filter(Host.name == host,
-                ServiceLowLevel.servicename == service)
+        events.add_filter(events.items.c.idsupitem == idsupitem)
 
         # XXX On devrait avoir une autre API que ça !!!
         # Supprime le filtre qui empêche d'obtenir des événements fermés
         # (ie: ayant l'état Nagios 'OK' et le statut 'AAClosed').
-        if len(events.filter) > 2:
-            del events.filter[2]
+        if len(events.filter) > 0:
+            del events.filter[0]
 
         # Vérification qu'il y a au moins 1 événement qui correspond
         if events.num_rows() == 0 :
@@ -419,10 +447,16 @@ class RootController(VigiboardRootController):
         
         # Si des changements sont survenus depuis que la 
         # page est affichée, on en informe l'utilisateur.
-        if datetime.fromtimestamp(float(krgv['last_modification'])) \
-                                        < get_last_modification_timestamp(ids):
-            flash(_('Changes have occurred since the page was last displayed, '
+        last_modification = get_last_modification_timestamp(ids, None)
+        if last_modification and datetime.fromtimestamp(\
+            float(krgv['last_modification'])) < last_modification:
+            flash(_('Changes have occurred since the page was displayed, '
                     'your changes HAVE NOT been saved.'), 'warning')
+            print "\n\n\n\n\n"
+            print datetime.fromtimestamp(float(krgv['last_modification']))
+            print get_last_modification_timestamp(ids)
+            print "\n\n\n\n\n"
+                        
             raise redirect(request.environ.get('HTTP_REFERER', url('/')))
 
         # Si l'utilisateur édite plusieurs événements à la fois,
@@ -538,7 +572,8 @@ class RootController(VigiboardRootController):
         session.save()
         return dict()
     
-def get_last_modification_timestamp(event_id_list):
+def get_last_modification_timestamp(event_id_list, 
+                                                value_if_none=datetime.now()):
     """
     Récupère le timestamp de la dernière modification 
     opérée sur l'un des événements dont l'identifiant
@@ -548,12 +583,10 @@ def get_last_modification_timestamp(event_id_list):
                                 func.max(EventHistory.timestamp),
                          ).filter(EventHistory.idevent.in_(event_id_list)
                          ).scalar()
-                         
     if not last_modification_timestamp:
-        last_modification_timestamp = datetime.now()
-    # On élimine la fraction (microsecondes) de l'objet datetime.
-    # XXX Dans l'idéal, on devrait gérer les microsecondes.
-    # Problème: les erreurs d'arrondis empêchent certaines modifications.
+        if not value_if_none:
+            return None
+        else:
+            last_modification_timestamp = value_if_none
     return datetime.fromtimestamp(mktime(
         last_modification_timestamp.timetuple()))
-
