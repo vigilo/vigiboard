@@ -498,7 +498,7 @@ class RootController(VigiboardRootController):
 
             if krgv['ack'] != 'NoChange' :
                 history = EventHistory(
-                        type_action="Acknowlegement change state",
+                        type_action="Acknowledgement change state",
                         idevent=event.idcause,
                         value=krgv['ack'],
                         text=_("Changed acknowledgement status "
