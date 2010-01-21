@@ -24,7 +24,6 @@ def insert_deps():
         name=u'foo',
     )
     DBSession.add(hostgroup)
-    DBSession.flush()
 
     host = Host(
         name=u'bar',
@@ -97,6 +96,8 @@ class TestSearchFormService(TestController):
         # à un groupe d'hôtes pour lesquels l'utilisateur
         # a les permissions.
         hostgroup = insert_deps()[0]
+        print "Adding permission for 'manager' on host group '%s'" % \
+            hostgroup.name
         manage = Permission.by_permission_name(u'manage')
         manage.hostgroups.append(hostgroup)
         DBSession.flush()
@@ -127,6 +128,8 @@ class TestSearchFormService(TestController):
         # Le service est rattaché à un groupe de services
         # pour lesquel l'utilisateur a les permissions.
         servicegroup = insert_deps()[1]
+        print "Adding permission for 'manager' on service group '%s'" % \
+            servicegroup.name
         manage = Permission.by_permission_name(u'manage')
         manage.servicegroups.append(servicegroup)
         DBSession.flush()

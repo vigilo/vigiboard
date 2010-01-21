@@ -63,7 +63,7 @@ class VigiboardRequest():
         ).join(
            (Host, Host.idhost == ServiceLowLevel.idhost),
         ).outerjoin(
-            (HOST_GROUP_TABLE, HOST_GROUP_TABLE.c.idhost == ServiceLowLevel.idservice),
+            (HOST_GROUP_TABLE, HOST_GROUP_TABLE.c.idhost == ServiceLowLevel.idhost),
             (SERVICE_GROUP_TABLE, SERVICE_GROUP_TABLE.c.idservice == ServiceLowLevel.idservice),
         ).filter(
             or_(
@@ -71,7 +71,7 @@ class VigiboardRequest():
                 SERVICE_GROUP_TABLE.c.idgroup.in_(self.user_groups),
             ),
         )
-                            
+               
         host_query = DBSession.query(
             Host.idhost.label("idsupitem"),
             expr_null().label("servicename"),
@@ -143,7 +143,6 @@ class VigiboardRequest():
         self.context_fct = []
 
     def add_plugin(self, *argv):
-
         """
         Ajout d'un plugin, on lui prélève ses ajouts dans la requête
         """
@@ -164,7 +163,6 @@ class VigiboardRequest():
                 self.plugin.append(i)
 
     def generate_request(self):
-        
         """
         Génération de la requête avec l'ensemble des données stockées
         et la place dans la variable rq de la classe
@@ -193,7 +191,6 @@ class VigiboardRequest():
             self.req = self.req.order_by(i)
 
     def num_rows(self):
-
         """
         Retourne le nombre de lignes de la requête.
         Si celle-ci n'est pas encore générée, on le fait.
@@ -207,7 +204,6 @@ class VigiboardRequest():
         return self.req.count()
 
     def add_table(self, *argv):
-        
         """
         Ajoute une ou plusieurs tables/élément d'une table à
         la requête.
@@ -225,7 +221,6 @@ class VigiboardRequest():
             self.table.append(i)
 
     def add_join(self, *argv):
-        
         """
         Ajoute une ou plusieurs jointures à
         la requête.
@@ -243,7 +238,6 @@ class VigiboardRequest():
             self.join.append(i)
 
     def add_outer_join(self, *argv):
-        
         """
         Ajoute une ou plusieurs jointures externes à
         la requête.
@@ -261,7 +255,6 @@ class VigiboardRequest():
             self.outerjoin.append(i)    
 
     def add_filter(self, *argv):
-
         """
         Ajoute un ou plusieurs filtres à la requête.
 
@@ -278,7 +271,6 @@ class VigiboardRequest():
             self.filter.append(i)
 
     def add_group_by(self, *argv):
-
         """
         Ajoute un ou plusieurs groupements à la requête.
 
@@ -300,7 +292,6 @@ class VigiboardRequest():
             self.groupby.append(i)
 
     def add_order_by(self, *argv):
-
         """
         Ajoute un ou plusieurs orders à la requête.
 
@@ -317,7 +308,6 @@ class VigiboardRequest():
             self.orderby.append(i)
 
     def format_events_status(self, event):
-        
         """
         Suivant l'état de l'événement, retourne la classe à appliquer
         à l'image indiquant si l'événement est pris en compte ou non,
@@ -429,7 +419,6 @@ class VigiboardRequest():
         self.idevents = ids
 
     def format_history(self):
-        
         """
         Formate les historiques correspondant aux événements sélectionnés
         pour un affichage simple du résultat par Genshi.
@@ -478,7 +467,6 @@ class VigiboardRequest():
         self.hist = hists
 
     def generate_tmpl_context(self):
-        
         """
         Génère et peuple la variable tmpl_context avec les Dialogs et
         formulaires nécessaire au fonctionnement de Vigiboard

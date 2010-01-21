@@ -48,7 +48,7 @@ class VigiboardRootController(BaseController):
             login_counter = request.environ['repoze.who.logins'] + 1
             redirect(url('/login', came_from=came_from, __logins=login_counter))
         userid = request.identity['repoze.who.userid']
-        ApplicationLog.add_login(userid, request.remote_addr, 'Vigiboard')
+        ApplicationLog.add_login(userid, request.remote_addr, u'Vigiboard')
         flash(_('Welcome back, %s!') % userid)
         redirect(came_from)
 
@@ -60,7 +60,7 @@ class VigiboardRootController(BaseController):
         """
         # XXX Ne fonctionne pas, l'identité est déjà oubliée arrivé ici.
 #        userid = request.identity['repoze.who.userid']
-#        ApplicationLog.add_logout(userid, request.remote_addr, 'Vigiboard')
+#        ApplicationLog.add_logout(userid, request.remote_addr, u'Vigiboard')
         flash(_('We hope to see you soon!'))
         redirect(came_from)
 
