@@ -194,6 +194,12 @@ class TestVigiboardRequest(TestController):
         # Derrière, VigiboardRequest doit charger le plugin de tests tout seul
         tg.config['vigiboard_plugins'] = [['tests', 'MonPlugin']]
         vigi_req = VigiboardRequest(User.by_user_name(u'editor'))
+        vigi_req.add_table(
+            CorrEvent,
+            vigi_req.items.c.hostname,
+            vigi_req.items.c.servicename,
+        )
+        vigi_req.add_join((Event, CorrEvent.idcause == Event.idevent))
 
         # On effectue les tests suivants :
         #   le nombre de lignes (historique et événements) doivent
@@ -221,6 +227,12 @@ class TestVigiboardRequest(TestController):
         tg.request = response.request
 
         vigi_req = VigiboardRequest(User.by_user_name(u'manager'))
+        vigi_req.add_table(
+            CorrEvent,
+            vigi_req.items.c.hostname,
+            vigi_req.items.c.servicename,
+        )
+        vigi_req.add_join((Event, CorrEvent.idcause == Event.idevent))
         vigi_req.add_plugin(MonPlugin)
 
         num_rows = vigi_req.num_rows()

@@ -82,27 +82,24 @@ class VigiboardRequest():
         ).filter(HOST_GROUP_TABLE.c.idgroup.label('idhostgroup').in_(self.user_groups),
         )
 
+        # Object Selectable renvoyant des informations sur un supitem
+        # concerné par une alerte, avec prise en compte des droits d'accès.
         # On est obligés d'utiliser sqlalchemy.sql.expression.union
         # pour indiquer à SQLAlchemy de NE PAS regrouper les tables
         # dans la requête principale, sans quoi les résultats sont
         # incorrects.
         self.items = union(lls_query, host_query, correlate=False).alias()
 
-        self.table = [
-            CorrEvent,
-            sql.func.count(CorrEvent.idcorrevent),
-            self.items.c.hostname,
-            self.items.c.servicename,
-        ]
+        # Éléments à retourner (SELECT ...)
+        self.table = []
 
-        self.join = [
-            (Event, CorrEvent.idcause == Event.idevent),
-            (self.items, Event.idsupitem == self.items.c.idsupitem),
-            (StateName, StateName.idstatename == Event.current_state),
-        ]
-        
+        # Tables sur lesquelles porte la récupération (JOIN)
+        self.join = []
+
+        # Tables sur lesquelles porte la récupération (OUTER JOIN)
         self.outerjoin = []
 
+        # Critères de filtrage (WHERE)
         self.filter = [
             # On masque les événements avec l'état OK
             # et traités (status == u'AAClosed').
@@ -119,6 +116,7 @@ class VigiboardRequest():
         else:
             priority_order = desc(CorrEvent.priority)
 
+        # Tris (ORDER BY)
         self.orderby = [
             desc(CorrEvent.status),         # None, Acknowledged, AAClosed
             priority_order,                 # Priorité ITIL (entier).
@@ -127,13 +125,13 @@ class VigiboardRequest():
             asc(self.items.c.hostname),
         ]
 
+        # Regroupements (GROUP BY)
         self.groupby = [
-                CorrEvent,
-                self.items.c.hostname,
-                self.items.c.servicename,
-                StateName.order,
-                Event.timestamp,
-            ]
+            StateName.order,
+            Event.timestamp,
+            CorrEvent.status,
+            CorrEvent.priority,
+        ]
 
         self.plugin = []
         self.events = []
@@ -167,6 +165,9 @@ class VigiboardRequest():
         Génération de la requête avec l'ensemble des données stockées
         et la place dans la variable rq de la classe
         """
+        if self.generaterq:
+            return
+
         for plug in config.get('vigiboard_plugins', []):
             try:
                 mypac = __import__(
@@ -175,6 +176,12 @@ class VigiboardRequest():
                 self.add_plugin(getattr(mypac, plug[1])())
             except:
                 raise
+
+        self.join.extend([
+            (self.items, Event.idsupitem == self.items.c.idsupitem),
+            (StateName, StateName.idstatename == Event.current_state),
+        ])
+        self.add_group_by(*self.table)
 
         # query et join ont besoin de referrence
         self.req = self.req.query(*self.table)
@@ -190,6 +197,8 @@ class VigiboardRequest():
         for i in self.orderby:
             self.req = self.req.order_by(i)
 
+        self.generaterq = True
+
     def num_rows(self):
         """
         Retourne le nombre de lignes de la requête.
@@ -198,9 +207,7 @@ class VigiboardRequest():
         @return: Nombre de ligne
         """
 
-        if not self.generaterq:
-            self.generate_request()
-            self.generaterq = True
+        self.generate_request()
         return self.req.count()
 
     def add_table(self, *argv):
@@ -344,9 +351,7 @@ class VigiboardRequest():
         """
         
         # Si la requête n'est pas générée, on le fait
-        if not self.generaterq :
-            self.generate_request()
-            self.generaterq = True
+        self.generate_request()
 
         # Liste des éléments pour la tête du tableau
 
@@ -378,8 +383,8 @@ class VigiboardRequest():
                 event = req
             else:
                 event = req[0]
-                hostname = req[2]
-                servicename = req[3]
+                hostname = req.hostname
+                servicename = req.servicename
             ids.append(event.idcause)
 
             # La liste pour l'événement actuel comporte dans l'ordre :

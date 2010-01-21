@@ -11,6 +11,7 @@ from pylons.controllers.util import abort
 from sqlalchemy import not_, and_,  or_, asc
 from sqlalchemy.orm import aliased
 from sqlalchemy.sql import func
+from sqlalchemy.sql.expression import union
 from datetime import datetime
 from time import mktime
 import math
@@ -88,6 +89,12 @@ class RootController(VigiboardRootController):
         user = User.by_user_name(username)
         
         aggregates = VigiboardRequest(user)
+        aggregates.add_table(
+            CorrEvent,
+            aggregates.items.c.hostname,
+            aggregates.items.c.servicename
+        )
+        aggregates.add_join((Event, CorrEvent.idcause == Event.idevent))
         
         search = {
             'host': '',
@@ -208,63 +215,26 @@ class RootController(VigiboardRootController):
         # Obtention de données sur l'événement et sur son historique
         username = request.environ.get('repoze.who.identity'
                     ).get('repoze.who.userid')
-        user = User.by_user_name(username)
-        user_groups = user.groups
 
-#        try:
-        
-        lls_query = DBSession.query(
-            ServiceLowLevel.idservice.label("idsupitem"),
-            ServiceLowLevel.servicename,
-            Host.name.label("hostname")
-        ).join(
-           (Host, Host.idhost == ServiceLowLevel.idhost),
-        ).outerjoin(
-            (HOST_GROUP_TABLE, HOST_GROUP_TABLE.c.idhost == ServiceLowLevel.idservice),
-            (SERVICE_GROUP_TABLE, SERVICE_GROUP_TABLE.c.idservice == ServiceLowLevel.idservice),
-        ).filter(
-            or_(
-                HOST_GROUP_TABLE.c.idgroup.in_(user_groups),
-                SERVICE_GROUP_TABLE.c.idgroup.in_(user_groups),
-            ),
+        username = request.environ['repoze.who.identity']['repoze.who.userid']
+        events = VigiboardRequest(User.by_user_name(username))
+        events.add_table(
+            Event,
+            events.items.c.hostname,
+            events.items.c.servicename,
         )
-                            
-        host_query = DBSession.query(
-            Host.idhost.label("idsupitem"),
-            "NULL",
-            Host.name.label("hostname")
-        ).join((HOST_GROUP_TABLE, HOST_GROUP_TABLE.c.idhost == Host.idhost)
-        ).filter(HOST_GROUP_TABLE.c.idgroup.in_(user_groups),
-        )
+        events.add_join((CorrEvent, CorrEvent.idcause == Event.idevent))
+        events.add_filter(CorrEvent.idcorrevent == idcorrevent)
 
-        items = lls_query.union(host_query).subquery()
-                
-        event = DBSession.query(
-                        CorrEvent.priority,
-                        Event,
-                        items.c.hostname,
-                        items.c.servicename,
-                 ).join(
-                    (Event, CorrEvent.idcause == Event.idevent),
-                    (items, Event.idsupitem == items.c.idsupitem),
-                 ).filter(
-                    # On masque les événements avec l'état OK
-                    # et traités (status == u'AAClosed').
-                    not_(and_(
-                        StateName.statename == u'OK',
-                        CorrEvent.status == u'AAClosed'
-                    ))
-                ).filter(CorrEvent.idcorrevent == idcorrevent
-                ).one()
-                
-                
-#        except:
-#            # XXX Raise some HTTP error.
-#            return None
+        # Vérification que au moins un des identifiants existe et est éditable
+        if events.num_rows() != 1:
+            flash(_('No access to this event'), 'error')
+            redirect('/')
 
+        event = events.req[0]
         history = DBSession.query(
                     EventHistory,
-                 ).filter(EventHistory.idevent == event[1].idevent
+                 ).filter(EventHistory.idevent == event[0].idevent
                  ).order_by(asc(EventHistory.timestamp)
                  ).order_by(asc(EventHistory.type_action)).all()
 
@@ -275,27 +245,27 @@ class RootController(VigiboardRootController):
             # Rappel:
             # event[0] = priorité de l'alerte corrélée.
             # event[1] = alerte brute.
-            if event[3]:
-                service = urllib.quote(event[3])
+            if event.servicename:
+                service = urllib.quote(event.servicename)
             else:
                 service = None
             eventdetails[edname] = edlink[1] % {
                 'idcorrevent': idcorrevent,
-                'host': urllib.quote(event[2]),
+                'host': urllib.quote(event.hostname),
                 'service': service,
-                'message': urllib.quote(event[1].message),
+                'message': urllib.quote(event[0].message),
             }
 
         return dict(
                 current_state = StateName.value_to_statename(
-                                    event[1].current_state),
+                                    event[0].current_state),
                 initial_state = StateName.value_to_statename(
-                                    event[1].initial_state),
+                                    event[0].initial_state),
                 peak_state = StateName.value_to_statename(
-                                    event[1].peak_state),
+                                    event[0].peak_state),
                 idcorrevent = idcorrevent,
-                host = event[2],
-                service = event[3],
+                host = event.hostname,
+                service = event.servicename,
                 eventdetails = eventdetails,
             )
 
@@ -313,11 +283,17 @@ class RootController(VigiboardRootController):
 
         username = request.environ['repoze.who.identity']['repoze.who.userid']
         events = VigiboardRequest(User.by_user_name(username))
+        events.add_table(
+            CorrEvent,
+            events.items.c.hostname,
+            events.items.c.servicename,
+        )
+        events.add_join((Event, CorrEvent.idcause == Event.idevent))
         events.add_filter(CorrEvent.idcorrevent == idcorrevent)
         
         # Vérification que l'événement existe
         if events.num_rows() != 1 :
-            flash(_('Error in DB'), 'error')
+            flash(_('No access to this event'), 'error')
             redirect('/')
        
         events.format_events(0, 1)
@@ -325,30 +301,30 @@ class RootController(VigiboardRootController):
         events.generate_tmpl_context() 
 
         return dict(
-                    events = events.events,
-                    rows_info = {
-                        'id_first_row': 1,
-                        'id_last_row': 1,
-                        'total_rows': 1,
-                    },
-                    nb_pages = 1,
-                    page = 1,
-                    event_edit_status_options = edit_event_status_options,
-                    history = events.hist,
-                    hist_error = True,
-                    plugin_context = events.context_fct,
-                    search = {
-                        'host': '',
-                        'service': '',
-                        'output': '',
-                        'tt': '',
-                        'from_date': '',
-                        'to_date': '',
-                        'hostgroup': '',
-                        'servicegroup': '',
-                    },
-                   refresh_times=config['vigiboard_refresh_times'],
-                )
+            events = events.events,
+            rows_info = {
+                'id_first_row': 1,
+                'id_last_row': 1,
+                'total_rows': 1,
+            },
+            nb_pages = 1,
+            page = 1,
+            event_edit_status_options = edit_event_status_options,
+            history = events.hist,
+            hist_error = True,
+            plugin_context = events.context_fct,
+            search = {
+                'host': '',
+                'service': '',
+                'output': '',
+                'tt': '',
+                'from_date': '',
+                'to_date': '',
+                'hostgroup': '',
+                'servicegroup': '',
+            },
+           refresh_times=config['vigiboard_refresh_times'],
+        )
 
     @validate(
         validators={
@@ -359,7 +335,6 @@ class RootController(VigiboardRootController):
     @expose('vigiboard.html')
     @require(Any(not_anonymous(), msg=l_("You need to be authenticated")))
     def host_service(self, host, service=None):
-        
         """
         Affichage de l'historique de l'ensemble des événements correspondant
         au host et service demandé.
@@ -373,6 +348,12 @@ class RootController(VigiboardRootController):
 
         username = request.environ['repoze.who.identity']['repoze.who.userid']
         events = VigiboardRequest(User.by_user_name(username))
+        events.add_table(
+            CorrEvent,
+            events.items.c.hostname,
+            events.items.c.servicename,
+        )
+        events.add_join((Event, CorrEvent.idcause == Event.idevent))
         events.add_filter(events.items.c.idsupitem == idsupitem)
 
         # XXX On devrait avoir une autre API que ça !!!
@@ -383,6 +364,7 @@ class RootController(VigiboardRootController):
 
         # Vérification qu'il y a au moins 1 événement qui correspond
         if events.num_rows() == 0 :
+            flash(_('No access to this host/service or no event yet'), 'error')
             redirect('/')
 
         events.format_events(0, events.num_rows())
@@ -450,13 +432,8 @@ class RootController(VigiboardRootController):
         last_modification = get_last_modification_timestamp(ids, None)
         if last_modification and datetime.fromtimestamp(\
             float(krgv['last_modification'])) < last_modification:
-            flash(_('Changes have occurred since the page was displayed, '
+            flash(_('Changes have occurred since the page was last displayed, '
                     'your changes HAVE NOT been saved.'), 'warning')
-            print "\n\n\n\n\n"
-            print datetime.fromtimestamp(float(krgv['last_modification']))
-            print get_last_modification_timestamp(ids)
-            print "\n\n\n\n\n"
-                        
             raise redirect(request.environ.get('HTTP_REFERER', url('/')))
 
         # Si l'utilisateur édite plusieurs événements à la fois,
@@ -467,6 +444,8 @@ class RootController(VigiboardRootController):
         
         username = request.environ['repoze.who.identity']['repoze.who.userid']
         events = VigiboardRequest(User.by_user_name(username))
+        events.add_table(CorrEvent)
+        events.add_join((Event, CorrEvent.idcause == Event.idevent))
         events.add_filter(CorrEvent.idcorrevent.in_(ids))
         
         # Vérification que au moins un des identifiants existe et est éditable

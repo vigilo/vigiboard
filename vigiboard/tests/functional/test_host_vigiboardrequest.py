@@ -128,6 +128,12 @@ class TestHostVigiboardRequest(TestController):
         # Derrière, VigiboardRequest doit charger le plugin de tests tout seul
         tg.config['vigiboard_plugins'] = [['tests', 'MonPlugin']]
         vigi_req = VigiboardRequest(User.by_user_name(u'editor'))
+        vigi_req.add_table(
+            CorrEvent,
+            vigi_req.items.c.hostname,
+            vigi_req.items.c.servicename,
+        )
+        vigi_req.add_join((Event, CorrEvent.idcause == Event.idevent))
 
         # On vérifie que le nombre d'événements corrélés 
         # trouvés par la requête est bien égal à 1.
@@ -156,6 +162,12 @@ class TestHostVigiboardRequest(TestController):
 
         vigi_req = VigiboardRequest(User.by_user_name(u'manager'))
         vigi_req.add_plugin(MonPlugin)
+        vigi_req.add_table(
+            CorrEvent,
+            vigi_req.items.c.hostname,
+            vigi_req.items.c.servicename,
+        )
+        vigi_req.add_join((Event, CorrEvent.idcause == Event.idevent))
 
         # On vérifie que le nombre d'événements corrélés 
         # trouvés par la requête est bien égal à 2.
