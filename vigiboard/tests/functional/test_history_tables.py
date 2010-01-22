@@ -67,7 +67,8 @@ def populate_DB():
     
     return (managerhost, managerservice)
 
-def add_correvent_caused_by(supitem):
+def add_correvent_caused_by(supitem, 
+        correvent_status=u"None", event_status=u"WARNING"):
     """
     Ajoute dans la base de données un évènement corrélé causé 
     par un incident survenu sur l'item passé en paramètre.
@@ -78,7 +79,7 @@ def add_correvent_caused_by(supitem):
     event = Event(
         supitem = supitem, 
         message = u'foo',
-        current_state = StateName.statename_to_value(u'WARNING'),
+        current_state = StateName.statename_to_value(event_status),
     )
     DBSession.add(event)
     DBSession.flush()
@@ -99,7 +100,7 @@ def add_correvent_caused_by(supitem):
         idcause = event.idevent, 
         timestamp_active = datetime.now(),
         priority = 1,
-        status = u'None')
+        status = correvent_status)
     aggregate.events.append(event)
     DBSession.add(aggregate)
     DBSession.flush()
@@ -112,50 +113,39 @@ class TestEventTable(TestController):
     Test des historiques de Vigiboard.
     """
 
-    def test_event_caused_by_host_history_table(self):
+    def test_host_event_history(self):
         """
         Test de l'affichage du tableau d'historique
         d'un évènement corrélé causé par un hôte.
         """
 
+        # On peuple la BDD avec un hôte, un service de bas niveau,
+        # et un groupe d'hôtes et de services associés à ces items.
         (managerhost, managerservice) = populate_DB()
+        
+        # On ajoute un évènement corrélé causé par l'hôte
         aggregate_id = add_correvent_caused_by(managerhost)
         
-        #
+        transaction.commit()
         
-        aggregates = DBSession.query(CorrEvent).count()
-        print "Nombre d'evenements correles dans la BDD : ", aggregates 
-        
-        histories = DBSession.query(EventHistory).count()
-        print "Nombre de lignes d'historique dans la BDD : ", histories 
-        
-        aggregate = DBSession.query(CorrEvent
-            ).filter(CorrEvent.idcorrevent == aggregate_id).one()
-        print "Permissions sur l'evenement correle : ",
-        for group in aggregate.cause.supitem.groups:
-            print "\n\tGroupe : ", group.name
-            for permission in group.permissions:
-                print "\t\t> ", permission.permission_name
-          
-        user = DBSession.query(User).filter(User.user_name == u"manager").one()      
-        print "Permissions de l'utilisateur : ",
-        for group in user.usergroups:
-            print "\n\tGroupe : ", group.group_name
-            for permission in group.permissions:
-                print "\t\t> ", permission.permission_name
-                
-        
-        #
-
         ### 1er cas : L'utilisateur utilisé pour
         # se connecter à Vigiboard est 'editor'.
         environ = {'REMOTE_USER': 'editor'}
         
-        # On s'attend à ce qu'une erreur 302 soit renvoyée.
+        # On s'attend à ce qu'une erreur 302 soit renvoyée, et à
+        # ce qu'un message d'erreur précise à l'utilisateur qu'il
+        # n'a pas accès aux informations concernant cet évènement.
         response = self.app.get(
-            '/event/' + str(aggregate_id),
+            '/event?idcorrevent=' + str(aggregate_id),
             status = 302, 
             extra_environ = environ)
+        
+        response = self.app.get(
+            '/', 
+            status = 200, 
+            extra_environ = environ)
+        assert_true(response.lxml.xpath(
+            '//div[@id="flash"]/div[@class="error"]'))
 
         ### 2nd cas : L'utilisateur utilisé pour
         # se connecter à Vigiboard est 'manager'.
@@ -163,17 +153,176 @@ class TestEventTable(TestController):
         
         # On s'attend à ce que le statut de la requête soit 200.
         response = self.app.get(
-            '/event/' + str(aggregate_id),
+            '/event?idcorrevent=' + str(aggregate_id),
             status = 200, 
             extra_environ = environ)
+
+        # Il doit y avoir 2 lignes de résultats.
+        rows = response.lxml.xpath('//table[@class="history_table"]/tbody/tr')
+        assert_equal(len(rows), 2)
+
+    def test_service_event_history(self):
+        """
+        Test de l'affichage du tableau d'historique d'un
+        évènement corrélé causé par un service de bas niveau.
+        """
+
+        # On peuple la BDD avec un hôte, un service de bas niveau,
+        # et un groupe d'hôtes et de services associés à ces items.
+        (managerhost, managerservice) = populate_DB()
         
-#        response = self.app.get(
-#            '/event/' + str(aggregate_id), extra_environ = environ)
-#
-#        # Il doit y avoir 2 lignes de résultats.
-#        rows = response.lxml.xpath('//table[@class="history_table"]/tbody/tr')
-#        print "There are %d rows in the result set" % len(rows)
-#        assert_equal(len(rows), 2)
+        # On ajoute un évènement corrélé causé par le service
+        aggregate_id = add_correvent_caused_by(managerservice)
+        
+        transaction.commit()
+        
+        ### 1er cas : L'utilisateur utilisé pour
+        # se connecter à Vigiboard est 'editor'.
+        environ = {'REMOTE_USER': 'editor'}
+        
+        # On s'attend à ce qu'une erreur 302 soit renvoyée, et à
+        # ce qu'un message d'erreur précise à l'utilisateur qu'il
+        # n'a pas accès aux informations concernant cet évènement.
+        response = self.app.get(
+            '/event?idcorrevent=' + str(aggregate_id),
+            status = 302, 
+            extra_environ = environ)
+        
+        response = self.app.get(
+            '/', 
+            status = 200, 
+            extra_environ = environ)
+        assert_true(response.lxml.xpath(
+            '//div[@id="flash"]/div[@class="error"]'))
+
+        ### 2nd cas : L'utilisateur utilisé pour
+        # se connecter à Vigiboard est 'manager'.
+        environ = {'REMOTE_USER': 'manager'}
+        
+        # On s'attend à ce que le statut de la requête soit 200.
+        response = self.app.get(
+            '/event?idcorrevent=' + str(aggregate_id),
+            status = 200, 
+            extra_environ = environ)
+
+        # Il doit y avoir 2 lignes de résultats.
+        rows = response.lxml.xpath('//table[@class="history_table"]/tbody/tr')
+        assert_equal(len(rows), 2)
+
+    def test_host_history(self):
+        """
+        Test de l'affichage du tableau d'historique
+        des évènements corrélé d'un hôte donné.
+        """
+
+        # On peuple la BDD avec un hôte, un service de bas niveau,
+        # et un groupe d'hôtes et de services associés à ces items.
+        (managerhost, managerservice) = populate_DB()
+        
+        # On ajoute deux évènements corrélés causés par l'hôte :
+        # le premier encore ouvert, le second clos par un utilisateur.
+        aggregate_id1 = add_correvent_caused_by(managerhost)
+        aggregate_id2 = add_correvent_caused_by(managerhost, u"AAClosed", 
+                                                                        u"OK")
+        
+        transaction.commit()
+        DBSession.add(managerhost)
+        
+        ### 1er cas : L'utilisateur utilisé pour
+        # se connecter à Vigiboard est 'editor'.
+        environ = {'REMOTE_USER': 'editor'}
+        
+        # On s'attend à ce qu'une erreur 302 soit renvoyée, et à
+        # ce qu'un message d'erreur précise à l'utilisateur qu'il
+        # n'a pas accès aux informations concernant cet évènement.
+        response = self.app.get(
+            '/host_service/' + managerhost.name,
+            status = 302, 
+            extra_environ = environ)
+        
+        response = self.app.get(
+            '/', 
+            status = 200, 
+            extra_environ = environ)
+        assert_true(response.lxml.xpath(
+            '//div[@id="flash"]/div[@class="error"]'))
+
+        ### 2nd cas : L'utilisateur utilisé pour
+        # se connecter à Vigiboard est 'manager'.
+        environ = {'REMOTE_USER': 'manager'}
+        
+        # On s'attend à ce que le statut de la requête soit 200.
+        response = self.app.get(
+            '/host_service/' + managerhost.name,
+            status = 200, 
+            extra_environ = environ)
+
+        # Il doit y avoir 2 lignes d'évènements 
+        # + 2 lignes contenant les tableaux d'historiques.
+        rows = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr')
+        assert_equal(len(rows), 2 + 2)
+        # Et 4 lignes d'historiques dans les tableaux d'historiques.
+        rows = response.lxml.xpath('//table[@class="history_table"]/tbody/tr')
+        assert_equal(len(rows), 4)
+
+    def test_service_history(self):
+        """
+        Test de l'affichage du tableau d'historique
+        des évènements corrélé d'un service donné.
+        """
+
+        # On peuple la BDD avec un hôte, un service de bas niveau,
+        # et un groupe d'hôtes et de services associés à ces items.
+        (managerhost, managerservice) = populate_DB()
+        
+        # On ajoute deux évènements corrélés causés par le service :
+        # le premier encore ouvert, le second clos par un utilisateur.
+        aggregate_id1 = add_correvent_caused_by(managerservice)
+        aggregate_id2 = add_correvent_caused_by(managerservice, u"AAClosed", 
+                                                                        u"OK")
+        
+        transaction.commit()
+        DBSession.add(managerhost)
+        DBSession.add(managerservice)
+        
+        ### 1er cas : L'utilisateur utilisé pour
+        # se connecter à Vigiboard est 'editor'.
+        environ = {'REMOTE_USER': 'editor'}
+        
+        # On s'attend à ce qu'une erreur 302 soit renvoyée, et à
+        # ce qu'un message d'erreur précise à l'utilisateur qu'il
+        # n'a pas accès aux informations concernant cet évènement.
+        response = self.app.get(
+            '/host_service/' + managerhost.name 
+                                + '/' + managerservice.servicename,
+            status = 302, 
+            extra_environ = environ)
+        
+        response = self.app.get(
+            '/', 
+            status = 200, 
+            extra_environ = environ)
+        assert_true(response.lxml.xpath(
+            '//div[@id="flash"]/div[@class="error"]'))
+
+        ### 2nd cas : L'utilisateur utilisé pour
+        # se connecter à Vigiboard est 'manager'.
+        environ = {'REMOTE_USER': 'manager'}
+        
+        # On s'attend à ce que le statut de la requête soit 200.
+        response = self.app.get(
+            '/host_service/' + managerhost.name 
+                                + '/' + managerservice.servicename,
+            status = 200, 
+            extra_environ = environ)
+
+        # Il doit y avoir 2 lignes d'évènements 
+        # + 2 lignes contenant les tableaux d'historiques.
+        rows = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr')
+        assert_equal(len(rows), 2 + 2)
+        # Et 4 lignes d'historiques dans les tableaux d'historiques.
+        rows = response.lxml.xpath('//table[@class="history_table"]/tbody/tr')
+        assert_equal(len(rows), 4)
 
 
 
