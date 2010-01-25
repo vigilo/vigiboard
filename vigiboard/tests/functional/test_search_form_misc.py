@@ -102,7 +102,6 @@ class TestSearchFormMisc(TestController):
         response = self.app.get('/?trouble_ticket=bar',
             extra_environ={'REMOTE_USER': 'manager'})
         transaction.commit()
-        print response.body
 
         # Il doit y avoir 1 seule ligne de résultats.
         rows = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr')
