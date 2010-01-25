@@ -2,6 +2,7 @@
 # vim:set expandtab tabstop=4 shiftwidth=4: 
 """Vigiboard Controller"""
 
+from tg.exceptions import HTTPNotFound
 from tg import expose, validate, require, flash, \
     tmpl_context, request, config, session, redirect, url
 from tw.forms import validators
@@ -408,7 +409,6 @@ class RootController(VigiboardRootController):
         ])}, error_handler=process_form_errors)
     @require(Any(not_anonymous(), msg=l_("You need to be authenticated")))
     def update(self,**krgv):
-        
         """
         Mise à jour d'un événement suivant les arguments passés.
         Cela peut être un changement de ticket ou un changement de statut.
@@ -441,7 +441,7 @@ class RootController(VigiboardRootController):
        
         if len(ids) > 1 :
             ids = ids[:-1]
-        
+
         username = request.environ['repoze.who.identity']['repoze.who.userid']
         events = VigiboardRequest(User.by_user_name(username))
         events.add_table(CorrEvent)
@@ -499,13 +499,28 @@ class RootController(VigiboardRootController):
         [i for [i, j] in config.get('vigiboard_plugins', [])])},
                 error_handler = process_form_errors)
     @expose('json')
-    def get_plugin_value(self, plugin_name, *arg, **krgv):
+    @require(Any(not_anonymous(), msg=l_("You need to be authenticated")))
+    def get_plugin_value(self, idcorrevent, plugin_name, *arg, **krgv):
         """
-        Permet aux plugins de pouvoir récupérer des valeurs Json
+        Permet de récupérer la valeur d'un plugin associée à un CorrEvent
+        donné via JSON.
         """
         plugins = config['vigiboard_plugins']
         if plugins is None:
-            return
+            raise HTTPNotFound()
+
+        # Permet de vérifier si l'utilisateur a bien les permissions
+        # pour accéder à cet événement et si l'événement existe.
+        username = request.environ['repoze.who.identity']['repoze.who.userid']
+        events = VigiboardRequest(User.by_user_name(username))
+        events.add_table(CorrEvent.idcorrevent)
+        events.add_join((Event, CorrEvent.idcause == Event.idevent))
+        events.add_filter(CorrEvent.idcorrevent == idcorrevent)
+
+        # Pas d'événement ou permission refusée. On ne distingue pas
+        # les 2 cas afin d'éviter la divulgation d'informations.
+        if not events.num_rows():
+            raise HTTPNotFound()
 
         plugin = [i for i in plugins if i[0] == plugin_name][0]
         try:
@@ -513,9 +528,9 @@ class RootController(VigiboardRootController):
                 'vigiboard.controllers.vigiboard_plugin.' + plugin[0],
                 globals(), locals(), [plugin[1]], -1)
             plug = getattr(mypac, plugin[1])()
-            return plug.controller(*arg, **krgv)
-        except:
-            raise
+            return plug.controller(idcorrevent, *arg, **krgv)
+        except ImportError:
+            raise HTTPNotFound()
 
     @validate(validators={
         "fontsize": validators.Regex(
@@ -524,9 +539,7 @@ class RootController(VigiboardRootController):
         )}, error_handler = process_form_errors)
     @expose('json')
     def set_fontsize(self, fontsize):
-        """
-        Save font size
-        """
+        """Enregistre la taille de la police dans les préférences."""
         session['fontsize'] = fontsize
         session.save()
         return dict()
@@ -535,24 +548,24 @@ class RootController(VigiboardRootController):
             error_handler=process_form_errors)
     @expose('json')
     def set_refresh(self, refresh):
-        """
-        Save refresh time
-        """
+        """Enregistre le temps de rafraichissement dans les préférences."""
         session['refresh'] = refresh
         session.save()
         return dict()
 
     @expose('json')
     def set_theme(self, theme):
-        """
-        Save theme to use time
-        """
+        """Enregistre le thème à utiliser dans les préférences."""
+        # On sauvegarde l'ID du thème sans vérifications
+        # car les thèmes (styles CSS) sont définies dans
+        # les packages de thèmes (ex: vigilo-themes-default).
+        # La vérification de la valeur est faite dans les templates.
         session['theme'] = theme
         session.save()
         return dict()
     
 def get_last_modification_timestamp(event_id_list, 
-                                                value_if_none=datetime.now()):
+                                    value_if_none=datetime.now()):
     """
     Récupère le timestamp de la dernière modification 
     opérée sur l'un des événements dont l'identifiant

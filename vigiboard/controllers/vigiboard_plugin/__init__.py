@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
 # vim:set expandtab tabstop=4 shiftwidth=4: 
 """
-Generic plugin
+Module complémentaire générique.
 """
 
 from pylons.i18n import ugettext as _
 
 class VigiboardRequestPlugin(object):
-
     """
-    Classe dont les plugins utilisé dans VigiboardRequest doivent étendre.
+    Classe que les plugins de VigiBoard doivent étendre.
     """
 
     def __init__ (self, table = None, join = None, outerjoin = None,
@@ -27,7 +26,6 @@ class VigiboardRequestPlugin(object):
         self.object_name = object_name
 
     def __show__ (self, aggregate):
-
         """
         Permet d'éviter toutes erreurs d'affichage.
         C'est la fonction appelée par le formateur d'événements.
@@ -42,7 +40,6 @@ class VigiboardRequestPlugin(object):
                 return _('Error')
 
     def show(self, aggregate):
-
         """
         Fonction qui affichera par défaut une chaîne de
         caractères vide dans la colonne attribuée au plugin.
@@ -54,20 +51,18 @@ class VigiboardRequestPlugin(object):
         return ''
 
     def context(self, context):
-
         """
-        Fonction permettant de rajouter du context à la page d'événements,
-        comme par exemple un css ou une fonction Javascript
+        Fonction permettant d'ajouter un contexte dans la page d'événements,
+        comme par exemple un fichier CSS ou une fonction Javascript.
         """
 
         pass
  
     
     def controller(self):
-
         """
-        Fonction permettant de rajouter un pseudo controller pour le plugin.
-        Ceci permet par exemple de faire de appels json
+        Fonction permettant de rajouter un pseudo-contrôleur pour le plugin.
+        Ceci permet par exemple d'exécuter des requêtes JSON.
         """
 
         pass
