@@ -7,7 +7,11 @@ except ImportError:
     use_setuptools()
     from setuptools import setup, find_packages
 
-tests_require = ['WebTest', 'BeautifulSoup']
+tests_require = [
+    'WebTest',
+    'BeautifulSoup',
+    'lxml',
+]
 
 setup(
     name='vigiboard',
