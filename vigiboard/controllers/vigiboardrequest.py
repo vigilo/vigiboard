@@ -3,7 +3,7 @@
 """Gestion de la requête, des plugins et de l'affichage du Vigiboard"""
 
 from vigiboard.model import Event, CorrEvent, EventHistory, \
-                            Host, HostGroup, ServiceLowLevel, ServiceGroup, \
+                            Host, HostGroup, LowLevelService, ServiceGroup, \
                             StateName
 from vigilo.models import SupItem
 from vigilo.models.secondary_tables import HOST_GROUP_TABLE, \
@@ -55,16 +55,16 @@ class VigiboardRequest():
         self.generaterq = False
         
         lls_query = DBSession.query(
-            ServiceLowLevel.idservice.label("idsupitem"),
-            ServiceLowLevel.servicename.label("servicename"),
+            LowLevelService.idservice.label("idsupitem"),
+            LowLevelService.servicename.label("servicename"),
             Host.name.label("hostname"),
             SERVICE_GROUP_TABLE.c.idgroup.label("idservicegroup"),
             HOST_GROUP_TABLE.c.idgroup.label("idhostgroup"),
         ).join(
-           (Host, Host.idhost == ServiceLowLevel.idhost),
+           (Host, Host.idhost == LowLevelService.idhost),
         ).outerjoin(
-            (HOST_GROUP_TABLE, HOST_GROUP_TABLE.c.idhost == ServiceLowLevel.idhost),
-            (SERVICE_GROUP_TABLE, SERVICE_GROUP_TABLE.c.idservice == ServiceLowLevel.idservice),
+            (HOST_GROUP_TABLE, HOST_GROUP_TABLE.c.idhost == LowLevelService.idhost),
+            (SERVICE_GROUP_TABLE, SERVICE_GROUP_TABLE.c.idservice == LowLevelService.idservice),
         ).filter(
             or_(
                 HOST_GROUP_TABLE.c.idgroup.in_(self.user_groups),

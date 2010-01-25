@@ -12,7 +12,7 @@ import transaction
 from vigiboard.model import DBSession, \
     Event, EventHistory, CorrEvent, \
     Permission, User, StateName, \
-    Host, HostGroup, ServiceLowLevel, ServiceGroup
+    Host, HostGroup, LowLevelService, ServiceGroup
 from vigiboard.tests import TestController
 from vigiboard.controllers.vigiboardrequest import VigiboardRequest
 from vigiboard.controllers.vigiboard_plugin.tests import MonPlugin
@@ -54,7 +54,7 @@ def populate_DB():
     DBSession.flush()
 
     # On crée un services de bas niveau, et on l'ajoute au groupe de services.
-    managerservice = ServiceLowLevel(
+    managerservice = LowLevelService(
         host = managerhost,
         servicename = u'managerservice',
         command = u'halt',

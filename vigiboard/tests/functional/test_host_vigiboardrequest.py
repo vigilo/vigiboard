@@ -12,7 +12,7 @@ import transaction
 from vigiboard.model import DBSession, \
     Event, EventHistory, CorrEvent, \
     Permission, User, StateName, \
-    Host, HostGroup, ServiceLowLevel, ServiceGroup
+    Host, HostGroup, LowLevelService, ServiceGroup
 from vigiboard.tests import TestController
 from vigiboard.controllers.vigiboardrequest import VigiboardRequest
 from vigiboard.controllers.vigiboard_plugin.tests import MonPlugin

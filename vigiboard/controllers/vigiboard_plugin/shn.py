@@ -10,7 +10,7 @@ from sqlalchemy.sql import functions
 
 from vigiboard.controllers.vigiboard_plugin import \
         VigiboardRequestPlugin
-from vigiboard.model import DBSession, ServiceHighLevel, \
+from vigiboard.model import DBSession, HighLevelService, \
                             CorrEvent, Event, \
                             ImpactedHLS, ImpactedPath
 from vigilo.models.supitem import SupItem
@@ -42,7 +42,7 @@ class PluginSHN(VigiboardRequestPlugin):
             count = 0
         else:
             count = supitem.impacted_hls(
-                ServiceHighLevel.idservice
+                HighLevelService.idservice
             ).count()
 
         dico = {
@@ -75,9 +75,9 @@ class PluginSHN(VigiboardRequestPlugin):
             return []
 
         services = supitem.impacted_hls(
-            ServiceHighLevel.servicename
+            HighLevelService.servicename
         ).order_by(
-            ServiceHighLevel.servicename.asc()
+            HighLevelService.servicename.asc()
         ).all()
 
         return dict(services=[service.servicename for service in services])

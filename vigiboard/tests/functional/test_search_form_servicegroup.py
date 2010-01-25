@@ -8,7 +8,7 @@ import transaction
 
 from vigiboard.tests import TestController
 from vigiboard.model import DBSession, ServiceGroup, Host, Permission, \
-                            ServiceLowLevel, Event, CorrEvent, StateName
+                            LowLevelService, Event, CorrEvent, StateName
 
 def insert_deps():
     """Insère les dépendances nécessaires aux tests."""
@@ -38,7 +38,7 @@ def insert_deps():
     )
     DBSession.add(servicegroup)
 
-    service = ServiceLowLevel(
+    service = LowLevelService(
         host=host,
         command=u'',
         weight=42,

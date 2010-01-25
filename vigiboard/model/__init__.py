@@ -11,6 +11,6 @@ from vigilo.models import User, UserGroup, Permission
 from vigilo.models import Event, EventHistory, CorrEvent
 from vigilo.models import Version, StateName, ApplicationLog
 from vigilo.models import Host, HostGroup
-from vigilo.models import ServiceLowLevel, ServiceHighLevel, ServiceGroup
+from vigilo.models import LowLevelService, HighLevelService, ServiceGroup
 from vigilo.models import ImpactedHLS, ImpactedPath
 

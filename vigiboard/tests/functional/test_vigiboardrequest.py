@@ -12,7 +12,7 @@ import transaction
 from vigiboard.model import DBSession, \
     Event, EventHistory, CorrEvent, \
     Permission, User, StateName, \
-    Host, HostGroup, ServiceLowLevel, ServiceGroup
+    Host, HostGroup, LowLevelService, ServiceGroup
 from vigiboard.tests import TestController
 from vigiboard.controllers.vigiboardrequest import VigiboardRequest
 from vigiboard.controllers.vigiboard_plugin.tests import MonPlugin
@@ -77,25 +77,25 @@ class TestVigiboardRequest(TestController):
             'weight': 42,
         }
 
-        service1 = ServiceLowLevel(
+        service1 = LowLevelService(
             host=managerhost,
             servicename=u'managerservice',
             **service_template
         )
 
-        service2 = ServiceLowLevel(
+        service2 = LowLevelService(
             host=editorhost,
             servicename=u'managerservice',
             **service_template
         )
 
-        service3 = ServiceLowLevel(
+        service3 = LowLevelService(
             host=managerhost,
             servicename=u'editorservice',
             **service_template
         )
 
-        service4 = ServiceLowLevel(
+        service4 = LowLevelService(
             host=editorhost,
             servicename=u'editorservice',
             **service_template
