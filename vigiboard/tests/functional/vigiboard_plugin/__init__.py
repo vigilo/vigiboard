@@ -1,0 +1,1 @@
+"""Tests fonctionnels des plugins de Vigiboard"""

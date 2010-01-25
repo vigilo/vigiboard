@@ -66,6 +66,43 @@ def populate_DB():
     hostmanagers.hosts.append(managerhost)
     DBSession.flush()
 
+    # Création des services techniques de test.
+    service_template = {
+        'command': u'halt',
+        'op_dep': u'+',
+        'weight': 42,
+    }
+
+    service1 = ServiceLowLevel(
+        host=managerhost,
+        servicename=u'managerservice',
+        **service_template
+    )
+
+    service2 = ServiceLowLevel(
+        host=editorhost,
+        servicename=u'managerservice',
+        **service_template
+    )
+
+    service3 = ServiceLowLevel(
+        host=managerhost,
+        servicename=u'editorservice',
+        **service_template
+    )
+
+    service4 = ServiceLowLevel(
+        host=editorhost,
+        servicename=u'editorservice',
+        **service_template
+    )
+
+    DBSession.add(service1)
+    DBSession.add(service2)
+    DBSession.add(service3)
+    DBSession.add(service4)
+    DBSession.flush()
+
     # Ajout des événements eux-mêmes
     event_template = {
         'message': u'foo',
