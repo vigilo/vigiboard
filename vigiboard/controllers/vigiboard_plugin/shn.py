@@ -62,9 +62,8 @@ class PluginSHN(VigiboardRequestPlugin):
         """Fonction de context"""
         context.append([None, self.object_name])
 
-    def controller(self, *argv, **krgv):
+    def controller(self, idcorrevent, *argv, **krgv):
         """Ajout de fonctionnalités au contrôleur"""
-        idcorrevent = krgv['idcorrevent']
         supitem = DBSession.query(SupItem).join(
             (Event, Event.idsupitem == SupItem.idsupitem),
             (CorrEvent, CorrEvent.idcause == Event.idevent),
