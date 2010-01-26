@@ -39,7 +39,7 @@ setup(
         "decorator != 3.1.0", # Blacklist bad version
         "vigilo-turbogears",
         #"modwsgideploy",
-        ],
+    ],
 
     paster_plugins=['PasteScript', 'Pylons', 'TurboGears2', 'tg.devtools'],
     packages=find_packages(exclude=['ez_setup']),
@@ -48,25 +48,21 @@ setup(
     tests_require=tests_require,
     extras_require={
         'tests': tests_require,
-        },
+    },
     package_data={'vigiboard': [
             'i18n/*/LC_MESSAGES/*.mo',
-        ]},
+    ]},
     message_extractors={'vigiboard': [
             ('**.py', 'python', None),
-        ]},
+    ]},
 
     entry_points={
         'paste.app_factory': [
             'main = vigiboard.config.middleware:make_app',
-            ],
+        ],
         'paste.app_install': [
             'main = pylons.util:PylonsInstaller',
-            ],
-        'console_scripts': [
-            'runtests-vigiboard = vigiboard.tests:runtests',
-            'paster = paste.script.command:run',
-            ],
-        },
+        ],
+    },
 )
 

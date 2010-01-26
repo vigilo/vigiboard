@@ -12,13 +12,12 @@ from webtest import TestApp
 import nose
 from nose.tools import eq_, nottest
 
-from vigilo.common.conf import settings
 from vigilo.models.vigilo_bdd_config import metadata
 from vigilo.models.session import DBSession
 
-metadata.bind = DBSession.bind
-
 __all__ = ['setup_db', 'teardown_db', 'TestController', 'url_for']
+
+metadata.bind = DBSession.bind
 
 def setup_db():
     """Method used to build a database"""
@@ -68,12 +67,4 @@ class TestController(object):
         # Cleaning up the database:
         teardown_db()
         del self.app
-
-def runtests(*args):
-    """This is the method called when running unit tests."""
-    sys.argv[1:0] = ['--with-pylons', '../vigiboard/test.ini', 
-                     '--with-coverage', '--cover-inclusive',
-                     '--cover-erase', '--cover-package', 'vigiboard',
-                     'vigiboard/tests' ]
-    nose.main()
 

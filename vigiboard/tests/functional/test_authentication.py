@@ -57,3 +57,4 @@ class TestAuthentication(TestController):
         assert home_page.request.cookies.get('authtkt') == '', \
                'Session cookie was not deleted: %s' % home_page.request.cookies
         assert home_page.location == 'http://localhost/', home_page.location
+
