@@ -9,8 +9,10 @@ from tg import expose, flash, require, url, request, redirect
 from pylons.i18n import ugettext as _, lazy_ugettext as l_
 from repoze.what import predicates
 
+from vigilo.models.session import DBSession
+from vigilo.models import ApplicationLog
+
 from vigiboard.lib.base import BaseController
-from vigiboard.model import DBSession, ApplicationLog
 from vigiboard.controllers.error import ErrorController
 
 class VigiboardRootController(BaseController):

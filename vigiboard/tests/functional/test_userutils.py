@@ -7,7 +7,8 @@ import tg
 import transaction
 from nose.tools import assert_true
 
-from vigiboard.model import DBSession, HostGroup, Permission, User
+from vigilo.models.session import DBSession
+from vigilo.models import HostGroup, Permission, User
 from vigiboard.tests import TestController
 
 class TestGroupPermissionsInheritance(TestController):

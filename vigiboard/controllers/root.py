@@ -2,6 +2,11 @@
 # vim:set expandtab tabstop=4 shiftwidth=4: 
 """Vigiboard Controller"""
 
+from datetime import datetime
+from time import mktime
+import math
+import urllib
+
 from tg.exceptions import HTTPNotFound
 from tg import expose, validate, require, flash, \
     tmpl_context, request, config, session, redirect, url
@@ -13,24 +18,20 @@ from sqlalchemy import not_, and_,  or_, asc
 from sqlalchemy.orm import aliased
 from sqlalchemy.sql import func
 from sqlalchemy.sql.expression import union
-from datetime import datetime
-from time import mktime
-import math
-import urllib
+from repoze.what.predicates import Any, not_anonymous
 
-from vigiboard.model import DBSession
-from vigiboard.model import Event, EventHistory, CorrEvent, \
+from vigilo.models.session import DBSession
+from vigilo.models import Event, EventHistory, CorrEvent, SupItem, \
                             Host, HostGroup, ServiceGroup, \
                             StateName, User, LowLevelService
-from vigilo.models import SupItem                    
-from repoze.what.predicates import Any, not_anonymous
-from vigiboard.widgets.edit_event import edit_event_status_options
-from vigiboard.controllers.vigiboardrequest import VigiboardRequest
-from vigiboard.controllers.vigiboard_controller import VigiboardRootController
-from vigilo.turbogears.controllers.autocomplete import AutoCompleteController
 from vigilo.models.functions import sql_escape_like
 from vigilo.models.secondary_tables import HOST_GROUP_TABLE, \
                                             SERVICE_GROUP_TABLE
+
+from vigilo.turbogears.controllers.autocomplete import AutoCompleteController
+from vigiboard.controllers.vigiboardrequest import VigiboardRequest
+from vigiboard.controllers.vigiboard_controller import VigiboardRootController
+from vigiboard.widgets.edit_event import edit_event_status_options
 from vigiboard.lib.base import BaseController
 
 __all__ = ('RootController', 'get_last_modification_timestamp', 

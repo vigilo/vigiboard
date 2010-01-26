@@ -14,12 +14,17 @@ convert them into boolean, for example, you should use the
  
 """
 
+from vigilo import models
+from vigilo.models.session import DBSession
+from vigilo.models.vigilo_bdd_config import metadata
+metadata.bind = DBSession.bind
+
 from vigilo.turbogears import VigiloAppConfig
 from pylons.i18n import lazy_ugettext as l_
 
 import vigiboard
-from vigiboard import model
 from vigiboard.lib import app_globals, helpers
+
 
 base_config = VigiloAppConfig('vigiboard')
 base_config.renderers = []
@@ -36,18 +41,18 @@ base_config.renderers.append('genshi')
 
 #Configure the base SQLALchemy Setup
 base_config.use_sqlalchemy = True
-base_config.model = model
-base_config.DBSession = model.DBSession
+base_config.model = models
+base_config.DBSession = DBSession
 
 # Configure the authentication backend
 base_config.auth_backend = 'sqlalchemy'
-base_config.sa_auth.dbsession = model.DBSession
+base_config.sa_auth.dbsession = DBSession
 # what is the class you want to use to search for users in the database
-base_config.sa_auth.user_class = model.User
+base_config.sa_auth.user_class = models.User
 # what is the class you want to use to search for groups in the database
-base_config.sa_auth.group_class = model.UserGroup
+base_config.sa_auth.group_class = models.UserGroup
 # what is the class you want to use to search for permissions in the database
-base_config.sa_auth.permission_class = model.Permission
+base_config.sa_auth.permission_class = models.Permission
 # The name "groups" is already used for groups of hosts.
 # We use "usergroups" when referering to users to avoid confusion.
 base_config.sa_auth.translations.groups = 'usergroups'

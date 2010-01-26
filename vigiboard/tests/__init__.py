@@ -13,17 +13,20 @@ import nose
 from nose.tools import eq_, nottest
 
 from vigilo.common.conf import settings
-from vigiboard import model
+from vigilo.models.vigilo_bdd_config import metadata
+from vigilo.models.session import DBSession
+
+metadata.bind = DBSession.bind
 
 __all__ = ['setup_db', 'teardown_db', 'TestController', 'url_for']
 
 def setup_db():
     """Method used to build a database"""
-    model.metadata.create_all()
+    metadata.create_all()
 
 def teardown_db():
     """Method used to destroy a database"""
-    model.metadata.drop_all()
+    metadata.drop_all()
 
 
 class TestController(object):

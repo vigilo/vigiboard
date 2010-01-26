@@ -7,7 +7,6 @@ from tg.render import render
 from tg import request
 from pylons.i18n import _, ungettext, N_
 from tw.api import WidgetBunch
-import vigiboard.model as model
 
 __all__ = ['Controller', 'BaseController']
 

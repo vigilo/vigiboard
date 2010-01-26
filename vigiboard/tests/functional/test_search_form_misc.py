@@ -7,8 +7,8 @@ from datetime import datetime
 import transaction
 
 from vigiboard.tests import TestController
-from vigiboard.model import DBSession, HostGroup, \
-                            Host, Permission, \
+from vigilo.models.session import DBSession
+from vigilo.models import HostGroup, Host, Permission, \
                             Event, CorrEvent, StateName
 
 def insert_deps():

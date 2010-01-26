@@ -9,19 +9,13 @@ from datetime import datetime
 import tg
 import transaction
 
-from vigiboard.model import DBSession, \
-    Event, EventHistory, CorrEvent, \
-    Permission, User, StateName, \
-    Host, HostGroup, LowLevelService, ServiceGroup
+from vigilo.models.session import DBSession
+from vigilo.models import Event, EventHistory, CorrEvent, \
+                            Permission, User, StateName, \
+                            Host, HostGroup, LowLevelService, ServiceGroup
 from vigiboard.tests import TestController
 from vigiboard.controllers.vigiboardrequest import VigiboardRequest
 from vigiboard.controllers.vigiboard_plugin.tests import MonPlugin
-
-
-class TestEventTable(TestController):
-    """
-    Test du tableau d'événements de Vigiboard
-    """
 
 def populate_DB():
     """ Peuple la base de données. """
@@ -73,25 +67,25 @@ def populate_DB():
         'weight': 42,
     }
 
-    service1 = ServiceLowLevel(
+    service1 = LowLevelService(
         host=managerhost,
         servicename=u'managerservice',
         **service_template
     )
 
-    service2 = ServiceLowLevel(
+    service2 = LowLevelService(
         host=editorhost,
         servicename=u'managerservice',
         **service_template
     )
 
-    service3 = ServiceLowLevel(
+    service3 = LowLevelService(
         host=managerhost,
         servicename=u'editorservice',
         **service_template
     )
 
-    service4 = ServiceLowLevel(
+    service4 = LowLevelService(
         host=editorhost,
         servicename=u'editorservice',
         **service_template
@@ -152,6 +146,11 @@ def populate_DB():
     DBSession.flush()
     transaction.commit()
 
+class TestEventTable(TestController):
+    """
+    Test du tableau d'événements de Vigiboard
+    """
+
     def test_event_table(self):
         """
         Test du tableau d'évènements de la page d'accueil de Vigiboard.
@@ -188,6 +187,4 @@ def populate_DB():
         cols = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr/td')
         print "There are %d columns in the result set" % len(cols)
         assert_true(len(cols) > 1)
-
-
 

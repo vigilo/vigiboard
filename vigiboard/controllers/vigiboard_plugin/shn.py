@@ -8,12 +8,11 @@ from pylons.i18n import gettext as _
 from tg import url
 from sqlalchemy.sql import functions
 
-from vigiboard.controllers.vigiboard_plugin import \
-        VigiboardRequestPlugin
-from vigiboard.model import DBSession, HighLevelService, \
-                            CorrEvent, Event, \
+from vigiboard.controllers.vigiboard_plugin import VigiboardRequestPlugin
+from vigilo.models.session import DBSession
+from vigilo.models import HighLevelService, \
+                            CorrEvent, Event, SupItem, \
                             ImpactedHLS, ImpactedPath
-from vigilo.models.supitem import SupItem
 from vigilo.models.secondary_tables import EVENTSAGGREGATE_TABLE
 
 class PluginSHN(VigiboardRequestPlugin):

@@ -9,10 +9,10 @@ from datetime import datetime
 import tg
 import transaction
 
-from vigiboard.model import DBSession, \
-    Event, EventHistory, CorrEvent, \
-    Permission, User, StateName, \
-    Host, HostGroup, LowLevelService, ServiceGroup
+from vigilo.models.session import DBSession
+from vigilo.models import Event, EventHistory, CorrEvent, \
+                            Permission, User, StateName, \
+                            Host, HostGroup, LowLevelService, ServiceGroup
 from vigiboard.tests import TestController
 from vigiboard.controllers.vigiboardrequest import VigiboardRequest
 from vigiboard.controllers.vigiboard_plugin.tests import MonPlugin

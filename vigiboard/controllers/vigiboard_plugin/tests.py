@@ -4,9 +4,8 @@
 Plugin for tests
 """
 
-from vigiboard.controllers.vigiboard_plugin import \
-        VigiboardRequestPlugin
-from vigiboard.model import EventHistory, Event
+from vigiboard.controllers.vigiboard_plugin import VigiboardRequestPlugin
+from vigilo.models import EventHistory, Event
 
 class MonPlugin(VigiboardRequestPlugin):
     """Plugin de test"""
