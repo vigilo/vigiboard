@@ -23,14 +23,6 @@ class EditEventForm(TableForm):
     Affiche une zone de texte pour le Trouble Ticket et une
     liste déroulante pour le nouveau status
     """
-    
-#    class fields(WidgetsList):
-#        id = HiddenField()
-#        trouble_ticket = TextField(label_text=l_('Trouble Ticket'))
-#        ack = SingleSelectField(label_text=l_('Status'),
-#                    options=edit_event_status_options)
-#
-#    submit_text = l_('Apply')
 
     submit_text = None
     fields = [
@@ -44,7 +36,7 @@ class EditEventForm(TableForm):
         super(TableForm, self).__init__(id, *args, **kwargs)
 
         self.children.append(HiddenField('last_modification',
-                                         attrs={'value':last_modification}))
+                                         attrs={'value': last_modification}))
         self.children.append(SubmitButton('submit', 
-                                          attrs={'value':l_('Apply')}))
+                                          attrs={'value': l_('Apply')}))
 

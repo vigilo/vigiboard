@@ -108,7 +108,7 @@ class VigiboardRequest():
             # On masque les événements avec l'état OK
             # et traités (status == u'AAClosed').
             not_(and_(
-                StateName.statename == u'OK',
+                StateName.statename.in_([u'OK', u'UP']),
                 CorrEvent.status == u'AAClosed'
             )),
             CorrEvent.timestamp_active != None,
