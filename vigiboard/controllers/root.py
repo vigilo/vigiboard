@@ -14,19 +14,14 @@ from tw.forms import validators
 from pylons.i18n import ugettext as _
 from pylons.i18n import lazy_ugettext as l_
 from pylons.controllers.util import abort
-from sqlalchemy import not_, and_,  or_, asc
-from sqlalchemy.orm import aliased
+from sqlalchemy import asc
 from sqlalchemy.sql import func
-from sqlalchemy.sql.expression import union
 from repoze.what.predicates import Any, not_anonymous
 
 from vigilo.models.session import DBSession
 from vigilo.models import Event, EventHistory, CorrEvent, SupItem, \
-                            Host, HostGroup, ServiceGroup, \
-                            StateName, User, LowLevelService
+                            HostGroup, ServiceGroup, StateName, User
 from vigilo.models.functions import sql_escape_like
-from vigilo.models.secondary_tables import HOST_GROUP_TABLE, \
-                                            SERVICE_GROUP_TABLE
 
 from vigilo.turbogears.controllers.autocomplete import AutoCompleteController
 from vigiboard.controllers.vigiboardrequest import VigiboardRequest
@@ -122,7 +117,8 @@ class RootController(VigiboardRootController):
             servicegroup = sql_escape_like(servicegroup)
             aggregates.add_join((ServiceGroup, ServiceGroup.idgroup == \
                 aggregates.items.c.idservicegroup))
-            aggregates.add_filter(ServiceGroup.name.ilike('%%%s%%' % servicegroup))
+            aggregates.add_filter(
+                ServiceGroup.name.ilike('%%%s%%' % servicegroup))
 
         if host:
             search['host'] = host
@@ -333,7 +329,7 @@ class RootController(VigiboardRootController):
             'host': validators.NotEmpty(),
 #            'service': validators.NotEmpty()
         }, 
-        error_handler=process_form_errors)
+        error_handler = process_form_errors)
     @expose('vigiboard.html')
     @require(Any(not_anonymous(), msg=l_("You need to be authenticated")))
     def host_service(self, host, service=None):
@@ -536,7 +532,7 @@ class RootController(VigiboardRootController):
     @validate(validators={
         "fontsize": validators.Regex(
             r'[0-9]+(pt|px|em|%)',
-            regexOps=('I',)
+            regexOps = ('I',)
         )}, error_handler = process_form_errors)
     @expose('json')
     def set_fontsize(self, fontsize):

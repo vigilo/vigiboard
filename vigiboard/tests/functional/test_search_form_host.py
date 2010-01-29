@@ -4,7 +4,6 @@ Teste le formulaire de recherche avec un nom d'hôte.
 """
 from nose.tools import assert_true, assert_equal
 from datetime import datetime
-from lxml import etree
 import transaction
 
 from vigiboard.tests import TestController

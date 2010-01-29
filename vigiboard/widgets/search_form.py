@@ -4,8 +4,6 @@
 
 from pylons.i18n import lazy_ugettext as l_
 from tw.forms import TableForm, TextField, CalendarDateTimePicker, SubmitButton
-from tw.api import WidgetsList
-from tg import url
 
 __all__ = ('SearchForm', )
 
@@ -22,17 +20,17 @@ class SearchForm(TableForm):
     submit_text = None
     action = './'
     fields = [
-        TextField('hostgroup', label_text=l_('Host group')),
-        TextField('servicegroup', label_text=l_('Service group')),
-        TextField('host', label_text=l_('Host')),
-        TextField('service', label_text=l_('Service')),
-        TextField('output', label_text=l_('Output')),
-        TextField('trouble_ticket', label_text=l_('Trouble Ticket'))
+        TextField('hostgroup', label_text = l_('Host group')),
+        TextField('servicegroup', label_text = l_('Service group')),
+        TextField('host', label_text = l_('Host')),
+        TextField('service', label_text = l_('Service')),
+        TextField('output', label_text = l_('Output')),
+        TextField('trouble_ticket', label_text = l_('Trouble Ticket'))
     ]
     
     def __init__(self,  id, lang, date_format='%Y-%m-%d %I:%M:%S %P', 
                  *args, **kwargs):
-        super(SearchForm, self).__init__(id, *args, **kwargs)
+        TableForm.__init__(self, id, *args, **kwargs)
 
         self.children.append(CalendarDateTimePicker(id + '_from_date', 
                                 name = 'from_date',

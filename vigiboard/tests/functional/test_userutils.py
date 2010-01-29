@@ -3,7 +3,6 @@
 """
 Teste l'héritage des permissions sur les groupes d'hôtes/services.
 """
-import tg
 import transaction
 from nose.tools import assert_true
 

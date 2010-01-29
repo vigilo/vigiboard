@@ -6,16 +6,13 @@ Test du tableau d'événements de Vigiboard
 
 from nose.tools import assert_true, assert_equal
 from datetime import datetime
-import tg
 import transaction
 
 from vigilo.models.session import DBSession
-from vigilo.models import Event, EventHistory, CorrEvent, \
-                            Permission, User, StateName, \
-                            Host, HostGroup, LowLevelService, ServiceGroup
+from vigilo.models import Event, CorrEvent, \
+                            Permission, StateName, \
+                            Host, HostGroup, LowLevelService
 from vigiboard.tests import TestController
-from vigiboard.controllers.vigiboardrequest import VigiboardRequest
-from vigiboard.controllers.vigiboard_plugin.tests import MonPlugin
 
 def populate_DB():
     """ Peuple la base de données. """

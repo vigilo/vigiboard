@@ -89,8 +89,8 @@ class TestSearchFormServiceGroup(TestController):
         DBSession.flush()
         transaction.commit()
 
-        # On envoie une requête avec recherche sur le groupe de services créé,
-        # on s'attend à recevoir 1 résultat.
+        # On envoie une requête avec recherche sur le groupe
+        # de services créé, on s'attend à recevoir 1 résultat.
         response = self.app.get('/?servicegroup=foo',
             extra_environ={'REMOTE_USER': 'manager'})
 
@@ -132,9 +132,9 @@ class TestSearchFormServiceGroup(TestController):
         insert_deps()
         transaction.commit()
 
-        # On envoie une requête avec recherche sur le groupe de services créé,
-        # mais avec un utilisateur ne disposant pas des permissions adéquates.
-        # On s'attend à n'obtenir aucun résultat.
+        # On envoie une requête avec recherche sur le groupe de services
+        # services créé, mais avec un utilisateur ne disposant pas des
+        # permissions adéquates. On s'attend à n'obtenir aucun résultat.
         response = self.app.get('/?servicegroup=foo',
             extra_environ={'REMOTE_USER': 'manager'})
 

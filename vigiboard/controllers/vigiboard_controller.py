@@ -4,12 +4,10 @@
 Controller for authentification
 """
 
-from tg import expose, flash, require, url, request, redirect
+from tg import expose, flash, url, request, redirect
 
-from pylons.i18n import ugettext as _, lazy_ugettext as l_
-from repoze.what import predicates
+from pylons.i18n import ugettext as _
 
-from vigilo.models.session import DBSession
 from vigilo.models import ApplicationLog
 
 from vigiboard.lib.base import BaseController

@@ -8,14 +8,12 @@ from logging import getLogger
 from tg import url, config, tmpl_context
 from tg.i18n import get_lang
 from pylons.i18n import ugettext as _
-from sqlalchemy import not_, and_, asc, desc, sql
+from sqlalchemy import not_, and_, asc, desc
 from sqlalchemy.sql.expression import or_, null as expr_null, union
-from sqlalchemy.orm import aliased
 
 from vigilo.models.session import DBSession
-from vigilo.models import SupItem, Event, CorrEvent, EventHistory, \
-                        Host, HostGroup, LowLevelService, ServiceGroup, \
-                        StateName
+from vigilo.models import Event, CorrEvent, EventHistory, \
+                        Host, LowLevelService, StateName
 from vigilo.models.secondary_tables import HOST_GROUP_TABLE, \
                                             SERVICE_GROUP_TABLE
 from vigiboard.widgets.edit_event import EditEventForm
@@ -67,8 +65,10 @@ class VigiboardRequest():
         ).join(
            (Host, Host.idhost == LowLevelService.idhost),
         ).outerjoin(
-            (HOST_GROUP_TABLE, HOST_GROUP_TABLE.c.idhost == LowLevelService.idhost),
-            (SERVICE_GROUP_TABLE, SERVICE_GROUP_TABLE.c.idservice == LowLevelService.idservice),
+            (HOST_GROUP_TABLE, 
+                HOST_GROUP_TABLE.c.idhost == LowLevelService.idhost),
+            (SERVICE_GROUP_TABLE, 
+                SERVICE_GROUP_TABLE.c.idservice == LowLevelService.idservice),
         ).filter(
             or_(
                 HOST_GROUP_TABLE.c.idgroup.in_(self.user_groups),
@@ -83,7 +83,8 @@ class VigiboardRequest():
             expr_null().label("idservicegroup"),
             HOST_GROUP_TABLE.c.idgroup.label('idhostgroup'),
         ).join((HOST_GROUP_TABLE, HOST_GROUP_TABLE.c.idhost == Host.idhost)
-        ).filter(HOST_GROUP_TABLE.c.idgroup.label('idhostgroup').in_(self.user_groups),
+        ).filter(HOST_GROUP_TABLE.c.idgroup.label('idhostgroup'
+            ).in_(self.user_groups),
         )
 
         # Object Selectable renvoyant des informations sur un supitem

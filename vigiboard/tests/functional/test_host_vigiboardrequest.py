@@ -12,16 +12,14 @@ import transaction
 from vigilo.models.session import DBSession
 from vigilo.models import Event, EventHistory, CorrEvent, \
                             Permission, User, StateName, \
-                            Host, HostGroup, LowLevelService, ServiceGroup
+                            Host, HostGroup
 from vigiboard.tests import TestController
 from vigiboard.controllers.vigiboardrequest import VigiboardRequest
 from vigiboard.controllers.vigiboard_plugin.tests import MonPlugin
 
 
 class TestHostVigiboardRequest(TestController):
-    """
-    Test de la classe Vigiboard Request pour des requêtes concernant les hôtes
-    """
+    """ Préparation de la base de données en vue des tests. """
 
     def setUp(self):
         super(TestHostVigiboardRequest, self).setUp()
@@ -37,7 +35,8 @@ class TestHostVigiboardRequest(TestController):
         # On ajoute les groupes et leurs dépendances
         self.hosteditors = HostGroup(name=u'editorsgroup')
         DBSession.add(self.hosteditors)
-        self.hostmanagers = HostGroup(name=u'managersgroup', parent=self.hosteditors)
+        self.hostmanagers = HostGroup(name=u'managersgroup', 
+                                        parent=self.hosteditors)
         DBSession.add(self.hostmanagers)
         DBSession.flush()
 
@@ -109,10 +108,7 @@ class TestHostVigiboardRequest(TestController):
         transaction.commit()
 
     def tearDown(self):
-        # This operation is only necessary for DBMS which are
-        # really strict about table locks, such as PostgreSQL.
-        # For our tests, we use an (in-memory) SQLite database,
-        # so we're unaffected. This is done only for completeness.
+        """ Nettoyage de la base de données après les tests. """
         TestController.tearDown(self)
 
 

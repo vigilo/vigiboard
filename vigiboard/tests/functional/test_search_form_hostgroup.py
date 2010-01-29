@@ -9,7 +9,7 @@ import transaction
 from vigiboard.tests import TestController
 from vigilo.models.session import DBSession
 from vigilo.models import HostGroup, Host, Permission, \
-                        LowLevelService, Event, CorrEvent, StateName
+                        Event, CorrEvent, StateName
 
 def insert_deps():
     """Insère les dépendances nécessaires aux tests."""

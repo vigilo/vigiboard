@@ -153,7 +153,7 @@ class TestHistoryForm(TestController):
         DBSession.flush()
         transaction.commit()
 
-        response = self.app.post('/history_dialog',
+        self.app.post('/history_dialog',
             {'idcorrevent': idcorrevent},
             extra_environ={'REMOTE_USER': 'manager'},
             status=302)
@@ -164,7 +164,7 @@ class TestHistoryForm(TestController):
         DBSession.flush()
         transaction.commit()
 
-        response = self.app.post('/history_dialog',
+        self.app.post('/history_dialog',
             {'idcorrevent': idcorrevent},
             extra_environ={'REMOTE_USER': 'manager'},
             status=302)

@@ -16,6 +16,7 @@ from vigiboard.tests import TestController
 
 
 class TestRootController(TestController):
+    """ Classe de test du root controller """
     def test_index(self):
         """Test that access to the root webpage is restricted."""
 

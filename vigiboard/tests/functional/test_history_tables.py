@@ -6,16 +6,13 @@ Test du tableau d'événements de Vigiboard
 
 from nose.tools import assert_true, assert_equal
 from datetime import datetime
-import tg
 import transaction
 
 from vigilo.models.session import DBSession
 from vigilo.models import Event, EventHistory, CorrEvent, \
-                            Permission, User, StateName, \
+                            Permission, StateName, \
                             Host, HostGroup, LowLevelService, ServiceGroup
 from vigiboard.tests import TestController
-from vigiboard.controllers.vigiboardrequest import VigiboardRequest
-from vigiboard.controllers.vigiboard_plugin.tests import MonPlugin
 
 def populate_DB():
     """ Peuple la base de données. """
@@ -221,9 +218,8 @@ class TestEventTable(TestController):
         
         # On ajoute deux évènements corrélés causés par l'hôte :
         # le premier encore ouvert, le second clos par un utilisateur.
-        aggregate_id1 = add_correvent_caused_by(managerhost)
-        aggregate_id2 = add_correvent_caused_by(managerhost, u"AAClosed", 
-                                                                        u"OK")
+        add_correvent_caused_by(managerhost)
+        add_correvent_caused_by(managerhost, u"AAClosed", u"OK")
         
         transaction.commit()
         DBSession.add(managerhost)
@@ -277,9 +273,8 @@ class TestEventTable(TestController):
         
         # On ajoute deux évènements corrélés causés par le service :
         # le premier encore ouvert, le second clos par un utilisateur.
-        aggregate_id1 = add_correvent_caused_by(managerservice)
-        aggregate_id2 = add_correvent_caused_by(managerservice, u"AAClosed", 
-                                                                        u"OK")
+        add_correvent_caused_by(managerservice)
+        add_correvent_caused_by(managerservice, u"AAClosed", u"OK")
         
         transaction.commit()
         DBSession.add(managerhost)

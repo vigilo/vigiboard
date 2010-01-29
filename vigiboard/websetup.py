@@ -3,9 +3,6 @@
 
 import logging
 
-import transaction
-from tg import config
-
 from vigiboard.config.environment import load_environment
 from vigilo.turbogears import populate_db
 

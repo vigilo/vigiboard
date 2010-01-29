@@ -5,7 +5,6 @@
 from pylons.i18n import lazy_ugettext as l_
 from tw.forms import TableForm, SingleSelectField, TextField, \
                         HiddenField, SubmitButton
-from tw.api import WidgetsList
 
 __all__ = ('EditEventForm', 'edit_event_status_options')
 
@@ -33,7 +32,7 @@ class EditEventForm(TableForm):
     ]
     
     def __init__(self, id, last_modification, *args, **kwargs):
-        super(TableForm, self).__init__(id, *args, **kwargs)
+        TableForm.__init__(self, id, *args, **kwargs)
 
         self.children.append(HiddenField('last_modification',
                                          attrs={'value': last_modification}))

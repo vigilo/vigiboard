@@ -6,14 +6,11 @@ Plugin SHN : High level service
 
 from pylons.i18n import gettext as _
 from tg import url
-from sqlalchemy.sql import functions
 
 from vigiboard.controllers.vigiboard_plugin import VigiboardRequestPlugin
 from vigilo.models.session import DBSession
 from vigilo.models import HighLevelService, \
-                            CorrEvent, Event, SupItem, \
-                            ImpactedHLS, ImpactedPath
-from vigilo.models.secondary_tables import EVENTSAGGREGATE_TABLE
+                            CorrEvent, Event, SupItem
 
 class PluginSHN(VigiboardRequestPlugin):
 
@@ -63,10 +60,7 @@ class PluginSHN(VigiboardRequestPlugin):
 
     def controller(self, idcorrevent, *argv, **krgv):
         """Ajout de fonctionnalités au contrôleur"""
-        supitem = DBSession.query(SupItem).join(
-            (Event, Event.idsupitem == SupItem.idsupitem),
-            (CorrEvent, CorrEvent.idcause == Event.idevent),
-        ).filter(CorrEvent.idcorrevent == idcorrevent).first()
+        supitem = self.get_correvent_supitem(idcorrevent)
 
         if not supitem:
             # XXX On devrait afficher une erreur (avec tg.flash()).
@@ -79,4 +73,45 @@ class PluginSHN(VigiboardRequestPlugin):
         ).all()
 
         return dict(services=[service.servicename for service in services])
+
+    def get_correvent_supitem(self, idcorrevent):
+        """
+        Retourne le supitem ayant causé l'évènement 
+        corrélé dont l'identifiant est passé en paramètre.
+        """
+        # On récupère l'item recherché dans la BDD
+        supitem = DBSession.query(SupItem
+            ).join(
+                (Event, Event.idsupitem == SupItem.idsupitem),
+                (CorrEvent, CorrEvent.idcause == Event.idevent),
+            ).filter(CorrEvent.idcorrevent == idcorrevent).first()
+            
+#        # On détermine l'identité de l'utilisateur
+#        username = request.environ['repoze.who.identity']['repoze.who.userid']
+#        user = User.by_user_name(username)
+#        
+#        # On liste les permissions dont dispose l'utilisateur
+#        user_permissions = []
+#        for group in user.usergroups:
+#            for permission in group.permissions:
+#                user_permissions.append(permission)
+#        
+#        # On liste les permissions possibles pour l'item
+#        supitem_permissions = []
+#        for group in supitem.groups:
+#            for permission in group.permissions:
+#                supitem_permissions.append(permission)
+#                
+#        # On vérifie que l'utilisateur dispose bien des
+#        # permissions sur l'item en question avant de le retourner.
+#        for user_permission in user_permissions :
+#            for supitem_permission in supitem_permissions :
+#                if user_permission.idpermission == \
+#                                            supitem_permission.idpermission:
+#                    return supitem
+#        
+#        # Dans le cas contraire on retourne None
+#        return None
+    
+        return supitem
 

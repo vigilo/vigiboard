@@ -1,17 +1,13 @@
 # -*- coding: utf-8 -*-
-"""
-Integration tests for the autocompletion controller.
-"""
+""" Test du plugin listant les services de haut niveau impactés. """
 
 from datetime import datetime
 import transaction
 from vigiboard.tests import TestController
-from nose.tools import assert_true, assert_equal
+from nose.tools import assert_equal
 from vigilo.models import Permission, StateName, \
-                            HostGroup, Host, \
-                            LowLevelService, HighLevelService, ServiceGroup, \
-                            Event, CorrEvent, \
-                            ImpactedPath, ImpactedHLS
+                            HostGroup, Host, HighLevelService, \
+                            Event, CorrEvent, ImpactedPath, ImpactedHLS
 from vigilo.models.session import DBSession
 
 
@@ -72,8 +68,7 @@ def populate_DB():
 
     return aggregate
 
-def add_paths(path_number, path_length, idsupitem, 
-                                        different_path_lengths = None):
+def add_paths(path_number, path_length, idsupitem):
     """ 
     Ajoute path_number chemins de services de haut niveau impactés
     dans la base de donnée. Leur longeur sera égale à path_length.
