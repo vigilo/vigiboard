@@ -6,7 +6,7 @@ from pylons.i18n import ugettext as _
 
 __all__ = ['ErrorController']
 
-
+# pylint: disable-msg=R0201
 class ErrorController(object):
     """
     Generates error documents as and when they are required.

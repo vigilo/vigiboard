@@ -23,7 +23,8 @@ from vigilo.models import Event, EventHistory, CorrEvent, SupItem, \
                             HostGroup, ServiceGroup, StateName, User
 from vigilo.models.functions import sql_escape_like
 
-from vigilo.turbogears.controllers.autocomplete import AutoCompleteController
+from vigilo.turbogears.controllers.autocomplete \
+    import make_autocomplete_controller
 from vigiboard.controllers.vigiboardrequest import VigiboardRequest
 from vigiboard.controllers.vigiboard_controller import VigiboardRootController
 from vigiboard.widgets.edit_event import edit_event_status_options
@@ -32,11 +33,12 @@ from vigiboard.lib.base import BaseController
 __all__ = ('RootController', 'get_last_modification_timestamp', 
            'date_to_timestamp')
 
+# pylint: disable-msg=R0201
 class RootController(VigiboardRootController):
     """
     Le controller général de vigiboard
     """
-    autocomplete = AutoCompleteController(BaseController)
+    autocomplete = make_autocomplete_controller(BaseController)
 
     def process_form_errors(self, *argv, **kwargv):
         """
@@ -230,12 +232,6 @@ class RootController(VigiboardRootController):
             redirect('/')
 
         event = events.req[0]
-        history = DBSession.query(
-                    EventHistory,
-                 ).filter(EventHistory.idevent == event[0].idevent
-                 ).order_by(asc(EventHistory.timestamp)
-                 ).order_by(asc(EventHistory.type_action)).all()
-
         eventdetails = {}
         for edname, edlink in \
                 config['vigiboard_links.eventdetails'].iteritems():

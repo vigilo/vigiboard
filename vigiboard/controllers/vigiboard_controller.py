@@ -13,6 +13,7 @@ from vigilo.models import ApplicationLog
 from vigiboard.lib.base import BaseController
 from vigiboard.controllers.error import ErrorController
 
+# pylint: disable-msg=R0201
 class VigiboardRootController(BaseController):
     """
     The root controller for the vigiboard application.
