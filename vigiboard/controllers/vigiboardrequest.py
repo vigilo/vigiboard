@@ -183,10 +183,15 @@ class VigiboardRequest():
                 # On loggue l'erreur et on ignore le plugin.
                 LOGGER.error(_('No such plugin "%s"') % plug[0])
 
-        self.join.extend([
-            (self.items, Event.idsupitem == self.items.c.idsupitem),
-            (StateName, StateName.idstatename == Event.current_state),
-        ])
+#        temp_join = self.join
+#        self.join =  [(self.items, Event.idsupitem == self.items.c.idsupitem),
+#            (StateName, StateName.idstatename == Event.current_state),]
+#        self.join.extend(temp_join)
+
+#        self.join.extend(
+#            [(self.items, Event.idsupitem == self.items.c.idsupitem),
+#            (StateName, StateName.idstatename == Event.current_state),])
+        self.join.append((StateName, StateName.idstatename == Event.current_state))
         self.add_group_by(*self.table)
 
         # query et join ont besoin de referrence

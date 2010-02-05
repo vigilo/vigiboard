@@ -130,6 +130,8 @@ class TestHostVigiboardRequest(TestController):
             vigi_req.items.c.servicename,
         )
         vigi_req.add_join((Event, CorrEvent.idcause == Event.idevent))
+        vigi_req.add_join((vigi_req.items, 
+            Event.idsupitem == vigi_req.items.c.idsupitem))
 
         # On vérifie que le nombre d'événements corrélés 
         # trouvés par la requête est bien égal à 1.
@@ -164,6 +166,8 @@ class TestHostVigiboardRequest(TestController):
             vigi_req.items.c.servicename,
         )
         vigi_req.add_join((Event, CorrEvent.idcause == Event.idevent))
+        vigi_req.add_join((vigi_req.items, 
+            Event.idsupitem == vigi_req.items.c.idsupitem))
 
         # On vérifie que le nombre d'événements corrélés 
         # trouvés par la requête est bien égal à 2.

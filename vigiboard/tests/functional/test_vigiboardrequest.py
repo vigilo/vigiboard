@@ -200,6 +200,8 @@ class TestVigiboardRequest(TestController):
             vigi_req.items.c.servicename,
         )
         vigi_req.add_join((Event, CorrEvent.idcause == Event.idevent))
+        vigi_req.add_join((vigi_req.items, 
+            Event.idsupitem == vigi_req.items.c.idsupitem))
 
         # On effectue les tests suivants :
         #   le nombre de lignes (historique et événements) doivent
@@ -233,6 +235,8 @@ class TestVigiboardRequest(TestController):
             vigi_req.items.c.servicename,
         )
         vigi_req.add_join((Event, CorrEvent.idcause == Event.idevent))
+        vigi_req.add_join((vigi_req.items, 
+            Event.idsupitem == vigi_req.items.c.idsupitem))
         vigi_req.add_plugin(MonPlugin)
 
         num_rows = vigi_req.num_rows()

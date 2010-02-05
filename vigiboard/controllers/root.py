@@ -94,6 +94,8 @@ class RootController(VigiboardRootController):
             aggregates.items.c.servicename
         )
         aggregates.add_join((Event, CorrEvent.idcause == Event.idevent))
+        aggregates.add_join((aggregates.items, 
+            Event.idsupitem == aggregates.items.c.idsupitem))
         
         search = {
             'host': '',
@@ -224,6 +226,8 @@ class RootController(VigiboardRootController):
             events.items.c.servicename,
         )
         events.add_join((CorrEvent, CorrEvent.idcause == Event.idevent))
+        events.add_join((events.items, 
+            Event.idsupitem == events.items.c.idsupitem))
         events.add_filter(CorrEvent.idcorrevent == idcorrevent)
 
         # Vérification que au moins un des identifiants existe et est éditable
@@ -283,6 +287,8 @@ class RootController(VigiboardRootController):
             events.items.c.servicename,
         )
         events.add_join((Event, CorrEvent.idcause == Event.idevent))
+        events.add_join((events.items, 
+            Event.idsupitem == events.items.c.idsupitem))
         events.add_filter(CorrEvent.idcorrevent == idcorrevent)
         
         # Vérification que l'événement existe
@@ -348,6 +354,8 @@ class RootController(VigiboardRootController):
             events.items.c.servicename,
         )
         events.add_join((Event, CorrEvent.idcause == Event.idevent))
+        events.add_join((events.items, 
+            Event.idsupitem == events.items.c.idsupitem))
         events.add_filter(events.items.c.idsupitem == idsupitem)
 
         # XXX On devrait avoir une autre API que ça !!!
@@ -439,6 +447,8 @@ class RootController(VigiboardRootController):
         events = VigiboardRequest(User.by_user_name(username))
         events.add_table(CorrEvent)
         events.add_join((Event, CorrEvent.idcause == Event.idevent))
+        events.add_join((aggregates.items, 
+            Event.idsupitem == events.items.c.idsupitem))
         events.add_filter(CorrEvent.idcorrevent.in_(ids))
         
         # Vérification que au moins un des identifiants existe et est éditable
@@ -508,6 +518,8 @@ class RootController(VigiboardRootController):
         events = VigiboardRequest(User.by_user_name(username))
         events.add_table(CorrEvent.idcorrevent)
         events.add_join((Event, CorrEvent.idcause == Event.idevent))
+        events.add_join((events.items, 
+            Event.idsupitem == events.items.c.idsupitem))
         events.add_filter(CorrEvent.idcorrevent == idcorrevent)
 
         # Pas d'événement ou permission refusée. On ne distingue pas
