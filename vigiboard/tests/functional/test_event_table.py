@@ -8,7 +8,7 @@ from nose.tools import assert_true, assert_equal
 from datetime import datetime
 import transaction
 
-from vigilo.models.session import DBSession
+from vigilo.models.configure import DBSession
 from vigilo.models import Event, CorrEvent, \
                             Permission, StateName, \
                             Host, HostGroup, LowLevelService

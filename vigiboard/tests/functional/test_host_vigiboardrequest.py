@@ -9,7 +9,7 @@ from datetime import datetime
 import tg
 import transaction
 
-from vigilo.models.session import DBSession
+from vigilo.models.configure import DBSession
 from vigilo.models import Event, EventHistory, CorrEvent, \
                             Permission, User, StateName, \
                             Host, HostGroup
@@ -109,7 +109,7 @@ class TestHostVigiboardRequest(TestController):
 
     def tearDown(self):
         """ Nettoyage de la base de données après les tests. """
-        TestController.tearDown(self)
+        super(TestHostVigiboardRequest, self).tearDown()
 
 
     def test_request_creation(self):

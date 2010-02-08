@@ -6,7 +6,7 @@ Teste l'héritage des permissions sur les groupes d'hôtes/services.
 import transaction
 from nose.tools import assert_true
 
-from vigilo.models.session import DBSession
+from vigilo.models.configure import DBSession
 from vigilo.models import HostGroup, Permission, User
 from vigiboard.tests import TestController
 

@@ -18,7 +18,7 @@ from sqlalchemy import asc
 from sqlalchemy.sql import func
 from repoze.what.predicates import Any, not_anonymous
 
-from vigilo.models.session import DBSession
+from vigilo.models.configure import DBSession
 from vigilo.models import Event, EventHistory, CorrEvent, SupItem, \
                             HostGroup, ServiceGroup, StateName, User
 from vigilo.models.functions import sql_escape_like

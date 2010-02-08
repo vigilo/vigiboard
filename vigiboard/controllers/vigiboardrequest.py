@@ -11,7 +11,7 @@ from pylons.i18n import ugettext as _
 from sqlalchemy import not_, and_, asc, desc
 from sqlalchemy.sql.expression import or_, null as expr_null, union
 
-from vigilo.models.session import DBSession
+from vigilo.models.configure import DBSession
 from vigilo.models import Event, CorrEvent, EventHistory, \
                         Host, LowLevelService, StateName
 from vigilo.models.secondary_tables import HOST_GROUP_TABLE, \
@@ -19,7 +19,6 @@ from vigilo.models.secondary_tables import HOST_GROUP_TABLE, \
 from vigiboard.widgets.edit_event import EditEventForm
 from vigiboard.widgets.search_form import SearchForm
 from vigiboard.controllers.vigiboard_plugin import VigiboardRequestPlugin
-from vigilo.common.conf import settings
 
 LOGGER = getLogger(__name__)
 
@@ -48,7 +47,7 @@ class VigiboardRequest():
         # On récupère la langue du navigateur de l'utilisateur
         lang = get_lang()
         if not lang:
-            lang = settings['VIGILO_ALL_DEFAULT_LANGUAGE']
+            lang = config['lang']
         else:
             lang = lang[0]
 

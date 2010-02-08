@@ -1,1 +1,0 @@
-../glue/settings.py

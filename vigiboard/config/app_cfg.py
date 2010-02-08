@@ -15,9 +15,6 @@ convert them into boolean, for example, you should use the
 """
 
 from vigilo import models
-from vigilo.models.session import DBSession
-from vigilo.models.vigilo_bdd_config import metadata
-metadata.bind = DBSession.bind
 
 from vigilo.turbogears import VigiloAppConfig
 from pylons.i18n import lazy_ugettext as l_
@@ -27,6 +24,7 @@ from vigiboard.lib import app_globals, helpers
 
 
 base_config = VigiloAppConfig('vigiboard')
+
 base_config.renderers = []
 
 base_config.package = vigiboard
@@ -34,19 +32,18 @@ base_config.package = vigiboard
 #Set the default renderer
 base_config.default_renderer = 'genshi'
 base_config.renderers.append('genshi')
-# if you want raw speed and have installed chameleon.genshi
-# you should try to use this renderer instead.
-# warning: for the moment chameleon does not handle i18n translations
-#base_config.renderers.append('chameleon_genshi')
 
 #Configure the base SQLALchemy Setup
 base_config.use_sqlalchemy = True
 base_config.model = models
-base_config.DBSession = DBSession
+
+#from vigilo.models import configure
+
+#base_config.DBSession = configure.DBSession
 
 # Configure the authentication backend
 base_config.auth_backend = 'sqlalchemy'
-base_config.sa_auth.dbsession = DBSession
+#base_config.sa_auth.dbsession = configure.DBSession
 # what is the class you want to use to search for users in the database
 base_config.sa_auth.user_class = models.User
 # what is the class you want to use to search for groups in the database

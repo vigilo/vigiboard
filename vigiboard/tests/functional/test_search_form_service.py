@@ -7,7 +7,7 @@ from datetime import datetime
 import transaction
 
 from vigiboard.tests import TestController
-from vigilo.models.session import DBSession
+from vigilo.models.configure import DBSession
 from vigilo.models import ServiceGroup, HostGroup, \
                             Host, Permission, StateName, \
                             LowLevelService, Event, CorrEvent

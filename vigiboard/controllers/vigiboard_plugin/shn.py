@@ -8,7 +8,7 @@ from pylons.i18n import gettext as _
 from tg import url
 
 from vigiboard.controllers.vigiboard_plugin import VigiboardRequestPlugin
-from vigilo.models.session import DBSession
+from vigilo.models.configure import DBSession
 from vigilo.models import HighLevelService, \
                             CorrEvent, Event, SupItem
 

@@ -9,7 +9,7 @@ from datetime import datetime
 import tg
 import transaction
 
-from vigilo.models.session import DBSession
+from vigilo.models.configure import DBSession
 from vigilo.models import Event, EventHistory, CorrEvent, \
                             Permission, User, StateName, \
                             Host, HostGroup, LowLevelService, ServiceGroup

@@ -12,21 +12,21 @@ from webtest import TestApp
 import nose
 from nose.tools import eq_, nottest
 
-from vigilo.models.vigilo_bdd_config import metadata
-from vigilo.models.session import DBSession
+from vigilo.models.configure import metadata, DBSession
 
 __all__ = ['setup_db', 'teardown_db', 'TestController', 'url_for']
 
-metadata.bind = DBSession.bind
-
 def setup_db():
     """Method used to build a database"""
-    metadata.create_all()
+    print "Creating model"
+    engine = config['pylons.app_globals'].sa_engine
+    metadata.create_all(engine)
 
 def teardown_db():
     """Method used to destroy a database"""
-    metadata.drop_all()
-
+    print "Destroying model"
+    engine = config['pylons.app_globals'].sa_engine
+    metadata.drop_all(engine)
 
 class TestController(object):
     """
@@ -53,9 +53,10 @@ class TestController(object):
     def setUp(self):
         """Method called by nose before running each test"""
         # Loading the application:
+        setup_db()
         conf_dir = config.here
-        wsgiapp = loadapp('config:test.ini#%s' % self.application_under_test,
-                          relative_to=conf_dir)
+        wsgiapp = loadapp('config:test.ini#%s' %
+            self.application_under_test, relative_to=conf_dir)
         self.app = TestApp(wsgiapp)
         # Setting it up:
         test_file = path.join(conf_dir, 'test.ini')

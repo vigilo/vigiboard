@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # vim:set expandtab tabstop=4 shiftwidth=4:
 try:
@@ -17,28 +18,13 @@ setup(
     name='vigiboard',
     version='0.1',
     description='IHM Module for the Dashboard',
-    author="""Thomas ANDREJAK""",
-    author_email="""thomas.andrejak@gmail.com""",
+    author="Thomas ANDREJAK",
+    author_email="thomas.andrejak@gmail.com",
     zip_safe=False,
+    license='http://www.gnu.org/licenses/gpl-2.0.html',
     install_requires=[
-        "tg.devtools",
-        "TurboGears2 >= 2.0b7",
-        "Catwalk >= 2.0.2",
-        "Babel >=0.9.4",
-        "ToscaWidgets >= 0.9.7.1",
-        "zope.sqlalchemy >= 0.4 ",
-        "repoze.tm2 >= 1.0a4",
-        "repoze.what-quickstart >= 1.0",
-        "psycopg2",
-        "tw.jquery >= 0.9.5",
-        "vigilo-models",
-        "vigilo-themes-default",
-        "PasteScript >= 1.7", # setup_requires has issues
-        "PasteDeploy",
-        "Paste",
-        "decorator != 3.1.0", # Blacklist bad version
         "vigilo-turbogears",
-        #"modwsgideploy",
+        "tw.forms",
     ],
 
     paster_plugins=['PasteScript', 'Pylons', 'TurboGears2', 'tg.devtools'],
@@ -49,9 +35,11 @@ setup(
     extras_require={
         'tests': tests_require,
     },
-    package_data={'vigiboard': [
+    package_data={
+        'vigiboard': [
             'i18n/*/LC_MESSAGES/*.mo',
-    ]},
+        ],
+    },
     message_extractors={'vigiboard': [
             ('**.py', 'python', None),
     ]},
@@ -63,6 +51,16 @@ setup(
         'paste.app_install': [
             'main = pylons.util:PylonsInstaller',
         ],
+        'console_scripts': [
+            'vigiboard-init-db = vigiboard.websetup:init_db',
+        ],
     },
+    data_files=[
+        ('/etc/vigilo/vigiboard/', [
+            'deployment/vigiboard.conf',
+            'deployment/vigiboard.wsgi',
+            'deployment/settings.ini',
+        ]),
+    ],
 )
 

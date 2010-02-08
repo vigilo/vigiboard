@@ -8,8 +8,7 @@ from nose.tools import assert_equal
 from vigilo.models import Permission, StateName, \
                             HostGroup, Host, HighLevelService, \
                             Event, CorrEvent, ImpactedPath, ImpactedHLS
-from vigilo.models.session import DBSession
-
+from vigilo.models.configure import DBSession
 
 def populate_DB():
     """ Peuple la base de données. """
@@ -150,7 +149,7 @@ class TestHLSPlugin(TestController):
             {"idcorrevent" : str(aggregate.idcorrevent),
              "plugin_name" : "shn"},
             status = 404,
-            extra_environ={'REMOTE_USER': 'editor'},)
+            extra_environ={'REMOTE_USER': 'editor'})
         
         ### 3ème cas : l'utilisateur a cette fois les droits.        
         resp = self.app.post(
