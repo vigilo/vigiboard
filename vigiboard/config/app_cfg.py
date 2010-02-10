@@ -22,9 +22,7 @@ from pylons.i18n import lazy_ugettext as l_
 import vigiboard
 from vigiboard.lib import app_globals, helpers
 
-
 base_config = VigiloAppConfig('vigiboard')
-
 base_config.renderers = []
 
 base_config.package = vigiboard
@@ -37,13 +35,9 @@ base_config.renderers.append('genshi')
 base_config.use_sqlalchemy = True
 base_config.model = models
 
-#from vigilo.models import configure
-
-#base_config.DBSession = configure.DBSession
-
 # Configure the authentication backend
 base_config.auth_backend = 'sqlalchemy'
-#base_config.sa_auth.dbsession = configure.DBSession
+
 # what is the class you want to use to search for users in the database
 base_config.sa_auth.user_class = models.User
 # what is the class you want to use to search for groups in the database

@@ -9,7 +9,6 @@ from paste.deploy import loadapp
 from paste.script.appinstall import SetupCommand
 from routes import url_for
 from webtest import TestApp
-import nose
 from nose.tools import eq_, nottest
 
 from vigilo.models.configure import metadata, DBSession
