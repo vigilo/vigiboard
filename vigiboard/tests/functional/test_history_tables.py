@@ -87,7 +87,7 @@ def add_correvent_caused_by(supitem,
         idevent=event.idevent, 
         timestamp=datetime.now()))
     DBSession.add(EventHistory(
-        type_action=u'Acknowledgement change state',
+        type_action=u'Acknowlegement change state',
         idevent=event.idevent, 
         timestamp=datetime.now()))
     DBSession.flush()

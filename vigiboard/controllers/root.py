@@ -96,6 +96,7 @@ class RootController(VigiboardRootController):
         aggregates.add_join((Event, CorrEvent.idcause == Event.idevent))
         aggregates.add_join((aggregates.items, 
             Event.idsupitem == aggregates.items.c.idsupitem))
+        aggregates.add_order_by(asc(aggregates.items.c.hostname))
         
         search = {
             'host': '',
@@ -402,7 +403,7 @@ class RootController(VigiboardRootController):
     @validate(validators={
         "id": validators.Regex(r'^[0-9]+(,[0-9]+)*,?$'),
 #        "trouble_ticket": validators.Regex(r'^[0-9]*$'),
-        "status": validators.OneOf([
+        "ack": validators.OneOf([
             u'NoChange',
             u'None',
             u'Acknowledged',
@@ -426,7 +427,10 @@ class RootController(VigiboardRootController):
         if krgv['id'] is None:
             flash(_('No event has been selected'), 'warning')
             raise redirect(request.environ.get('HTTP_REFERER', url('/')))
-        ids = krgv['id'].split(',')
+
+        # Le filtre permet d'éliminer les chaines vides contenues dans le
+        # tableau ('a,b,' -> split -> ['a','b',''] -> filter -> ['a','b']).
+        ids = filter(len, krgv['id'].split(','))
         
         # Si des changements sont survenus depuis que la 
         # page est affichée, on en informe l'utilisateur.
@@ -447,7 +451,7 @@ class RootController(VigiboardRootController):
         events = VigiboardRequest(User.by_user_name(username))
         events.add_table(CorrEvent)
         events.add_join((Event, CorrEvent.idcause == Event.idevent))
-        events.add_join((aggregates.items, 
+        events.add_join((events.items, 
             Event.idsupitem == events.items.c.idsupitem))
         events.add_filter(CorrEvent.idcorrevent.in_(ids))
         

@@ -12,6 +12,7 @@ tests_require = [
     'WebTest',
     'BeautifulSoup',
     'lxml',
+    'coverage',
 ]
 
 setup(

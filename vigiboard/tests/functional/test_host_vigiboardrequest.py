@@ -81,11 +81,11 @@ class TestHostVigiboardRequest(TestController):
         # Ajout des historiques
         DBSession.add(EventHistory(type_action=u'Nagios update state',
             idevent=event1.idevent, timestamp=datetime.now()))
-        DBSession.add(EventHistory(type_action=u'Acknowlegement change state',
+        DBSession.add(EventHistory(type_action=u'Acknowledgement change state',
             idevent=event1.idevent, timestamp=datetime.now()))
         DBSession.add(EventHistory(type_action=u'Nagios update state',
             idevent=event2.idevent, timestamp=datetime.now()))
-        DBSession.add(EventHistory(type_action=u'Acknowlegement change state',
+        DBSession.add(EventHistory(type_action=u'Acknowledgement change state',
             idevent=event2.idevent, timestamp=datetime.now()))
         DBSession.flush()
 
