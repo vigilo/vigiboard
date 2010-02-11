@@ -430,14 +430,11 @@ class RootController(VigiboardRootController):
 
         # Le filtre permet d'éliminer les chaines vides contenues dans le
         # tableau ('a,b,' -> split -> ['a','b',''] -> filter -> ['a','b']).
-        ids = filter(len, krgv['id'].split(','))
+        ids = map(int, filter(len, krgv['id'].split(',')))
 
         # Si l'utilisateur édite plusieurs événements à la fois,
         # il nous faut chacun des identifiants
        
-        if len(ids) > 1 :
-            ids = ids[:-1]
-
         username = request.environ['repoze.who.identity']['repoze.who.userid']
         events = VigiboardRequest(User.by_user_name(username))
         events.add_table(CorrEvent)
