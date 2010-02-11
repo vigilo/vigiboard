@@ -431,15 +431,6 @@ class RootController(VigiboardRootController):
         # Le filtre permet d'éliminer les chaines vides contenues dans le
         # tableau ('a,b,' -> split -> ['a','b',''] -> filter -> ['a','b']).
         ids = filter(len, krgv['id'].split(','))
-        
-        # Si des changements sont survenus depuis que la 
-        # page est affichée, on en informe l'utilisateur.
-        last_modification = get_last_modification_timestamp(ids, None)
-        if last_modification and datetime.fromtimestamp(\
-            float(krgv['last_modification'])) < last_modification:
-            flash(_('Changes have occurred since the page was last displayed, '
-                    'your changes HAVE NOT been saved.'), 'warning')
-            raise redirect(request.environ.get('HTTP_REFERER', url('/')))
 
         # Si l'utilisateur édite plusieurs événements à la fois,
         # il nous faut chacun des identifiants
@@ -454,6 +445,17 @@ class RootController(VigiboardRootController):
         events.add_join((events.items, 
             Event.idsupitem == events.items.c.idsupitem))
         events.add_filter(CorrEvent.idcorrevent.in_(ids))
+        
+        events.generate_request()
+        idevents = [cause.idcause for cause in events.req]
+        # Si des changements sont survenus depuis que la 
+        # page est affichée, on en informe l'utilisateur.
+        last_modification = get_last_modification_timestamp(idevents, None)
+        if last_modification and datetime.fromtimestamp(\
+            float(krgv['last_modification'])) < last_modification:
+            flash(_('Changes have occurred since the page was last displayed, '
+                    'your changes HAVE NOT been saved.'), 'warning')
+            raise redirect(request.environ.get('HTTP_REFERER', url('/')))
         
         # Vérification que au moins un des identifiants existe et est éditable
         if events.num_rows() <= 0 :
