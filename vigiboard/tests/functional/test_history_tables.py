@@ -16,13 +16,6 @@ from vigiboard.tests import TestController
 
 def populate_DB():
     """ Peuple la base de données. """
-
-    # On ajoute des noms d'états.
-    DBSession.add(StateName(statename = u'OK', order = 0))
-    DBSession.add(StateName(statename = u'WARNING', order = 2))
-    DBSession.flush()
-    transaction.commit()
-
     # On ajoute un groupe d'hôtes et un groupe de services.
     hostmanagers = HostGroup(name = u'managersgroup')
     DBSession.add(hostmanagers)
@@ -111,10 +104,7 @@ class TestEventTable(TestController):
     """
 
     def test_host_event_history(self):
-        """
-        Test de l'affichage du tableau d'historique
-        d'un évènement corrélé causé par un hôte.
-        """
+        """Affichage de l'historique d'un évènement corrélé pour un hôte."""
 
         # On peuple la BDD avec un hôte, un service de bas niveau,
         # et un groupe d'hôtes et de services associés à ces items.
@@ -159,10 +149,7 @@ class TestEventTable(TestController):
         assert_equal(len(rows), 2)
 
     def test_service_event_history(self):
-        """
-        Test de l'affichage du tableau d'historique d'un
-        évènement corrélé causé par un service de bas niveau.
-        """
+        """Affichage de l'historique d'un évènement corrélé pour un SBN."""
 
         # On peuple la BDD avec un hôte, un service de bas niveau,
         # et un groupe d'hôtes et de services associés à ces items.
@@ -207,10 +194,7 @@ class TestEventTable(TestController):
         assert_equal(len(rows), 2)
 
     def test_host_history(self):
-        """
-        Test de l'affichage du tableau d'historique
-        des évènements corrélé d'un hôte donné.
-        """
+        """Affichage de l'historique d'un hôte."""
 
         # On peuple la BDD avec un hôte, un service de bas niveau,
         # et un groupe d'hôtes et de services associés à ces items.
@@ -262,10 +246,7 @@ class TestEventTable(TestController):
         assert_equal(len(rows), 4)
 
     def test_service_history(self):
-        """
-        Test de l'affichage du tableau d'historique
-        des évènements corrélé d'un service donné.
-        """
+        """Affichage de l'historique d'un service de bas niveau."""
 
         # On peuple la BDD avec un hôte, un service de bas niveau,
         # et un groupe d'hôtes et de services associés à ces items.

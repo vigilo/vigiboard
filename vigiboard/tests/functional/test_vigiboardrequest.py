@@ -25,12 +25,6 @@ class TestVigiboardRequest(TestController):
         """Création de données pour le test."""
         super(TestVigiboardRequest, self).setUp()
 
-        # Les noms d'états.
-        DBSession.add(StateName(statename=u'OK', order=0))
-        DBSession.add(StateName(statename=u'WARNING', order=2))
-        DBSession.flush()
-        transaction.commit()
-
         # On peuple la base de données.
 
         # Les groupes et leurs dépendances

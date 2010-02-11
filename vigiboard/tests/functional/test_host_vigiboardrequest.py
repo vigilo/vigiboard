@@ -26,12 +26,6 @@ class TestHostVigiboardRequest(TestController):
 
         # On peuple la base de données.
 
-        # On ajoute les noms d'états.
-        DBSession.add(StateName(statename=u'OK', order=0))
-        DBSession.add(StateName(statename=u'WARNING', order=2))
-        DBSession.flush()
-        transaction.commit()
-
         # On ajoute les groupes et leurs dépendances
         self.hosteditors = HostGroup(name=u'editorsgroup')
         DBSession.add(self.hosteditors)

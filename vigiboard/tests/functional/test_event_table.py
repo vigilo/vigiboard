@@ -16,13 +16,6 @@ from vigiboard.tests import TestController
 
 def populate_DB():
     """ Peuple la base de données. """
-
-    # On ajoute des noms d'états.
-    DBSession.add(StateName(statename=u'OK', order=0))
-    DBSession.add(StateName(statename=u'WARNING', order=2))
-    DBSession.flush()
-    transaction.commit()
-
     # On ajoute les groupes et leurs dépendances
     hosteditors = HostGroup(name=u'editorsgroup')
     DBSession.add(hosteditors)

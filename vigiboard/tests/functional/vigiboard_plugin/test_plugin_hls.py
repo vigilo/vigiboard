@@ -13,12 +13,6 @@ from vigilo.models.configure import DBSession
 def populate_DB():
     """ Peuple la base de données. """
 
-    # On ajoute des noms d'états.
-    DBSession.add(StateName(statename = u'OK', order=0))
-    DBSession.add(StateName(statename = u'WARNING', order=2))
-    DBSession.flush()
-    transaction.commit()
-
     # On ajoute un groupe d'hôtes
     hostmanagers = HostGroup(name = u'managersgroup')
     DBSession.add(hostmanagers)

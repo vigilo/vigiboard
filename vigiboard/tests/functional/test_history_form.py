@@ -16,11 +16,6 @@ from vigilo.models import ServiceGroup, HostGroup, \
 def insert_deps(return_service):
     """Insère les dépendances nécessaires aux tests."""
     timestamp = datetime.now()
-    DBSession.add(StateName(statename=u'OK', order=1))
-    DBSession.add(StateName(statename=u'UNKNOWN', order=1))
-    DBSession.add(StateName(statename=u'WARNING', order=1))
-    DBSession.add(StateName(statename=u'CRITICAL', order=1))
-    DBSession.flush()
 
     hostgroup = HostGroup(
         name=u'foo',
