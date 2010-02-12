@@ -4,7 +4,7 @@
 Plugin SHN : High level service
 """
 
-from pylons.i18n import gettext as _
+from pylons.i18n import ugettext as _
 from tg import url
 
 from vigiboard.controllers.vigiboard_plugin import VigiboardRequestPlugin
