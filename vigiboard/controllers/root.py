@@ -455,7 +455,7 @@ class RootController(VigiboardRootController):
             raise redirect(request.environ.get('HTTP_REFERER', url('/')))
         
         # Vérification que au moins un des identifiants existe et est éditable
-        if events.num_rows() <= 0 :
+        if events.num_rows() <= 0:
             flash(_('No access to this event'), 'error')
             redirect('/')
         

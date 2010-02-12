@@ -14,8 +14,6 @@ convert them into boolean, for example, you should use the
  
 """
 
-from vigilo import models
-
 from vigilo.turbogears import VigiloAppConfig
 from pylons.i18n import lazy_ugettext as l_
 
@@ -33,20 +31,9 @@ base_config.renderers.append('genshi')
 
 #Configure the base SQLALchemy Setup
 base_config.use_sqlalchemy = True
-base_config.model = models
 
 # Configure the authentication backend
 base_config.auth_backend = 'sqlalchemy'
-
-# what is the class you want to use to search for users in the database
-base_config.sa_auth.user_class = models.User
-# what is the class you want to use to search for groups in the database
-base_config.sa_auth.group_class = models.UserGroup
-# what is the class you want to use to search for permissions in the database
-base_config.sa_auth.permission_class = models.Permission
-# The name "groups" is already used for groups of hosts.
-# We use "usergroups" when referering to users to avoid confusion.
-base_config.sa_auth.translations.groups = 'usergroups'
 
 # override this if you would like to provide a different who plugin for
 # managing login and logout of your application
