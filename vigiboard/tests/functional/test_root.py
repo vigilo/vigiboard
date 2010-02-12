@@ -12,10 +12,11 @@ Please read http://pythonpaste.org/webtest/ for more information.
 """
 from nose.tools import assert_true, assert_false, assert_equal
 from datetime import datetime
+from time import mktime
 import transaction
 
 from vigilo.models.configure import DBSession
-from vigilo.models import Event, CorrEvent, \
+from vigilo.models import Event, EventHistory, CorrEvent, \
                             Permission, StateName, \
                             Host, HostGroup, ServiceGroup, LowLevelService
 
@@ -424,4 +425,63 @@ class TestRootController(TestController):
             ).all()
         assert_equal(correvents[0].status, u'Acknowledged')
         assert_equal(correvents[1].status, u'Acknowledged')
+
+    def test_update_while_data_have_changed(self):
+        """Màj d'un évènement corrélé modifié entretemps"""
+
+        # On peuple la BDD avec 2 hôtes, 2 services de bas niveau,
+        # et un groupe d'hôtes et de services associés à ces items.
+        (hosts, services) = populate_DB()
+        
+        # On ajoute 2 évènements corrélés causés par ces hôtes
+        correvent1_id = add_correvent_caused_by(services[0])
+        correvent2_id = add_correvent_caused_by(services[1])
+        
+        # Date de modification du premier évènement corrélé 
+        later_date = datetime.now()
+        # Date du chargement de la page
+        date = mktime(later_date.timetuple()) - 42
+        
+        # On ajoute une entrée dans l'historique de l'évènement brut
+        # causant le premier évènement corrélé, portant pour timestamp
+        # une date postérieure à celle du chargement de la page.
+        correvent1 = DBSession.query(
+            CorrEvent.idcause
+            ).filter(CorrEvent.idcorrevent == correvent1_id).one()
+        DBSession.add(EventHistory(
+            type_action = u'Nagios update state',
+            idevent = correvent1.idcause,
+            timestamp = later_date))
+        DBSession.flush()
+        
+        transaction.commit()
+        
+        # L'utilisateur utilisé pour se connecter à Vigiboard est 'manager'.
+        environ = {'REMOTE_USER': 'manager'}
+        
+        # On s'attend à ce que le statut de la requête soit 302, et
+        # à ce qu'un message d'erreur avise l'utilisateur que des
+        # changements sont intervenus depuis le chargement de la page.
+        response = self.app.post(
+            '/update',
+            {"id" : str(correvent1_id),
+             "ack" : u'Acknowledged',
+             "trouble_ticket" : "",
+             "last_modification" : date},
+            status = 302,
+            extra_environ = environ)
+        
+        response = response.follow(
+            status=200,
+            extra_environ = environ)
+        assert_true(response.lxml.xpath(
+            '//div[@id="flash"]/div[@class="warning"]'))
+        
+        # On s'assure que le statut de l'évènement corrélé
+        # n'a pas été modifié dans la base de données.
+        status = DBSession.query(
+            CorrEvent.status
+            ).filter(CorrEvent.idcorrevent == correvent1_id
+            ).scalar()
+        assert_equal(status, u'None')
 
