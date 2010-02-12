@@ -52,7 +52,7 @@ msgstr "Vous devez vous authentifier"
 #: vigiboard/controllers/vigiboardrequest.py:453
 #, python-format
 msgid "%Y-%m-%d %I:%M:%S %p"
-msgstr ""
+msgstr "%d-%m-%Y %I:%M:%S"
 
 #: vigiboard/controllers/root.py:289
 msgid "Error in DB"
@@ -65,16 +65,6 @@ msgstr "Aucun événement sélectionné"
 #: vigiboard/controllers/root.py:423
 msgid "No access to this event"
 msgstr "Accès à cet événement refusé"
-
-#: vigiboard/controllers/root.py:441
-#, python-format
-msgid "Changed trouble ticket from '%s' to '%s'"
-msgstr "A changé le ticket d'incidence de '%s' en '%s'"
-
-#: vigiboard/controllers/root.py:455
-#, python-format
-msgid "Changed acknowledgement status from '%s' to '%s'"
-msgstr "A changé l'état d'acquittement de '%s' en '%s'"
 
 #: vigiboard/controllers/root.py:465
 msgid "Updated successfully"
@@ -158,7 +148,7 @@ msgstr "SHN impactés"
 
 #: vigiboard/controllers/vigiboard_plugin/shn.py:29
 msgid "Impacted High-Level Services"
-msgstr "Services de Haut Niveau impactes"
+msgstr "Services de Haut Niveau impactés"
 
 #: vigiboard/widgets/edit_event.py:12
 msgid "No change"
@@ -186,28 +176,27 @@ msgstr "Appliquer"
 
 #: vigiboard/widgets/search_form.py:25
 msgid "Host group"
-msgstr ""
+msgstr "Groupe d'hôtes"
 
 #: vigiboard/widgets/search_form.py:26
-#, fuzzy
 msgid "Service group"
-msgstr "Type de service"
+msgstr "Groupe de services"
 
 #: vigiboard/widgets/search_form.py:28
 msgid "Service"
 msgstr "Service"
 
 #: vigiboard/widgets/search_form.py:39
-msgid "From:"
-msgstr ""
+msgid "From"
+msgstr "Depuis"
 
 #: vigiboard/widgets/search_form.py:40 vigiboard/widgets/search_form.py:48
 msgid "Choose"
-msgstr ""
+msgstr "Choisir"
 
 #: vigiboard/widgets/search_form.py:47
-msgid "To:"
-msgstr ""
+msgid "To"
+msgstr "Jusqu'à"
 
 #: vigiboard/widgets/search_form.py:53
 msgid "Search"

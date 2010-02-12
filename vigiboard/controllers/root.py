@@ -472,7 +472,7 @@ class RootController(VigiboardRootController):
                         type_action="Ticket change",
                         idevent=event.idcause,
                         value=krgv['trouble_ticket'],
-                        text=_("Changed trouble ticket from '%s' to '%s'") % (
+                        text="Changed trouble ticket from '%s' to '%s'" % (
                             event.trouble_ticket, krgv['trouble_ticket']
                         ),
                         username=username,
@@ -486,8 +486,8 @@ class RootController(VigiboardRootController):
                         type_action="Acknowledgement change state",
                         idevent=event.idcause,
                         value=krgv['ack'],
-                        text=_("Changed acknowledgement status "
-                            "from '%s' to '%s'") % (
+                        text="Changed acknowledgement status "
+                            "from '%s' to '%s'" % (
                             event.status, krgv['ack']
                         ),
                         username=username,

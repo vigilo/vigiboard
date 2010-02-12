@@ -19,7 +19,7 @@ msgstr ""
 
 #: vigiboard/config/app_cfg.py:102
 msgid "Never"
-msgstr ""
+msgstr "Never"
 
 #: vigiboard/config/app_cfg.py:103
 msgid "30 seconds"
