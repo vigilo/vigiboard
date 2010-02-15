@@ -1,214 +1,212 @@
-# English (United States) translations for vigiboard.
-# Copyright (C) 2009 ORGANIZATION
+# Translations template for vigiboard.
+# Copyright (C) 2010 ORGANIZATION
 # This file is distributed under the same license as the vigiboard project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2009.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2010.
 #
-msgid ""
-msgstr ""
-"Project-Id-Version: vigiboard 0.1\n"
-"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2009-07-06 11:19+0200\n"
-"PO-Revision-Date: 2010-01-08 18:02+0100\n"
-"Last-Translator: Thomas ANDREJAK <thomas.andrejak@c-s.fr>\n"
-"Language-Team: en_US <LL@li.org>\n"
-"Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 0.9.4\n"
+#, fuzzy
+msgid   ""
+msgstr  "Project-Id-Version: vigiboard 0.1\n"
+        "Report-Msgid-Bugs-To: contact@projet-vigilo.org\n"
+        "POT-Creation-Date: 2010-01-08 18:02+0100\n"
+        "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+        "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+        "Language-Team: LANGUAGE <LL@li.org>\n"
+        "MIME-Version: 1.0\n"
+        "Content-Type: text/plain; charset=utf-8\n"
+        "Content-Transfer-Encoding: 8bit\n"
+        "Generated-By: Babel 0.9.4\n"
 
 #: vigiboard/config/app_cfg.py:102
-msgid "Never"
-msgstr "Never"
+msgid   "Never"
+msgstr  "Never"
 
 #: vigiboard/config/app_cfg.py:103
-msgid "30 seconds"
-msgstr ""
+msgid   "30 seconds"
+msgstr  "30 seconds"
 
 #: vigiboard/config/app_cfg.py:104
-msgid "1 minute"
-msgstr ""
+msgid   "1 minute"
+msgstr  "1 minute"
 
 #: vigiboard/config/app_cfg.py:105
-msgid "5 minutes"
-msgstr ""
+msgid   "5 minutes"
+msgstr  "5 minutes"
 
 #: vigiboard/config/app_cfg.py:106
-msgid "10 minutes"
-msgstr ""
+msgid   "10 minutes"
+msgstr  "10 minutes"
 
 #: vigiboard/controllers/error.py:26
-msgid "We're sorry but we weren't able to process this request."
-msgstr ""
+msgid   "We're sorry but we weren't able to process this request."
+msgstr  "We're sorry but we weren't able to process this request."
 
 #: vigiboard/controllers/root.py:51 vigiboard/controllers/root.py:195
 #: vigiboard/controllers/root.py:274 vigiboard/controllers/root.py:325
 #: vigiboard/controllers/root.py:393
-msgid "You need to be authenticated"
-msgstr ""
+msgid   "You need to be authenticated"
+msgstr  "You need to be authenticated"
 
 #. TRANSLATORS: Format de date et heure.
 #: vigiboard/controllers/root.py:144 vigiboard/controllers/root.py:154
 #: vigiboard/controllers/vigiboardrequest.py:453
 #, python-format
-msgid "%Y-%m-%d %I:%M:%S %p"
-msgstr ""
+msgid   "%Y-%m-%d %I:%M:%S %p"
+msgstr  "%Y-%m-%d %I:%M:%S %p"
 
 #: vigiboard/controllers/root.py:289
-msgid "Error in DB"
-msgstr ""
+msgid   "Error in DB"
+msgstr  "Error in DB"
 
 #: vigiboard/controllers/root.py:409
-msgid "No event has been selected"
-msgstr ""
+msgid   "No event has been selected"
+msgstr  "No event has been selected"
 
 #: vigiboard/controllers/root.py:423
-msgid "No access to this event"
-msgstr ""
+msgid   "No access to this event"
+msgstr  "No access to this event"
 
 #: vigiboard/controllers/root.py:441
 #, python-format
-msgid "Changed trouble ticket from '%s' to '%s'"
-msgstr ""
+msgid   "Changed trouble ticket from '%s' to '%s'"
+msgstr  "Changed trouble ticket from '%s' to '%s'"
 
 #: vigiboard/controllers/root.py:455
 #, python-format
-msgid "Changed acknowledgement status from '%s' to '%s'"
-msgstr ""
+msgid   "Changed acknowledgement status from '%s' to '%s'"
+msgstr  "Changed acknowledgement status from '%s' to '%s'"
 
 #: vigiboard/controllers/root.py:465
-msgid "Updated successfully"
-msgstr ""
+msgid   "Updated successfully"
+msgstr  "Updated successfully"
 
 #: vigiboard/controllers/vigiboard_controller.py:37
-msgid "Wrong credentials"
-msgstr ""
+msgid   "Wrong credentials"
+msgstr  "Wrong credentials"
 
 #: vigiboard/controllers/vigiboard_controller.py:52
 #, python-format
-msgid "Welcome back, %s!"
-msgstr ""
+msgid   "Welcome back, %s!"
+msgstr  "Welcome back, %s!"
 
 #: vigiboard/controllers/vigiboard_controller.py:64
-msgid "We hope to see you soon!"
-msgstr ""
+msgid   "We hope to see you soon!"
+msgstr  "We hope to see you soon!"
 
 #: vigiboard/controllers/vigiboardrequest.py:298
-msgid "Closed"
-msgstr ""
+msgid   "Closed"
+msgstr  "Closed"
 
 #: vigiboard/controllers/vigiboardrequest.py:303
-msgid "Acknowledged"
-msgstr ""
+msgid   "Acknowledged"
+msgstr  "Acknowledged"
 
 #: vigiboard/controllers/vigiboardrequest.py:328
-msgid "Date"
-msgstr ""
+msgid   "Date"
+msgstr  "Date"
 
 #: vigiboard/controllers/vigiboardrequest.py:329
-msgid "Duration"
-msgstr ""
+msgid   "Duration"
+msgstr  "Duration"
 
 #: vigiboard/controllers/vigiboardrequest.py:331
-msgid "Priority"
-msgstr ""
+msgid   "Priority"
+msgstr  "Priority"
 
 #: vigiboard/controllers/vigiboardrequest.py:331
-msgid "ITIL Priority"
-msgstr ""
+msgid   "ITIL Priority"
+msgstr  "ITIL Priority"
 
 #: vigiboard/controllers/vigiboardrequest.py:332
-msgid "Occurrence count"
-msgstr ""
+msgid   "Occurrence count"
+msgstr  "Occurrence count"
 
 #: vigiboard/controllers/vigiboardrequest.py:333
 #: vigiboard/widgets/search_form.py:27
-msgid "Host"
-msgstr ""
+msgid   "Host"
+msgstr  "Host"
 
 #: vigiboard/controllers/vigiboardrequest.py:334
-msgid "Service Type"
-msgstr ""
+msgid   "Service Type"
+msgstr  "Service Type"
 
 #: vigiboard/controllers/vigiboardrequest.py:334
-msgid "Service Name"
-msgstr ""
+msgid   "Service Name"
+msgstr  "Service Name"
 
 #: vigiboard/controllers/vigiboardrequest.py:336
 #: vigiboard/widgets/search_form.py:29
-msgid "Output"
-msgstr ""
+msgid   "Output"
+msgstr  "Output"
 
 #: vigiboard/controllers/vigiboardrequest.py:339
-msgid "TT"
-msgstr ""
+msgid   "TT"
+msgstr  "TT"
 
 #: vigiboard/controllers/vigiboardrequest.py:339
 #: vigiboard/widgets/edit_event.py:27 vigiboard/widgets/search_form.py:30
-msgid "Trouble Ticket"
-msgstr ""
+msgid   "Trouble Ticket"
+msgstr  "Trouble Ticket"
 
 #: vigiboard/controllers/vigiboard_plugin/__init__.py:42
-msgid "Error"
-msgstr ""
+msgid   "Error"
+msgstr  "Error"
 
 #: vigiboard/controllers/vigiboard_plugin/shn.py:28
-msgid "Impacted HLS"
-msgstr ""
+msgid   "Impacted HLS"
+msgstr  "Impacted HLS"
 
 #: vigiboard/controllers/vigiboard_plugin/shn.py:29
-msgid "Impacted High-Level Services"
-msgstr ""
+msgid   "Impacted High-Level Services"
+msgstr  "Impacted High-Level Services"
 
 #: vigiboard/widgets/edit_event.py:12
-msgid "No change"
-msgstr ""
+msgid   "No change"
+msgstr  "No change"
 
 #: vigiboard/widgets/edit_event.py:13
-msgid "Change to None"
-msgstr ""
+msgid   "Change to None"
+msgstr  "Change to None"
 
 #: vigiboard/widgets/edit_event.py:14
-msgid "Change to Acknowledged"
-msgstr ""
+msgid   "Change to Acknowledged"
+msgstr  "Change to Acknowledged"
 
 #: vigiboard/widgets/edit_event.py:15
-msgid "Change to Closed"
-msgstr ""
+msgid   "Change to Closed"
+msgstr  "Change to Closed"
 
 #: vigiboard/widgets/edit_event.py:28
-msgid "Status"
-msgstr ""
+msgid   "Status"
+msgstr  "Status"
 
 #: vigiboard/widgets/edit_event.py:31
-msgid "Apply"
-msgstr ""
+msgid   "Apply"
+msgstr  "Apply"
 
 #: vigiboard/widgets/search_form.py:25
-msgid "Host group"
-msgstr ""
+msgid   "Host group"
+msgstr  "Host group"
 
 #: vigiboard/widgets/search_form.py:26
-msgid "Service group"
-msgstr ""
+msgid   "Service group"
+msgstr  "Service group"
 
 #: vigiboard/widgets/search_form.py:28
-msgid "Service"
-msgstr ""
+msgid   "Service"
+msgstr  "Service"
 
 #: vigiboard/widgets/search_form.py:39
-msgid "From:"
-msgstr ""
+msgid   "From:"
+msgstr  "From:"
 
 #: vigiboard/widgets/search_form.py:40 vigiboard/widgets/search_form.py:48
-msgid "Choose"
-msgstr ""
+msgid   "Choose"
+msgstr  "Choose"
 
 #: vigiboard/widgets/search_form.py:47
-msgid "To:"
-msgstr ""
+msgid   "To:"
+msgstr  "To:"
 
 #: vigiboard/widgets/search_form.py:53
-msgid "Search"
-msgstr ""
-
+msgid   "Search"
+msgstr  "Search"
