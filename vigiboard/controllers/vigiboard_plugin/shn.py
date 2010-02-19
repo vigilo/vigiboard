@@ -35,16 +35,28 @@ class PluginSHN(VigiboardRequestPlugin):
         ).filter(CorrEvent.idcorrevent == aggregate.idcorrevent).first()
 
         if not supitem:
-            count = 0
+            hls = None
         else:
-            count = supitem.impacted_hls(
-                HighLevelService.idservice
-            ).count()
+            hls = supitem.impacted_hls(
+                HighLevelService.servicename
+            ).distinct().all()
 
+        # Si aucun HLS n'est impacté, on n'affiche rien.
+        if not hls:
+            return ''
+
+        # S'il n'y a qu'un seul HLS impacté,
+        # on affiche directement son nom.
+        if len(hls) == 1:
+            return hls[0].servicename
+
+        # Sinon, on affiche un lien permettant de récupérer
+        # la liste de tous les HLS impactés. Le texte du lien
+        # contient le nombre de HLS impactés.
         dico = {
             'baseurl': url('/'),
             'idcorrevent': aggregate.idcorrevent,
-            'count': count,
+            'count': len(hls),
         }
 
         # XXX Il faudrait échapper l'URL contenue dans baseurl
@@ -63,12 +75,11 @@ class PluginSHN(VigiboardRequestPlugin):
         supitem = self.get_correvent_supitem(idcorrevent)
 
         if not supitem:
-            # XXX On devrait afficher une erreur (avec tg.flash()).
             return []
 
         services = supitem.impacted_hls(
             HighLevelService.servicename
-        ).order_by(
+        ).distinct().order_by(
             HighLevelService.servicename.asc()
         ).all()
 
@@ -85,33 +96,5 @@ class PluginSHN(VigiboardRequestPlugin):
                 (Event, Event.idsupitem == SupItem.idsupitem),
                 (CorrEvent, CorrEvent.idcause == Event.idevent),
             ).filter(CorrEvent.idcorrevent == idcorrevent).first()
-            
-#        # On détermine l'identité de l'utilisateur
-#        username = request.environ['repoze.who.identity']['repoze.who.userid']
-#        user = User.by_user_name(username)
-#        
-#        # On liste les permissions dont dispose l'utilisateur
-#        user_permissions = []
-#        for group in user.usergroups:
-#            for permission in group.permissions:
-#                user_permissions.append(permission)
-#        
-#        # On liste les permissions possibles pour l'item
-#        supitem_permissions = []
-#        for group in supitem.groups:
-#            for permission in group.permissions:
-#                supitem_permissions.append(permission)
-#                
-#        # On vérifie que l'utilisateur dispose bien des
-#        # permissions sur l'item en question avant de le retourner.
-#        for user_permission in user_permissions :
-#            for supitem_permission in supitem_permissions :
-#                if user_permission.idpermission == \
-#                                            supitem_permission.idpermission:
-#                    return supitem
-#        
-#        # Dans le cas contraire on retourne None
-#        return None
-    
         return supitem
 
