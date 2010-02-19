@@ -358,7 +358,7 @@ class VigiboardRequest():
         # Liste des éléments pour la tête du tableau
 
         lst_title = [
-                ['',{}],
+                ['', {'class': 'small_col'}],
                 [_('Date')+ '<span style="font-weight:normal">' + \
                         '<br />['+_('Duration') + ']</span>',
                         {'style':'text-align:left'}],
