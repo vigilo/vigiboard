@@ -22,10 +22,12 @@ def init_db():
     pour initialiser la base de données de VigiBoard.
     """
     from paste.script.appinstall import SetupCommand
-    import os.path
+    import os.path, os
 
-    ini_file = '/etc/vigilo/vigiboard/settings.ini'
-    ini_file = os.path.join('/', *ini_file.split('/'))
+    if os.environ['VIGILO_SETTINGS']:
+        ini_file = os.environ['VIGILO_SETTINGS']
+    else:
+        ini_file = '/etc/vigilo/vigiboard/settings.ini'
 
     cmd = SetupCommand('setup-app')
     cmd.run([ini_file])

@@ -86,7 +86,7 @@ class RootController(VigiboardRootController):
 
         username = request.environ['repoze.who.identity']['repoze.who.userid']
         user = User.by_user_name(username)
-        
+
         aggregates = VigiboardRequest(user)
         aggregates.add_table(
             CorrEvent,
@@ -150,8 +150,8 @@ class RootController(VigiboardRootController):
 
         if from_date:
             search['from_date'] = from_date
-            # TRANSLATORS: Format de date et heure.
             try:
+                # TRANSLATORS: Format de date et heure.
                 from_date = datetime.strptime(
                     from_date, _('%Y-%m-%d %I:%M:%S %p'))
             except ValueError:
@@ -160,8 +160,8 @@ class RootController(VigiboardRootController):
 
         if to_date:
             search['to_date'] = to_date
-            # TRANSLATORS: Format de date et heure.
             try:
+                # TRANSLATORS: Format de date et heure.
                 to_date = datetime.strptime(
                     to_date, _('%Y-%m-%d %I:%M:%S %p'))
             except ValueError:
