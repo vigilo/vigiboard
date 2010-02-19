@@ -123,8 +123,8 @@ class VigiboardRequest():
         # Tris (ORDER BY)
         self.orderby = [
             desc(CorrEvent.status),         # None, Acknowledged, AAClosed
-            priority_order,                 # Priorité ITIL (entier).
             desc(StateName.order),          # Etat courant (entier).
+            priority_order,                 # Priorité ITIL (entier).
             desc(Event.timestamp),
         ]
 
