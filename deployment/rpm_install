@@ -1,2 +1,4 @@
 python setup.py install --root=$RPM_BUILD_ROOT --record=INSTALLED_FILES
-ln -f -s /etc/vigilo/vigiboard/vigiboard.conf /etc/httpd/conf/webapps.d
+mkdir -p $RPM_BUILD_ROOT/etc/httpd/conf/webapps.d
+ln -f -s %{_sysconfdir}/vigilo/vigiboard/vigiboard.conf $RPM_BUILD_ROOT/etc/httpd/conf/webapps.d
+echo /etc/httpd/conf/webapps.d/vigiboard.conf >> INSTALLED_FILES
