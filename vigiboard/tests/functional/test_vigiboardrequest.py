@@ -186,7 +186,7 @@ class TestVigiboardRequest(TestController):
         tg.request = response.request
 
         # Derrière, VigiboardRequest doit charger le plugin de tests tout seul
-        tg.config['vigiboard_plugins'] = [['tests', 'MonPlugin']]
+#        tg.config['vigiboard_plugins'] = [['tests', 'MonPlugin']]
         vigi_req = VigiboardRequest(User.by_user_name(u'editor'))
         vigi_req.add_table(
             CorrEvent,
@@ -210,10 +210,8 @@ class TestVigiboardRequest(TestController):
         vigi_req.format_events(0, 10)
         vigi_req.format_history()
         assert_true(len(vigi_req.events) == 1 + 1,
-            msg = "One history should be available for the user " +
+            msg = "One history should be available for user " +
             "'editor' but there are %d" % (len(vigi_req.events) - 1))
-#        assert_true(vigi_req.events[1][6][0][0] != 'Error', 
-#                    msg = "Plugins execution or events formatting problem") 
 
         # On recommence les tests précédents avec l'utilisateur
         # manager (plus de droits)
@@ -240,8 +238,6 @@ class TestVigiboardRequest(TestController):
         vigi_req.format_events(0, 10)
         vigi_req.format_history()
         assert_true(len(vigi_req.events) == 2 + 1, 
-            msg = "2 histories should be available for the user " +
+            msg = "2 histories should be available for user " +
             "'manager' but there are %d" % (len(vigi_req.events) - 1))
-#        assert_true(vigi_req.events[1][6][0][0] != 'Error', 
-#                    msg = "Plugins execution or events formatting problem") 
 

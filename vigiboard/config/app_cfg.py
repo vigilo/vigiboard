@@ -78,7 +78,21 @@ base_config['vigiboard_links.tt'] = 'http://example4.com/%(idcorrevent)d/%(tt)s'
 
 # Plugins to use
 base_config['vigiboard_plugins'] = [
-    ['shn', 'PluginSHN'],
+    ('history', 'PluginHistory'),
+    ('date', 'PluginDate'),
+    ('priority', 'PluginPriority'),
+    ('occurrences', 'PluginOccurrences'),
+    ('servicename', 'PluginServicename'),
+    ('hostname', 'PluginHostname'),
+    ('output', 'PluginOutput'),
+    ('hls', 'PluginHLS'),
+    ('tt', 'PluginTroubleTicket'),
+    ('status', 'PluginStatus'),
+
+    # Le plugin PluginId peut servir pour débuguer VigiBoard.
+    # En production, mieux vaut le désactiver car il expose
+    # des données d'un niveau assez bas dans l'interface.
+#    ('id', 'PluginId'),
 ]
 
 base_config['vigiboard_refresh_times'] = (

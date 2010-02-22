@@ -95,9 +95,10 @@ class TestHistoryForm(TestController):
         DBSession.flush()
         transaction.commit()
 
-        response = self.app.post('/history_dialog',
-            {'idcorrevent': idcorrevent},
-            extra_environ={'REMOTE_USER': 'manager'})
+        response = self.app.post('/get_plugin_value', {
+                'idcorrevent': idcorrevent,
+                'plugin_name': 'history',
+            }, extra_environ={'REMOTE_USER': 'manager'})
         json = response.json
 
         # Le contenu de "eventdetails" varie facilement.
@@ -122,9 +123,10 @@ class TestHistoryForm(TestController):
         DBSession.flush()
         transaction.commit()
 
-        response = self.app.post('/history_dialog',
-            {'idcorrevent': idcorrevent},
-            extra_environ={'REMOTE_USER': 'manager'})
+        response = self.app.post('/get_plugin_value', {
+                'idcorrevent': idcorrevent,
+                'plugin_name': 'history',
+            }, extra_environ={'REMOTE_USER': 'manager'})
         json = response.json
 
         # Le contenu de "eventdetails" varie facilement.
@@ -148,19 +150,21 @@ class TestHistoryForm(TestController):
         DBSession.flush()
         transaction.commit()
 
-        self.app.post('/history_dialog',
-            {'idcorrevent': idcorrevent},
-            extra_environ={'REMOTE_USER': 'manager'},
+        self.app.post('/get_plugin_value', {
+                'idcorrevent': idcorrevent,
+                'plugin_name': 'history',
+            }, extra_environ={'REMOTE_USER': 'manager'},
             status=302)
 
     def test_history_form_host_when_forbidden(self):
-        """Teste le formulaire d'historique avec un LLS (alerte invisible)."""
+        """Teste le formulaire d'historique avec un hôte (alerte invisible)."""
         idcorrevent = insert_deps(False)[1]
         DBSession.flush()
         transaction.commit()
 
-        self.app.post('/history_dialog',
-            {'idcorrevent': idcorrevent},
-            extra_environ={'REMOTE_USER': 'manager'},
+        self.app.post('/get_plugin_value', {
+                'idcorrevent': idcorrevent,
+                'plugin_name': 'history',
+            }, extra_environ={'REMOTE_USER': 'manager'},
             status=302)
 

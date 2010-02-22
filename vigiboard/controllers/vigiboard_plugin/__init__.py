@@ -14,7 +14,6 @@ class VigiboardRequestPlugin(object):
     def __init__ (self, table = None, join = None, outerjoin = None,
             filters = None, groupby = None, orderby = None, name = '',
             style = None, object_name = ""):
-
         self.table = table
         self.join = join
         self.outerjoin = outerjoin
@@ -25,44 +24,17 @@ class VigiboardRequestPlugin(object):
         self.style = style
         self.object_name = object_name
 
-    def __show__ (self, aggregate):
+    def get_value(self, idcorrevent, *args, **kwargs):
         """
-        Permet d'éviter toutes erreurs d'affichage.
-        C'est la fonction appelée par le formateur d'événements.
+        Cette méthode est appelée depuis le template associé à ce plugin,
+        mais également lorsque l'on demande la valeur du plugin grâce à la
+        méthode get_plugin_value du L{RootController} de VigiBoard.
+
+        Cette méthode DEVRAIT être surchargée dans les classes dérivées.
+
+        @param idcorrevent: Identifiant du L{CorrEvent} à interroger.
+        @type idcorrevent: C{int}
+        @return: Dictionnaire contenant un texte statique.
+        @rtype: C{dict}
         """
-
-        show = self.show(aggregate)
-
-        if show != None:
-            try:
-                return str(show)
-            except:
-                return _('Error')
-
-    def show(self, aggregate):
-        """
-        Fonction qui affichera par défaut une chaîne de
-        caractères vide dans la colonne attribuée au plugin.
-
-        En général, les plugins devront redéfinir cette fonction
-        pour afficher ce qu'ils souhaitent.
-        """
-
-        return ''
-
-    def context(self, context):
-        """
-        Fonction permettant d'ajouter un contexte dans la page d'événements,
-        comme par exemple un fichier CSS ou une fonction Javascript.
-        """
-
-        pass
- 
-    
-    def controller(self):
-        """
-        Fonction permettant de rajouter un pseudo-contrôleur pour le plugin.
-        Ceci permet par exemple d'exécuter des requêtes JSON.
-        """
-
         pass

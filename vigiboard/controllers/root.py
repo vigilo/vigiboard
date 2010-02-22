@@ -186,6 +186,7 @@ class RootController(VigiboardRootController):
 
         return dict(
             events = aggregates.events,
+            plugins = get_plugins_instances(),
             rows_info = {
                 'id_first_row': id_first_row,
                 'id_last_row': id_last_row,
@@ -200,73 +201,6 @@ class RootController(VigiboardRootController):
             search = search,
             refresh_times = config['vigiboard_refresh_times'],
         )
-      
-    @validate(validators={'idcorrevent': validators.Int(not_empty=True)},
-            error_handler=process_form_errors)
-    @expose('json')
-    @require(Any(not_anonymous(), msg=l_("You need to be authenticated")))
-    def history_dialog(self, idcorrevent):
-        
-        """
-        JSon renvoyant les éléments pour l'affichage de la fenêtre de dialogue
-        contenant des liens internes et externes.
-        Pour accéder à cette page, l'utilisateur doit être authentifié.
-
-        @param id: identifiant de l'événement
-        """
-
-        # Obtention de données sur l'événement et sur son historique
-        username = request.environ.get('repoze.who.identity'
-                    ).get('repoze.who.userid')
-
-        username = request.environ['repoze.who.identity']['repoze.who.userid']
-        events = VigiboardRequest(User.by_user_name(username))
-        events.add_table(
-            Event,
-            events.items.c.hostname,
-            events.items.c.servicename,
-        )
-        events.add_join((CorrEvent, CorrEvent.idcause == Event.idevent))
-        events.add_join((events.items, 
-            Event.idsupitem == events.items.c.idsupitem))
-        events.add_filter(CorrEvent.idcorrevent == idcorrevent)
-
-        # Vérification que au moins un des identifiants existe et est éditable
-        if events.num_rows() != 1:
-            flash(_('No access to this event'), 'error')
-            redirect('/')
-
-        event = events.req[0]
-        eventdetails = {}
-        for edname, edlink in \
-                config['vigiboard_links.eventdetails'].iteritems():
-
-            # Rappel:
-            # event[0] = priorité de l'alerte corrélée.
-            # event[1] = alerte brute.
-            if event.servicename:
-                service = urllib.quote(event.servicename)
-            else:
-                service = None
-            eventdetails[edname] = edlink[1] % {
-                'idcorrevent': idcorrevent,
-                'host': urllib.quote(event.hostname),
-                'service': service,
-                'message': urllib.quote(event[0].message),
-            }
-
-        return dict(
-                current_state = StateName.value_to_statename(
-                                    event[0].current_state),
-                initial_state = StateName.value_to_statename(
-                                    event[0].initial_state),
-                peak_state = StateName.value_to_statename(
-                                    event[0].peak_state),
-                idcorrevent = idcorrevent,
-                host = event.hostname,
-                service = event.servicename,
-                eventdetails = eventdetails,
-            )
 
     @validate(validators={'idcorrevent': validators.Int(not_empty=True)},
             error_handler=process_form_errors)
@@ -298,11 +232,12 @@ class RootController(VigiboardRootController):
             redirect('/')
        
         events.format_events(0, 1)
-        events.format_history()
+        history_entries = events.format_history()
         events.generate_tmpl_context() 
 
         return dict(
             events = events.events,
+            plugins = get_plugins_instances(),
             rows_info = {
                 'id_first_row': 1,
                 'id_last_row': 1,
@@ -311,7 +246,7 @@ class RootController(VigiboardRootController):
             nb_pages = 1,
             page = 1,
             event_edit_status_options = edit_event_status_options,
-            history = events.hist,
+            history = history_entries,
             hist_error = True,
             plugin_context = events.context_fct,
             search = {
@@ -371,11 +306,12 @@ class RootController(VigiboardRootController):
             redirect('/')
 
         events.format_events(0, events.num_rows())
-        events.format_history()
+        history_entries = events.format_history()
         events.generate_tmpl_context()
 
         return dict(
                     events = events.events,
+                    plugins = get_plugins_instances(),
                     rows_info = {
                         'id_first_row': 1,
                         'id_last_row': 1,
@@ -384,7 +320,7 @@ class RootController(VigiboardRootController):
                     nb_pages = 1,
                     page = 1,
                     event_edit_status_options = edit_event_status_options,
-                    history = events.hist,
+                    history = history_entries,
                     hist_error = True,
                     plugin_context = events.context_fct,
                     search = {
@@ -410,7 +346,7 @@ class RootController(VigiboardRootController):
             u'AAClosed'
         ])}, error_handler=process_form_errors)
     @require(Any(not_anonymous(), msg=l_("You need to be authenticated")))
-    def update(self,**krgv):
+    def update(self, **krgv):
         """
         Mise à jour d'un événement suivant les arguments passés.
         Cela peut être un changement de ticket ou un changement de statut.
@@ -500,10 +436,11 @@ class RootController(VigiboardRootController):
         flash(_('Updated successfully'))
         redirect(request.environ.get('HTTP_REFERER', url('/')))
 
-
-    @validate(validators={"plugin_name": validators.OneOf(
-        [i for [i, j] in config.get('vigiboard_plugins', [])])},
-                error_handler = process_form_errors)
+    @validate(validators={
+        "plugin_name": validators.OneOf([i[0] for i \
+            in config.get('vigiboard_plugins', [])]),
+        'idcorrevent': validators.Int(not_empty=True),
+        }, error_handler=process_form_errors)
     @expose('json')
     @require(Any(not_anonymous(), msg=l_("You need to be authenticated")))
     def get_plugin_value(self, idcorrevent, plugin_name, *arg, **krgv):
@@ -511,9 +448,7 @@ class RootController(VigiboardRootController):
         Permet de récupérer la valeur d'un plugin associée à un CorrEvent
         donné via JSON.
         """
-        plugins = config['vigiboard_plugins']
-        if plugins is None:
-            raise HTTPNotFound()
+        plugins = config.get('vigiboard_plugins', {})
 
         # Permet de vérifier si l'utilisateur a bien les permissions
         # pour accéder à cet événement et si l'événement existe.
@@ -528,17 +463,23 @@ class RootController(VigiboardRootController):
         # Pas d'événement ou permission refusée. On ne distingue pas
         # les 2 cas afin d'éviter la divulgation d'informations.
         if not events.num_rows():
-            raise HTTPNotFound()
+            raise HTTPNotFound(_('No such incident or insufficient permissions'))
 
-        plugin = [i for i in plugins if i[0] == plugin_name][0]
+        plugin_class = [p[1] for p in plugins if p[0] == plugin_name]
+        if not plugin_class:
+            raise HTTPNotFound(_('No such plugin'))
+
+        plugin_class = plugin_class[0]
         try:
             mypac = __import__(
-                'vigiboard.controllers.vigiboard_plugin.' + plugin[0],
-                globals(), locals(), [plugin[1]], -1)
-            plug = getattr(mypac, plugin[1])()
-            return plug.controller(idcorrevent, *arg, **krgv)
+                'vigiboard.controllers.vigiboard_plugin.' + plugin_name,
+                globals(), locals(), [plugin_class], -1)
+            plugin = getattr(mypac, plugin_class)
+            if callable(plugin):
+                return plugin().get_value(idcorrevent, *arg, **krgv)
+            raise HTTPInternalServerError(_('Not a valid plugin'))
         except ImportError:
-            raise HTTPNotFound()
+            raise HTTPInternalServerError(_('Plugin could not be loaded'))
 
     @validate(validators={
         "fontsize": validators.Regex(
@@ -590,3 +531,19 @@ def get_last_modification_timestamp(event_id_list,
             last_modification_timestamp = value_if_none
     return datetime.fromtimestamp(mktime(
         last_modification_timestamp.timetuple()))
+
+def get_plugins_instances():
+    plugins = config.get('vigiboard_plugins', [])
+    plugins_instances = []
+    for (plugin_name, plugin_class) in plugins:
+        try:
+            mypac = __import__(
+                'vigiboard.controllers.vigiboard_plugin.' + plugin_name,
+                globals(), locals(), [plugin_class], -1)
+            plugin = getattr(mypac, plugin_class)
+            if callable(plugin):
+                plugins_instances.append((plugin_name, plugin()))
+        except ImportError:
+            pass
+    return plugins_instances
+

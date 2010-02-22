@@ -116,7 +116,7 @@ class TestHLSPlugin(TestController):
     
     def test_no_impacted_hls(self):
         """
-        Retour du plugin SHN pour 0 SHN impacté
+        Retour du plugin HLS pour 0 HLS impacté
         Teste la valeur de retour du plugin lorsque
         aucun service de haut niveau n'est impacté.
         """
@@ -128,11 +128,11 @@ class TestHLSPlugin(TestController):
         DBSession.add(aggregate)
         
         ### 1er cas : l'utilisateur n'est pas connecté.
-        # On vérifie que le plugin retourne bien une erreur 404.
+        # On vérifie que le plugin retourne bien une erreur 401.
         resp = self.app.post(
             '/get_plugin_value', 
             {"idcorrevent" : str(aggregate.idcorrevent),
-             "plugin_name" : "shn"},
+             "plugin_name" : "hls"},
             status = 401,)
         
         ### 2ème cas : l'utilisateur n'a pas les
@@ -141,22 +141,22 @@ class TestHLSPlugin(TestController):
         resp = self.app.post(
             '/get_plugin_value', 
             {"idcorrevent" : str(aggregate.idcorrevent),
-             "plugin_name" : "shn"},
+             "plugin_name" : "hls"},
             status = 404,
             extra_environ={'REMOTE_USER': 'editor'})
         
-        ### 3ème cas : l'utilisateur a cette fois les droits.        
+        ### 3ème cas : l'utilisateur a cette fois les droits.
         resp = self.app.post(
             '/get_plugin_value', 
             {"idcorrevent" : str(aggregate.idcorrevent),
-             "plugin_name" : "shn"},
+             "plugin_name" : "hls"},
             extra_environ={'REMOTE_USER': 'manager'})
         # On vérifie que le plugin ne retourne toujours rien.
         assert_equal(resp.json, {"services": []})
     
     def test_1_impacted_hls_path(self):
         """
-        Retour du plugin SHN pour 1 chemin impacté
+        Retour du plugin HLS pour 1 chemin impacté
         Teste la valeur de retour du plugin lorsqu'un
         chemin de services de haut niveau est impacté.
         """
@@ -168,34 +168,36 @@ class TestHLSPlugin(TestController):
         DBSession.add(aggregate)
         
         ### 1er cas : l'utilisateur n'est pas connecté.
-        # On vérifie que le plugin retourne bien une erreur 404.
+        # On vérifie que le plugin retourne bien une erreur 401.
         resp = self.app.post(
             '/get_plugin_value', 
             {"idcorrevent" : str(aggregate.idcorrevent),
-             "plugin_name" : "shn"},
+             "plugin_name" : "hls"},
             status = 401,)
         
-        ### 2ème cas : l'utilisateur n'a pas les
-        ### droits sur l'hôte ayant causé le correvent.
+        ### 2ème cas : l'utilisateur n'a pas les droits
+        ### sur l'hôte ayant causé le correvent, on doit
+        ### obtenir une erreur 404 (pas d'événement trouvé
+        ### avec les informations liées à cet utilisateur).
         resp = self.app.post(
             '/get_plugin_value', 
             {"idcorrevent" : str(aggregate.idcorrevent),
-             "plugin_name" : "shn"},
+             "plugin_name" : "hls"},
             status = 404,
             extra_environ={'REMOTE_USER': 'editor'})
         
-        ### 3ème cas : l'utilisateur a cette fois les droits.        
+        ### 3ème cas : l'utilisateur a cette fois les droits.
         resp = self.app.post(
             '/get_plugin_value', 
             {"idcorrevent" : str(aggregate.idcorrevent),
-             "plugin_name" : "shn"},
+             "plugin_name" : "hls"},
             extra_environ={'REMOTE_USER': 'manager'})
-        # On vérifie que le plugin retourne bien les 2 SHN impactés..
+        # On vérifie que le plugin retourne bien les 2 HLS impactés.
         assert_equal(resp.json, {"services": ['HLS12']})
     
     def test_2_impacted_hls_path(self):
         """
-        Retour du plugin SHN pour 2 chemins impactés
+        Retour du plugin HLS pour 2 chemins impactés
         Teste la valeur de retour du plugin lorsque deux
         chemins de services de haut niveau sont impactés.
         """
@@ -207,11 +209,11 @@ class TestHLSPlugin(TestController):
         DBSession.add(aggregate)
         
         ### 1er cas : l'utilisateur n'est pas connecté.
-        # On vérifie que le plugin retourne bien une erreur 404.
+        # On vérifie que le plugin retourne bien une erreur 401.
         resp = self.app.post(
             '/get_plugin_value', 
             {"idcorrevent" : str(aggregate.idcorrevent),
-             "plugin_name" : "shn"},
+             "plugin_name" : "hls"},
             status = 401,)
         
         ### 2ème cas : l'utilisateur n'a pas les
@@ -219,16 +221,16 @@ class TestHLSPlugin(TestController):
         resp = self.app.post(
             '/get_plugin_value', 
             {"idcorrevent" : str(aggregate.idcorrevent),
-             "plugin_name" : "shn"},
+             "plugin_name" : "hls"},
             status = 404,
             extra_environ={'REMOTE_USER': 'editor'})
         
-        ### 3ème cas : l'utilisateur a cette fois les droits.        
+        ### 3ème cas : l'utilisateur a cette fois les droits.
         resp = self.app.post(
             '/get_plugin_value', 
             {"idcorrevent" : str(aggregate.idcorrevent),
-             "plugin_name" : "shn"},
+             "plugin_name" : "hls"},
             extra_environ={'REMOTE_USER': 'manager'})
-        # On vérifie que le plugin retourne bien les 4 SHN impactés..
+        # On vérifie que le plugin retourne bien les 4 HLS impactés.
         assert_equal(resp.json, {"services": ['HLS12', 'HLS22']})
         

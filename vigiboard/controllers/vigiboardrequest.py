@@ -138,8 +138,6 @@ class VigiboardRequest():
 
         self.plugin = []
         self.events = []
-        self.idevents = []
-        self.hist = []
         self.req = DBSession
         self.context_fct = []
 
@@ -356,74 +354,10 @@ class VigiboardRequest():
         self.generate_request()
 
         # Liste des éléments pour la tête du tableau
+        self.events = []
 
-        lst_title = [
-                ['', {'class': 'small_col'}],
-                [_('Date')+ '<span style="font-weight:normal">' + \
-                        '<br />['+_('Duration') + ']</span>',
-                        {'style':'text-align:left'}],
-                [_('Priority'), {'title':_('ITIL Priority')}],
-                ['#', {'title':_('Occurrence count')}],
-                [_('Host'), {'style':'text-align:left'}],
-                [_('Service Type')+'<br />'+_('Service Name'),
-                    {'style':'text-align:left'}], 
-                [_('Output'), {'style':'text-align:left'}]
-                ]
-        lst_title.extend([[plug.name, plug.style] for plug in self.plugin])
-        lst_title.extend([['[' + _('TT') + ']', {'title': _('Trouble Ticket')}],
-                            ['', {}]])
-        events = [lst_title]
-        i = 0
-        class_tr = ['odd', 'even']
-        ids = []
-        for req in self.req[first_row : last_row]:
-            # Si il y a plus d'un élément dans la liste des tables,
-            # req devient une liste plutôt que d'être directement la
-            # table souhaitée
-
-            if isinstance(req, CorrEvent):
-                event = req
-            else:
-                event = req[0]
-                hostname = req.hostname
-                servicename = req.servicename
-            ids.append(event.idcause)
-
-            # La liste pour l'événement actuel comporte dans l'ordre :
-            #   L'événement en lui-même
-            #   La classe à appliquer sur la ligne (permet d'alterner les
-            #       couleurs suivant les lignes)
-            #   La classe pour la case comportant la flèche de détails
-            #   La classe pour la date, l'occurence et l'édition
-            #   L'image à afficher pour la flèche de détails
-            #   Une liste (une case par plugin) de ce que le plugin souhaite
-            #       afficher en fonction de l'événement
-
-            cause = event.cause
-
-            events.append([
-                    event,
-                    hostname,
-                    servicename,
-                    {'class': class_tr[i % 2]},
-                    {'class': StateName.value_to_statename(
-                        cause.initial_state) +
-                        self.class_ack[event.status]},
-                    {'class': StateName.value_to_statename(
-                        cause.current_state) +
-                        self.class_ack[event.status]},
-                    {'src': '/images/%s2.png' %
-                        StateName.value_to_statename(
-                        cause.current_state)},
-                    self.format_events_status(event),
-                    [[j.__show__(event), j.style] for j in self.plugin]
-                ])
-            i += 1
-
-        # On sauvegarde la liste précédemment créée puis on remplit
-        # le TmplContext
-        self.events = events
-        self.idevents = ids
+        for data in self.req[first_row : last_row]:
+            self.events.append((data[0], data.hostname, data.servicename))
 
     def format_history(self):
         """
@@ -433,45 +367,21 @@ class VigiboardRequest():
         de l'affichage pour un historique donné.
         """
 
+        ids = [data[0].idcause for data in self.events]
         history = DBSession.query(
                     EventHistory,
-                ).filter(EventHistory.idevent.in_(self.idevents)
+                ).filter(EventHistory.idevent.in_(ids)
                 ).order_by(desc(EventHistory.timestamp)
                 ).order_by(desc(EventHistory.idhistory))
-        if history.count() == 0:
-            self.hist = {}
-            for i in self.idevents:
-                self.hist[i] = []
-            return
 
         hists = {}
-        i = 0
-        class_tr = ['odd', 'even']
+        for idevent in ids:
+            hists[idevent] = []
 
-        for hist in history:
-            if not hist.idevent in hists:
-                hists[hist.idevent] = []
+        for entry in history:
+            hists[entry.idevent].append(entry)
 
-            # La liste pour l'historique actuel comporte dans l'ordre :
-            #   Le moment où il a été généré
-            #   Qui l'a généré
-            #   Le type d'action qui a été appliqué
-            #   La valeur de l'action
-            #   Le détail de l'action
-            #   La classe à appliquer à la ligne
-            #       (permet d'alterner les couleurs)
-
-            hists[hist.idevent].append([
-                hist.timestamp,
-                hist.username,
-                hist.type_action,
-                hist.value,
-                hist.text,
-                {'class': class_tr[i % 2]},
-            ])
-            i += 1
-        
-        self.hist = hists
+        return hists
 
     def generate_tmpl_context(self):
         """
@@ -482,9 +392,10 @@ class VigiboardRequest():
         from vigiboard.controllers.root import get_last_modification_timestamp
         
         # Dialogue d'édition
+        ids = [data[0].idcause for data in self.events]
         tmpl_context.edit_event_form = EditEventForm('edit_event_form',
             last_modification=mktime(get_last_modification_timestamp(
-                self.idevents).timetuple()),
+                ids).timetuple()),
             action=url('/update'), 
         )
 
@@ -492,10 +403,4 @@ class VigiboardRequest():
         tmpl_context.search_form = SearchForm('search_form', lang=self.lang,
                                         # TRANSLATORS: Format de date et heure.
                                         date_format=_('%Y-%m-%d %I:%M:%S %p'))
-        
-        # Dialogue de détail d'un événement
-
-        # Exécution des contexts des plugins
-        for j in self.plugin:
-            j.context(self.context_fct)
 
