@@ -15,7 +15,7 @@ class PluginTest(VigiboardRequestPlugin):
     "Hello world" pour chaque événement du tableau.
     """
 
-    def get_value(self, idcorrevent, *args, **kwargs):
+    def get_value(self, *args, **kwargs):
         """
         Cette méthode est appelée depuis le template associé à ce plugin,
         mais également lorsque l'on demande la valeur du plugin grâce à la

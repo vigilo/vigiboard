@@ -13,5 +13,6 @@ from vigilo.models import HighLevelService, \
                             CorrEvent, Event, SupItem
 
 class PluginStatus(VigiboardRequestPlugin):
-    pass
+    def get_generated_columns_count(self):
+        return 3
 

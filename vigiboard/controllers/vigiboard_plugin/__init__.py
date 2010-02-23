@@ -38,3 +38,17 @@ class VigiboardRequestPlugin(object):
         @rtype: C{dict}
         """
         pass
+
+    def get_generated_columns_count(self):
+        """
+        Cette méthode renvoie le nombre de colonnes ajoutées dans le tableau
+        des événements par ce plugin. Par défaut, on suppose que chaque plugin
+        n'ajoute qu'une seule colonne au tableau.
+
+        Cette méthode PEUT être surchargée dans les classes dérivées.
+
+        @return: Nombre de colonnes ajoutées par ce plugin.
+        @rtype: C{int}
+        """
+        return 1
+
