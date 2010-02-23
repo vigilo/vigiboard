@@ -22,6 +22,7 @@ from vigilo.models.configure import DBSession
 from vigilo.models import Event, EventHistory, CorrEvent, SupItem, \
                             HostGroup, ServiceGroup, StateName, User
 from vigilo.models.functions import sql_escape_like
+from vigilo.models.secondary_tables import EVENTSAGGREGATE_TABLE
 
 from vigilo.turbogears.controllers.autocomplete \
     import make_autocomplete_controller
@@ -53,9 +54,12 @@ class RootController(VigiboardRootController):
         else :
             redirect('/')
 
+    @validate(validators={
+            'page': validators.Int(),
+        }, error_handler=process_form_errors)
     @expose('vigiboard.html')
     @require(Any(not_anonymous(), msg=l_("You need to be authenticated")))
-    def default(self, page=None, hostgroup=None, servicegroup=None,
+    def default(self, page=1, hostgroup=None, servicegroup=None,
             host=None, service=None, output=None, trouble_ticket=None,
             from_date=None, to_date=None, *argv, **krgv):
             
@@ -73,14 +77,6 @@ class RootController(VigiboardRootController):
         @param output: Idem que host mais sur le text explicatif
         @param trouble_ticket: Idem que host mais sur les tickets attribués
         """
-        if page is None:
-            page = 1
-
-        try:
-            page = int(page)
-        except ValueError:
-            abort(404)
-
         if page < 1:
             page = 1
 
@@ -197,16 +193,90 @@ class RootController(VigiboardRootController):
             event_edit_status_options = edit_event_status_options,
             history = [],
             hist_error = False,
-            plugin_context = aggregates.context_fct,
             search = search,
             refresh_times = config['vigiboard_refresh_times'],
         )
 
-    @validate(validators={'idcorrevent': validators.Int(not_empty=True)},
+    @validate(validators={
+            'idcorrevent': validators.Int(not_empty=True),
+            'page': validators.Int(),
+        }, error_handler=process_form_errors)
+    @expose('vigiboard_raw_events_table.html')
+    @require(Any(not_anonymous(), msg=l_("You need to be authenticated")))
+    def masked_events(self, idcorrevent, page=1):
+        """
+        Affichage de la liste des événements bruts masqués dans un
+        événement corrélé (agrégés).
+
+        @param idevent: identifiant de l'événement souhaité
+        """
+
+        username = request.environ['repoze.who.identity']['repoze.who.userid']
+        events = VigiboardRequest(User.by_user_name(username), False)
+        events.add_table(
+            Event,
+            events.items.c.hostname,
+            events.items.c.servicename,
+        )
+        events.add_join((EVENTSAGGREGATE_TABLE, EVENTSAGGREGATE_TABLE.c.idevent == Event.idevent))
+        events.add_join((CorrEvent, CorrEvent.idcorrevent == EVENTSAGGREGATE_TABLE.c.idcorrevent))
+        events.add_join((events.items, 
+            Event.idsupitem == events.items.c.idsupitem))
+        events.add_filter(Event.idevent != CorrEvent.idcause)
+        events.add_filter(CorrEvent.idcorrevent == idcorrevent)
+        
+        # Vérification que l'événement existe
+        if events.num_rows() != 1 :
+            flash(_('No masked event or access denied'), 'error')
+            redirect('/')
+
+        # Calcul des éléments à afficher et du nombre de pages possibles
+        total_rows = events.num_rows()
+        items_per_page = int(config['vigiboard_items_per_page'])
+
+        id_first_row = items_per_page * (page-1)
+        id_last_row = min(id_first_row + items_per_page, total_rows)
+
+        events.format_events(id_first_row, id_last_row)
+        events.generate_tmpl_context()
+
+        nb_pages = int(math.ceil(total_rows / (items_per_page + 0.0)))
+        if not total_rows:
+            id_first_row = 0
+        else:
+            id_first_row += 1
+
+        return dict(
+            events = events.events,
+            plugins = get_plugins_instances(),
+            rows_info = {
+                'id_first_row': id_first_row,
+                'id_last_row': id_last_row,
+                'total_rows': total_rows,
+            },
+            nb_pages = nb_pages,
+            page = page,
+            event_edit_status_options = edit_event_status_options,
+            history = history_entries,
+            hist_error = True,
+            search = {
+                'host': '',
+                'service': '',
+                'output': '',
+                'tt': '',
+                'from_date': '',
+                'to_date': '',
+                'hostgroup': '',
+                'servicegroup': '',
+            },
+           refresh_times=config['vigiboard_refresh_times'],
+        )
+
+    @validate(validators={'idevent': validators.Int(not_empty=True)},
             error_handler=process_form_errors)
     @expose('vigiboard.html')
     @require(Any(not_anonymous(), msg=l_("You need to be authenticated")))
-    def event(self, idcorrevent):
+    def event(self, idevent):
         """
         Affichage de l'historique d'un événement.
         Pour accéder à cette page, l'utilisateur doit être authentifié.
@@ -248,7 +318,6 @@ class RootController(VigiboardRootController):
             event_edit_status_options = edit_event_status_options,
             history = history_entries,
             hist_error = True,
-            plugin_context = events.context_fct,
             search = {
                 'host': '',
                 'service': '',
@@ -270,7 +339,7 @@ class RootController(VigiboardRootController):
         error_handler = process_form_errors)
     @expose('vigiboard.html')
     @require(Any(not_anonymous(), msg=l_("You need to be authenticated")))
-    def host_service(self, host, service=None):
+    def item(self, host, service=None):
         """
         Affichage de l'historique de l'ensemble des événements correspondant
         au host et service demandé.
@@ -283,7 +352,7 @@ class RootController(VigiboardRootController):
         idsupitem = SupItem.get_supitem(host, service)
 
         username = request.environ['repoze.who.identity']['repoze.who.userid']
-        events = VigiboardRequest(User.by_user_name(username))
+        events = VigiboardRequest(User.by_user_name(username), False)
         events.add_table(
             CorrEvent,
             events.items.c.hostname,
@@ -293,12 +362,6 @@ class RootController(VigiboardRootController):
         events.add_join((events.items, 
             Event.idsupitem == events.items.c.idsupitem))
         events.add_filter(events.items.c.idsupitem == idsupitem)
-
-        # XXX On devrait avoir une autre API que ça !!!
-        # Supprime le filtre qui empêche d'obtenir des événements fermés
-        # (ie: ayant l'état Nagios 'OK' et le statut 'AAClosed').
-        if len(events.filter) > 0:
-            del events.filter[0]
 
         # Vérification qu'il y a au moins 1 événement qui correspond
         if events.num_rows() == 0 :
@@ -310,31 +373,30 @@ class RootController(VigiboardRootController):
         events.generate_tmpl_context()
 
         return dict(
-                    events = events.events,
-                    plugins = get_plugins_instances(),
-                    rows_info = {
-                        'id_first_row': 1,
-                        'id_last_row': 1,
-                        'total_rows': 1,
-                    },
-                    nb_pages = 1,
-                    page = 1,
-                    event_edit_status_options = edit_event_status_options,
-                    history = history_entries,
-                    hist_error = True,
-                    plugin_context = events.context_fct,
-                    search = {
-                        'host': '',
-                        'service': '',
-                        'output': '',
-                        'tt': '',
-                        'from_date': '',
-                        'to_date': '',
-                        'hostgroup': '',
-                        'servicegroup': '',
-                    },
-                    refresh_times=config['vigiboard_refresh_times'],
-                )
+            events = events.events,
+            plugins = get_plugins_instances(),
+            rows_info = {
+                'id_first_row': 1,
+                'id_last_row': 1,
+                'total_rows': 1,
+            },
+            nb_pages = 1,
+            page = 1,
+            event_edit_status_options = edit_event_status_options,
+            history = history_entries,
+            hist_error = True,
+            search = {
+                'host': '',
+                'service': '',
+                'output': '',
+                'tt': '',
+                'from_date': '',
+                'to_date': '',
+                'hostgroup': '',
+                'servicegroup': '',
+            },
+            refresh_times=config['vigiboard_refresh_times'],
+        )
 
     @validate(validators={
         "id": validators.Regex(r'^[0-9]+(,[0-9]+)*,?$'),

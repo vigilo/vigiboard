@@ -34,13 +34,12 @@ class VigiboardRequest():
         'AAClosed': '_Ack',
     }
 
-    def __init__(self, user):
+    def __init__(self, user, mask_closed_events=True):
         """
-        Initialisation de toutes les variables nécessaires :
-        - la liste des groupes de l'utilisateur,
-        - la langue de l'utilisateur
-        - les différentes étapes de la génération de la requête,
-        - la liste des plugins à appliquer.
+        Initialisation de l'objet qui effectue les requêtes de VigiBoard
+        sur la base de données.
+        Cet objet est responsable de la vérification des droits de
+        l'utilisateur sur les données manipulées.
         """
 
         # TODO: Utiliser le champ "language" du modèle pour cet utilisateur ?
@@ -104,15 +103,16 @@ class VigiboardRequest():
         self.outerjoin = []
 
         # Critères de filtrage (WHERE)
-        self.filter = [
-            # On masque les événements avec l'état OK
-            # et traités (status == u'AAClosed').
-            not_(and_(
-                StateName.statename.in_([u'OK', u'UP']),
-                CorrEvent.status == u'AAClosed'
-            )),
-            CorrEvent.timestamp_active != None,
-        ]
+        self.filter = []
+        if mask_closed_events:
+            self.filter.append(
+                # On masque les événements avec l'état OK
+                # et traités (status == u'AAClosed').
+                not_(and_(
+                    StateName.statename.in_([u'OK', u'UP']),
+                    CorrEvent.status == u'AAClosed'
+                ))
+            )
 
         # Permet de définir le sens de tri pour la priorité.
         if config['vigiboard_priority_order'] == 'asc':
@@ -139,7 +139,6 @@ class VigiboardRequest():
         self.plugin = []
         self.events = []
         self.req = DBSession
-        self.context_fct = []
 
     def add_plugin(self, *argv):
         """
@@ -313,31 +312,6 @@ class VigiboardRequest():
                 if str(i) == str(j):
                     break
             self.orderby.append(i)
-
-    def format_events_status(self, event):
-        """
-        Suivant l'état de l'événement, retourne la classe à appliquer
-        à l'image indiquant si l'événement est pris en compte ou non,
-        ainsi qu'un texte indiquant l'état.
-
-        @param event: l'événement à analyser
-
-        @return: Dictionnaire représentant la classe à appliquer
-            et l'état (sous une forme intelligible).
-        """
-
-        if event.status == 'AAClosed':
-            return {
-                'src': url('/images/crossed.png'),
-                'label': _('Closed'),
-            }
-        elif event.status == 'Acknowledged':
-            return {
-                'src': url('/images/checked.png'),
-                'label': _('Acknowledged'),
-            }
-        else:
-            return None
 
     def format_events(self, first_row, last_row):
         """
