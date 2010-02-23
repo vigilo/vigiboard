@@ -341,21 +341,13 @@ class VigiboardRequest():
         de l'affichage pour un historique donné.
         """
 
-        ids = [data[0].idcause for data in self.events]
+        ids = [data[0].idevent for data in self.events]
         history = DBSession.query(
                     EventHistory,
                 ).filter(EventHistory.idevent.in_(ids)
                 ).order_by(desc(EventHistory.timestamp)
                 ).order_by(desc(EventHistory.idhistory))
-
-        hists = {}
-        for idevent in ids:
-            hists[idevent] = []
-
-        for entry in history:
-            hists[entry.idevent].append(entry)
-
-        return hists
+        return history
 
     def generate_tmpl_context(self):
         """

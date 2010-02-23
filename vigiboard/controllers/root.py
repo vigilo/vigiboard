@@ -55,14 +55,13 @@ class RootController(VigiboardRootController):
             redirect('/')
 
     @validate(validators={
-            'page': validators.Int(),
+            'page': validators.Int(min=1),
         }, error_handler=process_form_errors)
-    @expose('vigiboard.html')
+    @expose('vigiboard_event_table.html')
     @require(Any(not_anonymous(), msg=l_("You need to be authenticated")))
     def default(self, page=1, hostgroup=None, servicegroup=None,
             host=None, service=None, output=None, trouble_ticket=None,
             from_date=None, to_date=None, *argv, **krgv):
-            
         """
         Page d'accueil de Vigiboard. Elle affiche, suivant la page demandée
         (page 1 par defaut), la liste des événements, rangés par ordre de prise
@@ -77,9 +76,6 @@ class RootController(VigiboardRootController):
         @param output: Idem que host mais sur le text explicatif
         @param trouble_ticket: Idem que host mais sur les tickets attribués
         """
-        if page < 1:
-            page = 1
-
         username = request.environ['repoze.who.identity']['repoze.who.userid']
         user = User.by_user_name(username)
 
@@ -191,15 +187,13 @@ class RootController(VigiboardRootController):
             nb_pages = nb_pages,
             page = page,
             event_edit_status_options = edit_event_status_options,
-            history = [],
-            hist_error = False,
             search = search,
             refresh_times = config['vigiboard_refresh_times'],
         )
 
     @validate(validators={
             'idcorrevent': validators.Int(not_empty=True),
-            'page': validators.Int(),
+            'page': validators.Int(min=1),
         }, error_handler=process_form_errors)
     @expose('vigiboard_raw_events_table.html')
     @require(Any(not_anonymous(), msg=l_("You need to be authenticated")))
@@ -210,7 +204,6 @@ class RootController(VigiboardRootController):
 
         @param idevent: identifiant de l'événement souhaité
         """
-
         username = request.environ['repoze.who.identity']['repoze.who.userid']
         events = VigiboardRequest(User.by_user_name(username), False)
         events.add_table(
@@ -256,9 +249,7 @@ class RootController(VigiboardRootController):
             },
             nb_pages = nb_pages,
             page = page,
-            event_edit_status_options = edit_event_status_options,
             history = history_entries,
-            hist_error = True,
             search = {
                 'host': '',
                 'service': '',
@@ -272,52 +263,61 @@ class RootController(VigiboardRootController):
            refresh_times=config['vigiboard_refresh_times'],
         )
 
-    @validate(validators={'idevent': validators.Int(not_empty=True)},
-            error_handler=process_form_errors)
-    @expose('vigiboard.html')
+    @validate(validators={
+            'idevent': validators.Int(not_empty=True),
+            'page': validators.Int(min=1),
+        }, error_handler=process_form_errors)
+    @expose('vigiboard_history_table.html')
     @require(Any(not_anonymous(), msg=l_("You need to be authenticated")))
-    def event(self, idevent):
+    def event(self, idevent, page=1):
         """
         Affichage de l'historique d'un événement.
         Pour accéder à cette page, l'utilisateur doit être authentifié.
 
         @param idevent: identifiant de l'événement souhaité
         """
-
         username = request.environ['repoze.who.identity']['repoze.who.userid']
         events = VigiboardRequest(User.by_user_name(username))
         events.add_table(
-            CorrEvent,
+            Event,
             events.items.c.hostname,
             events.items.c.servicename,
         )
-        events.add_join((Event, CorrEvent.idcause == Event.idevent))
         events.add_join((events.items, 
             Event.idsupitem == events.items.c.idsupitem))
-        events.add_filter(CorrEvent.idcorrevent == idcorrevent)
-        
-        # Vérification que l'événement existe
-        if events.num_rows() != 1 :
-            flash(_('No access to this event'), 'error')
+
+        if events.num_rows() != 1:
+            flash(_('No such event or access denied'), 'error')
             redirect('/')
-       
+
         events.format_events(0, 1)
-        history_entries = events.format_history()
-        events.generate_tmpl_context() 
+        events.generate_tmpl_context()
+        history = events.format_history()
+
+        total_rows = history.count()
+        items_per_page = int(config['vigiboard_items_per_page'])
+
+        id_first_row = items_per_page * (page-1)
+        id_last_row = min(id_first_row + items_per_page, total_rows)
+
+        history_entries = history[id_first_row : id_last_row]
+
+        nb_pages = int(math.ceil(total_rows / (items_per_page + 0.0)))
+        if not total_rows:
+            id_first_row = 0
+        else:
+            id_first_row += 1
 
         return dict(
-            events = events.events,
             plugins = get_plugins_instances(),
             rows_info = {
-                'id_first_row': 1,
-                'id_last_row': 1,
-                'total_rows': 1,
+                'id_first_row': id_first_row,
+                'id_last_row': id_last_row,
+                'total_rows': total_rows,
             },
-            nb_pages = 1,
-            page = 1,
-            event_edit_status_options = edit_event_status_options,
+            nb_pages = nb_pages,
+            page = page,
             history = history_entries,
-            hist_error = True,
             search = {
                 'host': '',
                 'service': '',
@@ -334,57 +334,66 @@ class RootController(VigiboardRootController):
     @validate(
         validators={
             'host': validators.NotEmpty(),
-#            'service': validators.NotEmpty()
+#            'service': validators.NotEmpty(),
+            'page': validators.Int(min=1),
         }, 
         error_handler = process_form_errors)
-    @expose('vigiboard.html')
+    @expose('vigiboard_event_table.html')
     @require(Any(not_anonymous(), msg=l_("You need to be authenticated")))
-    def item(self, host, service=None):
+    def item(self, host, service=None, page=1):
         """
-        Affichage de l'historique de l'ensemble des événements correspondant
-        au host et service demandé.
+        Affichage de l'historique de l'ensemble des événements corrélés
+        jamais ouverts sur l'hôte / service demandé.
         Pour accéder à cette page, l'utilisateur doit être authentifié.
 
         @param host: Nom de l'hôte souhaité.
         @param service: Nom du service souhaité
         """
-
         idsupitem = SupItem.get_supitem(host, service)
 
         username = request.environ['repoze.who.identity']['repoze.who.userid']
-        events = VigiboardRequest(User.by_user_name(username), False)
-        events.add_table(
+        aggregates = VigiboardRequest(User.by_user_name(username), False)
+        aggregates.add_table(
             CorrEvent,
-            events.items.c.hostname,
-            events.items.c.servicename,
+            aggregates.items.c.hostname,
+            aggregates.items.c.servicename,
         )
-        events.add_join((Event, CorrEvent.idcause == Event.idevent))
-        events.add_join((events.items, 
-            Event.idsupitem == events.items.c.idsupitem))
-        events.add_filter(events.items.c.idsupitem == idsupitem)
+        aggregates.add_join((Event, CorrEvent.idcause == Event.idevent))
+        aggregates.add_join((aggregates.items, 
+            Event.idsupitem == aggregates.items.c.idsupitem))
+        aggregates.add_filter(aggregates.items.c.idsupitem == idsupitem)
 
         # Vérification qu'il y a au moins 1 événement qui correspond
-        if events.num_rows() == 0 :
+        total_rows = aggregates.num_rows()
+        if total_rows == 0 :
             flash(_('No access to this host/service or no event yet'), 'error')
             redirect('/')
 
-        events.format_events(0, events.num_rows())
-        history_entries = events.format_history()
-        events.generate_tmpl_context()
+        items_per_page = int(config['vigiboard_items_per_page'])
+
+        id_first_row = items_per_page * (page-1)
+        id_last_row = min(id_first_row + items_per_page, total_rows)
+
+        aggregates.format_events(id_first_row, id_last_row)
+        aggregates.generate_tmpl_context()
+
+        nb_pages = int(math.ceil(total_rows / (items_per_page + 0.0)))
+        if not total_rows:
+            id_first_row = 0
+        else:
+            id_first_row += 1
 
         return dict(
-            events = events.events,
+            events = aggregates.events,
             plugins = get_plugins_instances(),
             rows_info = {
-                'id_first_row': 1,
-                'id_last_row': 1,
-                'total_rows': 1,
+                'id_first_row': id_first_row,
+                'id_last_row': id_last_row,
+                'total_rows': total_rows,
             },
-            nb_pages = 1,
-            page = 1,
+            nb_pages = nb_pages,
+            page = page,
             event_edit_status_options = edit_event_status_options,
-            history = history_entries,
-            hist_error = True,
             search = {
                 'host': '',
                 'service': '',
