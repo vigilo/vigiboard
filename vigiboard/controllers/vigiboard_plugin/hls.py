@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
-# vim:set expandtab tabstop=4 shiftwidth=4: 
+# vim:set expandtab tabstop=4 shiftwidth=4:
 """
-Plugin SHN : High level service
+Un plugin pour VigiBoard qui ajoute une colonne avec les services de haut
+niveau (L{HighLevelService}) impactés par un événement.
 """
 
 from pylons.i18n import ugettext as _
@@ -13,14 +14,20 @@ from vigilo.models import HighLevelService, \
                             CorrEvent, Event, SupItem
 
 class PluginHLS(VigiboardRequestPlugin):
-
     """
-    Plugin permettant de rajouter le nombre de Service de Haut Niveau
-    impactés à l'affichage et d'obtenir une liste détaillée de ces
-    Services de Haut Niveau.
+    Plugin qui permet de voir les services de haut niveau impactés par
+    un événement.
     """
     def get_value(self, idcorrevent):
-        """Ajout de fonctionnalités au contrôleur"""
+        """
+        Renvoie le nom des services de haut niveau impactés par l'événement.
+
+        @param idcorrevent: Identifiant de l'événement corrélé.
+        @type idcorrevent: C{int}
+        @return: Un dictionnaire dont la clé "services" contient une liste
+            des noms des services de haut niveau impactés par l'événement
+            corrélé dont l'identifiant est L{idcorrevent}.
+        """
         supitem = self.get_correvent_supitem(idcorrevent)
 
         if not supitem:

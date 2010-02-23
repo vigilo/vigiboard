@@ -533,6 +533,12 @@ def get_last_modification_timestamp(event_id_list,
         last_modification_timestamp.timetuple()))
 
 def get_plugins_instances():
+    """
+    Renvoie une liste d'instances de plugins pour VigiBoard.
+
+    @return: Liste de tuples contenant le nom du plugin et l'instance associé.
+    @rtype: C{list} of C{tuple}
+    """
     plugins = config.get('vigiboard_plugins', [])
     plugins_instances = []
     for (plugin_name, plugin_class) in plugins:

@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
-# vim:set expandtab tabstop=4 shiftwidth=4: 
+# vim:set expandtab tabstop=4 shiftwidth=4:
 """
-
+Un plugin pour VigiBoard qui ajoute une colonne avec le nom de l'hôte
+sur lequel porte l'événement corrélé.
 """
 
 from pylons.i18n import ugettext as _
@@ -13,5 +14,7 @@ from vigilo.models import HighLevelService, \
                             CorrEvent, Event, SupItem
 
 class PluginHostname(VigiboardRequestPlugin):
-    pass
+    """
+    Ajoute une colonne avec le nom de l'hôte impacté par un événement corrélé.
+    """
 

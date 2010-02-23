@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim:set expandtab tabstop=4 shiftwidth=4: 
+# vim:set expandtab tabstop=4 shiftwidth=4:
 """
-
+Un plugin pour VigiBoard qui ajoute une colonne avec les liens vers les
+entrées d'historiques liées à l'événement, ainsi que les liens vers les
+applications externes.
 """
 
 import urllib
@@ -16,6 +18,11 @@ from vigilo.models.configure import DBSession
 from vigilo.models import User, CorrEvent, Event, StateName
 
 class PluginHistory(VigiboardRequestPlugin):
+    """
+    Plugin qui ajoute des liens vers les historiques et les applications
+    externes.
+    """
+
     def get_value(self, idcorrevent, *args, **kwargs):
         """
         Renvoie les éléments pour l'affichage de la fenêtre de dialogue
