@@ -248,6 +248,7 @@ class RootController(VigiboardRootController):
             id_first_row += 1
 
         return dict(
+            idcorrevent = idcorrevent,
             events = events.events,
             plugins = get_plugins_instances(),
             rows_info = {
@@ -325,6 +326,7 @@ class RootController(VigiboardRootController):
             id_first_row += 1
 
         return dict(
+            idevent = idevent,
             plugins = get_plugins_instances(),
             rows_info = {
                 'id_first_row': id_first_row,
@@ -402,12 +404,9 @@ class RootController(VigiboardRootController):
         else:
             id_first_row += 1
         
-        item_label = host
-        if service:
-            item_label = "(%(hostname)s, %(servicename)s)" % \
-                {"hostname": host, "servicename": service}
-
         return dict(
+            hostname = host,
+            servicename = service,
             events = aggregates.events,
             item_label = item_label,
             plugins = get_plugins_instances(),

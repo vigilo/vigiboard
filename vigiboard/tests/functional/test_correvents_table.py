@@ -14,7 +14,7 @@ from vigilo.models import Event, CorrEvent, \
                             Host, HostGroup, LowLevelService
 from vigiboard.tests import TestController
 
-def populate_DB():
+def populate_DB(caused_by_service):
     """ Peuple la base de données. """
     # On ajoute les groupes et leurs dépendances
     hosteditors = HostGroup(name=u'editorsgroup')
@@ -91,6 +91,7 @@ def populate_DB():
     event_template = {
         'message': u'foo',
         'current_state': StateName.statename_to_value(u'WARNING'),
+        'timestamp': datetime.now(),
     }
 
     event1 = Event(supitem=service1, **event_template)
@@ -114,6 +115,7 @@ def populate_DB():
         'priority': 1,
         'status': u'None',
     }
+
     aggregate1 = CorrEvent(
         idcause=event1.idevent, **aggregate_template)
     aggregate2 = CorrEvent(
@@ -133,6 +135,7 @@ def populate_DB():
     DBSession.add(aggregate2)
     DBSession.add(aggregate3)
     DBSession.add(aggregate4)
+
     DBSession.flush()
     transaction.commit()
 
@@ -141,15 +144,16 @@ class TestEventTable(TestController):
     Test du tableau d'événements de Vigiboard
     """
 
-    def test_event_table(self):
+    def test_homepage(self):
         """
-        Test du tableau d'évènements de la page d'accueil de Vigiboard.
+        Tableau des événements (page d'accueil).
         """
+        populate_DB(True)
 
-        populate_DB()
+        # L'utilisateur n'est pas authentifié.
+        response = self.app.get('/', status=401)
 
-        ### 1er cas : L'utilisateur utilisé pour
-        # se connecter à Vigiboard est 'editor'.
+        # L'utilisateur est authentifié avec des permissions réduites.
         environ = {'REMOTE_USER': 'editor'}
         response = self.app.get('/', extra_environ=environ)
 
@@ -163,8 +167,7 @@ class TestEventTable(TestController):
         print "There are %d columns in the result set" % len(cols)
         assert_true(len(cols) > 1)
 
-        ### 2nd cas : L'utilisateur utilisé pour
-        # se connecter à Vigiboard est 'manager'.
+        # L'utilisateur est authentifié avec des permissions plus étendues.
         environ = {'REMOTE_USER': 'manager'}
         response = self.app.get('/', extra_environ=environ)
 
@@ -177,4 +180,64 @@ class TestEventTable(TestController):
         cols = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr/td')
         print "There are %d columns in the result set" % len(cols)
         assert_true(len(cols) > 1)
+
+    def test_correvents_table_for_LLS(self):
+        """
+        Tableau des événements corrélés pour un service de bas niveau.
+        """
+        populate_DB(True)
+        url = '/item/%s/%s' % ('managerhost', 'managerservice')
+
+        # L'utilisateur n'est pas authentifié.
+        response = self.app.get(url, status=401)
+
+        # L'utilisateur dispose de permissions restreintes.
+        # Il n'a pas accès aux événements corrélés sur le service donné.
+        # Donc, on s'attend à être redirigé avec un message d'erreur.
+        environ = {'REMOTE_USER': 'editor'}
+        response = self.app.get(url, extra_environ=environ, status=302)
+        response = response.follow(status = 200, extra_environ = environ)
+        assert_true(len(response.lxml.xpath(
+            '//div[@id="flash"]/div[@class="error"]')))
+
+        # L'utilisateur dispose de permissions plus étendues.
+        # Il doit avoir accès à l'historique.
+        # Ici, il n'y a qu'un seul événement corrélé pour ce service.
+        environ = {'REMOTE_USER': 'manager'}
+        response = self.app.get(url, extra_environ=environ, status=200)
+
+        # Il doit y avoir 1 ligne de résultats.
+        rows = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr')
+        print "There are %d rows in the result set" % len(rows)
+        assert_equal(len(rows), 1)
+
+    def test_correvents_table_for_host(self):
+        """
+        Tableau des événements corrélés pour un hôte.
+        """
+        populate_DB(False)
+        url = '/item/%s/' % ('managerhost', )
+
+        # L'utilisateur n'est pas authentifié.
+        response = self.app.get(url, status=401)
+
+        # L'utilisateur dispose de permissions restreintes.
+        # Il n'a pas accès aux événements corrélés sur le service donné.
+        # Donc, on s'attend à être redirigé avec un message d'erreur.
+        environ = {'REMOTE_USER': 'editor'}
+        response = self.app.get(url, extra_environ=environ, status=302)
+        response = response.follow(status = 200, extra_environ = environ)
+        assert_true(len(response.lxml.xpath(
+            '//div[@id="flash"]/div[@class="error"]')))
+
+        # L'utilisateur dispose de permissions plus étendues.
+        # Il doit avoir accès à l'historique.
+        # Ici, il n'y a qu'un seul événement corrélé pour ce service.
+        environ = {'REMOTE_USER': 'manager'}
+        response = self.app.get(url, extra_environ=environ, status=200)
+
+        # Il doit y avoir 1 ligne de résultats.
+        rows = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr')
+        print "There are %d rows in the result set" % len(rows)
+        assert_equal(len(rows), 1)
 

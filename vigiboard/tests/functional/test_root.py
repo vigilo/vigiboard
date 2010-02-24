@@ -98,6 +98,7 @@ def add_correvent_caused_by(supitem,
         supitem = supitem, 
         message = u'foo',
         current_state = StateName.statename_to_value(event_status),
+        timestamp = datetime.now(),
     )
     DBSession.add(event)
     DBSession.flush()

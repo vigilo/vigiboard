@@ -70,6 +70,7 @@ def add_correvent_caused_by(supitem):
         supitem = supitem, 
         message = u'foo',
         current_state = StateName.statename_to_value(u"WARNING"),
+        timestamp = datetime.now(),
     )
     DBSession.add(event)
     DBSession.flush()
@@ -100,11 +101,12 @@ def add_correvent_caused_by(supitem):
 
 class TestHistoryTable(TestController):
     """
-    Teste .
+    Teste la table qui affiche l'historique des actions
+    sur un événement brut.
     """
 
     def setUp(self):
-        super(TestEventTable, self).setUp()
+        super(TestHistoryTable, self).setUp()
 
     def test_cause_host_history(self):
         """Historique de la cause d'un événement corrélé sur un hôte."""

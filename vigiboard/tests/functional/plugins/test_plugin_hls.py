@@ -3,12 +3,13 @@
 
 from datetime import datetime
 import transaction
-from vigiboard.tests import TestController
 from nose.tools import assert_equal
+
+from vigilo.models.configure import DBSession
 from vigilo.models import Permission, StateName, \
                             HostGroup, Host, HighLevelService, \
                             Event, CorrEvent, ImpactedPath, ImpactedHLS
-from vigilo.models.configure import DBSession
+from vigiboard.tests import TestController
 
 def populate_DB():
     """ Peuple la base de données. """
@@ -43,7 +44,9 @@ def populate_DB():
     event1 = Event(
         supitem = host,
         message = u'foo',
-        current_state = StateName.statename_to_value(u'WARNING'))
+        current_state = StateName.statename_to_value(u'WARNING'),
+        timestamp = datetime.now(),
+    )
     DBSession.add(event1)
     DBSession.flush()
 
