@@ -76,6 +76,9 @@ class RootController(VigiboardRootController):
         @param output: Idem que host mais sur le text explicatif
         @param trouble_ticket: Idem que host mais sur les tickets attribués
         """
+        if not page:
+            page = 1
+
         username = request.environ['repoze.who.identity']['repoze.who.userid']
         user = User.by_user_name(username)
 
@@ -204,6 +207,9 @@ class RootController(VigiboardRootController):
 
         @param idevent: identifiant de l'événement souhaité
         """
+        if not page:
+            page = 1
+
         username = request.environ['repoze.who.identity']['repoze.who.userid']
         events = VigiboardRequest(User.by_user_name(username), False)
         events.add_table(
@@ -217,14 +223,14 @@ class RootController(VigiboardRootController):
             Event.idsupitem == events.items.c.idsupitem))
         events.add_filter(Event.idevent != CorrEvent.idcause)
         events.add_filter(CorrEvent.idcorrevent == idcorrevent)
-        
+
         # Vérification que l'événement existe
-        if events.num_rows() != 1 :
+        total_rows = events.num_rows()
+        if total_rows < 1:
             flash(_('No masked event or access denied'), 'error')
             redirect('/')
 
         # Calcul des éléments à afficher et du nombre de pages possibles
-        total_rows = events.num_rows()
         items_per_page = int(config['vigiboard_items_per_page'])
 
         id_first_row = items_per_page * (page-1)
@@ -276,6 +282,9 @@ class RootController(VigiboardRootController):
 
         @param idevent: identifiant de l'événement souhaité
         """
+        if not page:
+            page = 1
+
         username = request.environ['repoze.who.identity']['repoze.who.userid']
         events = VigiboardRequest(User.by_user_name(username))
         events.add_table(
@@ -349,6 +358,9 @@ class RootController(VigiboardRootController):
         @param host: Nom de l'hôte souhaité.
         @param service: Nom du service souhaité
         """
+        if not page:
+            page = 1
+            
         idsupitem = SupItem.get_supitem(host, service)
 
         username = request.environ['repoze.who.identity']['repoze.who.userid']

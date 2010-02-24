@@ -66,6 +66,7 @@ class PluginHistory(VigiboardRequestPlugin):
                 service = urllib.quote(event.servicename)
             else:
                 service = None
+
             eventdetails[edname] = edlink[1] % {
                 'idcorrevent': idcorrevent,
                 'host': urllib.quote(event.hostname),
@@ -84,6 +85,7 @@ class PluginHistory(VigiboardRequestPlugin):
                 host = event.hostname,
                 service = event.servicename,
                 eventdetails = eventdetails,
+                idcause = event[0].idevent,
             )
 
 
