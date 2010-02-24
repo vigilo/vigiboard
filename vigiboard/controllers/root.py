@@ -350,7 +350,7 @@ class RootController(VigiboardRootController):
             'page': validators.Int(min=1),
         }, 
         error_handler = process_form_errors)
-    @expose('events_table.html.html')
+    @expose('events_table.html')
     @require(Any(not_anonymous(), msg=l_("You need to be authenticated")))
     def item(self, host, service=None, page=1):
         """
@@ -397,9 +397,15 @@ class RootController(VigiboardRootController):
             id_first_row = 0
         else:
             id_first_row += 1
+        
+        item_label = host
+        if service:
+            item_label = "(%(hostname)s, %(servicename)s)" % \
+                {"hostname": host, "servicename": service}
 
         return dict(
             events = aggregates.events,
+            item_label = item_label,
             plugins = get_plugins_instances(),
             rows_info = {
                 'id_first_row': id_first_row,
