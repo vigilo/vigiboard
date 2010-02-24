@@ -358,7 +358,7 @@ class VigiboardRequest():
         from vigiboard.controllers.root import get_last_modification_timestamp
 
         # Si les objets manipulés sont des Event, on a facilement les idevent.
-        if isinstance(data[0], Event):
+        if isinstance(self.events[0][0], Event):
             ids = [data[0].idevent for data in self.events]
         # Sinon, il s'agit de CorrEvent(s) dont on récupère l'idcause.
         else:

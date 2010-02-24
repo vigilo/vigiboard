@@ -57,7 +57,7 @@ class RootController(VigiboardRootController):
     @validate(validators={
             'page': validators.Int(min=1),
         }, error_handler=process_form_errors)
-    @expose('vigiboard_event_table.html')
+    @expose('event_table.html')
     @require(Any(not_anonymous(), msg=l_("You need to be authenticated")))
     def default(self, page=1, hostgroup=None, servicegroup=None,
             host=None, service=None, output=None, trouble_ticket=None,
@@ -255,7 +255,6 @@ class RootController(VigiboardRootController):
             },
             nb_pages = nb_pages,
             page = page,
-            history = history_entries,
             search = {
                 'host': '',
                 'service': '',
@@ -347,7 +346,7 @@ class RootController(VigiboardRootController):
             'page': validators.Int(min=1),
         }, 
         error_handler = process_form_errors)
-    @expose('vigiboard_event_table.html')
+    @expose('event_table.html')
     @require(Any(not_anonymous(), msg=l_("You need to be authenticated")))
     def item(self, host, service=None, page=1):
         """
