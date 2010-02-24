@@ -217,8 +217,10 @@ class RootController(VigiboardRootController):
             events.items.c.hostname,
             events.items.c.servicename,
         )
-        events.add_join((EVENTSAGGREGATE_TABLE, EVENTSAGGREGATE_TABLE.c.idevent == Event.idevent))
-        events.add_join((CorrEvent, CorrEvent.idcorrevent == EVENTSAGGREGATE_TABLE.c.idcorrevent))
+        events.add_join((EVENTSAGGREGATE_TABLE, \
+            EVENTSAGGREGATE_TABLE.c.idevent == Event.idevent))
+        events.add_join((CorrEvent, CorrEvent.idcorrevent == \
+            EVENTSAGGREGATE_TABLE.c.idcorrevent))
         events.add_join((events.items, 
             Event.idsupitem == events.items.c.idsupitem))
         events.add_filter(Event.idevent != CorrEvent.idcause)
@@ -292,8 +294,10 @@ class RootController(VigiboardRootController):
             events.items.c.hostname,
             events.items.c.servicename,
         )
-        events.add_join((EVENTSAGGREGATE_TABLE, EVENTSAGGREGATE_TABLE.c.idevent == Event.idevent))
-        events.add_join((CorrEvent, CorrEvent.idcorrevent == EVENTSAGGREGATE_TABLE.c.idcorrevent))
+        events.add_join((EVENTSAGGREGATE_TABLE, \
+            EVENTSAGGREGATE_TABLE.c.idevent == Event.idevent))
+        events.add_join((CorrEvent, CorrEvent.idcorrevent == \
+            EVENTSAGGREGATE_TABLE.c.idcorrevent))
         events.add_join((events.items, 
             Event.idsupitem == events.items.c.idsupitem))
         events.add_filter(Event.idevent == idevent)

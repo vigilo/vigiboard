@@ -14,7 +14,17 @@ from vigilo.models import ServiceGroup, HostGroup, \
                             LowLevelService, Event, CorrEvent
 
 def insert_deps(return_service):
-    """Insère les dépendances nécessaires aux tests."""
+    """
+    Insère les dépendances nécessaires aux tests.
+
+    @param return_service: Indique si les événements générés
+        concernent un hôte (False) ou un service de bas niveau (True).
+    @type return_service: C{bool}
+    @return: Renvoie un tuple avec le groupe d'hôte créé,
+        l'identifiant du L{CorrEvent} généré et enfin,
+        l'identifiant de l'L{Event} généré.
+    @rtype: C{tuple}
+    """
     timestamp = datetime.now()
 
     hostgroup = HostGroup(
@@ -82,14 +92,14 @@ def insert_deps(return_service):
     DBSession.add(correvent)
     DBSession.flush()
 
-    return (hostgroup, correvent.idcorrevent)
+    return (hostgroup, correvent.idcorrevent, event.idevent)
 
-class TestHistoryForm(TestController):
+class TestDetailsPlugin(TestController):
     """Teste le dialogue pour l'accès aux historiques."""
 
-    def test_history_form_LLS_alert_when_allowed(self):
-        """Teste le formulaire d'historique avec un LLS (alerte visible)."""
-        hostgroup, idcorrevent = insert_deps(True)
+    def test_details_plugin_LLS_alert_when_allowed(self):
+        """Dialogue des détails avec un LLS et les bons droits."""
+        hostgroup, idcorrevent, idcause = insert_deps(True)
         manage = Permission.by_permission_name(u'manage')
         manage.hostgroups.append(hostgroup)
         DBSession.flush()
@@ -97,7 +107,7 @@ class TestHistoryForm(TestController):
 
         response = self.app.post('/get_plugin_value', {
                 'idcorrevent': idcorrevent,
-                'plugin_name': 'history',
+                'plugin_name': 'details',
             }, extra_environ={'REMOTE_USER': 'manager'})
         json = response.json
 
@@ -108,6 +118,7 @@ class TestHistoryForm(TestController):
 
         assert_equal(json, {
             "idcorrevent": idcorrevent,
+            "idcause": idcause,
             "service": "baz",
             "peak_state": "WARNING",
             "current_state": "WARNING",
@@ -115,9 +126,9 @@ class TestHistoryForm(TestController):
             "initial_state": "WARNING"
         })
 
-    def test_history_form_host_alert_when_allowed(self):
-        """Teste le formulaire d'historique avec un hôte (alerte visible)."""
-        hostgroup, idcorrevent = insert_deps(False)
+    def test_details_plugin_host_alert_when_allowed(self):
+        """Dialogue des détails avec un hôte et les bons droits."""
+        hostgroup, idcorrevent, idcause = insert_deps(False)
         manage = Permission.by_permission_name(u'manage')
         manage.hostgroups.append(hostgroup)
         DBSession.flush()
@@ -125,7 +136,7 @@ class TestHistoryForm(TestController):
 
         response = self.app.post('/get_plugin_value', {
                 'idcorrevent': idcorrevent,
-                'plugin_name': 'history',
+                'plugin_name': 'details',
             }, extra_environ={'REMOTE_USER': 'manager'})
         json = response.json
 
@@ -136,6 +147,7 @@ class TestHistoryForm(TestController):
 
         assert_equal(json, {
             "idcorrevent": idcorrevent,
+            "idcause": idcause,
             "service": None,
             "peak_state": "WARNING",
             "current_state": "WARNING",
@@ -144,27 +156,59 @@ class TestHistoryForm(TestController):
         })
 
 
-    def test_history_form_LLS_when_forbidden(self):
-        """Teste le formulaire d'historique avec un LLS (alerte invisible)."""
+    def test_details_plugin_LLS_when_forbidden(self):
+        """Dialogue des détails avec un LLS et des droits insuffisants."""
         idcorrevent = insert_deps(True)[1]
         DBSession.flush()
         transaction.commit()
 
+        # Le contrôleur renvoie une erreur 404 (HTTPNotFound)
+        # lorsque l'utilisateur n'a pas les permissions nécessaires sur
+        # les données ou qu'aucun événement correspondant n'est trouvé.
         self.app.post('/get_plugin_value', {
                 'idcorrevent': idcorrevent,
-                'plugin_name': 'history',
+                'plugin_name': 'details',
             }, extra_environ={'REMOTE_USER': 'manager'},
-            status=302)
+            status=404)
 
-    def test_history_form_host_when_forbidden(self):
-        """Teste le formulaire d'historique avec un hôte (alerte invisible)."""
+    def test_details_plugin_host_when_forbidden(self):
+        """Dialogue des détails avec un hôte et des droits insuffisants."""
         idcorrevent = insert_deps(False)[1]
         DBSession.flush()
         transaction.commit()
 
+        # Le contrôleur renvoie une erreur 404 (HTTPNotFound)
+        # lorsque l'utilisateur n'a pas les permissions nécessaires sur
+        # les données ou qu'aucun événement correspondant n'est trouvé.
         self.app.post('/get_plugin_value', {
                 'idcorrevent': idcorrevent,
-                'plugin_name': 'history',
+                'plugin_name': 'details',
             }, extra_environ={'REMOTE_USER': 'manager'},
-            status=302)
+            status=404)
+
+    def test_details_plugin_LLS_anonymous(self):
+        """Dialogue des détails avec un LLS et en anonyme."""
+        idcorrevent = insert_deps(True)[1]
+        DBSession.flush()
+        transaction.commit()
+
+        # Le contrôleur renvoie une erreur 401 (HTTPUnauthorized)
+        # lorsque l'utilisateur n'est pas authentifié.
+        self.app.post('/get_plugin_value', {
+                'idcorrevent': idcorrevent,
+                'plugin_name': 'details',
+            }, status=401)
+
+    def test_details_plugin_host_anonymous(self):
+        """Dialogue des détails avec un hôte et en anonyme."""
+        idcorrevent = insert_deps(False)[1]
+        DBSession.flush()
+        transaction.commit()
+
+        # Le contrôleur renvoie une erreur 401 (HTTPUnauthorized)
+        # lorsque l'utilisateur n'est pas authentifié.
+        self.app.post('/get_plugin_value', {
+                'idcorrevent': idcorrevent,
+                'plugin_name': 'details',
+            }, status=401)
 
