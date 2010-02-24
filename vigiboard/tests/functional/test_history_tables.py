@@ -105,7 +105,6 @@ class TestEventTable(TestController):
 
     def setUp(self):
         super(TestEventTable, self).setUp()
-#        tg.config['vigiboard_plugins'] = [('history', 'PluginHistory')]
 
     def test_host_event_history(self):
         """Affichage de l'historique d'un évènement corrélé pour un hôte."""

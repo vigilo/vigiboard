@@ -8,16 +8,16 @@ applications externes.
 
 import urllib
 
-from tg.exceptions import HTTPNotFound
+from tg.exceptions import HTTPForbidden
 from tg import flash, request, config, redirect, url
 from pylons.i18n import ugettext as _
 
 from vigiboard.controllers.vigiboardrequest import VigiboardRequest
-from vigiboard.controllers.vigiboard_plugin import VigiboardRequestPlugin
+from vigiboard.controllers.plugins import VigiboardRequestPlugin
 from vigilo.models.configure import DBSession
 from vigilo.models import User, CorrEvent, Event, StateName
 
-class PluginHistory(VigiboardRequestPlugin):
+class PluginDetails(VigiboardRequestPlugin):
     """
     Plugin qui ajoute des liens vers les historiques et les applications
     externes.
@@ -26,10 +26,10 @@ class PluginHistory(VigiboardRequestPlugin):
     def get_value(self, idcorrevent, *args, **kwargs):
         """
         Renvoie les éléments pour l'affichage de la fenêtre de dialogue
-        contenant des liens internes et externes.
-        Pour accéder à cette page, l'utilisateur doit être authentifié.
+        contenant des détails sur un événement corrélé.
 
-        @param id: identifiant de l'événement
+        @param idcorrevent: identifiant de l'événement corrélé.
+        @type idcorrevent: C{int}
         """
 
         # Obtention de données sur l'événement et sur son historique
@@ -49,10 +49,8 @@ class PluginHistory(VigiboardRequestPlugin):
         events.add_filter(CorrEvent.idcorrevent == idcorrevent)
 
         # Vérification que au moins un des identifiants existe et est éditable
-        # TODO: on est dans du JSON, donc flash/redirect ne fonctionneront pas!
         if events.num_rows() != 1:
-            flash(_('No access to this event'), 'error')
-            redirect('/')
+            raise HTTPForbidden()
 
         event = events.req[0]
         eventdetails = {}

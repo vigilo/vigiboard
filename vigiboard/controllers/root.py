@@ -276,23 +276,27 @@ class RootController(VigiboardRootController):
     @require(Any(not_anonymous(), msg=l_("You need to be authenticated")))
     def event(self, idevent, page=1):
         """
-        Affichage de l'historique d'un événement.
+        Affichage de l'historique d'un événement brut.
         Pour accéder à cette page, l'utilisateur doit être authentifié.
 
-        @param idevent: identifiant de l'événement souhaité
+        @param idevent: identifiant de l'événement brut souhaité.
+        @type idevent: C{int}
         """
         if not page:
             page = 1
 
         username = request.environ['repoze.who.identity']['repoze.who.userid']
-        events = VigiboardRequest(User.by_user_name(username))
+        events = VigiboardRequest(User.by_user_name(username), False)
         events.add_table(
             Event,
             events.items.c.hostname,
             events.items.c.servicename,
         )
+        events.add_join((EVENTSAGGREGATE_TABLE, EVENTSAGGREGATE_TABLE.c.idevent == Event.idevent))
+        events.add_join((CorrEvent, CorrEvent.idcorrevent == EVENTSAGGREGATE_TABLE.c.idcorrevent))
         events.add_join((events.items, 
             Event.idsupitem == events.items.c.idsupitem))
+        events.add_filter(Event.idevent == idevent)
 
         if events.num_rows() != 1:
             flash(_('No such event or access denied'), 'error')
@@ -376,7 +380,7 @@ class RootController(VigiboardRootController):
 
         # Vérification qu'il y a au moins 1 événement qui correspond
         total_rows = aggregates.num_rows()
-        if total_rows == 0 :
+        if not total_rows:
             flash(_('No access to this host/service or no event yet'), 'error')
             redirect('/')
 
@@ -473,7 +477,7 @@ class RootController(VigiboardRootController):
             raise redirect(request.environ.get('HTTP_REFERER', url('/')))
         
         # Vérification que au moins un des identifiants existe et est éditable
-        if events.num_rows() <= 0:
+        if not events.num_rows():
             flash(_('No access to this event'), 'error')
             redirect('/')
         
@@ -554,7 +558,7 @@ class RootController(VigiboardRootController):
         plugin_class = plugin_class[0]
         try:
             mypac = __import__(
-                'vigiboard.controllers.vigiboard_plugin.' + plugin_name,
+                'vigiboard.controllers.plugins.' + plugin_name,
                 globals(), locals(), [plugin_class], -1)
             plugin = getattr(mypac, plugin_class)
             if callable(plugin):
@@ -626,7 +630,7 @@ def get_plugins_instances():
     for (plugin_name, plugin_class) in plugins:
         try:
             mypac = __import__(
-                'vigiboard.controllers.vigiboard_plugin.' + plugin_name,
+                'vigiboard.controllers.plugins.' + plugin_name,
                 globals(), locals(), [plugin_class], -1)
             plugin = getattr(mypac, plugin_class)
             if callable(plugin):

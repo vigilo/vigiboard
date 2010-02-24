@@ -15,8 +15,6 @@ from vigilo.models import Event, EventHistory, CorrEvent, \
                             Host, HostGroup
 from vigiboard.tests import TestController
 from vigiboard.controllers.vigiboardrequest import VigiboardRequest
-from vigiboard.controllers.vigiboard_plugin.tests import MonPlugin
-
 
 class TestHostVigiboardRequest(TestController):
     """ Préparation de la base de données en vue des tests. """
@@ -116,7 +114,6 @@ class TestHostVigiboardRequest(TestController):
         tg.request = response.request
 
         # Derrière, VigiboardRequest doit charger le plugin de tests tout seul
-#        tg.config['vigiboard_plugins'] = [['test', 'MonPlugin']]
         vigi_req = VigiboardRequest(User.by_user_name(u'editor'))
         vigi_req.add_table(
             CorrEvent,

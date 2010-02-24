@@ -18,7 +18,7 @@ from vigilo.models.secondary_tables import HOST_GROUP_TABLE, \
                                             SERVICE_GROUP_TABLE
 from vigiboard.widgets.edit_event import EditEventForm
 from vigiboard.widgets.search_form import SearchForm
-from vigiboard.controllers.vigiboard_plugin import VigiboardRequestPlugin
+from vigiboard.controllers.plugins import VigiboardRequestPlugin
 
 LOGGER = getLogger(__name__)
 
@@ -171,7 +171,7 @@ class VigiboardRequest():
         for plug in config.get('vigiboard_plugins', []):
             try:
                 mypac = __import__(
-                    'vigiboard.controllers.vigiboard_plugin.' +\
+                    'vigiboard.controllers.plugins.' +\
                             plug[0], globals(), locals(), [plug[1]], -1)
                 self.add_plugin(getattr(mypac, plug[1])())
             except ImportError:
@@ -331,7 +331,7 @@ class VigiboardRequest():
         self.events = []
 
         for data in self.req[first_row : last_row]:
-            self.events.append((data[0], data.hostname, data.servicename))
+            self.events.append(data)
 
     def format_history(self):
         """
@@ -358,7 +358,9 @@ class VigiboardRequest():
         from vigiboard.controllers.root import get_last_modification_timestamp
 
         # Si les objets manipulés sont des Event, on a facilement les idevent.
-        if isinstance(self.events[0][0], Event):
+        if not len(self.events):
+            ids = []
+        elif isinstance(self.events[0][0], Event):
             ids = [data[0].idevent for data in self.events]
         # Sinon, il s'agit de CorrEvent(s) dont on récupère l'idcause.
         else:

@@ -8,14 +8,7 @@ Un plugin pour VigiBoard qui ajoute 3 colonnes au tableau des événements :
 -   la dernière colonne permet de (dé)sélectionner l'événement pour
     effectuer un traitement par lot.
 """
-
-from pylons.i18n import ugettext as _
-from tg import url
-
-from vigiboard.controllers.vigiboard_plugin import VigiboardRequestPlugin
-from vigilo.models.configure import DBSession
-from vigilo.models import HighLevelService, \
-                            CorrEvent, Event, SupItem
+from vigiboard.controllers.plugins import VigiboardRequestPlugin
 
 class PluginStatus(VigiboardRequestPlugin):
     """

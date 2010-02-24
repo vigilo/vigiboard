@@ -57,10 +57,10 @@ base_config['vigilo_version'] = u'2.0-pre0.1'
 
 # Configuration des liens
 # Les elements suivants peuvent etre utilises dans la chaine de formatage :
-# - idcorrevent : identifiant de l'aggregat (alerte correlee)
-# - host : le nom de l'hote concerne par l'alerte
-# - service : le nom du service concerne par l'alerte
-# - message : le message transmis par Nagios dans l'alerte
+# - %(idcorrevent)d : identifiant de l'aggregat (alerte correlee)
+# - %(host)s : le nom de l'hote concerne par l'alerte
+# - %(service)s : le nom du service concerne par l'alerte
+# - %(message) : le message transmis par Nagios dans l'alerte
 base_config['vigiboard_links.eventdetails'] = {
     'nagios': ['Nagios host details', 'http://example1.com/%(idcorrevent)d'],
     'metrology': ['Metrology details', 'http://example2.com/%(idcorrevent)d'],
@@ -70,29 +70,47 @@ base_config['vigiboard_links.eventdetails'] = {
 }
 
 # URL des tickets, possibilités:
-# - %(idaggregate)s
+# - %(idcorrevent)d
 # - %(host)s
 # - %(service)s
 # - %(tt)s
 base_config['vigiboard_links.tt'] = 'http://example4.com/%(idcorrevent)d/%(tt)s'
 
 # Plugins to use
-base_config['vigiboard_plugins'] = [
-    ('history', 'PluginHistory'),
-    ('date', 'PluginDate'),
-    ('priority', 'PluginPriority'),
-    ('occurrences', 'PluginOccurrences'),
-    ('hostname', 'PluginHostname'),
-    ('servicename', 'PluginServicename'),
-    ('output', 'PluginOutput'),
-    ('hls', 'PluginHLS'),
-    ('tt', 'PluginTroubleTicket'),
-    ('status', 'PluginStatus'),
+base_config['vigiboard_plugins'] = [#{
+#    'correvent': [
+        ('details', 'PluginDetails'),
+        ('date', 'PluginDate'),
+        ('priority', 'PluginPriority'),
+        ('occurrences', 'PluginOccurrences'),
+        ('hostname', 'PluginHostname'),
+        ('servicename', 'PluginServicename'),
+        ('output', 'PluginOutput'),
+        ('hls', 'PluginHLS'),
+        ('tt', 'PluginTroubleTicket'),
+        ('status', 'PluginStatus'),
 
-    # Le plugin PluginId peut servir pour débuguer VigiBoard.
-    # En production, mieux vaut le désactiver car il expose
-    # des données d'un niveau assez bas dans l'interface.
-#    ('id', 'PluginId'),
+        # Le plugin PluginId peut servir pour débuguer VigiBoard.
+        # En production, mieux vaut le désactiver car il expose
+        # des données d'un niveau assez bas dans l'interface.
+#        ('id', 'PluginId'),
+#    ],
+
+#    'event': [
+#        ('timestamp', 'PluginTimestamp'),
+#        ('hostname', 'PluginHostname'),
+#        ('servicename', 'PluginServicename'),
+#        ('current_state', 'PluginCurrentState'),
+#        ('initial_state', 'PluginInitialState'),
+#        ('peak_state', 'PluginPeakState'),
+#        ('output', 'PluginOutput'),
+#        ('history_link', 'PluginHistoryLink'),
+#    ],
+
+#    'eventhistory': [
+#        
+#    ],
+#}
 ]
 
 base_config['vigiboard_refresh_times'] = (

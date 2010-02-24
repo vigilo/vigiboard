@@ -4,10 +4,9 @@
 Ce fichier contient un exemple de plugin pour l'interface
 de VigiBoard. Il s'accompagne d'un template contenu dans
 les thèmes, dans le répertoire suivant :
-vigilo/themes/templates/vigiboard/vigiboard_plugin/test.html
+vigilo/themes/templates/vigiboard/plugins/test.html
 """
-
-from vigiboard.controllers.vigiboard_plugin import VigiboardRequestPlugin
+from vigiboard.controllers.plugins import VigiboardRequestPlugin
 
 class PluginTest(VigiboardRequestPlugin):
     """
