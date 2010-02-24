@@ -198,7 +198,7 @@ class RootController(VigiboardRootController):
             'idcorrevent': validators.Int(not_empty=True),
             'page': validators.Int(min=1),
         }, error_handler=process_form_errors)
-    @expose('vigiboard_raw_events_table.html')
+    @expose('raw_events_table.html')
     @require(Any(not_anonymous(), msg=l_("You need to be authenticated")))
     def masked_events(self, idcorrevent, page=1):
         """
@@ -274,7 +274,7 @@ class RootController(VigiboardRootController):
             'idevent': validators.Int(not_empty=True),
             'page': validators.Int(min=1),
         }, error_handler=process_form_errors)
-    @expose('vigiboard_history_table.html')
+    @expose('history_table.html')
     @require(Any(not_anonymous(), msg=l_("You need to be authenticated")))
     def event(self, idevent, page=1):
         """
