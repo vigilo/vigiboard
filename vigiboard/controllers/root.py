@@ -366,7 +366,7 @@ class RootController(VigiboardRootController):
         error_handler = process_form_errors)
     @expose('events_table.html')
     @require(Any(not_anonymous(), msg=l_("You need to be authenticated")))
-    def item(self, host, service=None, page=1):
+    def item(self, page, host, service=None):
         """
         Affichage de l'historique de l'ensemble des événements corrélés
         jamais ouverts sur l'hôte / service demandé.
@@ -375,9 +375,6 @@ class RootController(VigiboardRootController):
         @param host: Nom de l'hôte souhaité.
         @param service: Nom du service souhaité
         """
-        if not page:
-            page = 1
-            
         idsupitem = SupItem.get_supitem(host, service)
 
         username = request.environ['repoze.who.identity']['repoze.who.userid']
