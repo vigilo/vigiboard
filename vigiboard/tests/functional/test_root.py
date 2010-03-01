@@ -428,7 +428,7 @@ class TestRootController(TestController):
         assert_equal(correvents[1].status, u'Acknowledged')
 
     def test_update_while_data_have_changed(self):
-        """Màj d'un évènement corrélé modifié entretemps"""
+        """Màj d'un évènement corrélé modifié entre temps."""
 
         # On peuple la BDD avec 2 hôtes, 2 services de bas niveau,
         # et un groupe d'hôtes et de services associés à ces items.

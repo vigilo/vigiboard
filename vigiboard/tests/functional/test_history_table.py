@@ -152,7 +152,10 @@ class TestHistoryTable(TestController):
             extra_environ = environ)
 
         # Il doit y avoir 2 lignes de résultats.
-        rows = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr')
+        # NB: la requête XPath est approchante, car XPath 1.0 ne permet pas
+        # de rechercher directement une valeur dans une liste. Elle devrait
+        # néanmoins suffire pour les besoins des tests.
+        rows = response.lxml.xpath('//table[contains(@class, "vigitable")]/tbody/tr')
         assert_equal(len(rows), 2)
 
     def test_cause_service_history(self):
@@ -200,6 +203,9 @@ class TestHistoryTable(TestController):
             extra_environ = environ)
 
         # Il doit y avoir 2 lignes de résultats.
-        rows = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr')
+        # NB: la requête XPath est approchante, car XPath 1.0 ne permet pas
+        # de rechercher directement une valeur dans une liste. Elle devrait
+        # néanmoins suffire pour les besoins des tests.
+        rows = response.lxml.xpath('//table[contains(@class,"vigitable")]/tbody/tr')
         assert_equal(len(rows), 2)
 

@@ -173,7 +173,7 @@ class TestRawEventsTableWithoutPermsLLS(TestController):
         idcorrevent = populate_DB(self.test_service)
         transaction.commit()
 
-        environ = {'REMOTE_USER': 'manager'}
+        environ = {'REMOTE_USER': 'editor'}
 
         # On s'attend à ce qu'une erreur 302 soit renvoyée, et à
         # ce qu'un message d'erreur précise à l'utilisateur qu'il
@@ -246,7 +246,11 @@ class TestRawEventsTableWithPermsLLS(TestController):
             status = 200,
             extra_environ = environ)
 
-        rows = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr')
+        # On s'attend à trouver exactement 1 événement masqué.
+        # NB: la requête XPath est approchante, car XPath 1.0 ne permet pas
+        # de rechercher directement une valeur dans une liste. Elle devrait
+        # néanmoins suffire pour les besoins des tests.
+        rows = response.lxml.xpath('//table[contains(@class, "vigitable")]/tbody/tr')
         assert_equal(len(rows), 1)
 
 class TestRawEventsTableWithPermsHost(TestRawEventsTableWithPermsLLS):

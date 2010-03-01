@@ -150,8 +150,10 @@ class RootController(VigiboardRootController):
                 from_date = datetime.strptime(
                     from_date, _('%Y-%m-%d %I:%M:%S %p'))
             except ValueError:
-                to_date = None
-            aggregates.add_filter(CorrEvent.timestamp_active >= from_date)
+                # On ignore silencieusement la date invalide reçue.
+                pass
+            else:
+                aggregates.add_filter(CorrEvent.timestamp_active >= from_date)
 
         if to_date:
             search['to_date'] = to_date
@@ -160,8 +162,10 @@ class RootController(VigiboardRootController):
                 to_date = datetime.strptime(
                     to_date, _('%Y-%m-%d %I:%M:%S %p'))
             except ValueError:
-                to_date = None
-            aggregates.add_filter(CorrEvent.timestamp_active <= to_date)
+                # On ignore silencieusement la date invalide reçue.
+                pass
+            else:
+                aggregates.add_filter(CorrEvent.timestamp_active <= to_date)
 
         # Calcul des éléments à afficher et du nombre de pages possibles
         total_rows = aggregates.num_rows()
@@ -251,6 +255,8 @@ class RootController(VigiboardRootController):
 
         return dict(
             idcorrevent = idcorrevent,
+            hostname = None,
+            servicename = None,
             events = events.events,
             plugins = get_plugins_instances(),
             rows_info = {

@@ -2,6 +2,7 @@
 """
 Teste le formulaire de recherche avec divers champs.
 """
+from pylons.i18n import ugettext as _
 from nose.tools import assert_true, assert_equal
 from datetime import datetime
 import transaction
@@ -112,8 +113,14 @@ class TestSearchFormMisc(TestController):
         """Teste la recherche par dates."""
         timestamp = insert_deps()
         transaction.commit()
-        from_date = timestamp.strftime('%Y-%m-%d %I:%M:%S %p')
-        to_date = datetime.max.strftime('%Y-%m-%d %I:%M:%S %p')
+
+        # Préparation des dates/heures.
+        # On réutilise le formattage attendu par le contrôleur
+        # (donc dépendant de la locale des tests, "fr" par défaut).
+        # TRANSLATORS: Format de date et heure.
+        from_date = timestamp.strftime(str(_("%Y-%m-%d %I:%M:%S %p")))
+        # TRANSLATORS: Format de date et heure.
+        to_date = datetime.max.strftime(str(_("%Y-%m-%d %I:%M:%S %p")))
 
         # Permet également de vérifier que la recherche
         # par date est inclusive.
