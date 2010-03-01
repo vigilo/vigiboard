@@ -50,6 +50,12 @@ class VigiboardRequest():
         else:
             lang = lang[0]
 
+        # TODO: Il faudrait gérer les cas où tout nous intéresse dans "lang".
+        # Si l'identifiant de langage est composé (ex: "fr_FR"),
+        # on ne récupère que la 1ère partie.
+        lang = lang.replace('_', '-')
+        lang = lang.split('-')[0]
+
         self.user_groups = user.groups
         self.lang = lang
         self.generaterq = False
