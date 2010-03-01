@@ -180,6 +180,8 @@ class RootController(VigiboardRootController):
             id_first_row += 1
 
         return dict(
+            hostname = None,
+            servicename = None,
             events = aggregates.events,
             plugins = get_plugins_instances(),
             rows_info = {
