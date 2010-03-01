@@ -408,7 +408,6 @@ class RootController(VigiboardRootController):
             hostname = host,
             servicename = service,
             events = aggregates.events,
-            item_label = item_label,
             plugins = get_plugins_instances(),
             rows_info = {
                 'id_first_row': id_first_row,
