@@ -4,7 +4,7 @@
 Controller for authentification
 """
 
-from tg import expose, flash, url, request, redirect
+from tg import expose, flash, request, redirect
 
 from pylons.i18n import ugettext as _
 
@@ -31,7 +31,7 @@ class VigiboardRootController(BaseController):
     error = ErrorController()
 
     @expose('login.html')
-    def login(self, came_from=url('/')):
+    def login(self, came_from='/'):
         """Start the user login."""
         login_counter = request.environ['repoze.who.logins']
         if login_counter > 0:
@@ -40,21 +40,21 @@ class VigiboardRootController(BaseController):
                     came_from=came_from)
 
     @expose()
-    def post_login(self, came_from=url('/')):
+    def post_login(self, came_from='/'):
         """
         Redirect the user to the initially requested page on successful
         authentication or redirect her back to the login page if login failed.
         """
         if not request.identity:
             login_counter = request.environ['repoze.who.logins'] + 1
-            redirect(url('/login', came_from=came_from, __logins=login_counter))
+            redirect('/login', came_from=came_from, __logins=login_counter)
         userid = request.identity['repoze.who.userid']
         ApplicationLog.add_login(userid, request.remote_addr, u'Vigiboard')
         flash(_('Welcome back, %s!') % userid)
         redirect(came_from)
 
     @expose()
-    def post_logout(self, came_from=url('/')):
+    def post_logout(self, came_from='/'):
         """
         Redirect the user to the initially requested page on logout and say
         goodbye as well.
