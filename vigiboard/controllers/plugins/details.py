@@ -37,7 +37,7 @@ class PluginDetails(VigiboardRequestPlugin):
                     ).get('repoze.who.userid')
 
         username = request.environ['repoze.who.identity']['repoze.who.userid']
-        events = VigiboardRequest(User.by_user_name(username))
+        events = VigiboardRequest(User.by_user_name(username), False)
         events.add_table(
             Event,
             events.items.c.hostname,
@@ -57,9 +57,6 @@ class PluginDetails(VigiboardRequestPlugin):
         for edname, edlink in \
                 config['vigiboard_links.eventdetails'].iteritems():
 
-            # Rappel:
-            # event[0] = priorité de l'alerte corrélée.
-            # event[1] = alerte brute.
             if event.servicename:
                 service = urllib.quote(event.servicename)
             else:

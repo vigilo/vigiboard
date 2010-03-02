@@ -14,7 +14,7 @@ from vigilo.models import Event, CorrEvent, \
                             Host, HostGroup, LowLevelService
 from vigiboard.tests import TestController
 
-def populate_DB(caused_by_service):
+def populate_DB():
     """ Peuple la base de données. """
     # On ajoute les groupes et leurs dépendances
     hosteditors = HostGroup(name=u'editorsgroup')
@@ -148,7 +148,7 @@ class TestEventTable(TestController):
         """
         Tableau des événements (page d'accueil).
         """
-        populate_DB(True)
+        populate_DB()
 
         # L'utilisateur n'est pas authentifié.
         response = self.app.get('/', status=401)
@@ -185,8 +185,8 @@ class TestEventTable(TestController):
         """
         Tableau des événements corrélés pour un service de bas niveau.
         """
-        populate_DB(True)
-        url = '/item/%s/%s' % ('managerhost', 'managerservice')
+        populate_DB()
+        url = '/item/1/%s/%s' % ('managerhost', 'managerservice')
 
         # L'utilisateur n'est pas authentifié.
         response = self.app.get(url, status=401)
@@ -215,8 +215,8 @@ class TestEventTable(TestController):
         """
         Tableau des événements corrélés pour un hôte.
         """
-        populate_DB(False)
-        url = '/item/%s/' % ('managerhost', )
+        populate_DB()
+        url = '/item/1/%s/' % ('managerhost', )
 
         # L'utilisateur n'est pas authentifié.
         response = self.app.get(url, status=401)

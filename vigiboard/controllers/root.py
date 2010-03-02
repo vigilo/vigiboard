@@ -552,7 +552,7 @@ class RootController(VigiboardRootController):
         # Permet de vérifier si l'utilisateur a bien les permissions
         # pour accéder à cet événement et si l'événement existe.
         username = request.environ['repoze.who.identity']['repoze.who.userid']
-        events = VigiboardRequest(User.by_user_name(username))
+        events = VigiboardRequest(User.by_user_name(username), False)
         events.add_table(CorrEvent.idcorrevent)
         events.add_join((Event, CorrEvent.idcause == Event.idevent))
         events.add_join((events.items, 
