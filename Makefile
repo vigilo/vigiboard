@@ -1,7 +1,7 @@
 NAME := vigiboard
 all: build
 
-include ../glue/Makefile.common
+include buildenv/Makefile.common
 
 MODULE := $(NAME)
 CODEPATH := $(NAME)
