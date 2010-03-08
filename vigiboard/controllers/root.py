@@ -171,6 +171,11 @@ class RootController(VigiboardRootController):
         total_rows = aggregates.num_rows()
         items_per_page = int(config['vigiboard_items_per_page'])
 
+        # Si le numéro de page dépasse le nombre de pages existantes,
+        # on redirige automatiquement vers la 1ère page.
+        if total_rows and items_per_page * (page-1) > total_rows:
+            redirect('/', page=1, **search)
+
         id_first_row = items_per_page * (page-1)
         id_last_row = min(id_first_row + items_per_page, total_rows)
 
