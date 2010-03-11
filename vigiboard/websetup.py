@@ -24,10 +24,8 @@ def init_db():
     from paste.script.appinstall import SetupCommand
     import os.path, os
 
-    if os.environ['VIGILO_SETTINGS']:
-        ini_file = os.environ['VIGILO_SETTINGS']
-    else:
-        ini_file = '/etc/vigilo/vigiboard/settings.ini'
+    ini_file = os.getenv("VIGILO_SETTINGS",
+                         "/etc/vigilo/vigiboard/settings.ini")
 
     cmd = SetupCommand('setup-app')
     cmd.run([ini_file])
