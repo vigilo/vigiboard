@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # vim:set expandtab tabstop=4 shiftwidth=4:
+
+import os
+
 try:
     from setuptools import setup, find_packages
 except ImportError:
@@ -14,6 +17,8 @@ tests_require = [
     'lxml',
     'coverage',
 ]
+
+sysconfdir = os.getenv("SYSCONFDIR", "/etc")
 
 setup(
     name='vigiboard',
@@ -57,7 +62,7 @@ setup(
         ],
     },
     data_files=[
-        ('/etc/vigilo/vigiboard/', [
+        (os.path.join(sysconfdir, 'vigilo/vigiboard/'), [
             'deployment/vigiboard.conf',
             'deployment/vigiboard.wsgi',
             'deployment/settings.ini',
