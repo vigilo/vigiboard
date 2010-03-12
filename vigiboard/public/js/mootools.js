@@ -2723,7 +2723,8 @@ Element.implement({
 var Selectors = {Cache: {nth: {}, parsed: {}}};
 
 Selectors.RegExps = {
-	id: (/#([\w-]+)/),
+	// FIXME: fpo: Restriction de l'id pour que la recherche sur un attribut avec un '#' fonctionne.
+	id: (/#([a-zA-Z_][\w-]+)/),
 	tag: (/^(\w+|\*)/),
 	quick: (/^(\w+|\*)$/),
 	splitter: (/\s*([+>~\s])\s*([a-zA-Z#.*:\[])/g),
