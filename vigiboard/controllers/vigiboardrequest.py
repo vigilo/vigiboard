@@ -128,18 +128,23 @@ class VigiboardRequest():
 
         # Tris (ORDER BY)
         self.orderby = [
-            desc(CorrEvent.status),         # None, Acknowledged, AAClosed
-            desc(StateName.order),          # Etat courant (entier).
-            priority_order,                 # Priorité ITIL (entier).
-            desc(Event.timestamp),
+            desc(CorrEvent.status),                         # État acquittement
+            asc(StateName.statename.in_([u'OK', u'UP'])),   # Vert / Pas vert
+            priority_order,                                 # Priorité ITIL
+            desc(StateName.order),                          # Etat courant
+            desc(Event.timestamp),                          # Timestamp
         ]
 
         # Regroupements (GROUP BY)
+        # PostgreSQL est pointilleux sur les colonnes qui apparaissent
+        # dans la clause GROUP BY. Si une colonne apparaît dans ORDER BY,
+        # elle doit systématiquement apparaître AUSSI dans GROUP BY.
         self.groupby = [
             StateName.order,
             Event.timestamp,
             CorrEvent.status,
             CorrEvent.priority,
+            StateName.statename,
         ]
 
         self.plugin = []
@@ -184,8 +189,15 @@ class VigiboardRequest():
                 # On loggue l'erreur et on ignore le plugin.
                 LOGGER.error(_('No such plugin "%s"') % plug[0])
 
+        # Toutes les requêtes ont besoin de récupérer l'état courant
+        # de l'événement.
         self.join.append((StateName, StateName.idstatename == \
                                         Event.current_state))
+
+        # PostgreSQL est pointilleux sur les colonnes qui apparaissent
+        # dans la clause GROUP BY. Si une colonne apparaît dans SELECT,
+        # elle doit systématiquement apparaître AUSSI dans GROUP BY.
+        # Ici, on ajoute automatiquement les colonnes du SELECT au GROUP BY.
         self.add_group_by(*self.table)
 
         # query et join ont besoin de referrence
