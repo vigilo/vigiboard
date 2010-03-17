@@ -61,6 +61,8 @@ base_config['vigilo_version'] = u'2.0-pre0.1'
 # - %(host)s : le nom de l'hote concerne par l'alerte
 # - %(service)s : le nom du service concerne par l'alerte
 # - %(message) : le message transmis par Nagios dans l'alerte
+#
+# Permet de satisfaire l'exigence VIGILO_EXIG_VIGILO_BAC_0130.
 base_config['vigiboard_links.eventdetails'] = {
     'nagios': ['Nagios host details', 'http://example1.com/%(idcorrevent)d'],
     'metrology': ['Metrology details', 'http://example2.com/%(idcorrevent)d'],

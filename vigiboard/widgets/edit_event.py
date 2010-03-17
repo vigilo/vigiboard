@@ -21,6 +21,10 @@ class EditEventForm(TableForm):
 
     Affiche une zone de texte pour le Trouble Ticket et une
     liste déroulante pour le nouveau status
+
+    Ce widget permet de répondre aux exigences suivantes :
+    - VIGILO_EXIG_VIGILO_BAC_0060
+    - VIGILO_EXIG_VIGILO_BAC_0110
     """
 
     submit_text = None

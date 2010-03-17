@@ -78,11 +78,8 @@ class RootController(VigiboardRootController):
 
         Cette méthode permet de satisfaire les exigences suivantes : 
         - VIGILO_EXIG_VIGILO_BAC_0040, 
-        - VIGILO_EXIG_VIGILO_BAC_0050,
-        - VIGILO_EXIG_VIGILO_BAC_0060,
         - VIGILO_EXIG_VIGILO_BAC_0070,
         - VIGILO_EXIG_VIGILO_BAC_0100,
-        - VIGILO_EXIG_VIGILO_BAC_0110.
         """
         if not page:
             page = 1

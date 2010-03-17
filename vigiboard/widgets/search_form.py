@@ -13,6 +13,10 @@ class SearchForm(TableForm):
 
     Affiche un champ texte pour l'hôte, le service, la sortie,
     le ticket d'incidence, et la date.
+
+    Ce widget permet de répondre aux exigences suivantes :
+    - VIGILO_EXIG_VIGILO_BAC_0070
+    - VIGILO_EXIG_VIGILO_BAC_0100
     """
         
     method = 'GET'

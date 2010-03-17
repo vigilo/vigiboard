@@ -3,7 +3,6 @@
 # This file is distributed under the same license as the vigiboard project.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2010.
 #
-#, fuzzy
 msgid   ""
 msgstr  "Project-Id-Version: vigiboard 0.1\n"
         "Report-Msgid-Bugs-To: contact@projet-vigilo.org\n"

@@ -127,6 +127,9 @@ class VigiboardRequest():
             priority_order = desc(CorrEvent.priority)
 
         # Tris (ORDER BY)
+        # Permet de répondre aux exigences suivantes :
+        # - VIGILO_EXIG_VIGILO_BAC_0050
+        # - VIGILO_EXIG_VIGILO_BAC_0060
         self.orderby = [
             desc(CorrEvent.status),                         # État acquittement
             asc(StateName.statename.in_([u'OK', u'UP'])),   # Vert / Pas vert
