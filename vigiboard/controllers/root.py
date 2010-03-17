@@ -75,6 +75,14 @@ class RootController(VigiboardRootController):
         @param service: Idem que host mais sur les services
         @param output: Idem que host mais sur le text explicatif
         @param trouble_ticket: Idem que host mais sur les tickets attribués
+
+        Cette méthode permet de satisfaire les exigences suivantes : 
+        - VIGILO_EXIG_VIGILO_BAC_0040, 
+        - VIGILO_EXIG_VIGILO_BAC_0050,
+        - VIGILO_EXIG_VIGILO_BAC_0060,
+        - VIGILO_EXIG_VIGILO_BAC_0070,
+        - VIGILO_EXIG_VIGILO_BAC_0100,
+        - VIGILO_EXIG_VIGILO_BAC_0110.
         """
         if not page:
             page = 1
@@ -297,6 +305,9 @@ class RootController(VigiboardRootController):
 
         @param idevent: identifiant de l'événement brut souhaité.
         @type idevent: C{int}
+
+        Cette méthode permet de satisfaire
+        l'exigence VIGILO_EXIG_VIGILO_BAC_0080.
         """
         if not page:
             page = 1
@@ -379,6 +390,9 @@ class RootController(VigiboardRootController):
 
         @param host: Nom de l'hôte souhaité.
         @param service: Nom du service souhaité
+
+        Cette méthode permet de satisfaire
+        l'exigence VIGILO_EXIG_VIGILO_BAC_0080.
         """
         idsupitem = SupItem.get_supitem(host, service)
 
@@ -460,6 +474,11 @@ class RootController(VigiboardRootController):
         dont l'utilisateur est au courant.
         @param krgv['tt']: Nouveau numéro du ticket associé.
         @param krgv['status']: Nouveau status de/des événements.
+
+        Cette méthode permet de satisfaire les exigences suivantes : 
+        - VIGILO_EXIG_VIGILO_BAC_0020,
+        - VIGILO_EXIG_VIGILO_BAC_0060,
+        - VIGILO_EXIG_VIGILO_BAC_0110.
         """
 
         # On vérifie que des identifiants ont bien été transmis via
