@@ -16,8 +16,8 @@ from vigilo.models import Event, CorrEvent, EventHistory, \
                         Host, LowLevelService, StateName
 from vigilo.models.secondary_tables import HOST_GROUP_TABLE, \
                                             SERVICE_GROUP_TABLE
-from vigiboard.widgets.edit_event import EditEventForm
-from vigiboard.widgets.search_form import SearchForm
+from vigiboard.widgets.edit_event import create_edit_event_form, EditEventForm
+from vigiboard.widgets.search_form import create_search_form, SearchForm
 from vigiboard.controllers.plugins import VigiboardRequestPlugin
 
 LOGGER = getLogger(__name__)
@@ -386,16 +386,16 @@ class VigiboardRequest():
         # Sinon, il s'agit de CorrEvent(s) dont on récupère l'idcause.
         else:
             ids = [data[0].idcause for data in self.events]
-        
-        # Dialogue d'édition
-        tmpl_context.edit_event_form = EditEventForm('edit_event_form',
-            last_modification=mktime(get_last_modification_timestamp(
-                ids).timetuple()),
-            action=url('/update'), 
-        )
 
-        # Dialogue de recherche
-        tmpl_context.search_form = SearchForm('search_form', lang=self.lang,
-                                        # TRANSLATORS: Format de date et heure.
-                                        date_format=_('%Y-%m-%d %I:%M:%S %p'))
+        # Ajout des formulaires et préparation
+        # des données pour ces formulaires.
+        tmpl_context.last_modification = \
+            mktime(get_last_modification_timestamp(ids).timetuple())
+
+        tmpl_context.calendar_lang = self.lang
+        # TRANSLATORS: Format de date et heure compatible Python/JavaScript.
+        tmpl_context.calendar_date_format = _('%Y-%m-%d %I:%M:%S %p')
+
+        tmpl_context.edit_event_form = create_edit_event_form
+        tmpl_context.search_form = create_search_form
 

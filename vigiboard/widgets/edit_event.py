@@ -2,11 +2,17 @@
 # vim:set expandtab tabstop=4 shiftwidth=4:
 """Le formulaire d'édition d'un événement."""
 
+import tg
 from pylons.i18n import lazy_ugettext as l_
+from tw.api import WidgetsList
 from tw.forms import TableForm, SingleSelectField, TextField, \
                         HiddenField, SubmitButton
 
-__all__ = ('EditEventForm', 'edit_event_status_options')
+__all__ = (
+    'EditEventForm',
+    'edit_event_status_options',
+    'create_edit_event_form',
+)
 
 edit_event_status_options = [
     ['NoChange', l_('No change')],
@@ -27,19 +33,13 @@ class EditEventForm(TableForm):
     - VIGILO_EXIG_VIGILO_BAC_0110
     """
 
-    submit_text = None
-    fields = [
-        HiddenField('id'),
-        TextField('trouble_ticket', label_text=l_('Trouble Ticket')),
-        SingleSelectField('ack', label_text=l_('Status'), 
-                                            options=edit_event_status_options)
-    ]
+    class fields(WidgetsList):
+        id = HiddenField('id')
+        trouble_ticket = TextField(label_text=l_('Trouble Ticket'))
+        ack = SingleSelectField(label_text=l_('Acknowledgement Status'),
+                                options=edit_event_status_options)
+        last_modification = HiddenField()
     
-    def __init__(self, id, last_modification, *args, **kwargs):
-        TableForm.__init__(self, id, *args, **kwargs)
-
-        self.children.append(HiddenField('last_modification',
-                                         attrs={'value': last_modification}))
-        self.children.append(SubmitButton('submit', 
-                                          attrs={'value': l_('Apply')}))
+create_edit_event_form = EditEventForm("edit_event_form",
+    submit_text=l_('Apply'), action=tg.url('/update'))
 

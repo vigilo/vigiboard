@@ -468,7 +468,7 @@ class RootController(VigiboardRootController):
         
         @param krgv['id']: Le ou les identifiants des événements à traiter
         @param krgv['last_modification']: La date de la dernière modification
-        dont l'utilisateur est au courant.
+            dont l'utilisateur est au courant.
         @param krgv['tt']: Nouveau numéro du ticket associé.
         @param krgv['status']: Nouveau status de/des événements.
 

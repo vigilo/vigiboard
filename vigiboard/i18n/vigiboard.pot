@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: vigiboard 0.1\n"
 "Report-Msgid-Bugs-To: contact@projet-vigilo.org\n"
-"POT-Creation-Date: 2010-01-08 18:02+0100\n"
+"POT-Creation-Date: 2010-03-18 18:06+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,23 +17,23 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 0.9.4\n"
 
-#: vigiboard/config/app_cfg.py:102
+#: vigiboard/config/app_cfg.py:119
 msgid "Never"
 msgstr ""
 
-#: vigiboard/config/app_cfg.py:103
+#: vigiboard/config/app_cfg.py:120
 msgid "30 seconds"
 msgstr ""
 
-#: vigiboard/config/app_cfg.py:104
+#: vigiboard/config/app_cfg.py:121
 msgid "1 minute"
 msgstr ""
 
-#: vigiboard/config/app_cfg.py:105
+#: vigiboard/config/app_cfg.py:122
 msgid "5 minutes"
 msgstr ""
 
-#: vigiboard/config/app_cfg.py:106
+#: vigiboard/config/app_cfg.py:123
 msgid "10 minutes"
 msgstr ""
 
@@ -41,174 +41,147 @@ msgstr ""
 msgid "We're sorry but we weren't able to process this request."
 msgstr ""
 
-#: vigiboard/controllers/root.py:51 vigiboard/controllers/root.py:195
-#: vigiboard/controllers/root.py:274 vigiboard/controllers/root.py:325
-#: vigiboard/controllers/root.py:393
+#: vigiboard/controllers/root.py:61 vigiboard/controllers/root.py:218
+#: vigiboard/controllers/root.py:297 vigiboard/controllers/root.py:381
+#: vigiboard/controllers/root.py:463 vigiboard/controllers/root.py:565
 msgid "You need to be authenticated"
 msgstr ""
 
+#. TRANSLATORS: Format de date et heure compatible Python/JavaScript.
 #. TRANSLATORS: Format de date et heure.
-#: vigiboard/controllers/root.py:144 vigiboard/controllers/root.py:154
-#: vigiboard/controllers/vigiboardrequest.py:453
+#: vigiboard/controllers/root.py:156 vigiboard/controllers/root.py:168
+#: vigiboard/controllers/vigiboardrequest.py:397
+#: vigiboard/tests/functional/test_search_form_misc.py:121
+#: vigiboard/tests/functional/test_search_form_misc.py:123
 #, python-format
 msgid "%Y-%m-%d %I:%M:%S %p"
 msgstr ""
 
-#: vigiboard/controllers/root.py:289
-msgid "Error in DB"
+#: vigiboard/controllers/root.py:248
+msgid "No masked event or access denied"
 msgstr ""
 
-#: vigiboard/controllers/root.py:409
+#: vigiboard/controllers/root.py:328
+msgid "No such event or access denied"
+msgstr ""
+
+#: vigiboard/controllers/root.py:411
+msgid "No access to this host/service or no event yet"
+msgstr ""
+
+#: vigiboard/controllers/root.py:484
 msgid "No event has been selected"
 msgstr ""
 
-#: vigiboard/controllers/root.py:423
+#: vigiboard/controllers/root.py:509
+msgid ""
+"Changes have occurred since the page was last displayed, your changes HAVE "
+"NOT been saved."
+msgstr ""
+
+#: vigiboard/controllers/root.py:515
 msgid "No access to this event"
 msgstr ""
 
-#: vigiboard/controllers/root.py:441
-#, python-format
-msgid "Changed trouble ticket from '%s' to '%s'"
-msgstr ""
-
-#: vigiboard/controllers/root.py:455
-#, python-format
-msgid "Changed acknowledgement status from '%s' to '%s'"
-msgstr ""
-
-#: vigiboard/controllers/root.py:465
+#: vigiboard/controllers/root.py:556
 msgid "Updated successfully"
 msgstr ""
 
-#: vigiboard/controllers/vigiboard_controller.py:37
+#: vigiboard/controllers/root.py:586
+msgid "No such incident or insufficient permissions"
+msgstr ""
+
+#: vigiboard/controllers/root.py:590
+msgid "No such plugin"
+msgstr ""
+
+#: vigiboard/controllers/root.py:600
+msgid "Not a valid plugin"
+msgstr ""
+
+#: vigiboard/controllers/root.py:602
+msgid "Plugin could not be loaded"
+msgstr ""
+
+#: vigiboard/controllers/vigiboard_controller.py:38
 msgid "Wrong credentials"
 msgstr ""
 
-#: vigiboard/controllers/vigiboard_controller.py:52
+#: vigiboard/controllers/vigiboard_controller.py:53
 #, python-format
 msgid "Welcome back, %s!"
 msgstr ""
 
-#: vigiboard/controllers/vigiboard_controller.py:64
+#: vigiboard/controllers/vigiboard_controller.py:65
 msgid "We hope to see you soon!"
 msgstr ""
 
-#: vigiboard/controllers/vigiboardrequest.py:298
-msgid "Closed"
-msgstr ""
-
-#: vigiboard/controllers/vigiboardrequest.py:303
-msgid "Acknowledged"
-msgstr ""
-
-#: vigiboard/controllers/vigiboardrequest.py:328
-msgid "Date"
-msgstr ""
-
-#: vigiboard/controllers/vigiboardrequest.py:329
-msgid "Duration"
-msgstr ""
-
-#: vigiboard/controllers/vigiboardrequest.py:331
-msgid "Priority"
-msgstr ""
-
-#: vigiboard/controllers/vigiboardrequest.py:331
-msgid "ITIL Priority"
-msgstr ""
-
-#: vigiboard/controllers/vigiboardrequest.py:332
-msgid "Occurrence count"
-msgstr ""
-
-#: vigiboard/controllers/vigiboardrequest.py:333
-#: vigiboard/widgets/search_form.py:27
-msgid "Host"
-msgstr ""
-
-#: vigiboard/controllers/vigiboardrequest.py:334
-msgid "Service Type"
-msgstr ""
-
-#: vigiboard/controllers/vigiboardrequest.py:334
-msgid "Service Name"
-msgstr ""
-
-#: vigiboard/controllers/vigiboardrequest.py:336
-#: vigiboard/widgets/search_form.py:29
-msgid "Output"
-msgstr ""
-
-#: vigiboard/controllers/vigiboardrequest.py:339
-msgid "TT"
-msgstr ""
-
-#: vigiboard/controllers/vigiboardrequest.py:339 vigiboard/widgets/edit_event.py:27
-#: vigiboard/widgets/search_form.py:30
-msgid "Trouble Ticket"
-msgstr ""
-
-#: vigiboard/controllers/vigiboard_plugin/__init__.py:42
-msgid "Error"
-msgstr ""
-
-#: vigiboard/controllers/vigiboard_plugin/shn.py:28
-msgid "Impacted HLS"
-msgstr ""
-
-#: vigiboard/controllers/vigiboard_plugin/shn.py:29
-msgid "Impacted High-Level Services"
-msgstr ""
-
-#: vigiboard/widgets/edit_event.py:12
-msgid "No change"
-msgstr ""
-
-#: vigiboard/widgets/edit_event.py:13
-msgid "Change to None"
+#: vigiboard/controllers/vigiboardrequest.py:193
+#, python-format
+msgid "No such plugin \"%s\""
 msgstr ""
 
 #: vigiboard/widgets/edit_event.py:14
-msgid "Change to Acknowledged"
+msgid "No change"
 msgstr ""
 
 #: vigiboard/widgets/edit_event.py:15
+msgid "Change to None"
+msgstr ""
+
+#: vigiboard/widgets/edit_event.py:16
+msgid "Change to Acknowledged"
+msgstr ""
+
+#: vigiboard/widgets/edit_event.py:17
 msgid "Change to Closed"
 msgstr ""
 
-#: vigiboard/widgets/edit_event.py:28
-msgid "Status"
+#: vigiboard/widgets/edit_event.py:34 vigiboard/widgets/search_form.py:33
+msgid "Trouble Ticket"
 msgstr ""
 
-#: vigiboard/widgets/edit_event.py:31
+#: vigiboard/widgets/edit_event.py:35
+msgid "Acknowledgement Status"
+msgstr ""
+
+#: vigiboard/widgets/edit_event.py:40
 msgid "Apply"
 msgstr ""
 
-#: vigiboard/widgets/search_form.py:25
+#: vigiboard/widgets/search_form.py:28
 msgid "Host group"
 msgstr ""
 
-#: vigiboard/widgets/search_form.py:26
+#: vigiboard/widgets/search_form.py:29
 msgid "Service group"
 msgstr ""
 
-#: vigiboard/widgets/search_form.py:28
+#: vigiboard/widgets/search_form.py:30
+msgid "Host"
+msgstr ""
+
+#: vigiboard/widgets/search_form.py:31
 msgid "Service"
 msgstr ""
 
-#: vigiboard/widgets/search_form.py:39
-msgid "From:"
+#: vigiboard/widgets/search_form.py:32
+msgid "Output"
 msgstr ""
 
-#: vigiboard/widgets/search_form.py:40 vigiboard/widgets/search_form.py:48
+#: vigiboard/widgets/search_form.py:35
+msgid "From"
+msgstr ""
+
+#: vigiboard/widgets/search_form.py:36 vigiboard/widgets/search_form.py:40
 msgid "Choose"
 msgstr ""
 
-#: vigiboard/widgets/search_form.py:47
-msgid "To:"
+#: vigiboard/widgets/search_form.py:39
+msgid "To"
 msgstr ""
 
-#: vigiboard/widgets/search_form.py:53
+#: vigiboard/widgets/search_form.py:44
 msgid "Search"
 msgstr ""
 

@@ -1,211 +1,189 @@
-# Translations template for vigiboard.
+# English (United States) translations for vigiboard.
 # Copyright (C) 2010 ORGANIZATION
 # This file is distributed under the same license as the vigiboard project.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2010.
 #
-msgid   ""
-msgstr  "Project-Id-Version: vigiboard 0.1\n"
-        "Report-Msgid-Bugs-To: contact@projet-vigilo.org\n"
-        "POT-Creation-Date: 2010-01-08 18:02+0100\n"
-        "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-        "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-        "Language-Team: LANGUAGE <LL@li.org>\n"
-        "MIME-Version: 1.0\n"
-        "Content-Type: text/plain; charset=utf-8\n"
-        "Content-Transfer-Encoding: 8bit\n"
-        "Generated-By: Babel 0.9.4\n"
+msgid ""
+msgstr ""
+"Project-Id-Version: vigiboard 0.1\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2010-03-18 18:06+0100\n"
+"PO-Revision-Date: 2010-03-18 18:06+0100\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: en_US <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 0.9.4\n"
 
-#: vigiboard/config/app_cfg.py:102
-msgid   "Never"
-msgstr  "Never"
+#: vigiboard/config/app_cfg.py:119
+msgid "Never"
+msgstr "Never"
 
-#: vigiboard/config/app_cfg.py:103
-msgid   "30 seconds"
-msgstr  "30 seconds"
+#: vigiboard/config/app_cfg.py:120
+msgid "30 seconds"
+msgstr "30 seconds"
 
-#: vigiboard/config/app_cfg.py:104
-msgid   "1 minute"
-msgstr  "1 minute"
+#: vigiboard/config/app_cfg.py:121
+msgid "1 minute"
+msgstr "1 minute"
 
-#: vigiboard/config/app_cfg.py:105
-msgid   "5 minutes"
-msgstr  "5 minutes"
+#: vigiboard/config/app_cfg.py:122
+msgid "5 minutes"
+msgstr "5 minutes"
 
-#: vigiboard/config/app_cfg.py:106
-msgid   "10 minutes"
-msgstr  "10 minutes"
+#: vigiboard/config/app_cfg.py:123
+msgid "10 minutes"
+msgstr "10 minutes"
 
 #: vigiboard/controllers/error.py:26
-msgid   "We're sorry but we weren't able to process this request."
-msgstr  "We're sorry but we weren't able to process this request."
+msgid "We're sorry but we weren't able to process this request."
+msgstr "We're sorry but we weren't able to process this request."
 
-#: vigiboard/controllers/root.py:51 vigiboard/controllers/root.py:195
-#: vigiboard/controllers/root.py:274 vigiboard/controllers/root.py:325
-#: vigiboard/controllers/root.py:393
-msgid   "You need to be authenticated"
-msgstr  "You need to be authenticated"
+#: vigiboard/controllers/root.py:61 vigiboard/controllers/root.py:218
+#: vigiboard/controllers/root.py:297 vigiboard/controllers/root.py:381
+#: vigiboard/controllers/root.py:463 vigiboard/controllers/root.py:565
+msgid "You need to be authenticated"
+msgstr "You need to be authenticated"
 
+#. TRANSLATORS: Format de date et heure compatible Python/JavaScript.
 #. TRANSLATORS: Format de date et heure.
-#: vigiboard/controllers/root.py:144 vigiboard/controllers/root.py:154
-#: vigiboard/controllers/vigiboardrequest.py:453
+#: vigiboard/controllers/root.py:156 vigiboard/controllers/root.py:168
+#: vigiboard/controllers/vigiboardrequest.py:397
+#: vigiboard/tests/functional/test_search_form_misc.py:121
+#: vigiboard/tests/functional/test_search_form_misc.py:123
 #, python-format
-msgid   "%Y-%m-%d %I:%M:%S %p"
-msgstr  "%Y-%m-%d %I:%M:%S %p"
+msgid "%Y-%m-%d %I:%M:%S %p"
+msgstr "%Y-%m-%d %I:%M:%S %p"
 
-#: vigiboard/controllers/root.py:289
-msgid   "Error in DB"
-msgstr  "Error in DB"
+#: vigiboard/controllers/root.py:248
+msgid "No masked event or access denied"
+msgstr "No masked event or access denied"
 
-#: vigiboard/controllers/root.py:409
-msgid   "No event has been selected"
-msgstr  "No event has been selected"
+#: vigiboard/controllers/root.py:328
+msgid "No such event or access denied"
+msgstr "No such event or access denied"
 
-#: vigiboard/controllers/root.py:423
-msgid   "No access to this event"
-msgstr  "No access to this event"
+#: vigiboard/controllers/root.py:411
+msgid "No such event or access denied"
+msgstr "No such event or access denied"
 
-#: vigiboard/controllers/root.py:441
+#: vigiboard/controllers/root.py:484
+msgid "No event has been selected"
+msgstr "No event has been selected"
+
+#: vigiboard/controllers/root.py:509
+msgid ""
+"Changes have occurred since the page was last displayed, your changes "
+"HAVE NOT been saved."
+msgstr ""
+"Changes have occurred since the page was last displayed, your changes "
+"HAVE NOT been saved."
+
+#: vigiboard/controllers/root.py:515
+msgid "No access to this event"
+msgstr "No access to this event"
+
+#: vigiboard/controllers/root.py:556
+msgid "Updated successfully"
+msgstr "Updated successfully"
+
+#: vigiboard/controllers/root.py:586
+msgid "No such incident or insufficient permissions"
+msgstr "No such incident or insufficient permissions"
+
+#: vigiboard/controllers/root.py:590
+msgid "No such plugin"
+msgstr "No such plugin"
+
+#: vigiboard/controllers/root.py:600
+msgid "Not a valid plugin"
+msgstr "Not a valid plugin"
+
+#: vigiboard/controllers/root.py:602
+msgid "Plugin could not be loaded"
+msgstr "Plugin could not be loaded"
+
+#: vigiboard/controllers/vigiboard_controller.py:38
+msgid "Wrong credentials"
+msgstr "Wrong credentials"
+
+#: vigiboard/controllers/vigiboard_controller.py:53
 #, python-format
-msgid   "Changed trouble ticket from '%s' to '%s'"
-msgstr  "Changed trouble ticket from '%s' to '%s'"
+msgid "Welcome back, %s!"
+msgstr "Welcome back, %s!"
 
-#: vigiboard/controllers/root.py:455
+#: vigiboard/controllers/vigiboard_controller.py:65
+msgid "We hope to see you soon!"
+msgstr "We hope to see you soon!"
+
+#: vigiboard/controllers/vigiboardrequest.py:193
 #, python-format
-msgid   "Changed acknowledgement status from '%s' to '%s'"
-msgstr  "Changed acknowledgement status from '%s' to '%s'"
-
-#: vigiboard/controllers/root.py:465
-msgid   "Updated successfully"
-msgstr  "Updated successfully"
-
-#: vigiboard/controllers/vigiboard_controller.py:37
-msgid   "Wrong credentials"
-msgstr  "Wrong credentials"
-
-#: vigiboard/controllers/vigiboard_controller.py:52
-#, python-format
-msgid   "Welcome back, %s!"
-msgstr  "Welcome back, %s!"
-
-#: vigiboard/controllers/vigiboard_controller.py:64
-msgid   "We hope to see you soon!"
-msgstr  "We hope to see you soon!"
-
-#: vigiboard/controllers/vigiboardrequest.py:298
-msgid   "Closed"
-msgstr  "Closed"
-
-#: vigiboard/controllers/vigiboardrequest.py:303
-msgid   "Acknowledged"
-msgstr  "Acknowledged"
-
-#: vigiboard/controllers/vigiboardrequest.py:328
-msgid   "Date"
-msgstr  "Date"
-
-#: vigiboard/controllers/vigiboardrequest.py:329
-msgid   "Duration"
-msgstr  "Duration"
-
-#: vigiboard/controllers/vigiboardrequest.py:331
-msgid   "Priority"
-msgstr  "Priority"
-
-#: vigiboard/controllers/vigiboardrequest.py:331
-msgid   "ITIL Priority"
-msgstr  "ITIL Priority"
-
-#: vigiboard/controllers/vigiboardrequest.py:332
-msgid   "Occurrence count"
-msgstr  "Occurrence count"
-
-#: vigiboard/controllers/vigiboardrequest.py:333
-#: vigiboard/widgets/search_form.py:27
-msgid   "Host"
-msgstr  "Host"
-
-#: vigiboard/controllers/vigiboardrequest.py:334
-msgid   "Service Type"
-msgstr  "Service Type"
-
-#: vigiboard/controllers/vigiboardrequest.py:334
-msgid   "Service Name"
-msgstr  "Service Name"
-
-#: vigiboard/controllers/vigiboardrequest.py:336
-#: vigiboard/widgets/search_form.py:29
-msgid   "Output"
-msgstr  "Output"
-
-#: vigiboard/controllers/vigiboardrequest.py:339
-msgid   "TT"
-msgstr  "TT"
-
-#: vigiboard/controllers/vigiboardrequest.py:339
-#: vigiboard/widgets/edit_event.py:27 vigiboard/widgets/search_form.py:30
-msgid   "Trouble Ticket"
-msgstr  "Trouble Ticket"
-
-#: vigiboard/controllers/vigiboard_plugin/__init__.py:42
-msgid   "Error"
-msgstr  "Error"
-
-#: vigiboard/controllers/vigiboard_plugin/shn.py:28
-msgid   "Impacted HLS"
-msgstr  "Impacted HLS"
-
-#: vigiboard/controllers/vigiboard_plugin/shn.py:29
-msgid   "Impacted High-Level Services"
-msgstr  "Impacted High-Level Services"
-
-#: vigiboard/widgets/edit_event.py:12
-msgid   "No change"
-msgstr  "No change"
-
-#: vigiboard/widgets/edit_event.py:13
-msgid   "Change to None"
-msgstr  "Change to None"
+msgid "No such plugin \"%s\""
+msgstr "No such plugin \"%s\""
 
 #: vigiboard/widgets/edit_event.py:14
-msgid   "Change to Acknowledged"
-msgstr  "Change to Acknowledged"
+msgid "No change"
+msgstr "No change"
 
 #: vigiboard/widgets/edit_event.py:15
-msgid   "Change to Closed"
-msgstr  "Change to Closed"
+msgid "Change to None"
+msgstr "Change to None"
 
-#: vigiboard/widgets/edit_event.py:28
-msgid   "Status"
-msgstr  "Status"
+#: vigiboard/widgets/edit_event.py:16
+msgid "Change to Acknowledged"
+msgstr "Change to Acknowledged"
 
-#: vigiboard/widgets/edit_event.py:31
-msgid   "Apply"
-msgstr  "Apply"
+#: vigiboard/widgets/edit_event.py:17
+msgid "Change to Closed"
+msgstr "Change to Closed"
 
-#: vigiboard/widgets/search_form.py:25
-msgid   "Host group"
-msgstr  "Host group"
+#: vigiboard/widgets/edit_event.py:34 vigiboard/widgets/search_form.py:33
+msgid "Trouble Ticket"
+msgstr "Trouble Ticket"
 
-#: vigiboard/widgets/search_form.py:26
-msgid   "Service group"
-msgstr  "Service group"
+#: vigiboard/widgets/edit_event.py:35
+msgid "Acknowledgement Status"
+msgstr "Acknowledgement Status"
+
+#: vigiboard/widgets/edit_event.py:40
+msgid "Apply"
+msgstr "Apply"
 
 #: vigiboard/widgets/search_form.py:28
-msgid   "Service"
-msgstr  "Service"
+msgid "Host group"
+msgstr "Host group"
+
+#: vigiboard/widgets/search_form.py:29
+msgid "Service group"
+msgstr "Service group"
+
+#: vigiboard/widgets/search_form.py:30
+msgid "Host"
+msgstr "Host"
+
+#: vigiboard/widgets/search_form.py:31
+msgid "Service"
+msgstr "Service"
+
+#: vigiboard/widgets/search_form.py:32
+msgid "Output"
+msgstr "Output"
+
+#: vigiboard/widgets/search_form.py:35
+msgid "From"
+msgstr "From"
+
+#: vigiboard/widgets/search_form.py:36 vigiboard/widgets/search_form.py:40
+msgid "Choose"
+msgstr "Choose"
 
 #: vigiboard/widgets/search_form.py:39
-msgid   "From:"
-msgstr  "From:"
+msgid "To"
+msgstr "To"
 
-#: vigiboard/widgets/search_form.py:40 vigiboard/widgets/search_form.py:48
-msgid   "Choose"
-msgstr  "Choose"
+#: vigiboard/widgets/search_form.py:44
+msgid "Search"
+msgstr "Search"
 
-#: vigiboard/widgets/search_form.py:47
-msgid   "To:"
-msgstr  "To:"
-
-#: vigiboard/widgets/search_form.py:53
-msgid   "Search"
-msgstr  "Search"

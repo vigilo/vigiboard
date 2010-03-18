@@ -2,10 +2,12 @@
 # vim:set expandtab tabstop=4 shiftwidth=4:
 """Le formulaire de recherche/filtrage."""
 
+import tg
 from pylons.i18n import lazy_ugettext as l_
+from tw.api import WidgetsList
 from tw.forms import TableForm, TextField, CalendarDateTimePicker, SubmitButton
 
-__all__ = ('SearchForm', )
+__all__ = ('SearchForm', 'create_search_form')
 
 class SearchForm(TableForm):
     """
@@ -21,37 +23,23 @@ class SearchForm(TableForm):
         
     method = 'GET'
     style = 'display: none'
-    submit_text = None
-    action = './'
-    fields = [
-        TextField('hostgroup', label_text = l_('Host group')),
-        TextField('servicegroup', label_text = l_('Service group')),
-        TextField('host', label_text = l_('Host')),
-        TextField('service', label_text = l_('Service')),
-        TextField('output', label_text = l_('Output')),
-        TextField('trouble_ticket', label_text = l_('Trouble Ticket'))
-    ]
+
+    class fields(WidgetsList):
+        hostgroup = TextField(label_text=l_('Host group'))
+        servicegroup = TextField(label_text=l_('Service group'))
+        host = TextField(label_text=l_('Host'))
+        service = TextField(label_text=l_('Service'))
+        output = TextField(label_text=l_('Output'))
+        trouble_ticket = TextField(label_text=l_('Trouble Ticket'))
+        from_date = CalendarDateTimePicker(
+            label_text = l_('From'),
+            button_text = l_("Choose"),
+            not_empty = False)
+        to_date = CalendarDateTimePicker(
+            label_text = l_('To'),
+            button_text = l_("Choose"),
+            not_empty = False)
     
-    def __init__(self,  id, lang, date_format='%Y-%m-%d %I:%M:%S %P', 
-                 *args, **kwargs):
-        TableForm.__init__(self, id, *args, **kwargs)
-
-        self.children.append(CalendarDateTimePicker(id + '_from_date', 
-                                name = 'from_date',
-                                label_text = l_('From'),
-                                button_text = l_("Choose"),
-                                date_format = date_format, 
-                                not_empty = False,
-                                calendar_lang=lang))
-        
-        self.children.append(CalendarDateTimePicker(id + '_to_date',
-                                name = 'to_date',
-                                label_text = l_('To'),
-                                button_text = l_("Choose"),
-                                date_format = date_format, 
-                                not_empty = False,
-                                calendar_lang=lang))
-
-        self.children.append(SubmitButton('search',
-                                          attrs={'value':l_('Search')}))
+create_search_form = SearchForm("search_form",
+    submit_text=l_('Search'), action=tg.url('/'))
 
