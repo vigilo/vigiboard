@@ -3,15 +3,14 @@
 """
 Controller for authentification
 """
-
+import logging
 from tg import expose, flash, request, redirect
-
 from pylons.i18n import ugettext as _
-
-from vigilo.models import ApplicationLog
 
 from vigiboard.lib.base import BaseController
 from vigiboard.controllers.error import ErrorController
+
+LOGGER = logging.getLogger(__name__)
 
 # pylint: disable-msg=R0201
 class VigiboardRootController(BaseController):
@@ -49,7 +48,10 @@ class VigiboardRootController(BaseController):
             login_counter = request.environ['repoze.who.logins'] + 1
             redirect('/login', came_from=came_from, __logins=login_counter)
         userid = request.identity['repoze.who.userid']
-        ApplicationLog.add_login(userid, request.remote_addr, u'Vigiboard')
+        LOGGER.info(_('"%(username)s" logged in (from %(IP)s)') % {
+                'username': userid,
+                'IP': request.remote_addr,
+            })
         flash(_('Welcome back, %s!') % userid)
         redirect(came_from)
 
@@ -61,7 +63,6 @@ class VigiboardRootController(BaseController):
         """
         # XXX Ne fonctionne pas, l'identité est déjà oubliée arrivé ici.
 #        userid = request.identity['repoze.who.userid']
-#        ApplicationLog.add_logout(userid, request.remote_addr, u'Vigiboard')
         flash(_('We hope to see you soon!'))
         redirect(came_from)
 
