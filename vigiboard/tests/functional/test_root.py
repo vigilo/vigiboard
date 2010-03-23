@@ -85,7 +85,7 @@ def populate_DB():
     
     return ([host1, host2], [service1, service2])
 
-def add_correvent_caused_by(supitem, 
+def add_correvent_caused_by(supitem, timestamp,
         correvent_status=u"None", event_status=u"WARNING"):
     """
     Ajoute dans la base de données un évènement corrélé causé 
@@ -106,7 +106,7 @@ def add_correvent_caused_by(supitem,
     # Ajout d'un événement corrélé
     aggregate = CorrEvent(
         idcause = event.idevent, 
-        timestamp_active = datetime.now(),
+        timestamp_active = timestamp,
         priority = 1,
         status = correvent_status)
     aggregate.events.append(event)
@@ -133,19 +133,20 @@ class TestRootController(TestController):
         (hosts, services) = populate_DB()
         
         # On ajoute 2 évènements corrélés causés par ces hôtes
-        correvent1_id = add_correvent_caused_by(hosts[0])
-        correvent2_id = add_correvent_caused_by(hosts[1])
-        
+        timestamp = datetime.now()
+        correvent1_id = add_correvent_caused_by(hosts[0], timestamp)
+        correvent2_id = add_correvent_caused_by(hosts[1], timestamp)
         transaction.commit()
         
         ### 1er cas : L'utilisateur n'est pas connecté.
         # On vérifie que le plugin retourne bien une erreur 401.
         response = self.app.post(
-            '/update',
-            {"ids" : str(correvent1_id) + "," + str(correvent2_id),
-             "ack" : u'NoChange',
-             "trouble_ticket" : u"foo"},
-            status = 401)
+            '/update', {
+                "id" : str(correvent1_id) + "," + str(correvent2_id),
+                "last_modification": mktime(timestamp.timetuple()),
+                "trouble_ticket" : u"foo",
+                "ack" : u'NoChange',
+            }, status = 401)
         
         ### 2ème cas : L'utilisateur utilisé pour
         # se connecter à Vigiboard est 'editor'.
@@ -155,16 +156,14 @@ class TestRootController(TestController):
         # ce qu'un message d'erreur précise à l'utilisateur qu'il
         # n'a pas la permission de modifier ces évènements.
         response = self.app.post(
-            '/update',
-            {"id" : str(correvent1_id) + "," + str(correvent2_id),
-             "ack" : u'NoChange',
-             "trouble_ticket" : u"foo"},
-            status = 302,
-            extra_environ = environ)
+            '/update', {
+                "id" : str(correvent1_id) + "," + str(correvent2_id),
+                "ack" : u'NoChange',
+                "trouble_ticket" : u"foo",
+                "last_modification": mktime(timestamp.timetuple()),
+            }, status = 302, extra_environ = environ)
         
-        response = response.follow(
-            status=200,
-            extra_environ = environ)
+        response = response.follow(status=200, extra_environ = environ)
         assert_true(response.lxml.xpath(
             '//div[@id="flash"]/div[@class="error"]'))
 
@@ -176,16 +175,14 @@ class TestRootController(TestController):
         # et à ce qu'un message informe l'utilisateur que les
         # évènements corrélés sélectionnées ont bien été mis à jour.
         response = self.app.post(
-            '/update',
-            {"id" : str(correvent1_id) + "," + str(correvent2_id),
-             "ack" : u'NoChange',
-             "trouble_ticket" : u"foo"},
-            status = 302,
-            extra_environ = environ)
+            '/update', {
+                "id" : str(correvent1_id) + "," + str(correvent2_id),
+                "last_modification": mktime(timestamp.timetuple()),
+                "trouble_ticket" : u"foo",
+                "ack" : u'NoChange',
+            }, status = 302, extra_environ = environ)
         
-        response = response.follow(
-            status=200,
-            extra_environ = environ)
+        response = response.follow(status=200, extra_environ = environ)
         assert_false(response.lxml.xpath(
             '//div[@id="flash"]/div[@class="error"]'))
         assert_true(response.lxml.xpath(
@@ -209,19 +206,21 @@ class TestRootController(TestController):
         (hosts, services) = populate_DB()
         
         # On ajoute 2 évènements corrélés causés par ces hôtes
-        correvent1_id = add_correvent_caused_by(services[0])
-        correvent2_id = add_correvent_caused_by(services[1])
+        timestamp = datetime.now()
+        correvent1_id = add_correvent_caused_by(services[0], timestamp)
+        correvent2_id = add_correvent_caused_by(services[1], timestamp)
         
         transaction.commit()
         
         ### 1er cas : L'utilisateur n'est pas connecté.
         # On vérifie que le plugin retourne bien une erreur 401.
         response = self.app.post(
-            '/update',
-            {"ids" : str(correvent1_id) + "," + str(correvent2_id),
-             "ack" : u'NoChange',
-             "trouble_ticket" : u"foo"},
-            status = 401)
+            '/update', {
+                "id" : str(correvent1_id) + "," + str(correvent2_id),
+                "last_modification": mktime(timestamp.timetuple()),
+                "trouble_ticket" : u"foo",
+                "ack" : u'NoChange',
+            }, status = 401)
         
         ### 2ème cas : L'utilisateur utilisé pour
         # se connecter à Vigiboard est 'editor'.
@@ -231,16 +230,14 @@ class TestRootController(TestController):
         # ce qu'un message d'erreur précise à l'utilisateur qu'il
         # n'a pas la permission de modifier ces évènements.
         response = self.app.post(
-            '/update',
-            {"id" : str(correvent1_id) + "," + str(correvent2_id),
-             "ack" : u'NoChange',
-             "trouble_ticket" : u"foo"},
-            status = 302,
-            extra_environ = environ)
+            '/update', {
+                "id" : str(correvent1_id) + "," + str(correvent2_id),
+                "last_modification": mktime(timestamp.timetuple()),
+                "trouble_ticket" : u"foo",
+                "ack" : u'NoChange',
+            }, status = 302, extra_environ = environ)
         
-        response = response.follow(
-            status=200,
-            extra_environ = environ)
+        response = response.follow(status=200, extra_environ = environ)
         assert_true(response.lxml.xpath(
             '//div[@id="flash"]/div[@class="error"]'))
 
@@ -252,16 +249,14 @@ class TestRootController(TestController):
         # et à ce qu'un message informe l'utilisateur que les
         # évènements corrélés sélectionnées ont bien été mis à jour.
         response = self.app.post(
-            '/update',
-            {"id" : str(correvent1_id) + "," + str(correvent2_id),
-             "ack" : u'NoChange',
-             "trouble_ticket" : u"foo"},
-            status = 302,
-            extra_environ = environ)
+            '/update', {
+                "id" : str(correvent1_id) + "," + str(correvent2_id),
+                "last_modification": mktime(timestamp.timetuple()),
+                "trouble_ticket" : u"foo",
+                "ack" : u'NoChange',
+            }, status = 302, extra_environ = environ)
         
-        response = response.follow(
-            status=200,
-            extra_environ = environ)
+        response = response.follow(status=200, extra_environ = environ)
         assert_false(response.lxml.xpath(
             '//div[@id="flash"]/div[@class="error"]'))
         assert_true(response.lxml.xpath(
@@ -284,19 +279,20 @@ class TestRootController(TestController):
         (hosts, services) = populate_DB()
         
         # On ajoute 2 évènements corrélés causés par ces hôtes
-        correvent1_id = add_correvent_caused_by(hosts[0])
-        correvent2_id = add_correvent_caused_by(hosts[1])
-        
+        timestamp = datetime.now()
+        correvent1_id = add_correvent_caused_by(hosts[0], timestamp)
+        correvent2_id = add_correvent_caused_by(hosts[1], timestamp)
         transaction.commit()
         
         ### 1er cas : L'utilisateur n'est pas connecté.
         # On vérifie que le plugin retourne bien une erreur 401.
         response = self.app.post(
-            '/update',
-            {"ids" : str(correvent1_id) + "," + str(correvent2_id),
-             "ack" : u'Acknowledged',
-             "trouble_ticket" : ""},
-            status = 401)
+            '/update', {
+                "id" : str(correvent1_id) + "," + str(correvent2_id),
+                "last_modification": mktime(timestamp.timetuple()),
+                "trouble_ticket" : "",
+                "ack" : u'Acknowledged',
+            }, status = 401)
         
         ### 2ème cas : L'utilisateur utilisé pour
         # se connecter à Vigiboard est 'editor'.
@@ -306,16 +302,14 @@ class TestRootController(TestController):
         # ce qu'un message d'erreur précise à l'utilisateur qu'il
         # n'a pas la permission de modifier ces évènements.
         response = self.app.post(
-            '/update',
-            {"id" : str(correvent1_id) + "," + str(correvent2_id),
-             "ack" : u'Acknowledged',
-             "trouble_ticket" : ""},
-            status = 302,
-            extra_environ = environ)
+            '/update', {
+                "id" : str(correvent1_id) + "," + str(correvent2_id),
+                "last_modification": mktime(timestamp.timetuple()),
+                "trouble_ticket" : "",
+                "ack" : u'Acknowledged',
+            }, status = 302, extra_environ = environ)
         
-        response = response.follow(
-            status=200,
-            extra_environ = environ)
+        response = response.follow(status=200, extra_environ = environ)
         assert_true(response.lxml.xpath(
             '//div[@id="flash"]/div[@class="error"]'))
 
@@ -327,16 +321,14 @@ class TestRootController(TestController):
         # et à ce qu'un message informe l'utilisateur que les
         # évènements corrélés sélectionnées ont bien été mis à jour.
         response = self.app.post(
-            '/update',
-            {"id" : str(correvent1_id) + "," + str(correvent2_id),
-             "ack" : u'Acknowledged',
-             "trouble_ticket" : ""},
-            status = 302,
-            extra_environ = environ)
+            '/update', {
+                "id" : str(correvent1_id) + "," + str(correvent2_id),
+                "last_modification": mktime(timestamp.timetuple()),
+                "trouble_ticket" : "",
+                "ack" : u'Acknowledged',
+            }, status = 302, extra_environ = environ)
         
-        response = response.follow(
-            status=200,
-            extra_environ = environ)
+        response = response.follow(status=200, extra_environ = environ)
         assert_false(response.lxml.xpath(
             '//div[@id="flash"]/div[@class="error"]'))
         assert_true(response.lxml.xpath(
@@ -360,19 +352,21 @@ class TestRootController(TestController):
         (hosts, services) = populate_DB()
         
         # On ajoute 2 évènements corrélés causés par ces hôtes
-        correvent1_id = add_correvent_caused_by(services[0])
-        correvent2_id = add_correvent_caused_by(services[1])
+        timestamp = datetime.now()
+        correvent1_id = add_correvent_caused_by(services[0], timestamp)
+        correvent2_id = add_correvent_caused_by(services[1], timestamp)
         
         transaction.commit()
         
         ### 1er cas : L'utilisateur n'est pas connecté.
         # On vérifie que le plugin retourne bien une erreur 401.
         response = self.app.post(
-            '/update',
-            {"ids" : str(correvent1_id) + "," + str(correvent2_id),
-             "ack" : u'Acknowledged',
-             "trouble_ticket" : ""},
-            status = 401)
+            '/update', {
+                "id" : str(correvent1_id) + "," + str(correvent2_id),
+                "last_modification": mktime(timestamp.timetuple()),
+                "trouble_ticket" : "",
+                "ack" : u'Acknowledged',
+            }, status = 401)
         
         ### 2ème cas : L'utilisateur utilisé pour
         # se connecter à Vigiboard est 'editor'.
@@ -382,16 +376,14 @@ class TestRootController(TestController):
         # ce qu'un message d'erreur précise à l'utilisateur qu'il
         # n'a pas la permission de modifier ces évènements.
         response = self.app.post(
-            '/update',
-            {"id" : str(correvent1_id) + "," + str(correvent2_id),
-             "ack" : u'Acknowledged',
-             "trouble_ticket" : ""},
-            status = 302,
-            extra_environ = environ)
+            '/update', {
+                "id" : str(correvent1_id) + "," + str(correvent2_id),
+                "last_modification": mktime(timestamp.timetuple()),
+                "trouble_ticket" : "",
+                "ack" : u'Acknowledged',
+            }, status = 302, extra_environ = environ)
         
-        response = response.follow(
-            status=200,
-            extra_environ = environ)
+        response = response.follow(status=200, extra_environ = environ)
         assert_true(response.lxml.xpath(
             '//div[@id="flash"]/div[@class="error"]'))
 
@@ -403,16 +395,14 @@ class TestRootController(TestController):
         # et à ce qu'un message informe l'utilisateur que les
         # évènements corrélés sélectionnées ont bien été mis à jour.
         response = self.app.post(
-            '/update',
-            {"id" : str(correvent1_id) + "," + str(correvent2_id),
-             "ack" : u'Acknowledged',
-             "trouble_ticket" : ""},
-            status = 302,
-            extra_environ = environ)
+            '/update', {
+                "id" : str(correvent1_id) + "," + str(correvent2_id),
+                "last_modification": mktime(timestamp.timetuple()),
+                "trouble_ticket" : "",
+                "ack" : u'Acknowledged',
+            }, status = 302, extra_environ = environ)
         
-        response = response.follow(
-            status=200,
-            extra_environ = environ)
+        response = response.follow(status=200, extra_environ = environ)
         assert_false(response.lxml.xpath(
             '//div[@id="flash"]/div[@class="error"]'))
         assert_true(response.lxml.xpath(
@@ -435,8 +425,9 @@ class TestRootController(TestController):
         (hosts, services) = populate_DB()
         
         # On ajoute 2 évènements corrélés causés par ces hôtes
-        correvent1_id = add_correvent_caused_by(services[0])
-        correvent2_id = add_correvent_caused_by(services[1])
+        timestamp = datetime.now()
+        correvent1_id = add_correvent_caused_by(services[0], timestamp)
+        correvent2_id = add_correvent_caused_by(services[1], timestamp)
         
         # Date de modification du premier évènement corrélé 
         later_date = datetime.now()
@@ -464,17 +455,14 @@ class TestRootController(TestController):
         # à ce qu'un message d'erreur avise l'utilisateur que des
         # changements sont intervenus depuis le chargement de la page.
         response = self.app.post(
-            '/update',
-            {"id" : str(correvent1_id),
-             "ack" : u'Acknowledged',
-             "trouble_ticket" : "",
-             "last_modification" : date},
-            status = 302,
-            extra_environ = environ)
+            '/update', {
+                "id" : str(correvent1_id),
+                "last_modification" : date,
+                "trouble_ticket" : "",
+                "ack" : u'Acknowledged',
+            }, status = 302, extra_environ = environ)
         
-        response = response.follow(
-            status=200,
-            extra_environ = environ)
+        response = response.follow(status=200, extra_environ = environ)
         assert_true(response.lxml.xpath(
             '//div[@id="flash"]/div[@class="warning"]'))
         
