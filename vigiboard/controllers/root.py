@@ -48,11 +48,7 @@ class RootController(VigiboardRootController):
         """
         for k in tmpl_context.form_errors:
             flash("'%s': %s" % (k, tmpl_context.form_errors[k]), 'error')
-        if request.environ.get('HTTP_REFERER') :
-            redirect(request.environ.get('HTTP_REFERER'
-                ).split(request.environ.get('HTTP_HOST'))[1])
-        else :
-            redirect('/')
+        redirect(request.environ.get('HTTP_REFERER', '/'))
 
     @validate(validators={
             'page': validators.Int(min=1),
@@ -453,24 +449,25 @@ class RootController(VigiboardRootController):
 
     @validate(validators={
         "id": validators.Regex(r'^[0-9]+(,[0-9]+)*,?$'),
-#        "trouble_ticket": validators.Regex(r'^[0-9]*$'),
+        "last_modification": validators.Number(not_empty=True),
+        "trouble_ticket": validators.String(if_missing=''),
         "ack": validators.OneOf([
             u'NoChange',
             u'None',
             u'Acknowledged',
             u'AAClosed'
-        ])}, error_handler=process_form_errors)
+        ], not_empty=True)}, error_handler=process_form_errors)
     @require(Any(not_anonymous(), msg=l_("You need to be authenticated")))
-    def update(self, **krgv):
+    def update(self, id, last_modification, trouble_ticket, ack):
         """
         Mise à jour d'un événement suivant les arguments passés.
         Cela peut être un changement de ticket ou un changement de statut.
         
-        @param krgv['id']: Le ou les identifiants des événements à traiter
-        @param krgv['last_modification']: La date de la dernière modification
+        @param id: Le ou les identifiants des événements à traiter
+        @param last_modification: La date de la dernière modification
             dont l'utilisateur est au courant.
-        @param krgv['tt']: Nouveau numéro du ticket associé.
-        @param krgv['status']: Nouveau status de/des événements.
+        @param trouble_ticket: Nouveau numéro du ticket associé.
+        @param ack: Nouvel état d'acquittement des événements sélectionnés.
 
         Cette méthode permet de satisfaire les exigences suivantes : 
         - VIGILO_EXIG_VIGILO_BAC_0020,
@@ -480,13 +477,13 @@ class RootController(VigiboardRootController):
 
         # On vérifie que des identifiants ont bien été transmis via
         # le formulaire, et on informe l'utilisateur le cas échéant.
-        if krgv['id'] is None:
+        if id is None:
             flash(_('No event has been selected'), 'warning')
-            raise redirect(request.environ.get('HTTP_REFERER', url('/')))
+            raise redirect(request.environ.get('HTTP_REFERER', '/'))
 
         # Le filtre permet d'éliminer les chaines vides contenues dans le
         # tableau ('a,b,' -> split -> ['a','b',''] -> filter -> ['a','b']).
-        ids = map(int, filter(len, krgv['id'].split(',')))
+        ids = map(int, filter(len, id.split(',')))
 
         # Si l'utilisateur édite plusieurs événements à la fois,
         # il nous faut chacun des identifiants
@@ -501,14 +498,15 @@ class RootController(VigiboardRootController):
         
         events.generate_request()
         idevents = [cause.idcause for cause in events.req]
+
         # Si des changements sont survenus depuis que la 
         # page est affichée, on en informe l'utilisateur.
-        last_modification = get_last_modification_timestamp(idevents, None)
-        if last_modification and datetime.fromtimestamp(\
-            float(krgv['last_modification'])) < last_modification:
+        last_modification = datetime.fromtimestamp(last_modification)
+        cur_last_modification = get_last_modification_timestamp(idevents, None)
+        if cur_last_modification and last_modification < cur_last_modification:
             flash(_('Changes have occurred since the page was last displayed, '
                     'your changes HAVE NOT been saved.'), 'warning')
-            raise redirect(request.environ.get('HTTP_REFERER', url('/')))
+            raise redirect(request.environ.get('HTTP_REFERER', '/'))
         
         # Vérification que au moins un des identifiants existe et est éditable
         if not events.num_rows():
@@ -523,38 +521,38 @@ class RootController(VigiboardRootController):
             else:
                 event = req[0]
 
-            if krgv['trouble_ticket'] != '' :
+            if trouble_ticket:
                 history = EventHistory(
                         type_action="Ticket change",
                         idevent=event.idcause,
-                        value=krgv['trouble_ticket'],
+                        value=unicode(trouble_ticket),
                         text="Changed trouble ticket from '%s' to '%s'" % (
-                            event.trouble_ticket, krgv['trouble_ticket']
+                            event.trouble_ticket, trouble_ticket
                         ),
                         username=username,
                         timestamp=datetime.now(),
                     )
                 DBSession.add(history)   
-                event.trouble_ticket = krgv['trouble_ticket']
+                event.trouble_ticket = trouble_ticket
 
-            if krgv['ack'] != 'NoChange' :
+            if ack != 'NoChange':
                 history = EventHistory(
                         type_action="Acknowledgement change state",
                         idevent=event.idcause,
-                        value=krgv['ack'],
+                        value=unicode(ack),
                         text="Changed acknowledgement status "
                             "from '%s' to '%s'" % (
-                            event.status, krgv['ack']
+                            event.status, ack
                         ),
                         username=username,
                         timestamp=datetime.now(),
                     )
                 DBSession.add(history)
-                event.status = krgv['ack']
+                event.status = ack
 
         DBSession.flush()
         flash(_('Updated successfully'))
-        redirect(request.environ.get('HTTP_REFERER', url('/')))
+        redirect(request.environ.get('HTTP_REFERER', '/'))
 
     @validate(validators={
         "plugin_name": validators.OneOf([i[0] for i \
