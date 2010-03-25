@@ -371,7 +371,7 @@ class RootController(VigiboardRootController):
             'host': validators.NotEmpty(),
 #            'service': validators.NotEmpty(),
             'page': validators.Int(min=1),
-        }, 
+        },
         error_handler = process_form_errors)
     @expose('events_table.html')
     @require(Any(not_anonymous(), msg=l_("You need to be authenticated")))
@@ -458,6 +458,7 @@ class RootController(VigiboardRootController):
             u'AAClosed'
         ], not_empty=True)}, error_handler=process_form_errors)
     @require(Any(not_anonymous(), msg=l_("You need to be authenticated")))
+    @expose()
     def update(self, id, last_modification, trouble_ticket, ack):
         """
         Mise à jour d'un événement suivant les arguments passés.
