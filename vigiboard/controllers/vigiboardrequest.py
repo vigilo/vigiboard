@@ -11,10 +11,10 @@ from pylons.i18n import ugettext as _
 from sqlalchemy import not_, and_, asc, desc
 from sqlalchemy.sql.expression import or_, null as expr_null, union
 
-from vigilo.models.configure import DBSession
-from vigilo.models import Event, CorrEvent, EventHistory, \
+from vigilo.models.session import DBSession
+from vigilo.models.tables import Event, CorrEvent, EventHistory, \
                         Host, LowLevelService, StateName
-from vigilo.models.secondary_tables import HOST_GROUP_TABLE, \
+from vigilo.models.tables.secondary_tables import HOST_GROUP_TABLE, \
                                             SERVICE_GROUP_TABLE
 from vigiboard.widgets.edit_event import create_edit_event_form, EditEventForm
 from vigiboard.widgets.search_form import create_search_form, SearchForm

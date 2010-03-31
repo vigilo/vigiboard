@@ -5,8 +5,8 @@ from datetime import datetime
 import transaction
 from nose.tools import assert_equal
 
-from vigilo.models.configure import DBSession
-from vigilo.models import Permission, StateName, \
+from vigilo.models.session import DBSession
+from vigilo.models.tables import Permission, StateName, \
                             HostGroup, Host, HighLevelService, \
                             Event, CorrEvent, ImpactedPath, ImpactedHLS
 from vigiboard.tests import TestController

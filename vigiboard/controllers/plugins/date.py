@@ -9,9 +9,6 @@ from pylons.i18n import ugettext as _
 from tg import url
 
 from vigiboard.controllers.plugins import VigiboardRequestPlugin
-from vigilo.models.configure import DBSession
-from vigilo.models import HighLevelService, \
-                            CorrEvent, Event, SupItem
 
 class PluginDate(VigiboardRequestPlugin):
     """Plugin pour l'ajout d'une colonne Date."""

@@ -9,9 +9,9 @@ from paste.deploy import loadapp
 from paste.script.appinstall import SetupCommand
 from routes import url_for
 from webtest import TestApp
-from nose.tools import eq_, nottest
+from nose.tools import eq_
 
-from vigilo.models.configure import metadata, DBSession
+from vigilo.models.session import metadata, DBSession
 
 __all__ = ['setup_db', 'teardown_db', 'TestController', 'url_for']
 

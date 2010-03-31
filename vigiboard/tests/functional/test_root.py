@@ -15,8 +15,8 @@ from datetime import datetime
 from time import mktime
 import transaction
 
-from vigilo.models.configure import DBSession
-from vigilo.models import Event, EventHistory, CorrEvent, \
+from vigilo.models.session import DBSession
+from vigilo.models.tables import Event, EventHistory, CorrEvent, \
                             Permission, StateName, \
                             Host, HostGroup, ServiceGroup, LowLevelService
 

@@ -14,8 +14,8 @@ from pylons.i18n import ugettext as _
 
 from vigiboard.controllers.vigiboardrequest import VigiboardRequest
 from vigiboard.controllers.plugins import VigiboardRequestPlugin
-from vigilo.models.configure import DBSession
-from vigilo.models import User, CorrEvent, Event, StateName
+from vigilo.models.session import DBSession
+from vigilo.models.tables import User, CorrEvent, Event, StateName
 
 class PluginDetails(VigiboardRequestPlugin):
     """

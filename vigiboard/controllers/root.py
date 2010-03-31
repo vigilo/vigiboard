@@ -18,11 +18,11 @@ from sqlalchemy import asc
 from sqlalchemy.sql import func
 from repoze.what.predicates import Any, not_anonymous
 
-from vigilo.models.configure import DBSession
-from vigilo.models import Event, EventHistory, CorrEvent, SupItem, \
+from vigilo.models.session import DBSession
+from vigilo.models.tables import Event, EventHistory, CorrEvent, SupItem, \
                             HostGroup, ServiceGroup, StateName, User
 from vigilo.models.functions import sql_escape_like
-from vigilo.models.secondary_tables import EVENTSAGGREGATE_TABLE
+from vigilo.models.tables.secondary_tables import EVENTSAGGREGATE_TABLE
 
 from vigilo.turbogears.controllers.autocomplete \
     import make_autocomplete_controller

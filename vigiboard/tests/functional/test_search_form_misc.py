@@ -8,9 +8,9 @@ from datetime import datetime
 import transaction
 
 from vigiboard.tests import TestController
-from vigilo.models.configure import DBSession
-from vigilo.models import HostGroup, Host, Permission, \
-                            Event, CorrEvent, StateName
+from vigilo.models.session import DBSession
+from vigilo.models.tables import HostGroup, Host, Permission, \
+                                   Event, CorrEvent, StateName
 
 def insert_deps():
     """Insère les dépendances nécessaires aux tests."""
