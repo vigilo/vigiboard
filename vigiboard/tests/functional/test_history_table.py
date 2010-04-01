@@ -105,9 +105,6 @@ class TestHistoryTable(TestController):
     sur un événement brut.
     """
 
-    def setUp(self):
-        super(TestHistoryTable, self).setUp()
-
     def test_cause_host_history(self):
         """Historique de la cause d'un événement corrélé sur un hôte."""
 

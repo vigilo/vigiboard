@@ -4,12 +4,12 @@
 from os import path, environ
 import sys
 
+import unittest
 from tg import config
 from paste.deploy import loadapp
 from paste.script.appinstall import SetupCommand
 from routes import url_for
 from webtest import TestApp
-from nose.tools import eq_
 
 from vigilo.models.session import metadata, DBSession
 
@@ -27,7 +27,7 @@ def teardown_db():
     engine = config['pylons.app_globals'].sa_engine
     metadata.drop_all(engine)
 
-class TestController(object):
+class TestController(unittest.TestCase):
     """
     Base functional test case for the controllers.
     
@@ -46,13 +46,9 @@ class TestController(object):
     
     application_under_test = 'main_without_authn'
 
-    def __init__(self):
-        object.__init__(self)
-    
     def setUp(self):
         """Method called by nose before running each test"""
         # Loading the application:
-        setup_db()
         conf_dir = config.here
         wsgiapp = loadapp('config:test.ini#%s' %
             self.application_under_test, relative_to=conf_dir)
