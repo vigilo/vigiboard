@@ -22,7 +22,7 @@ sysconfdir = os.getenv("SYSCONFDIR", "/etc")
 
 setup(
     name='vigiboard',
-    version='0.1',
+    version='2.0.0',
     description='IHM Module for the Dashboard',
     author='Vigilo Team',
     author_email='contact@projet-vigilo.org',
