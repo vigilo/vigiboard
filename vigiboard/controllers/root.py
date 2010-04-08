@@ -20,7 +20,7 @@ from repoze.what.predicates import Any, not_anonymous
 
 from vigilo.models.session import DBSession
 from vigilo.models.tables import Event, EventHistory, CorrEvent, SupItem, \
-                            HostGroup, ServiceGroup, StateName, User
+                                SupItemGroup, StateName, User
 from vigilo.models.functions import sql_escape_like
 from vigilo.models.tables.secondary_tables import EVENTSAGGREGATE_TABLE
 
@@ -55,7 +55,7 @@ class RootController(VigiboardRootController):
         }, error_handler=process_form_errors)
     @expose('events_table.html')
     @require(Any(not_anonymous(), msg=l_("You need to be authenticated")))
-    def default(self, page=1, hostgroup=None, servicegroup=None,
+    def default(self, page=1, supitemgroup=None,
             host=None, service=None, output=None, trouble_ticket=None,
             from_date=None, to_date=None, *argv, **krgv):
         """
@@ -101,25 +101,17 @@ class RootController(VigiboardRootController):
             'tt': '',
             'from_date': '',
             'to_date': '',
-            'hostgroup': '',
-            'servicegroup': '',
+            'supitemgroup': '',
         }
 
         # Application des filtres si nécessaire
-        if hostgroup:
-            search['hostgroup'] = hostgroup
-            hostgroup = sql_escape_like(hostgroup)
-            aggregates.add_join((HostGroup, HostGroup.idgroup == \
-                aggregates.items.c.idhostgroup))
-            aggregates.add_filter(HostGroup.name.ilike('%%%s%%' % hostgroup))
-
-        if servicegroup:
-            search['servicegroup'] = servicegroup
-            servicegroup = sql_escape_like(servicegroup)
-            aggregates.add_join((ServiceGroup, ServiceGroup.idgroup == \
-                aggregates.items.c.idservicegroup))
+        if supitemgroup:
+            search['supitemgroup'] = supitemgroup
+            supitemgroup = sql_escape_like(supitemgroup)
+            aggregates.add_join((SupItemGroup, SupItemGroup.idgroup == \
+                aggregates.items.c.idsupitemgroup))
             aggregates.add_filter(
-                ServiceGroup.name.ilike('%%%s%%' % servicegroup))
+                SupItemGroup.name.ilike('%%%s%%' % supitemgroup))
 
         if host:
             search['host'] = host
@@ -279,8 +271,7 @@ class RootController(VigiboardRootController):
                 'tt': '',
                 'from_date': '',
                 'to_date': '',
-                'hostgroup': '',
-                'servicegroup': '',
+                'supitemgroup': '',
             },
            refresh_times=config['vigiboard_refresh_times'],
         )
@@ -360,8 +351,7 @@ class RootController(VigiboardRootController):
                 'tt': '',
                 'from_date': '',
                 'to_date': '',
-                'hostgroup': '',
-                'servicegroup': '',
+                'supitemgroup': '',
             },
            refresh_times=config['vigiboard_refresh_times'],
         )
@@ -441,8 +431,7 @@ class RootController(VigiboardRootController):
                 'tt': '',
                 'from_date': '',
                 'to_date': '',
-                'hostgroup': '',
-                'servicegroup': '',
+                'supitemgroup': '',
             },
             refresh_times=config['vigiboard_refresh_times'],
         )

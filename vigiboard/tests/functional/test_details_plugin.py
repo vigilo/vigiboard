@@ -9,7 +9,7 @@ import transaction
 
 from vigiboard.tests import TestController
 from vigilo.models.session import DBSession
-from vigilo.models.tables import ServiceGroup, HostGroup, \
+from vigilo.models.tables import SupItemGroup, GroupHierarchy, \
                             Host, Permission, StateName, \
                             LowLevelService, Event, CorrEvent
 
@@ -27,10 +27,14 @@ def insert_deps(return_service):
     """
     timestamp = datetime.now()
 
-    hostgroup = HostGroup(
-        name=u'foo',
-    )
+    hostgroup = SupItemGroup(name=u'foo')
     DBSession.add(hostgroup)
+
+    DBSession.add(GroupHierarchy(
+        parent=hostgroup,
+        child=hostgroup,
+        hops=0,
+    ))
 
     host = Host(
         name=u'bar',
@@ -46,13 +50,17 @@ def insert_deps(return_service):
     DBSession.add(host)
     DBSession.flush()
 
-    hostgroup.hosts.append(host)
+    hostgroup.supitems.append(host)
     DBSession.flush()
 
-    servicegroup = ServiceGroup(
-        name=u'foo',
-    )
+    servicegroup = SupItemGroup(name=u'bar')
     DBSession.add(servicegroup)
+
+    DBSession.add(GroupHierarchy(
+        parent=servicegroup,
+        child=servicegroup,
+        hops=0,
+    ))
 
     service = LowLevelService(
         host=host,
@@ -64,7 +72,7 @@ def insert_deps(return_service):
     DBSession.add(service)
     DBSession.flush()
 
-    servicegroup.services.append(service)
+    servicegroup.supitems.append(service)
     DBSession.flush()
 
     event = Event(
@@ -101,7 +109,7 @@ class TestDetailsPlugin(TestController):
         """Dialogue des détails avec un LLS et les bons droits."""
         hostgroup, idcorrevent, idcause = insert_deps(True)
         manage = Permission.by_permission_name(u'manage')
-        manage.hostgroups.append(hostgroup)
+        manage.supitemgroups.append(hostgroup)
         DBSession.flush()
         transaction.commit()
 
@@ -130,7 +138,7 @@ class TestDetailsPlugin(TestController):
         """Dialogue des détails avec un hôte et les bons droits."""
         hostgroup, idcorrevent, idcause = insert_deps(False)
         manage = Permission.by_permission_name(u'manage')
-        manage.hostgroups.append(hostgroup)
+        manage.supitemgroups.append(hostgroup)
         DBSession.flush()
         transaction.commit()
 

@@ -9,18 +9,35 @@ from datetime import datetime
 import transaction
 
 from vigilo.models.session import DBSession
-from vigilo.models.tables import Event, CorrEvent, \
-                            Permission, StateName, \
-                            Host, HostGroup, LowLevelService
+from vigilo.models.tables import Event, CorrEvent, GroupHierarchy, \
+                            Permission, StateName, Host, SupItemGroup, \
+                            LowLevelService
 from vigiboard.tests import TestController
 
 def populate_DB():
     """ Peuple la base de données. """
     # On ajoute les groupes et leurs dépendances
-    hosteditors = HostGroup(name=u'editorsgroup')
+    hosteditors = SupItemGroup(name=u'editorsgroup')
     DBSession.add(hosteditors)
-    hostmanagers = HostGroup(name=u'managersgroup', parent=hosteditors)
+    hostmanagers = SupItemGroup(name=u'managersgroup')
     DBSession.add(hostmanagers)
+    DBSession.flush()
+
+    DBSession.add(GroupHierarchy(
+        parent=hosteditors,
+        child=hosteditors,
+        hops=0,
+    ))
+    DBSession.add(GroupHierarchy(
+        parent=hostmanagers,
+        child=hostmanagers,
+        hops=0,
+    ))
+    DBSession.add(GroupHierarchy(
+        parent=hosteditors,
+        child=hostmanagers,
+        hops=1,
+    ))
     DBSession.flush()
 
     manage_perm = Permission.by_permission_name(u'manage')
@@ -46,8 +63,8 @@ def populate_DB():
     DBSession.add(editorhost)
 
     # Affectation des hôtes aux groupes.
-    hosteditors.hosts.append(editorhost)
-    hostmanagers.hosts.append(managerhost)
+    hosteditors.supitems.append(editorhost)
+    hostmanagers.supitems.append(managerhost)
     DBSession.flush()
 
     # Création des services techniques de test.

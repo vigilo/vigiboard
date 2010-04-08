@@ -8,17 +8,24 @@ import transaction
 
 from vigiboard.tests import TestController
 from vigilo.models.session import DBSession
-from vigilo.models.tables import HostGroup, Host, Permission, \
-                                    Event, CorrEvent, StateName
+from vigilo.models.tables import SupItemGroup, Host, Permission, StateName, \
+                                    Event, CorrEvent, GroupHierarchy
 
 def insert_deps():
     """Insère les dépendances nécessaires aux tests."""
     timestamp = datetime.now()
 
-    hostgroup = HostGroup(
+    hostgroup = SupItemGroup(
         name=u'foo',
     )
     DBSession.add(hostgroup)
+    DBSession.flush()
+
+    DBSession.add(GroupHierarchy(
+        parent=hostgroup,
+        child=hostgroup,
+        hops=0,
+    ))
     DBSession.flush()
 
     host = Host(
@@ -35,7 +42,7 @@ def insert_deps():
     DBSession.add(host)
     DBSession.flush()
 
-    hostgroup.hosts.append(host)
+    hostgroup.supitems.append(host)
     DBSession.flush()
 
     event = Event(
@@ -73,13 +80,13 @@ class TestSearchFormHostGroup(TestController):
         # ayant la permission 'manage' de voir cette alerte.
         hostgroup = insert_deps()
         manage = Permission.by_permission_name(u'manage')
-        manage.hostgroups.append(hostgroup)
+        manage.supitemgroups.append(hostgroup)
         DBSession.flush()
         transaction.commit()
 
         # On envoie une requête avec recherche sur le groupe d'hôtes créé,
         # on s'attend à recevoir 1 résultat.
-        response = self.app.get('/?hostgroup=foo',
+        response = self.app.get('/?supitemgroup=foo',
             extra_environ={'REMOTE_USER': 'manager'})
 
         # Il doit y avoir 1 seule ligne de résultats.
@@ -96,7 +103,7 @@ class TestSearchFormHostGroup(TestController):
         """Teste la recherche par hostgroup sur un groupe inexistant."""
         # On envoie une requête avec recherche sur un groupe d'hôtes
         # qui n'existe pas, on s'attend à n'obtenir aucun résultat.
-        response = self.app.get('/?hostgroup=foot',
+        response = self.app.get('/?supitemgroup=foot',
             extra_environ={'REMOTE_USER': 'manager'})
 
         # Il doit y avoir 1 seule ligne de résultats.
@@ -123,7 +130,7 @@ class TestSearchFormHostGroup(TestController):
         # On envoie une requête avec recherche sur le groupe d'hôtes créé,
         # mais avec un utilisateur ne disposant pas des permissions adéquates.
         # On s'attend à n'obtenir aucun résultat.
-        response = self.app.get('/?hostgroup=foo',
+        response = self.app.get('/?supitemgroup=foo',
             extra_environ={'REMOTE_USER': 'manager'})
 
         # Il doit y avoir 1 seule ligne de résultats.

@@ -7,7 +7,7 @@ import transaction
 from nose.tools import assert_true
 
 from vigilo.models.session import DBSession
-from vigilo.models.tables import HostGroup, Permission, User
+from vigilo.models.tables import SupItemGroup, Permission, User, GroupHierarchy
 from vigiboard.tests import TestController
 
 class TestGroupPermissionsInheritance(TestController):
@@ -18,18 +18,35 @@ class TestGroupPermissionsInheritance(TestController):
         """
 
         # Création de 2 groupes d'utilisateurs.
-        hosteditors = HostGroup(name=u'hosteditors', parent=None)
+        hosteditors = SupItemGroup(name=u'hosteditors')
         DBSession.add(hosteditors)
 
-        hostmanagers = HostGroup(name=u'hostmanagers', parent=hosteditors)
+        hostmanagers = SupItemGroup(name=u'hostmanagers')
         DBSession.add(hostmanagers)
+
+        # Hiérarchie des groupes.
+        DBSession.add(GroupHierarchy(
+            parent=hosteditors,
+            child=hosteditors,
+            hops=0,
+        ))
+        DBSession.add(GroupHierarchy(
+            parent=hostmanagers,
+            child=hostmanagers,
+            hops=0,
+        ))
+        DBSession.add(GroupHierarchy(
+            parent=hosteditors,
+            child=hostmanagers,
+            hops=1,
+        ))
 
         # L'attribution des permissions.
         manage_perm = Permission.by_permission_name(u'manage')
         edit_perm = Permission.by_permission_name(u'edit')
 
-        manage_perm.hostgroups.append(hostmanagers)
-        edit_perm.hostgroups.append(hosteditors)
+        manage_perm.supitemgroups.append(hostmanagers)
+        edit_perm.supitemgroups.append(hosteditors)
         DBSession.flush()
         transaction.commit()
 
@@ -42,13 +59,13 @@ class TestGroupPermissionsInheritance(TestController):
         username = response.request.environ \
             ['repoze.who.identity'] \
             ['repoze.who.userid']
-        grp = User.by_user_name(username).groups
+        grp = User.by_user_name(username).supitemgroups
 
         # Permet de rafraîchir les instances.
-        hostmanagers = DBSession.query(HostGroup).filter(
-                            HostGroup.name==u'hostmanagers').one()
-        hosteditors = DBSession.query(HostGroup).filter(
-                            HostGroup.name==u'hosteditors').one()
+        hostmanagers = DBSession.query(SupItemGroup).filter(
+                            SupItemGroup.name==u'hostmanagers').one()
+        hosteditors = DBSession.query(SupItemGroup).filter(
+                            SupItemGroup.name==u'hosteditors').one()
 
         # On vérifie que la liste est correcte : le manager doit avoir accès
         # aux groupes 'hostmanagers' & 'hosteditors' (dont il hérite).
@@ -63,7 +80,7 @@ class TestGroupPermissionsInheritance(TestController):
         username = response.request.environ \
             ['repoze.who.identity'] \
             ['repoze.who.userid']
-        grp = User.by_user_name(username).groups
+        grp = User.by_user_name(username).supitemgroups
 
         # L'utilisateur editor ne doit avoir accès qu'au groupe 'hosteditors'.
         assert_true(not(hostmanagers.idgroup in grp) and

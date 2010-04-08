@@ -6,8 +6,8 @@ import transaction
 from nose.tools import assert_equal
 
 from vigilo.models.session import DBSession
-from vigilo.models.tables import Permission, StateName, \
-                            HostGroup, Host, HighLevelService, \
+from vigilo.models.tables import Permission, StateName, GroupHierarchy, \
+                            SupItemGroup, Host, HighLevelService, \
                             Event, CorrEvent, ImpactedPath, ImpactedHLS
 from vigiboard.tests import TestController
 
@@ -15,9 +15,15 @@ def populate_DB():
     """ Peuple la base de données. """
 
     # On ajoute un groupe d'hôtes
-    hostmanagers = HostGroup(name = u'managersgroup')
+    hostmanagers = SupItemGroup(name=u'managersgroup')
     DBSession.add(hostmanagers)
     DBSession.flush()
+
+    DBSession.add(GroupHierarchy(
+        parent=hostmanagers,
+        child=hostmanagers,
+        hops=0,
+    ))
 
     # On lui octroie les permissions
     manage_perm = Permission.by_permission_name(u'manage')
@@ -37,7 +43,7 @@ def populate_DB():
     DBSession.add(host)
 
     # On affecte cet hôte au groupe précédemment créé.
-    hostmanagers.hosts.append(host)
+    hostmanagers.supitems.append(host)
     DBSession.flush()
 
     # On ajoute un évènement causé par cet hôte.
@@ -236,4 +242,4 @@ class TestHLSPlugin(TestController):
             extra_environ={'REMOTE_USER': 'manager'})
         # On vérifie que le plugin retourne bien les 4 HLS impactés.
         assert_equal(resp.json, {"services": ['HLS12', 'HLS22']})
-        
+

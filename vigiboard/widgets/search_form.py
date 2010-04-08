@@ -25,8 +25,7 @@ class SearchForm(TableForm):
     style = 'display: none'
 
     class fields(WidgetsList):
-        hostgroup = TextField(label_text=l_('Host group'))
-        servicegroup = TextField(label_text=l_('Service group'))
+        supitemgroup = TextField(label_text=l_('Group'))
         host = TextField(label_text=l_('Host'))
         service = TextField(label_text=l_('Service'))
         output = TextField(label_text=l_('Output'))

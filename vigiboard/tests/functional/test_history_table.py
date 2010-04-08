@@ -11,23 +11,26 @@ import transaction
 
 from vigilo.models.session import DBSession
 from vigilo.models.tables import Event, EventHistory, CorrEvent, \
-                            Permission, StateName, \
-                            Host, HostGroup, LowLevelService, ServiceGroup
+                            Permission, StateName, GroupHierarchy, \
+                            Host, SupItemGroup, LowLevelService
 from vigiboard.tests import TestController
 
 def populate_DB():
     """ Peuple la base de données. """
     # On ajoute un groupe d'hôtes et un groupe de services.
-    hostmanagers = HostGroup(name = u'managersgroup')
-    DBSession.add(hostmanagers)
-    servicemanagers = ServiceGroup(name = u'managersgroup')
-    DBSession.add(servicemanagers)
+    supitemmanagers = SupItemGroup(name=u'managersgroup')
+    DBSession.add(supitemmanagers)
     DBSession.flush()
+
+    DBSession.add(GroupHierarchy(
+        parent=supitemmanagers,
+        child=supitemmanagers,
+        hops=0,
+    ))
 
     # On ajoute la permission 'manage' à ces deux groupes.
     manage_perm = Permission.by_permission_name(u'manage')
-    hostmanagers.permissions.append(manage_perm)
-    servicemanagers.permissions.append(manage_perm)
+    supitemmanagers.permissions.append(manage_perm)
     DBSession.flush()
 
     # On crée un hôte de test, et on l'ajoute au groupe d'hôtes.
@@ -41,7 +44,7 @@ def populate_DB():
         weight = 42,
     )
     DBSession.add(managerhost)
-    hostmanagers.hosts.append(managerhost)
+    supitemmanagers.supitems.append(managerhost)
     DBSession.flush()
 
     # On crée un services de bas niveau, et on l'ajoute au groupe de services.
@@ -53,7 +56,7 @@ def populate_DB():
         weight = 42,
     )
     DBSession.add(managerservice)
-    servicemanagers.services.append(managerservice)
+    supitemmanagers.supitems.append(managerservice)
     DBSession.flush()
     
     return (managerhost, managerservice)

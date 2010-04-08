@@ -14,8 +14,7 @@ from sqlalchemy.sql.expression import or_, null as expr_null, union
 from vigilo.models.session import DBSession
 from vigilo.models.tables import Event, CorrEvent, EventHistory, \
                         Host, LowLevelService, StateName
-from vigilo.models.tables.secondary_tables import HOST_GROUP_TABLE, \
-                                            SERVICE_GROUP_TABLE
+from vigilo.models.tables.secondary_tables import SUPITEM_GROUP_TABLE
 from vigiboard.widgets.edit_event import create_edit_event_form, EditEventForm
 from vigiboard.widgets.search_form import create_search_form, SearchForm
 from vigiboard.controllers.plugins import VigiboardRequestPlugin
@@ -56,42 +55,47 @@ class VigiboardRequest():
         lang = lang.replace('_', '-')
         lang = lang.split('-')[0]
 
-        self.user_groups = user.groups
+        self.user_groups = user.supitemgroups
         self.lang = lang
         self.generaterq = False
-        
+
+        # Sélectionne tous les IDs des services auxquels
+        # l'utilisateur a accès.
         lls_query = DBSession.query(
             LowLevelService.idservice.label("idsupitem"),
             LowLevelService.servicename.label("servicename"),
             Host.name.label("hostname"),
-            SERVICE_GROUP_TABLE.c.idgroup.label("idservicegroup"),
-            HOST_GROUP_TABLE.c.idgroup.label("idhostgroup"),
+            SUPITEM_GROUP_TABLE.c.idgroup.label("idsupitemgroup"),
         ).join(
-           (Host, Host.idhost == LowLevelService.idhost),
+            (Host, Host.idhost == LowLevelService.idhost),
         ).outerjoin(
-            (HOST_GROUP_TABLE, 
-                HOST_GROUP_TABLE.c.idhost == LowLevelService.idhost),
-            (SERVICE_GROUP_TABLE, 
-                SERVICE_GROUP_TABLE.c.idservice == LowLevelService.idservice),
-        ).filter(
-            or_(
-                HOST_GROUP_TABLE.c.idgroup.in_(self.user_groups),
-                SERVICE_GROUP_TABLE.c.idgroup.in_(self.user_groups),
+            (SUPITEM_GROUP_TABLE,
+                or_(
+                    SUPITEM_GROUP_TABLE.c.idsupitem == \
+                        LowLevelService.idhost,
+                    SUPITEM_GROUP_TABLE.c.idsupitem == \
+                        LowLevelService.idservice,
+                )
             ),
+        ).filter(
+            SUPITEM_GROUP_TABLE.c.idgroup.in_(self.user_groups)
         )
-               
+
+        # Sélectionne tous les IDs des hôtes auxquels
+        # l'utilisateur a accès.
         host_query = DBSession.query(
             Host.idhost.label("idsupitem"),
             expr_null().label("servicename"),
             Host.name.label("hostname"),
-            expr_null().label("idservicegroup"),
-            HOST_GROUP_TABLE.c.idgroup.label('idhostgroup'),
-        ).join((HOST_GROUP_TABLE, HOST_GROUP_TABLE.c.idhost == Host.idhost)
-        ).filter(HOST_GROUP_TABLE.c.idgroup.label('idhostgroup'
-            ).in_(self.user_groups),
+            SUPITEM_GROUP_TABLE.c.idgroup.label('idsupitemgroup'),
+        ).join(
+            (SUPITEM_GROUP_TABLE, SUPITEM_GROUP_TABLE.c.idsupitem == \
+                Host.idhost),
+        ).filter(
+            SUPITEM_GROUP_TABLE.c.idgroup.in_(self.user_groups),
         )
 
-        # Object Selectable renvoyant des informations sur un supitem
+        # Objet Selectable renvoyant des informations sur un SupItem
         # concerné par une alerte, avec prise en compte des droits d'accès.
         # On est obligés d'utiliser sqlalchemy.sql.expression.union
         # pour indiquer à SQLAlchemy de NE PAS regrouper les tables

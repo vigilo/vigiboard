@@ -8,8 +8,9 @@ import transaction
 
 from vigiboard.tests import TestController
 from vigilo.models.session import DBSession
-from vigilo.models.tables import ServiceGroup, Host, Permission, Event, \
-                                    LowLevelService, CorrEvent, StateName
+from vigilo.models.tables import SupItemGroup, Host, Permission, Event, \
+                                    LowLevelService, CorrEvent, StateName, \
+                                    GroupHierarchy
 
 def insert_deps():
     """Insère les dépendances nécessaires aux tests."""
@@ -29,10 +30,17 @@ def insert_deps():
     DBSession.add(host)
     DBSession.flush()
 
-    servicegroup = ServiceGroup(
+    servicegroup = SupItemGroup(
         name=u'foo',
     )
     DBSession.add(servicegroup)
+
+    DBSession.add(GroupHierarchy(
+        parent=servicegroup,
+        child=servicegroup,
+        hops=0,
+    ))
+    DBSession.flush()
 
     service = LowLevelService(
         host=host,
@@ -44,7 +52,7 @@ def insert_deps():
     DBSession.add(service)
     DBSession.flush()
 
-    servicegroup.services.append(service)
+    servicegroup.supitems.append(service)
     event = Event(
         supitem=service,
         timestamp=timestamp,
@@ -80,13 +88,13 @@ class TestSearchFormServiceGroup(TestController):
         # ayant la permission 'manage' de voir cette alerte.
         servicegroup = insert_deps()
         manage = Permission.by_permission_name(u'manage')
-        manage.servicegroups.append(servicegroup)
+        manage.supitemgroups.append(servicegroup)
         DBSession.flush()
         transaction.commit()
 
         # On envoie une requête avec recherche sur le groupe
         # de services créé, on s'attend à recevoir 1 résultat.
-        response = self.app.get('/?servicegroup=foo',
+        response = self.app.get('/?supitemgroup=foo',
             extra_environ={'REMOTE_USER': 'manager'})
 
         # Il doit y avoir 1 seule ligne de résultats.
@@ -103,7 +111,7 @@ class TestSearchFormServiceGroup(TestController):
         """Teste la recherche par servicegroup sur un groupe inexistant."""
         # On envoie une requête avec recherche sur un groupe de services
         # qui n'existe pas, on s'attend à n'obtenir aucun résultat.
-        response = self.app.get('/?servicegroup=foot',
+        response = self.app.get('/?supitemgroup=foot',
             extra_environ={'REMOTE_USER': 'manager'})
 
         # Il doit y avoir 1 seule ligne de résultats.
@@ -130,7 +138,7 @@ class TestSearchFormServiceGroup(TestController):
         # On envoie une requête avec recherche sur le groupe de services
         # services créé, mais avec un utilisateur ne disposant pas des
         # permissions adéquates. On s'attend à n'obtenir aucun résultat.
-        response = self.app.get('/?servicegroup=foo',
+        response = self.app.get('/?supitemgroup=foo',
             extra_environ={'REMOTE_USER': 'manager'})
 
         # Il doit y avoir 1 seule ligne de résultats.

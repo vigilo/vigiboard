@@ -8,7 +8,7 @@ import transaction
 
 from vigiboard.tests import TestController
 from vigilo.models.session import DBSession
-from vigilo.models.tables import ServiceGroup, HostGroup, \
+from vigilo.models.tables import SupItemGroup, GroupHierarchy, \
                                     Host, Permission, StateName, \
                                     LowLevelService, Event, CorrEvent
 
@@ -16,10 +16,15 @@ def insert_deps():
     """Insère les dépendances nécessaires aux tests."""
     timestamp = datetime.now()
 
-    hostgroup = HostGroup(
-        name=u'foo',
-    )
+    hostgroup = SupItemGroup(name=u'foo')
     DBSession.add(hostgroup)
+
+    DBSession.add(GroupHierarchy(
+        parent=hostgroup,
+        child=hostgroup,
+        hops=0,
+    ))
+    DBSession.flush()
 
     host = Host(
         name=u'bar',
@@ -35,13 +40,18 @@ def insert_deps():
     DBSession.add(host)
     DBSession.flush()
 
-    hostgroup.hosts.append(host)
+    hostgroup.supitems.append(host)
     DBSession.flush()
 
-    servicegroup = ServiceGroup(
-        name=u'foo',
-    )
+    servicegroup = SupItemGroup(name=u'bar')
     DBSession.add(servicegroup)
+
+    DBSession.add(GroupHierarchy(
+        parent=servicegroup,
+        child=servicegroup,
+        hops=0,
+    ))
+    DBSession.flush()
 
     service = LowLevelService(
         host=host,
@@ -53,7 +63,7 @@ def insert_deps():
     DBSession.add(service)
     DBSession.flush()
 
-    servicegroup.services.append(service)
+    servicegroup.supitems.append(service)
     DBSession.flush()
 
     event = Event(
@@ -82,7 +92,7 @@ def insert_deps():
 class TestSearchFormService(TestController):
     """Teste la récupération d'événements selon le groupe de services."""
 
-    def test_search_service_when_allowed_by_hostgroup(self):
+    def test_search_service_when_allowed_by_host(self):
         """
         Teste la recherche par service avec des droits implicites
         (droits accordés car l'utilisateur a les droits sur l'hôte).
@@ -95,7 +105,7 @@ class TestSearchFormService(TestController):
         print "Adding permission for 'manager' on host group '%s'" % \
             hostgroup.name
         manage = Permission.by_permission_name(u'manage')
-        manage.hostgroups.append(hostgroup)
+        manage.supitemgroups.append(hostgroup)
         DBSession.flush()
         transaction.commit()
 
@@ -114,7 +124,7 @@ class TestSearchFormService(TestController):
         print "There are %d columns in the result set" % len(cols)
         assert_true(len(cols) > 1)
 
-    def test_search_service_when_allowed_by_servicegroup(self):
+    def test_search_service_when_allowed_by_service(self):
         """
         Teste la recherche par service avec des droits explicites
         (droits accordés car l'utilisateur a explicitement les droits
@@ -127,7 +137,7 @@ class TestSearchFormService(TestController):
         print "Adding permission for 'manager' on service group '%s'" % \
             servicegroup.name
         manage = Permission.by_permission_name(u'manage')
-        manage.servicegroups.append(servicegroup)
+        manage.supitemgroups.append(servicegroup)
         DBSession.flush()
         transaction.commit()
 

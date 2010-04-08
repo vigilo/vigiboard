@@ -9,8 +9,8 @@ import transaction
 
 from vigiboard.tests import TestController
 from vigilo.models.session import DBSession
-from vigilo.models.tables import HostGroup, Host, Permission, \
-                                   Event, CorrEvent, StateName
+from vigilo.models.tables import SupItemGroup, Host, Permission, \
+                                   Event, CorrEvent, StateName, GroupHierarchy
 
 def insert_deps():
     """Insère les dépendances nécessaires aux tests."""
@@ -30,11 +30,16 @@ def insert_deps():
     DBSession.add(host)
     DBSession.flush()
 
-    hostgroup = HostGroup(
-        name=u'foo',
-    )
-    hostgroup.hosts.append(host)
+    hostgroup = SupItemGroup(name=u'foo')
+    hostgroup.supitems.append(host)
     DBSession.add(hostgroup)
+    DBSession.flush()
+
+    DBSession.add(GroupHierarchy(
+        parent=hostgroup,
+        child=hostgroup,
+        hops=0,
+    ))
     DBSession.flush()
 
     event = Event(
@@ -61,7 +66,7 @@ def insert_deps():
 
     # On attribut les permissions.
     manage = Permission.by_permission_name(u'manage')
-    manage.hostgroups.append(hostgroup)
+    manage.supitemgroups.append(hostgroup)
     DBSession.flush()
     return timestamp
 
