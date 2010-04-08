@@ -8,6 +8,8 @@ from logging import getLogger
 from tg import url, config, tmpl_context
 from tg.i18n import get_lang
 from pylons.i18n import ugettext as _
+from paste.deploy.converters import asbool
+
 from sqlalchemy import not_, and_, asc, desc
 from sqlalchemy.sql.expression import or_, null as expr_null, union
 
@@ -138,9 +140,19 @@ class VigiboardRequest():
             desc(CorrEvent.status),                         # État acquittement
             asc(StateName.statename.in_([u'OK', u'UP'])),   # Vert / Pas vert
             priority_order,                                 # Priorité ITIL
-            desc(StateName.order),                          # Etat courant
-            desc(Event.timestamp),                          # Timestamp
         ]
+
+        if asbool(config.get('state_first', True)):
+            self.orderby.extend([
+                desc(StateName.order),                      # Etat courant
+                desc(Event.timestamp),                      # Timestamp
+            ])
+        else:
+            self.orderby.extend([
+                desc(Event.timestamp),                      # Timestamp
+                desc(StateName.order),                      # Etat courant
+            ])
+
 
         # Regroupements (GROUP BY)
         # PostgreSQL est pointilleux sur les colonnes qui apparaissent
