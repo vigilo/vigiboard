@@ -300,8 +300,8 @@ class RootController(VigiboardRootController):
         events = VigiboardRequest(User.by_user_name(username), False)
         events.add_table(
             Event,
-            events.items.c.hostname,
-            events.items.c.servicename,
+            events.items.c.hostname.label('hostname'),
+            events.items.c.servicename.label('servicename'),
         )
         events.add_join((EVENTSAGGREGATE_TABLE, \
             EVENTSAGGREGATE_TABLE.c.idevent == Event.idevent))
@@ -333,8 +333,12 @@ class RootController(VigiboardRootController):
         else:
             id_first_row += 1
 
+        event = events.req[0]
+
         return dict(
             idevent = idevent,
+            hostname = event.hostname,
+            servicename = event.servicename,
             plugins = get_plugins_instances(),
             rows_info = {
                 'id_first_row': id_first_row,
