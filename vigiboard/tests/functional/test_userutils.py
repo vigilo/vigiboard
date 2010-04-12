@@ -36,8 +36,8 @@ class TestGroupPermissionsInheritance(TestController):
             hops=0,
         ))
         DBSession.add(GroupHierarchy(
-            parent=hosteditors,
-            child=hostmanagers,
+            parent=hostmanagers,
+            child=hosteditors,
             hops=1,
         ))
 
@@ -59,7 +59,7 @@ class TestGroupPermissionsInheritance(TestController):
         username = response.request.environ \
             ['repoze.who.identity'] \
             ['repoze.who.userid']
-        grp = User.by_user_name(username).supitemgroups
+        grp = User.by_user_name(username).supitemgroups()
 
         # Permet de rafraîchir les instances.
         hostmanagers = DBSession.query(SupItemGroup).filter(
@@ -80,7 +80,7 @@ class TestGroupPermissionsInheritance(TestController):
         username = response.request.environ \
             ['repoze.who.identity'] \
             ['repoze.who.userid']
-        grp = User.by_user_name(username).supitemgroups
+        grp = User.by_user_name(username).supitemgroups(False)
 
         # L'utilisateur editor ne doit avoir accès qu'au groupe 'hosteditors'.
         assert_true(not(hostmanagers.idgroup in grp) and

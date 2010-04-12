@@ -57,7 +57,7 @@ class VigiboardRequest():
         lang = lang.replace('_', '-')
         lang = lang.split('-')[0]
 
-        self.user_groups = user.supitemgroups
+        self.user_groups = user.supitemgroups(False)
         self.lang = lang
         self.generaterq = False
 

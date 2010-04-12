@@ -34,8 +34,8 @@ def populate_DB():
         hops=0,
     ))
     DBSession.add(GroupHierarchy(
-        parent=hosteditors,
-        child=hostmanagers,
+        parent=hostmanagers,
+        child=hosteditors,
         hops=1,
     ))
     DBSession.flush()
