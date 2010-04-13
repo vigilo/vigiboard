@@ -26,6 +26,8 @@ from vigilo.models.tables.secondary_tables import EVENTSAGGREGATE_TABLE
 
 from vigilo.turbogears.controllers.autocomplete \
     import make_autocomplete_controller
+from vigilo.turbogears.helpers import get_current_user
+
 from vigiboard.controllers.vigiboardrequest import VigiboardRequest
 from vigiboard.controllers.vigiboard_controller import VigiboardRootController
 from vigiboard.widgets.edit_event import edit_event_status_options
@@ -80,9 +82,7 @@ class RootController(VigiboardRootController):
         if not page:
             page = 1
 
-        username = request.environ['repoze.who.identity']['repoze.who.userid']
-        user = User.by_user_name(username)
-
+        user = get_current_user()
         aggregates = VigiboardRequest(user)
         aggregates.add_table(
             CorrEvent,
@@ -214,8 +214,8 @@ class RootController(VigiboardRootController):
         if not page:
             page = 1
 
-        username = request.environ['repoze.who.identity']['repoze.who.userid']
-        events = VigiboardRequest(User.by_user_name(username), False)
+        user = get_current_user()
+        events = VigiboardRequest(user, False)
         events.add_table(
             Event,
             events.items.c.hostname,
@@ -296,8 +296,8 @@ class RootController(VigiboardRootController):
         if not page:
             page = 1
 
-        username = request.environ['repoze.who.identity']['repoze.who.userid']
-        events = VigiboardRequest(User.by_user_name(username), False)
+        user = get_current_user()
+        events = VigiboardRequest(user, False)
         events.add_table(
             Event,
             events.items.c.hostname.label('hostname'),
@@ -383,8 +383,8 @@ class RootController(VigiboardRootController):
         """
         idsupitem = SupItem.get_supitem(host, service)
 
-        username = request.environ['repoze.who.identity']['repoze.who.userid']
-        aggregates = VigiboardRequest(User.by_user_name(username), False)
+        user = get_current_user()
+        aggregates = VigiboardRequest(user, False)
         aggregates.add_table(
             CorrEvent,
             aggregates.items.c.hostname,
@@ -481,9 +481,9 @@ class RootController(VigiboardRootController):
 
         # Si l'utilisateur édite plusieurs événements à la fois,
         # il nous faut chacun des identifiants
-       
-        username = request.environ['repoze.who.identity']['repoze.who.userid']
-        events = VigiboardRequest(User.by_user_name(username))
+
+        user = get_current_user()
+        events = VigiboardRequest(user)
         events.add_table(CorrEvent)
         events.add_join((Event, CorrEvent.idcause == Event.idevent))
         events.add_join((events.items, 
@@ -564,8 +564,8 @@ class RootController(VigiboardRootController):
 
         # Permet de vérifier si l'utilisateur a bien les permissions
         # pour accéder à cet événement et si l'événement existe.
-        username = request.environ['repoze.who.identity']['repoze.who.userid']
-        events = VigiboardRequest(User.by_user_name(username), False)
+        user = get_current_user()
+        events = VigiboardRequest(user, False)
         events.add_table(CorrEvent.idcorrevent)
         events.add_join((Event, CorrEvent.idcause == Event.idevent))
         events.add_join((events.items, 
