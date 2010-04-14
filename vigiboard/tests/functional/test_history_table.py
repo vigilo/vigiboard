@@ -155,7 +155,8 @@ class TestHistoryTable(TestController):
         # NB: la requête XPath est approchante, car XPath 1.0 ne permet pas
         # de rechercher directement une valeur dans une liste. Elle devrait
         # néanmoins suffire pour les besoins des tests.
-        rows = response.lxml.xpath('//table[contains(@class, "vigitable")]/tbody/tr')
+        rows = response.lxml.xpath(
+            '//table[contains(@class, "vigitable")]/tbody/tr')
         assert_equal(len(rows), 2)
 
     def test_cause_service_history(self):
@@ -206,6 +207,7 @@ class TestHistoryTable(TestController):
         # NB: la requête XPath est approchante, car XPath 1.0 ne permet pas
         # de rechercher directement une valeur dans une liste. Elle devrait
         # néanmoins suffire pour les besoins des tests.
-        rows = response.lxml.xpath('//table[contains(@class,"vigitable")]/tbody/tr')
+        rows = response.lxml.xpath(
+            '//table[contains(@class,"vigitable")]/tbody/tr')
         assert_equal(len(rows), 2)
 

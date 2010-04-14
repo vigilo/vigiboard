@@ -5,9 +5,6 @@ Un plugin pour VigiBoard qui ajoute une colonne avec les services de haut
 niveau (L{HighLevelService}) impactés par un événement.
 """
 
-from pylons.i18n import ugettext as _
-from tg import url
-
 from vigiboard.controllers.plugins import VigiboardRequestPlugin
 from vigilo.models.session import DBSession
 from vigilo.models.tables import HighLevelService, CorrEvent, Event, SupItem

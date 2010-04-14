@@ -5,7 +5,7 @@
 import tg
 from pylons.i18n import lazy_ugettext as l_
 from tw.api import WidgetsList
-from tw.forms import TableForm, TextField, CalendarDateTimePicker, SubmitButton
+from tw.forms import TableForm, TextField, CalendarDateTimePicker
 
 __all__ = ('SearchForm', 'create_search_form')
 

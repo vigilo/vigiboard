@@ -5,7 +5,7 @@
 from time import mktime
 from logging import getLogger
 
-from tg import url, config, tmpl_context
+from tg import config, tmpl_context
 from tg.i18n import get_lang
 from pylons.i18n import ugettext as _
 from paste.deploy.converters import asbool
@@ -17,8 +17,8 @@ from vigilo.models.session import DBSession
 from vigilo.models.tables import Event, CorrEvent, EventHistory, \
                         Host, LowLevelService, StateName
 from vigilo.models.tables.secondary_tables import SUPITEM_GROUP_TABLE
-from vigiboard.widgets.edit_event import create_edit_event_form, EditEventForm
-from vigiboard.widgets.search_form import create_search_form, SearchForm
+from vigiboard.widgets.edit_event import create_edit_event_form
+from vigiboard.widgets.search_form import create_search_form
 from vigiboard.controllers.plugins import VigiboardRequestPlugin
 
 LOGGER = getLogger(__name__)

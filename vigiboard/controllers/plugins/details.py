@@ -9,13 +9,12 @@ applications externes.
 import urllib
 
 from tg.exceptions import HTTPForbidden
-from tg import flash, request, config, redirect, url
-from pylons.i18n import ugettext as _
+from tg import config
 
 from vigiboard.controllers.vigiboardrequest import VigiboardRequest
 from vigiboard.controllers.plugins import VigiboardRequestPlugin
-from vigilo.models.session import DBSession
-from vigilo.models.tables import User, CorrEvent, Event, StateName
+from vigilo.models.tables import CorrEvent, Event, StateName
+from vigilo.turbogears.helpers import get_current_user
 
 class PluginDetails(VigiboardRequestPlugin):
     """
@@ -33,11 +32,11 @@ class PluginDetails(VigiboardRequestPlugin):
         """
 
         # Obtention de données sur l'événement et sur son historique
-        username = request.environ.get('repoze.who.identity'
-                    ).get('repoze.who.userid')
+        user = get_current_user()
+        if user is None:
+            return None
 
-        username = request.environ['repoze.who.identity']['repoze.who.userid']
-        events = VigiboardRequest(User.by_user_name(username), False)
+        events = VigiboardRequest(user, False)
         events.add_table(
             Event,
             events.items.c.hostname,

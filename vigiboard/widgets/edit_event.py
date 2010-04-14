@@ -5,8 +5,7 @@
 import tg
 from pylons.i18n import lazy_ugettext as l_
 from tw.api import WidgetsList
-from tw.forms import TableForm, SingleSelectField, TextField, \
-                        HiddenField, SubmitButton
+from tw.forms import TableForm, SingleSelectField, TextField, HiddenField
 
 __all__ = (
     'EditEventForm',

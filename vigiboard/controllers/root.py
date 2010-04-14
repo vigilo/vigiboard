@@ -5,22 +5,20 @@
 from datetime import datetime
 from time import mktime
 import math
-import urllib
 
-from tg.exceptions import HTTPNotFound
+from tg.exceptions import HTTPNotFound, HTTPInternalServerError
 from tg import expose, validate, require, flash, \
-    tmpl_context, request, config, session, redirect, url
+    tmpl_context, request, config, session, redirect
 from tw.forms import validators
 from pylons.i18n import ugettext as _
 from pylons.i18n import lazy_ugettext as l_
-from pylons.controllers.util import abort
 from sqlalchemy import asc
 from sqlalchemy.sql import func
 from repoze.what.predicates import Any, not_anonymous
 
 from vigilo.models.session import DBSession
-from vigilo.models.tables import Event, EventHistory, CorrEvent, SupItem, \
-                                SupItemGroup, StateName, User
+from vigilo.models.tables import Event, EventHistory, CorrEvent, \
+                                    SupItem, SupItemGroup
 from vigilo.models.functions import sql_escape_like
 from vigilo.models.tables.secondary_tables import EVENTSAGGREGATE_TABLE
 
@@ -54,7 +52,7 @@ class RootController(VigiboardRootController):
 
     @validate(validators={
             'page': validators.Int(min=1),
-        }, error_handler=process_form_errors)
+        }, error_handler = process_form_errors)
     @expose('events_table.html')
     @require(Any(not_anonymous(), msg=l_("You need to be authenticated")))
     def default(self, page=1, supitemgroup=None,
@@ -201,7 +199,7 @@ class RootController(VigiboardRootController):
     @validate(validators={
             'idcorrevent': validators.Int(not_empty=True),
             'page': validators.Int(min=1),
-        }, error_handler=process_form_errors)
+        }, error_handler = process_form_errors)
     @expose('raw_events_table.html')
     @require(Any(not_anonymous(), msg=l_("You need to be authenticated")))
     def masked_events(self, idcorrevent, page=1):
@@ -279,7 +277,7 @@ class RootController(VigiboardRootController):
     @validate(validators={
             'idevent': validators.Int(not_empty=True),
             'page': validators.Int(min=1),
-        }, error_handler=process_form_errors)
+        }, error_handler = process_form_errors)
     @expose('history_table.html')
     @require(Any(not_anonymous(), msg=l_("You need to be authenticated")))
     def event(self, idevent, page=1):
@@ -449,7 +447,7 @@ class RootController(VigiboardRootController):
             u'None',
             u'Acknowledged',
             u'AAClosed'
-        ], not_empty=True)}, error_handler=process_form_errors)
+        ], not_empty=True)}, error_handler = process_form_errors)
     @require(Any(not_anonymous(), msg=l_("You need to be authenticated")))
     @expose()
     def update(self, id, last_modification, trouble_ticket, ack):
@@ -575,7 +573,8 @@ class RootController(VigiboardRootController):
         # Pas d'événement ou permission refusée. On ne distingue pas
         # les 2 cas afin d'éviter la divulgation d'informations.
         if not events.num_rows():
-            raise HTTPNotFound(_('No such incident or insufficient permissions'))
+            raise HTTPNotFound(_('No such incident or insufficient '
+                                'permissions'))
 
         plugin_class = [p[1] for p in plugins if p[0] == plugin_name]
         if not plugin_class:
@@ -606,7 +605,7 @@ class RootController(VigiboardRootController):
         return dict()
 
     @validate(validators={"refresh": validators.Int()},
-            error_handler=process_form_errors)
+            error_handler = process_form_errors)
     @expose('json')
     def set_refresh(self, refresh):
         """Enregistre le temps de rafraichissement dans les préférences."""

@@ -97,6 +97,7 @@ def populate_DB(caused_by_service):
     return aggregate.idcorrevent
 
 def add_masked_event(idcorrevent):
+    """Ajoute un événement masqué à un événement corrélé."""
     transaction.begin()
     hostmanagers = SupItemGroup.by_group_name(u'managersgroup')
     nb_hosts = DBSession.query(Host).count()
@@ -254,7 +255,8 @@ class TestRawEventsTableWithPermsLLS(TestController):
         # NB: la requête XPath est approchante, car XPath 1.0 ne permet pas
         # de rechercher directement une valeur dans une liste. Elle devrait
         # néanmoins suffire pour les besoins des tests.
-        rows = response.lxml.xpath('//table[contains(@class, "vigitable")]/tbody/tr')
+        rows = response.lxml.xpath(
+            '//table[contains(@class, "vigitable")]/tbody/tr')
         assert_equal(len(rows), 1)
 
 class TestRawEventsTableWithPermsHost(TestRawEventsTableWithPermsLLS):

@@ -26,15 +26,14 @@ class VigiboardRequestPlugin(object):
 
     def get_value(self, idcorrevent, *args, **kwargs):
         """
-        Cette méthode est appelée depuis le template associé à ce plugin,
-        mais également lorsque l'on demande la valeur du plugin grâce à la
-        méthode get_plugin_value du L{RootController} de VigiBoard.
+        Cette méthode est appelée lorsque l'on demande la valeur du plugin
+        grâce à la méthode get_plugin_value du L{RootController} de VigiBoard.
 
         Cette méthode DEVRAIT être surchargée dans les classes dérivées.
 
         @param idcorrevent: Identifiant du L{CorrEvent} à interroger.
         @type idcorrevent: C{int}
-        @return: Dictionnaire contenant un texte statique.
+        @return: Dictionnaire contenant la ou les valeur(s) correspondantes.
         @rtype: C{dict}
         """
         pass
