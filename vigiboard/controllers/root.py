@@ -523,7 +523,7 @@ class RootController(VigiboardRootController):
                         text="Changed trouble ticket from '%s' to '%s'" % (
                             event.trouble_ticket, trouble_ticket
                         ),
-                        username=username,
+                        username=user.user_name,
                         timestamp=datetime.now(),
                     )
                 DBSession.add(history)   
@@ -538,7 +538,7 @@ class RootController(VigiboardRootController):
                             "from '%s' to '%s'" % (
                             event.status, ack
                         ),
-                        username=username,
+                        username=user.user_name,
                         timestamp=datetime.now(),
                     )
                 DBSession.add(history)
