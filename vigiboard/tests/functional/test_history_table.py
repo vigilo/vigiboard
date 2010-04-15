@@ -11,8 +11,9 @@ import transaction
 
 from vigilo.models.session import DBSession
 from vigilo.models.tables import Event, EventHistory, CorrEvent, \
-                            Permission, StateName, GroupHierarchy, \
-                            Host, SupItemGroup, LowLevelService
+                            Permission, StateName, Host, \
+                            SupItemGroup, LowLevelService
+from vigilo.models.tables.grouphierarchy import GroupHierarchy
 from vigiboard.tests import TestController
 
 def populate_DB():

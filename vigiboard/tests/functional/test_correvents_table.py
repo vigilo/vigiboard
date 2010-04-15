@@ -9,9 +9,10 @@ from datetime import datetime
 import transaction
 
 from vigilo.models.session import DBSession
-from vigilo.models.tables import Event, CorrEvent, GroupHierarchy, \
+from vigilo.models.tables import Event, CorrEvent, \
                             Permission, StateName, Host, SupItemGroup, \
                             LowLevelService
+from vigilo.models.tables.grouphierarchy import GroupHierarchy
 from vigiboard.tests import TestController
 
 def populate_DB():

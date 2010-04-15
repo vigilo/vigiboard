@@ -7,7 +7,8 @@ import transaction
 from nose.tools import assert_true
 
 from vigilo.models.session import DBSession
-from vigilo.models.tables import SupItemGroup, Permission, User, GroupHierarchy
+from vigilo.models.tables import SupItemGroup, Permission, User
+from vigilo.models.tables.grouphierarchy import GroupHierarchy
 from vigiboard.tests import TestController
 
 class TestGroupPermissionsInheritance(TestController):

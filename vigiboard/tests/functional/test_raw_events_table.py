@@ -10,8 +10,9 @@ import transaction
 
 from vigilo.models.session import DBSession
 from vigilo.models.tables import Event, EventHistory, CorrEvent, \
-                            Permission, StateName, GroupHierarchy, \
-                            Host, LowLevelService, SupItemGroup
+                            Permission, StateName, Host, \
+                            LowLevelService, SupItemGroup
+from vigilo.models.tables.grouphierarchy import GroupHierarchy
 from vigiboard.tests import TestController
 
 def populate_DB(caused_by_service):

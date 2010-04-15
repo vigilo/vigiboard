@@ -6,9 +6,10 @@ import transaction
 from nose.tools import assert_equal
 
 from vigilo.models.session import DBSession
-from vigilo.models.tables import Permission, StateName, GroupHierarchy, \
+from vigilo.models.tables import Permission, StateName, \
                             SupItemGroup, Host, HighLevelService, \
                             Event, CorrEvent, ImpactedPath, ImpactedHLS
+from vigilo.models.tables.grouphierarchy import GroupHierarchy
 from vigiboard.tests import TestController
 
 def populate_DB():

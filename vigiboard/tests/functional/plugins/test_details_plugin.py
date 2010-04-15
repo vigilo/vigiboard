@@ -9,9 +9,10 @@ import transaction
 
 from vigiboard.tests import TestController
 from vigilo.models.session import DBSession
-from vigilo.models.tables import SupItemGroup, GroupHierarchy, \
+from vigilo.models.tables import SupItemGroup, \
                             Host, Permission, StateName, \
                             LowLevelService, Event, CorrEvent
+from vigilo.models.tables.grouphierarchy import GroupHierarchy
 
 def insert_deps(return_service):
     """
