@@ -5,7 +5,8 @@
 import tg
 from pylons.i18n import lazy_ugettext as l_
 from tw.api import WidgetsList
-from tw.forms import TableForm, SingleSelectField, TextField, HiddenField
+from tw.forms import TableForm, SingleSelectField, TextField, \
+                        HiddenField, Label
 
 __all__ = (
     'EditEventForm',
@@ -35,6 +36,8 @@ class EditEventForm(TableForm):
     class fields(WidgetsList):
         id = HiddenField('id')
         trouble_ticket = TextField(label_text=l_('Trouble Ticket'))
+        warning = Label(suppress_label=True, text=l_('Warning: changing '
+                        'the ticket will affect all selected events.'))
         ack = SingleSelectField(label_text=l_('Acknowledgement Status'),
                                 options=edit_event_status_options)
         last_modification = HiddenField()
