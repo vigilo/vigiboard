@@ -499,7 +499,7 @@ class RootController(VigiboardRootController):
             flash(_('Changes have occurred since the page was last displayed, '
                     'your changes HAVE NOT been saved.'), 'warning')
             raise redirect(request.environ.get('HTTP_REFERER', '/'))
-        
+
         # Vérification que au moins un des identifiants existe et est éditable
         if not events.num_rows():
             flash(_('No access to this event'), 'error')
@@ -513,7 +513,7 @@ class RootController(VigiboardRootController):
             else:
                 event = req[0]
 
-            if trouble_ticket:
+            if trouble_ticket and trouble_ticket != event.trouble_ticket:
                 history = EventHistory(
                         type_action="Ticket change",
                         idevent=event.idcause,

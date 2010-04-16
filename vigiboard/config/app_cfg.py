@@ -79,40 +79,16 @@ base_config['vigiboard_links.eventdetails'] = {
 base_config['vigiboard_links.tt'] = 'http://example4.com/%(idcorrevent)d/%(tt)s'
 
 # Plugins to use
-base_config['vigiboard_plugins'] = [#{
-#    'correvent': [
-        ('details', 'PluginDetails'),
-        ('date', 'PluginDate'),
-        ('priority', 'PluginPriority'),
-        ('occurrences', 'PluginOccurrences'),
-        ('hostname', 'PluginHostname'),
-        ('servicename', 'PluginServicename'),
-        ('output', 'PluginOutput'),
-        ('hls', 'PluginHLS'),
-        ('tt', 'PluginTroubleTicket'),
-        ('status', 'PluginStatus'),
-
-        # Le plugin PluginId peut servir pour débuguer VigiBoard.
-        # En production, mieux vaut le désactiver car il expose
-        # des données d'un niveau assez bas dans l'interface.
-#        ('id', 'PluginId'),
-#    ],
-
-#    'event': [
-#        ('timestamp', 'PluginTimestamp'),
-#        ('hostname', 'PluginHostname'),
-#        ('servicename', 'PluginServicename'),
-#        ('current_state', 'PluginCurrentState'),
-#        ('initial_state', 'PluginInitialState'),
-#        ('peak_state', 'PluginPeakState'),
-#        ('output', 'PluginOutput'),
-#        ('history_link', 'PluginHistoryLink'),
-#    ],
-
-#    'eventhistory': [
-#        
-#    ],
-#}
+base_config['vigiboard_plugins'] = [
+    ('details', 'PluginDetails'),
+    ('date', 'PluginDate'),
+    ('priority', 'PluginPriority'),
+    ('occurrences', 'PluginOccurrences'),
+    ('hostname', 'PluginHostname'),
+    ('servicename', 'PluginServicename'),
+    ('output', 'PluginOutput'),
+    ('hls', 'PluginHLS'),
+    ('status', 'PluginStatus'),
 ]
 
 base_config['vigiboard_refresh_times'] = (

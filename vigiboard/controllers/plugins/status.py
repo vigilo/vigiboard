@@ -19,7 +19,7 @@ class PluginStatus(VigiboardRequestPlugin):
     def get_generated_columns_count(self):
         """
         Renvoie le nombre de colonnes que ce plugin ajoute.
-        Ce plugin en ajoute 3, au lieu de 1 comme la plupart des plugins.
+        Ce plugin en ajoute 4, au lieu de 1 comme la plupart des plugins.
         """
-        return 3
+        return 4
 
