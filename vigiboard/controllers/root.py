@@ -17,8 +17,8 @@ from sqlalchemy.sql import func
 from repoze.what.predicates import Any, not_anonymous
 
 from vigilo.models.session import DBSession
-from vigilo.models.tables import Event, EventHistory, CorrEvent, \
-                                    SupItem, SupItemGroup
+from vigilo.models.tables import Event, EventHistory, CorrEvent, Host, \
+                                    SupItem, SupItemGroup, LowLevelService
 from vigilo.models.functions import sql_escape_like
 from vigilo.models.tables.secondary_tables import EVENTSAGGREGATE_TABLE
 
@@ -213,6 +213,9 @@ class RootController(VigiboardRootController):
             page = 1
 
         user = get_current_user()
+
+        # Récupère la liste des événements masqués de l'événement
+        # corrélé donné par idcorrevent.
         events = VigiboardRequest(user, False)
         events.add_table(
             Event,
@@ -227,6 +230,30 @@ class RootController(VigiboardRootController):
             Event.idsupitem == events.items.c.idsupitem))
         events.add_filter(Event.idevent != CorrEvent.idcause)
         events.add_filter(CorrEvent.idcorrevent == idcorrevent)
+
+        # Récupère l'instance de SupItem associé à la cause de
+        # l'événement corrélé. Cette instance est utilisé pour
+        # obtenir le nom d'hôte/service auquel la cause est
+        # rattachée (afin de fournir un contexte à l'utilisateur).
+        hostname = None
+        servicename = None
+        cause_supitem = DBSession.query(
+                SupItem,
+            ).join(
+                (Event, Event.idsupitem == SupItem.idsupitem),
+                (EVENTSAGGREGATE_TABLE, EVENTSAGGREGATE_TABLE.c.idevent ==
+                    Event.idevent),
+                (CorrEvent, CorrEvent.idcorrevent ==
+                    EVENTSAGGREGATE_TABLE.c.idcorrevent),
+            ).filter(CorrEvent.idcorrevent == idcorrevent
+            ).filter(Event.idevent == CorrEvent.idcause
+            ).one()
+
+        if isinstance(cause_supitem, LowLevelService):
+            hostname = cause_supitem.host.name
+            servicename = cause_supitem.servicename
+        elif isinstance(cause_supitem, Host):
+            hostname = cause_supitem.name
 
         # Vérification que l'événement existe
         total_rows = events.num_rows()
@@ -251,8 +278,8 @@ class RootController(VigiboardRootController):
 
         return dict(
             idcorrevent = idcorrevent,
-            hostname = None,
-            servicename = None,
+            hostname = hostname,
+            servicename = servicename,
             events = events.events,
             plugins = get_plugins_instances(),
             rows_info = {
