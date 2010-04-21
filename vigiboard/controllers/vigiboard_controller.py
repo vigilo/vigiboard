@@ -61,8 +61,9 @@ class VigiboardRootController(BaseController):
         Redirect the user to the initially requested page on logout and say
         goodbye as well.
         """
-        # XXX Ne fonctionne pas, l'identité est déjà oubliée arrivé ici.
-#        userid = request.identity['repoze.who.userid']
+        LOGGER.info(_('Some user logged out (from %(IP)s)') % {
+                'IP': request.remote_addr,
+            })
         flash(_('We hope to see you soon!'))
         redirect(came_from)
 
