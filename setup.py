@@ -46,9 +46,14 @@ setup(
             'i18n/*/LC_MESSAGES/*.mo',
         ],
     },
-    message_extractors={'vigiboard': [
+    message_extractors={
+        'vigiboard': [
             ('**.py', 'python', None),
-    ]},
+        ],
+        '../turbogears/src': [
+            ('**.py', 'python', None),
+        ],
+    },
 
     entry_points={
         'paste.app_factory': [
