@@ -57,7 +57,31 @@ class TestController(unittest.TestCase):
         test_file = path.join(conf_dir, 'test.ini')
         cmd = SetupCommand('setup-app')
         cmd.run([test_file])
-    
+
+        # Ajout de l'utilisateur 'editor' et de ses permissions limitées.
+        # Utilisé pour vérifier la gestion des permissions.
+        from vigilo.models import tables
+        editor = tables.User() 
+        editor.user_name = u'editor' 
+        editor.email = u'editor@somedomain.com' 
+        editor.fullname = u'Editor' 
+        editor.password = u'editpass' 
+        DBSession.add(editor) 
+        DBSession.flush() 
+
+        group = tables.UserGroup() 
+        group.group_name = u'editors' 
+        group.users.append(editor) 
+        DBSession.add(group) 
+        DBSession.flush() 
+
+        permission = tables.Permission() 
+        permission.permission_name = u'edit' 
+        permission.usergroups.append(group) 
+        DBSession.add(permission) 
+        DBSession.flush() 
+
+
     def tearDown(self):
         """Method called by nose after running each test"""
         # Cleaning up the database:
