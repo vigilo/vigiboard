@@ -7,7 +7,7 @@ import logging
 from tg import expose, flash, request, redirect
 from pylons.i18n import ugettext as _
 
-from vigiboard.lib.base import BaseController
+from vigilo.turbogears.controllers import BaseController
 from vigiboard.controllers.error import ErrorController
 
 LOGGER = logging.getLogger(__name__)

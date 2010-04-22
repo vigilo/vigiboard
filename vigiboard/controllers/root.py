@@ -15,6 +15,7 @@ from pylons.i18n import lazy_ugettext as l_
 from sqlalchemy import asc
 from sqlalchemy.sql import func
 from repoze.what.predicates import Any, not_anonymous
+from formencode import validators, schema
 
 from vigilo.models.session import DBSession
 from vigilo.models.tables import Event, EventHistory, CorrEvent, Host, \
@@ -22,14 +23,12 @@ from vigilo.models.tables import Event, EventHistory, CorrEvent, Host, \
 from vigilo.models.functions import sql_escape_like
 from vigilo.models.tables.secondary_tables import EVENTSAGGREGATE_TABLE
 
-from vigilo.turbogears.controllers.autocomplete \
-    import make_autocomplete_controller
+from vigilo.turbogears.controllers.autocomplete import AutoCompleteController
 from vigilo.turbogears.helpers import get_current_user
 
 from vigiboard.controllers.vigiboardrequest import VigiboardRequest
 from vigiboard.controllers.vigiboard_controller import VigiboardRootController
 from vigiboard.widgets.edit_event import edit_event_status_options
-from vigiboard.lib.base import BaseController
 
 __all__ = ('RootController', 'get_last_modification_timestamp', 
            'date_to_timestamp')
@@ -39,7 +38,7 @@ class RootController(VigiboardRootController):
     """
     Le controller général de vigiboard
     """
-    autocomplete = make_autocomplete_controller(BaseController)
+    autocomplete = AutoCompleteController()
 
     def process_form_errors(self, *argv, **kwargv):
         """
@@ -50,14 +49,24 @@ class RootController(VigiboardRootController):
             flash("'%s': %s" % (k, tmpl_context.form_errors[k]), 'error')
         redirect(request.environ.get('HTTP_REFERER', '/'))
 
-    @validate(validators={
-            'page': validators.Int(min=1),
-        }, error_handler = process_form_errors)
+    
+    class DefaultSchema(schema.Schema):
+        page = validators.Int(min=1, if_missing=1, if_invalid=1)
+        supitemgroup = validators.String(if_missing=None)
+        host = validators.String(if_missing=None)
+        service = validators.String(if_missing=None)
+        output = validators.String(if_missing=None)
+        trouble_ticket = validators.String(if_missing=None)
+        from_date = validators.String(if_missing=None)
+        to_date = validators.String(if_missing=None)
+
+    @validate(
+        validators=DefaultSchema(),
+        error_handler = process_form_errors)
     @expose('events_table.html')
     @require(Any(not_anonymous(), msg=l_("You need to be authenticated")))
-    def default(self, page=1, supitemgroup=None,
-            host=None, service=None, output=None, trouble_ticket=None,
-            from_date=None, to_date=None, *argv, **krgv):
+    def default(self, page, supitemgroup, host, service,
+                output, trouble_ticket, from_date, to_date):
         """
         Page d'accueil de Vigiboard. Elle affiche, suivant la page demandée
         (page 1 par defaut), la liste des événements, rangés par ordre de prise
@@ -77,9 +86,6 @@ class RootController(VigiboardRootController):
         - VIGILO_EXIG_VIGILO_BAC_0070,
         - VIGILO_EXIG_VIGILO_BAC_0100,
         """
-        if not page:
-            page = 1
-
         user = get_current_user()
         aggregates = VigiboardRequest(user)
         aggregates.add_table(
@@ -196,22 +202,23 @@ class RootController(VigiboardRootController):
             refresh_times = config['vigiboard_refresh_times'],
         )
 
-    @validate(validators={
-            'idcorrevent': validators.Int(not_empty=True),
-            'page': validators.Int(min=1),
-        }, error_handler = process_form_errors)
+
+    class MaskedEventsSchema(schema.Schema):
+        idcorrevent = validators.Int(not_empty=True)
+        page = validators.Int(min=1, if_missing=1, if_invalid=1)
+
+    @validate(
+        validators=MaskedEventsSchema(),
+        error_handler = process_form_errors)
     @expose('raw_events_table.html')
     @require(Any(not_anonymous(), msg=l_("You need to be authenticated")))
-    def masked_events(self, idcorrevent, page=1):
+    def masked_events(self, idcorrevent, page):
         """
         Affichage de la liste des événements bruts masqués dans un
         événement corrélé (agrégés).
 
         @param idevent: identifiant de l'événement souhaité
         """
-        if not page:
-            page = 1
-
         user = get_current_user()
 
         # Récupère la liste des événements masqués de l'événement
@@ -301,13 +308,17 @@ class RootController(VigiboardRootController):
            refresh_times=config['vigiboard_refresh_times'],
         )
 
-    @validate(validators={
-            'idevent': validators.Int(not_empty=True),
-            'page': validators.Int(min=1),
-        }, error_handler = process_form_errors)
+
+    class EventSchema(schema.Schema):
+        idevent = validators.Int(not_empty=True)
+        page = validators.Int(min=1, if_missing=1, if_invalid=1)
+
+    @validate(
+        validators=EventSchema(),
+        error_handler = process_form_errors)
     @expose('history_table.html')
     @require(Any(not_anonymous(), msg=l_("You need to be authenticated")))
-    def event(self, idevent, page=1):
+    def event(self, idevent, page):
         """
         Affichage de l'historique d'un événement brut.
         Pour accéder à cette page, l'utilisateur doit être authentifié.
@@ -385,16 +396,18 @@ class RootController(VigiboardRootController):
            refresh_times=config['vigiboard_refresh_times'],
         )
 
+
+    class ItemSchema(schema.Schema):
+        page = validators.Int(min=1, if_missing=1, if_invalid=1)
+        host = validators.String(not_empty=True)
+        service = validators.String(if_missing=None)
+
     @validate(
-        validators={
-            'host': validators.NotEmpty(),
-#            'service': validators.NotEmpty(),
-            'page': validators.Int(min=1),
-        },
+        validators=ItemSchema(),
         error_handler = process_form_errors)
     @expose('events_table.html')
     @require(Any(not_anonymous(), msg=l_("You need to be authenticated")))
-    def item(self, page, host, service=None):
+    def item(self, page, host, service):
         """
         Affichage de l'historique de l'ensemble des événements corrélés
         jamais ouverts sur l'hôte / service demandé.
@@ -465,16 +478,21 @@ class RootController(VigiboardRootController):
             refresh_times=config['vigiboard_refresh_times'],
         )
 
-    @validate(validators={
-        "id": validators.Regex(r'^[0-9]+(,[0-9]+)*,?$'),
-        "last_modification": validators.Number(not_empty=True),
-        "trouble_ticket": validators.String(if_missing=''),
-        "ack": validators.OneOf([
+
+    class UpdateSchema(schema.Schema):
+        id = validators.Regex(r'^[0-9]+(,[0-9]+)*,?$')
+        last_modification = validators.Number(not_empty=True)
+        trouble_ticket = validators.String(if_missing='')
+        ack = validators.OneOf([
             u'NoChange',
             u'None',
             u'Acknowledged',
             u'AAClosed'
-        ], not_empty=True)}, error_handler = process_form_errors)
+        ], not_empty=True)
+
+    @validate(
+        validators=UpdateSchema(),
+        error_handler = process_form_errors)
     @require(Any(not_anonymous(), msg=l_("You need to be authenticated")))
     @expose()
     def update(self, id, last_modification, trouble_ticket, ack):
@@ -573,11 +591,17 @@ class RootController(VigiboardRootController):
         flash(_('Updated successfully'))
         redirect(request.environ.get('HTTP_REFERER', '/'))
 
-    @validate(validators={
-        "plugin_name": validators.OneOf([i[0] for i \
-            in config.get('vigiboard_plugins', [])]),
-        'idcorrevent': validators.Int(not_empty=True),
-        }, error_handler=process_form_errors)
+
+    class GetPluginValueSchema(schema.Schema):
+        idcorrevent = validators.Int(not_empty=True)
+        plugin_name = validators.OneOf(
+            i[0] for i in config.get('vigiboard_plugins', []))
+        # Permet de passer des paramètres supplémentaires au plugin.
+        allow_extra_fields = True
+
+    @validate(
+        validators=GetPluginValueSchema(),
+        error_handler = process_form_errors)
     @expose('json')
     @require(Any(not_anonymous(), msg=l_("You need to be authenticated")))
     def get_plugin_value(self, idcorrevent, plugin_name, *arg, **krgv):

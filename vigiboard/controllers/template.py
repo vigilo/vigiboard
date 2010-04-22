@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Fallback controller."""
 
-from vigiboard.lib.base import BaseController
+from vigilo.turbogears.controllers import BaseController
 from tg import expose
 
 __all__ = ['TemplateController']
