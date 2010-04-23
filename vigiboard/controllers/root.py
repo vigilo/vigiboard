@@ -49,6 +49,10 @@ class RootController(VigiboardRootController):
             flash("'%s': %s" % (k, tmpl_context.form_errors[k]), 'error')
         redirect(request.environ.get('HTTP_REFERER', '/'))
 
+    @expose('json')
+    def handle_validation_errors_json(self, *args, **kwargs):
+        kwargs['errors'] = tmpl_context.form_errors
+        return dict(kwargs)
     
     class DefaultSchema(schema.Schema):
         page = validators.Int(min=1, if_missing=1, if_invalid=1)
@@ -595,13 +599,14 @@ class RootController(VigiboardRootController):
     class GetPluginValueSchema(schema.Schema):
         idcorrevent = validators.Int(not_empty=True)
         plugin_name = validators.OneOf(
-            i[0] for i in config.get('vigiboard_plugins', []))
+            [unicode(i[0]) for i in config.get('vigiboard_plugins', [])],
+            not_empty=True, hideList=True)
         # Permet de passer des paramètres supplémentaires au plugin.
         allow_extra_fields = True
 
     @validate(
         validators=GetPluginValueSchema(),
-        error_handler = process_form_errors)
+        error_handler = handle_validation_errors_json)
     @expose('json')
     @require(Any(not_anonymous(), msg=l_("You need to be authenticated")))
     def get_plugin_value(self, idcorrevent, plugin_name, *arg, **krgv):
@@ -610,7 +615,6 @@ class RootController(VigiboardRootController):
         donné via JSON.
         """
         plugins = config.get('vigiboard_plugins', {})
-
         # Permet de vérifier si l'utilisateur a bien les permissions
         # pour accéder à cet événement et si l'événement existe.
         user = get_current_user()
@@ -647,7 +651,7 @@ class RootController(VigiboardRootController):
         "fontsize": validators.Regex(
             r'[0-9]+(pt|px|em|%)',
             regexOps = ('I',)
-        )}, error_handler = process_form_errors)
+        )}, error_handler = handle_validation_errors_json)
     @expose('json')
     def set_fontsize(self, fontsize):
         """Enregistre la taille de la police dans les préférences."""
@@ -656,7 +660,7 @@ class RootController(VigiboardRootController):
         return dict()
 
     @validate(validators={"refresh": validators.Int()},
-            error_handler = process_form_errors)
+            error_handler = handle_validation_errors_json)
     @expose('json')
     def set_refresh(self, refresh):
         """Enregistre le temps de rafraichissement dans les préférences."""

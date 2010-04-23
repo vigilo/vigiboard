@@ -161,7 +161,7 @@ class TestSearchFormService(TestController):
         """Teste la recherche par service sur un service inexistant."""
         # On envoie une requête avec recherche sur un service
         # qui n'existe pas, on s'attend à n'obtenir aucun résultat.
-        response = self.app.get('/?servicegroup=bad',
+        response = self.app.get('/?service=bad',
             extra_environ={'REMOTE_USER': 'manager'})
 
         # Il doit y avoir 1 seule ligne de résultats.
@@ -184,7 +184,7 @@ class TestSearchFormService(TestController):
         # On envoie une requête avec recherche sur le service créé,
         # mais avec un utilisateur ne disposant pas des permissions adéquates.
         # On s'attend à n'obtenir aucun résultat.
-        response = self.app.get('/?hostgroup=baz',
+        response = self.app.get('/?service=baz',
             extra_environ={'REMOTE_USER': 'manager'})
 
         # Il doit y avoir 1 seule ligne de résultats.
