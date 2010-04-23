@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: vigiboard 0.1\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2009-07-06 11:19+0200\n"
-"PO-Revision-Date: 2010-03-29 19:43+0200\n"
+"PO-Revision-Date: 2010-04-23 11:48+0200\n"
 "Last-Translator: Thomas ANDREJAK <thomas.andrejak@c-s.fr>\n"
 "Language-Team: fr_FR <LL@li.org>\n"
 "Plural-Forms: nplurals=2; plural=(n > 1)\n"
@@ -17,63 +17,84 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 0.9.4\n"
 
-#: vigiboard/config/app_cfg.py:119
-msgid "Never"
-msgstr "Jamais"
-
-#: vigiboard/config/app_cfg.py:120
-msgid "30 seconds"
-msgstr "30 secondes"
-
-#: vigiboard/config/app_cfg.py:121
-msgid "1 minute"
-msgstr "1 minute"
-
-#: vigiboard/config/app_cfg.py:122
-msgid "5 minutes"
-msgstr "5 minutes"
-
-#: vigiboard/config/app_cfg.py:123
-msgid "10 minutes"
-msgstr "10 minutes"
-
-#: vigiboard/controllers/error.py:26
+#: ../turbogears/src/vigilo/turbogears/controllers/error.py:26
 msgid "We're sorry but we weren't able to process this request."
 msgstr "Désolé mais nous n'avons pas pu traiter votre requête."
 
-#: vigiboard/controllers/root.py:57 vigiboard/controllers/root.py:214
-#: vigiboard/controllers/root.py:293 vigiboard/controllers/root.py:377
-#: vigiboard/controllers/root.py:460 vigiboard/controllers/root.py:564
+#: ../turbogears/src/vigilo/turbogears/controllers/proxy.py:98
+#, python-format
+msgid "No such monitored host: %s"
+msgstr "Cet hôte n'est pas supervisé: %s"
+
+#: ../turbogears/src/vigilo/turbogears/controllers/proxy.py:138
+#, python-format
+msgid "Access denied to host \"%(host)s\" and service \"%(service)s\""
+msgstr "Accès refusé au service \"%(service)s\" sur l'hôte \"%(host)s\""
+
+#: ../turbogears/src/vigilo/turbogears/controllers/proxy.py:144
+#, python-format
+msgid "Access denied to host \"%s\""
+msgstr "Accès refusé à l'hôte \"%s\""
+
+#: ../turbogears/src/vigilo/turbogears/controllers/proxy.py:153
+#, python-format
+msgid "No %(server_type)s server configured to monitor \"%(host)s\""
+msgstr "Aucun serveur %(server_type)s configuré pour superviser \"%(host)s\""
+
+#: ../turbogears/src/vigilo/turbogears/controllers/proxy.py:193
+#: vigiboard/controllers/root.py:71 vigiboard/controllers/root.py:218
+#: vigiboard/controllers/root.py:324 vigiboard/controllers/root.py:413
+#: vigiboard/controllers/root.py:500 vigiboard/controllers/root.py:611
 msgid "You need to be authenticated"
 msgstr "Vous devez vous authentifier"
+
+#: vigiboard/config/app_cfg.py:95
+msgid "Never"
+msgstr "Jamais"
+
+#: vigiboard/config/app_cfg.py:96
+msgid "30 seconds"
+msgstr "30 secondes"
+
+#: vigiboard/config/app_cfg.py:97
+msgid "1 minute"
+msgstr "1 minute"
+
+#: vigiboard/config/app_cfg.py:98
+msgid "5 minutes"
+msgstr "5 minutes"
+
+#: vigiboard/config/app_cfg.py:99
+msgid "10 minutes"
+msgstr "10 minutes"
 
 #. TRANSLATORS: Format de date et heure compatible Python/JavaScript.
 #. TRANSLATORS: Format de date et heure.
 #: vigiboard/controllers/root.py:152 vigiboard/controllers/root.py:164
-#: vigiboard/controllers/vigiboardrequest.py:397
-#: vigiboard/tests/functional/test_search_form_misc.py:121
-#: vigiboard/tests/functional/test_search_form_misc.py:123
+#: vigiboard/controllers/vigiboardrequest.py:413
+#: vigiboard/tests/functional/test_search_form_misc.py:127
+#: vigiboard/tests/functional/test_search_form_misc.py:129
 #, python-format
 msgid "%Y-%m-%d %I:%M:%S %p"
 msgstr "%d-%m-%Y %I:%M:%S"
 
-#: vigiboard/controllers/root.py:244
+#: vigiboard/controllers/root.py:272
 msgid "No masked event or access denied"
 msgstr "Aucun événement masqué ou accès refusé"
 
-#: vigiboard/controllers/root.py:324
+#: vigiboard/controllers/root.py:355
 msgid "No such event or access denied"
 msgstr "Aucun événement correspondant ou accès refusé"
 
-#: vigiboard/controllers/root.py:407
+#: vigiboard/controllers/root.py:443
 msgid "No access to this host/service or no event yet"
 msgstr "Accès à cet hôte/service refusé ou aucun événement pour le moment"
 
-#: vigiboard/controllers/root.py:482
+#: vigiboard/controllers/root.py:522
 msgid "No event has been selected"
 msgstr "Aucun événement sélectionné"
 
-#: vigiboard/controllers/root.py:508
+#: vigiboard/controllers/root.py:548
 msgid ""
 "Changes have occurred since the page was last displayed, your changes "
 "HAVE NOT been saved."
@@ -81,27 +102,27 @@ msgstr ""
 "Des modifications ont eu lieu depuis le dernier affichage de cette page, "
 "vos modifications N'ONT PAS été enregistrées."
 
-#: vigiboard/controllers/root.py:514
+#: vigiboard/controllers/root.py:554
 msgid "No access to this event"
 msgstr "Accès à cet événement refusé"
 
-#: vigiboard/controllers/root.py:555
+#: vigiboard/controllers/root.py:595
 msgid "Updated successfully"
 msgstr "Mise à jour réussie"
 
-#: vigiboard/controllers/root.py:585
+#: vigiboard/controllers/root.py:631
 msgid "No such incident or insufficient permissions"
 msgstr "Aucun incident correspondant ou permissions insuffisantes"
 
-#: vigiboard/controllers/root.py:589
+#: vigiboard/controllers/root.py:636
 msgid "No such plugin"
 msgstr "Module non trouvé"
 
-#: vigiboard/controllers/root.py:599
+#: vigiboard/controllers/root.py:646
 msgid "Not a valid plugin"
 msgstr "Module non valide"
 
-#: vigiboard/controllers/root.py:601
+#: vigiboard/controllers/root.py:648
 msgid "Plugin could not be loaded"
 msgstr "Impossible de charger le module"
 
@@ -119,11 +140,15 @@ msgstr "\"%(username)s\" s'est connecté (depuis %(IP)s)"
 msgid "Welcome back, %s!"
 msgstr "Bienvenue, %s!"
 
-#: vigiboard/controllers/vigiboard_controller.py:66
+#: vigiboard/controllers/vigiboard_controller.py:64
+msgid "Some user logged out (from %(IP)s)"
+msgstr "Un utilisateur s'est déconnecté (depuis %(IP)s)"
+
+#: vigiboard/controllers/vigiboard_controller.py:67
 msgid "We hope to see you soon!"
 msgstr "Nous espérons vous revoir bientôt!"
 
-#: vigiboard/controllers/vigiboardrequest.py:193
+#: vigiboard/controllers/vigiboardrequest.py:209
 #, python-format
 msgid "No such plugin \"%s\""
 msgstr "Module introuvable \"%s\""
@@ -144,51 +169,51 @@ msgstr "Changer en Pris en compte"
 msgid "Change to Closed"
 msgstr "Changer en Fermé"
 
-#: vigiboard/widgets/edit_event.py:38 vigiboard/widgets/search_form.py:33
+#: vigiboard/widgets/edit_event.py:38 vigiboard/widgets/search_form.py:32
 msgid "Trouble Ticket"
 msgstr "Ticket d'incident"
 
 #: vigiboard/widgets/edit_event.py:39
+msgid "Warning: changing the ticket will affect all selected events."
+msgstr "Attention: la modification du ticket affectera toute la sélection."
+
+#: vigiboard/widgets/edit_event.py:41
 msgid "Acknowledgement Status"
 msgstr "Statut d'acquittement"
 
-#: vigiboard/widgets/edit_event.py:44
+#: vigiboard/widgets/edit_event.py:46
 msgid "Apply"
 msgstr "Appliquer"
 
 #: vigiboard/widgets/search_form.py:28
-msgid "Host group"
-msgstr "Groupe d'hôtes"
+msgid "Group"
+msgstr "Groupe"
 
 #: vigiboard/widgets/search_form.py:29
-msgid "Service group"
-msgstr "Groupe de services"
-
-#: vigiboard/widgets/search_form.py:30
 msgid "Host"
 msgstr "Hôte"
 
-#: vigiboard/widgets/search_form.py:31
+#: vigiboard/widgets/search_form.py:30
 msgid "Service"
 msgstr "Service"
 
-#: vigiboard/widgets/search_form.py:32
+#: vigiboard/widgets/search_form.py:31
 msgid "Output"
 msgstr "Sortie d'erreur"
 
-#: vigiboard/widgets/search_form.py:35
+#: vigiboard/widgets/search_form.py:34
 msgid "From"
 msgstr "Depuis"
 
-#: vigiboard/widgets/search_form.py:36 vigiboard/widgets/search_form.py:40
+#: vigiboard/widgets/search_form.py:35 vigiboard/widgets/search_form.py:39
 msgid "Choose"
 msgstr "Choisir"
 
-#: vigiboard/widgets/search_form.py:39
+#: vigiboard/widgets/search_form.py:38
 msgid "To"
 msgstr "Jusqu'à"
 
-#: vigiboard/widgets/search_form.py:44
+#: vigiboard/widgets/search_form.py:43
 msgid "Search"
 msgstr "Rechercher"
 
