@@ -21,16 +21,7 @@ import vigiboard
 from vigiboard.lib import app_globals, helpers
 
 base_config = VigiloAppConfig('vigiboard')
-base_config.renderers = []
-
 base_config.package = vigiboard
-
-#Set the default renderer
-base_config.default_renderer = 'genshi'
-base_config.renderers.append('genshi')
-
-#Configure the base SQLALchemy Setup
-base_config.use_sqlalchemy = True
 
 # Configure the authentication backend
 base_config.auth_backend = 'sqlalchemy'

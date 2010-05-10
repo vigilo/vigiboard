@@ -14,12 +14,14 @@ from pylons.i18n import ugettext as _
 from pylons.i18n import lazy_ugettext as l_
 from sqlalchemy import asc
 from sqlalchemy.sql import func
-from repoze.what.predicates import Any, not_anonymous
+from repoze.what.predicates import Any, All, in_group, \
+                                    has_permission, not_anonymous
 from formencode import validators, schema
 
 from vigilo.models.session import DBSession
 from vigilo.models.tables import Event, EventHistory, CorrEvent, Host, \
-                                    SupItem, SupItemGroup, LowLevelService
+                                    SupItem, SupItemGroup, LowLevelService, \
+                                    StateName
 from vigilo.models.functions import sql_escape_like
 from vigilo.models.tables.secondary_tables import EVENTSAGGREGATE_TABLE
 
@@ -68,7 +70,13 @@ class RootController(VigiboardRootController):
         validators=DefaultSchema(),
         error_handler = process_form_errors)
     @expose('events_table.html')
-    @require(Any(not_anonymous(), msg=l_("You need to be authenticated")))
+    @require(
+        All(
+            not_anonymous(msg=l_("You need to be authenticated")),
+            Any(in_group('managers'),
+                has_permission('vigiboard-read'),
+                msg=l_("You don't have read access to VigiBoard"))
+        ))
     def default(self, page, supitemgroup, host, service,
                 output, trouble_ticket, from_date, to_date):
         """
@@ -215,7 +223,13 @@ class RootController(VigiboardRootController):
         validators=MaskedEventsSchema(),
         error_handler = process_form_errors)
     @expose('raw_events_table.html')
-    @require(Any(not_anonymous(), msg=l_("You need to be authenticated")))
+    @require(
+        All(
+            not_anonymous(msg=l_("You need to be authenticated")),
+            Any(in_group('managers'),
+                has_permission('vigiboard-read'),
+                msg=l_("You don't have read access to VigiBoard"))
+        ))
     def masked_events(self, idcorrevent, page):
         """
         Affichage de la liste des événements bruts masqués dans un
@@ -321,7 +335,13 @@ class RootController(VigiboardRootController):
         validators=EventSchema(),
         error_handler = process_form_errors)
     @expose('history_table.html')
-    @require(Any(not_anonymous(), msg=l_("You need to be authenticated")))
+    @require(
+        All(
+            not_anonymous(msg=l_("You need to be authenticated")),
+            Any(in_group('managers'),
+                has_permission('vigiboard-read'),
+                msg=l_("You don't have read access to VigiBoard"))
+        ))
     def event(self, idevent, page):
         """
         Affichage de l'historique d'un événement brut.
@@ -410,7 +430,13 @@ class RootController(VigiboardRootController):
         validators=ItemSchema(),
         error_handler = process_form_errors)
     @expose('events_table.html')
-    @require(Any(not_anonymous(), msg=l_("You need to be authenticated")))
+    @require(
+        All(
+            not_anonymous(msg=l_("You need to be authenticated")),
+            Any(in_group('managers'),
+                has_permission('vigiboard-read'),
+                msg=l_("You don't have read access to VigiBoard"))
+        ))
     def item(self, page, host, service):
         """
         Affichage de l'historique de l'ensemble des événements corrélés
@@ -487,17 +513,20 @@ class RootController(VigiboardRootController):
         id = validators.Regex(r'^[0-9]+(,[0-9]+)*,?$')
         last_modification = validators.Number(not_empty=True)
         trouble_ticket = validators.String(if_missing='')
-        ack = validators.OneOf([
-            u'NoChange',
-            u'None',
-            u'Acknowledged',
-            u'AAClosed'
-        ], not_empty=True)
+        ack = validators.OneOf(
+            [unicode(s[0]) for s in edit_event_status_options],
+            not_empty=True)
 
     @validate(
         validators=UpdateSchema(),
         error_handler = process_form_errors)
-    @require(Any(not_anonymous(), msg=l_("You need to be authenticated")))
+    @require(
+        All(
+            not_anonymous(msg=l_("You need to be authenticated")),
+            Any(in_group('managers'),
+                has_permission('vigiboard-write'),
+                msg=l_("You don't have write access to VigiBoard"))
+        ))
     @expose()
     def update(self, id, last_modification, trouble_ticket, ack):
         """
@@ -557,10 +586,7 @@ class RootController(VigiboardRootController):
         # Modification des événements et création d'un historique
         # pour chacun d'eux.
         for req in events.req:
-            if isinstance(req, CorrEvent):
-                event = req
-            else:
-                event = req[0]
+            event = req
 
             if trouble_ticket and trouble_ticket != event.trouble_ticket:
                 history = EventHistory(
@@ -576,11 +602,35 @@ class RootController(VigiboardRootController):
                 DBSession.add(history)   
                 event.trouble_ticket = trouble_ticket
 
-            if ack != 'NoChange':
+            # Changement du statut d'acquittement.
+            if ack != u'NoChange':
+                # Pour forcer l'acquittement d'un événement,
+                # il faut en plus avoir la permission
+                # "vigiboard-admin".
+                if ack == u'Forced':
+                    condition = Any(
+                        in_group('managers'),
+                        has_permission('vigiboard-admin'),
+                        msg=l_("You don't have administrative access "
+                                "to VigiBoard"))
+                    try:
+                        condition.check_authorization(request.environ)
+                    except NotAuthorizedError, e:
+                        reason = unicode(e)
+                        flash(reason, 'error')
+                        raise redirect(request.environ.get('HTTP_REFERER', '/'))
+                    else:
+                        ack = u'AAClosed'
+                        # On met systématiquement l'état à "OK", même s'il
+                        # s'agit d'un hôte. Techniquement, c'est incorrect,
+                        # mais comme on fait ça pour masquer l'événement...
+                        event.cause.current_state = \
+                            StateName.statename_to_value(u'OK')
+
                 history = EventHistory(
                         type_action="Acknowledgement change state",
                         idevent=event.idcause,
-                        value=unicode(ack),
+                        value=ack,
                         text="Changed acknowledgement status "
                             "from '%s' to '%s'" % (
                             event.status, ack
@@ -608,7 +658,13 @@ class RootController(VigiboardRootController):
         validators=GetPluginValueSchema(),
         error_handler = handle_validation_errors_json)
     @expose('json')
-    @require(Any(not_anonymous(), msg=l_("You need to be authenticated")))
+    @require(
+        All(
+            not_anonymous(msg=l_("You need to be authenticated")),
+            Any(in_group('managers'),
+                has_permission('vigiboard-read'),
+                msg=l_("You don't have read access to VigiBoard"))
+        ))
     def get_plugin_value(self, idcorrevent, plugin_name, *arg, **krgv):
         """
         Permet de récupérer la valeur d'un plugin associée à un CorrEvent
@@ -702,7 +758,8 @@ def get_plugins_instances():
     """
     Renvoie une liste d'instances de plugins pour VigiBoard.
 
-    @return: Liste de tuples contenant le nom du plugin et l'instance associé.
+    @return: Liste de tuples contenant le nom du plugin
+        et l'instance associée.
     @rtype: C{list} of C{tuple}
     """
     plugins = config.get('vigiboard_plugins', [])

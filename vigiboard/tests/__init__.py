@@ -61,25 +61,33 @@ class TestController(unittest.TestCase):
         # Ajout de l'utilisateur 'editor' et de ses permissions limitées.
         # Utilisé pour vérifier la gestion des permissions.
         from vigilo.models import tables
-        editor = tables.User() 
-        editor.user_name = u'editor' 
-        editor.email = u'editor@somedomain.com' 
-        editor.fullname = u'Editor' 
-        editor.password = u'editpass' 
-        DBSession.add(editor) 
-        DBSession.flush() 
+        editor = tables.User()
+        editor.user_name = u'editor'
+        editor.email = u'editor@somedomain.com'
+        editor.fullname = u'Editor'
+        editor.password = u'editpass'
+        DBSession.add(editor)
+        DBSession.flush()
 
-        group = tables.UserGroup() 
-        group.group_name = u'editors' 
-        group.users.append(editor) 
-        DBSession.add(group) 
-        DBSession.flush() 
+        group = tables.UserGroup()
+        group.group_name = u'editors'
+        group.users.append(editor)
+        DBSession.add(group)
+        DBSession.flush()
 
-        permission = tables.Permission() 
-        permission.permission_name = u'edit' 
-        permission.usergroups.append(group) 
-        DBSession.add(permission) 
-        DBSession.flush() 
+        permission = tables.Permission()
+        permission.permission_name = u'edit'
+        permission.usergroups.append(group)
+        DBSession.add(permission)
+        DBSession.flush()
+
+        permission = tables.Permission.by_permission_name(u'vigiboard-read')
+        permission.usergroups.append(group)
+        DBSession.flush()
+
+        permission = tables.Permission.by_permission_name(u'vigiboard-write')
+        permission.usergroups.append(group)
+        DBSession.flush()
 
 
     def tearDown(self):

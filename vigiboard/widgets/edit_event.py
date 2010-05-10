@@ -19,6 +19,7 @@ edit_event_status_options = [
     ['None', l_('Change to None')],
     ['Acknowledged', l_('Change to Acknowledged')],
     ['AAClosed', l_('Change to Closed')],
+    ['Forced', l_('Force to Closed')],
 ]
 
 class EditEventForm(TableForm):
