@@ -42,6 +42,16 @@ class RootController(VigiboardRootController):
     """
     autocomplete = AutoCompleteController()
 
+    # Prédicat pour la restriction de l'accès aux interfaces.
+    # L'utilisateur doit avoir la permission "vigiboard-read"
+    # ou appartenir au groupe "managers" pour accéder à VigiBoard.
+    access_restriction = All(
+        not_anonymous(msg=l_("You need to be authenticated")),
+        Any(in_group('managers'),
+            has_permission('vigiboard-read'),
+            msg=l_("You don't have read access to VigiBoard"))
+    )
+
     def process_form_errors(self, *argv, **kwargv):
         """
         Gestion des erreurs de validation : On affiche les erreurs
@@ -70,13 +80,7 @@ class RootController(VigiboardRootController):
         validators=DefaultSchema(),
         error_handler = process_form_errors)
     @expose('events_table.html')
-    @require(
-        All(
-            not_anonymous(msg=l_("You need to be authenticated")),
-            Any(in_group('managers'),
-                has_permission('vigiboard-read'),
-                msg=l_("You don't have read access to VigiBoard"))
-        ))
+    @require(access_restriction)
     def default(self, page, supitemgroup, host, service,
                 output, trouble_ticket, from_date, to_date):
         """
@@ -223,13 +227,7 @@ class RootController(VigiboardRootController):
         validators=MaskedEventsSchema(),
         error_handler = process_form_errors)
     @expose('raw_events_table.html')
-    @require(
-        All(
-            not_anonymous(msg=l_("You need to be authenticated")),
-            Any(in_group('managers'),
-                has_permission('vigiboard-read'),
-                msg=l_("You don't have read access to VigiBoard"))
-        ))
+    @require(access_restriction)
     def masked_events(self, idcorrevent, page):
         """
         Affichage de la liste des événements bruts masqués dans un
@@ -335,13 +333,7 @@ class RootController(VigiboardRootController):
         validators=EventSchema(),
         error_handler = process_form_errors)
     @expose('history_table.html')
-    @require(
-        All(
-            not_anonymous(msg=l_("You need to be authenticated")),
-            Any(in_group('managers'),
-                has_permission('vigiboard-read'),
-                msg=l_("You don't have read access to VigiBoard"))
-        ))
+    @require(access_restriction)
     def event(self, idevent, page):
         """
         Affichage de l'historique d'un événement brut.
@@ -430,13 +422,7 @@ class RootController(VigiboardRootController):
         validators=ItemSchema(),
         error_handler = process_form_errors)
     @expose('events_table.html')
-    @require(
-        All(
-            not_anonymous(msg=l_("You need to be authenticated")),
-            Any(in_group('managers'),
-                has_permission('vigiboard-read'),
-                msg=l_("You don't have read access to VigiBoard"))
-        ))
+    @require(access_restriction)
     def item(self, page, host, service):
         """
         Affichage de l'historique de l'ensemble des événements corrélés
@@ -658,13 +644,7 @@ class RootController(VigiboardRootController):
         validators=GetPluginValueSchema(),
         error_handler = handle_validation_errors_json)
     @expose('json')
-    @require(
-        All(
-            not_anonymous(msg=l_("You need to be authenticated")),
-            Any(in_group('managers'),
-                has_permission('vigiboard-read'),
-                msg=l_("You don't have read access to VigiBoard"))
-        ))
+    @require(access_restriction)
     def get_plugin_value(self, idcorrevent, plugin_name, *arg, **krgv):
         """
         Permet de récupérer la valeur d'un plugin associée à un CorrEvent

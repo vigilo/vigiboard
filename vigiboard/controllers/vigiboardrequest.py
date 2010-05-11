@@ -5,10 +5,11 @@
 from time import mktime
 from logging import getLogger
 
-from tg import config, tmpl_context
+from tg import config, tmpl_context, request
 from tg.i18n import get_lang
 from pylons.i18n import ugettext as _
 from paste.deploy.converters import asbool
+from repoze.what.predicates import in_group
 
 from sqlalchemy import not_, and_, asc, desc
 from sqlalchemy.sql.expression import or_, null as expr_null, union
@@ -61,6 +62,8 @@ class VigiboardRequest():
         self.lang = lang
         self.generaterq = False
 
+        is_manager = in_group('managers').is_met(request.environ)
+
         # Sélectionne tous les IDs des services auxquels
         # l'utilisateur a accès.
         lls_query = DBSession.query(
@@ -79,8 +82,6 @@ class VigiboardRequest():
                         LowLevelService.idservice,
                 )
             ),
-        ).filter(
-            SUPITEM_GROUP_TABLE.c.idgroup.in_(self.user_groups)
         )
 
         # Sélectionne tous les IDs des hôtes auxquels
@@ -93,9 +94,18 @@ class VigiboardRequest():
         ).join(
             (SUPITEM_GROUP_TABLE, SUPITEM_GROUP_TABLE.c.idsupitem == \
                 Host.idhost),
-        ).filter(
-            SUPITEM_GROUP_TABLE.c.idgroup.in_(self.user_groups),
         )
+
+        # Les managers ont accès à tout, les autres sont soumis
+        # aux vérifications classiques d'accès aux données.
+        if not is_manager:
+            lls_query = lls_query.filter(
+                SUPITEM_GROUP_TABLE.c.idgroup.in_(self.user_groups)
+            )
+            host_query = host_query.filter(
+                SUPITEM_GROUP_TABLE.c.idgroup.in_(self.user_groups)
+            )
+
 
         # Objet Selectable renvoyant des informations sur un SupItem
         # concerné par une alerte, avec prise en compte des droits d'accès.
