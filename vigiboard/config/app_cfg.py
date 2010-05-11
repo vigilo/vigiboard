@@ -55,11 +55,11 @@ base_config['vigilo_version'] = u'2.0-pre0.1'
 #
 # Permet de satisfaire l'exigence VIGILO_EXIG_VIGILO_BAC_0130.
 base_config['vigiboard_links.eventdetails'] = {
-    'nagios': ['Nagios host details', 'http://example1.com/%(idcorrevent)d'],
-    'metrology': ['Metrology details', 'http://example2.com/%(idcorrevent)d'],
-    'security': ['Security details', 'http://example3.com/%(idcorrevent)d'],
-    'servicetype': ['Service Type', 'http://example4.com/%(idcorrevent)d'],
-    'documentation': ['Documentation', 'http://doc.example.com/?q=%(message)s'],
+    'nagios': [u'Nagios host details', 'http://example1.com/%(idcorrevent)d'],
+    'metrology': [u'Metrology details', 'http://example2.com/%(idcorrevent)d'],
+    'security': [u'Security details', 'http://example3.com/%(idcorrevent)d'],
+    'servicetype': [u'Service Type', 'http://example4.com/%(idcorrevent)d'],
+    'documentation': [u'Documentation', 'http://doc.example.com/?q=%(message)s'],
 }
 
 # URL des tickets, possibilités:
