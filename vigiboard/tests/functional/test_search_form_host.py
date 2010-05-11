@@ -78,15 +78,15 @@ class TestSearchFormHost(TestController):
         # L'hôte est rattaché à un groupe d'hôtes
         # pour lesquel l'utilisateur a les permissions.
         hostgroup = insert_deps()
-        manage = Permission.by_permission_name(u'manage')
-        manage.supitemgroups.append(hostgroup)
+        edit = Permission.by_permission_name(u'edit')
+        edit.supitemgroups.append(hostgroup)
         DBSession.flush()
         transaction.commit()
 
         # On envoie une requête avec recherche sur l'hôte créé,
         # on s'attend à recevoir 1 résultat.
         response = self.app.get('/?host=bar',
-            extra_environ={'REMOTE_USER': 'manager'})
+            extra_environ={'REMOTE_USER': 'editor'})
 
         # Il doit y avoir 1 seule ligne de résultats.
         rows = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr')
@@ -103,7 +103,7 @@ class TestSearchFormHost(TestController):
         # On envoie une requête avec recherche sur un hôte
         # qui n'existe pas, on s'attend à n'obtenir aucun résultat.
         response = self.app.get('/?host=bad',
-            extra_environ={'REMOTE_USER': 'manager'})
+            extra_environ={'REMOTE_USER': 'editor'})
 
         # Il doit y avoir 1 seule ligne de résultats.
         rows = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr')
@@ -127,7 +127,7 @@ class TestSearchFormHost(TestController):
         # mais avec un utilisateur ne disposant pas des permissions adéquates.
         # On s'attend à n'obtenir aucun résultat.
         response = self.app.get('/?host=bar',
-            extra_environ={'REMOTE_USER': 'manager'})
+            extra_environ={'REMOTE_USER': 'editor'})
 
         # Il doit y avoir 1 seule ligne de résultats.
         rows = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr')

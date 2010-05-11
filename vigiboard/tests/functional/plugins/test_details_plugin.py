@@ -177,7 +177,7 @@ class TestDetailsPlugin(TestController):
         self.app.post('/get_plugin_value', {
                 'idcorrevent': idcorrevent,
                 'plugin_name': 'details',
-            }, extra_environ={'REMOTE_USER': 'manager'},
+            }, extra_environ={'REMOTE_USER': 'editor'},
             status=404)
 
     def test_details_plugin_host_when_forbidden(self):
@@ -192,7 +192,7 @@ class TestDetailsPlugin(TestController):
         self.app.post('/get_plugin_value', {
                 'idcorrevent': idcorrevent,
                 'plugin_name': 'details',
-            }, extra_environ={'REMOTE_USER': 'manager'},
+            }, extra_environ={'REMOTE_USER': 'editor'},
             status=404)
 
     def test_details_plugin_LLS_anonymous(self):

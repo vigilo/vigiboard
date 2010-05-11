@@ -85,17 +85,17 @@ class TestSearchFormServiceGroup(TestController):
         # contenant un service 'bar', ainsi qu'un événement
         # et un événement corrélé sur ce service.
         # De plus, on donne l'autorisation aux utilisateurs
-        # ayant la permission 'manage' de voir cette alerte.
+        # ayant la permission 'edit' de voir cette alerte.
         servicegroup = insert_deps()
-        manage = Permission.by_permission_name(u'manage')
-        manage.supitemgroups.append(servicegroup)
+        edit = Permission.by_permission_name(u'edit')
+        edit.supitemgroups.append(servicegroup)
         DBSession.flush()
         transaction.commit()
 
         # On envoie une requête avec recherche sur le groupe
         # de services créé, on s'attend à recevoir 1 résultat.
         response = self.app.get('/?supitemgroup=foo',
-            extra_environ={'REMOTE_USER': 'manager'})
+            extra_environ={'REMOTE_USER': 'editor'})
 
         # Il doit y avoir 1 seule ligne de résultats.
         rows = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr')
@@ -112,7 +112,7 @@ class TestSearchFormServiceGroup(TestController):
         # On envoie une requête avec recherche sur un groupe de services
         # qui n'existe pas, on s'attend à n'obtenir aucun résultat.
         response = self.app.get('/?supitemgroup=foot',
-            extra_environ={'REMOTE_USER': 'manager'})
+            extra_environ={'REMOTE_USER': 'editor'})
 
         # Il doit y avoir 1 seule ligne de résultats.
         rows = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr')
@@ -139,7 +139,7 @@ class TestSearchFormServiceGroup(TestController):
         # services créé, mais avec un utilisateur ne disposant pas des
         # permissions adéquates. On s'attend à n'obtenir aucun résultat.
         response = self.app.get('/?supitemgroup=foo',
-            extra_environ={'REMOTE_USER': 'manager'})
+            extra_environ={'REMOTE_USER': 'editor'})
 
         # Il doit y avoir 1 seule ligne de résultats.
         rows = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr')

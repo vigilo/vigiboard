@@ -103,17 +103,17 @@ class TestSearchFormService(TestController):
         # à un groupe d'hôtes pour lesquels l'utilisateur
         # a les permissions.
         hostgroup = insert_deps()[0]
-        print "Adding permission for 'manager' on host group '%s'" % \
+        print "Adding permission for 'editor' on host group '%s'" % \
             hostgroup.name
-        manage = Permission.by_permission_name(u'manage')
-        manage.supitemgroups.append(hostgroup)
+        edit = Permission.by_permission_name(u'edit')
+        edit.supitemgroups.append(hostgroup)
         DBSession.flush()
         transaction.commit()
 
         # On envoie une requête avec recherche sur le service créé,
         # on s'attend à recevoir 1 résultat.
         response = self.app.get('/?service=baz',
-            extra_environ={'REMOTE_USER': 'manager'})
+            extra_environ={'REMOTE_USER': 'editor'})
 
         # Il doit y avoir 1 seule ligne de résultats.
         rows = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr')
@@ -135,17 +135,17 @@ class TestSearchFormService(TestController):
         # Le service est rattaché à un groupe de services
         # pour lesquel l'utilisateur a les permissions.
         servicegroup = insert_deps()[1]
-        print "Adding permission for 'manager' on service group '%s'" % \
+        print "Adding permission for 'editor' on service group '%s'" % \
             servicegroup.name
-        manage = Permission.by_permission_name(u'manage')
-        manage.supitemgroups.append(servicegroup)
+        edit = Permission.by_permission_name(u'edit')
+        edit.supitemgroups.append(servicegroup)
         DBSession.flush()
         transaction.commit()
 
         # On envoie une requête avec recherche sur le service créé,
         # on s'attend à recevoir 1 résultat.
         response = self.app.get('/?service=baz',
-            extra_environ={'REMOTE_USER': 'manager'})
+            extra_environ={'REMOTE_USER': 'editor'})
 
         # Il doit y avoir 1 seule ligne de résultats.
         rows = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr')
@@ -162,7 +162,7 @@ class TestSearchFormService(TestController):
         # On envoie une requête avec recherche sur un service
         # qui n'existe pas, on s'attend à n'obtenir aucun résultat.
         response = self.app.get('/?service=bad',
-            extra_environ={'REMOTE_USER': 'manager'})
+            extra_environ={'REMOTE_USER': 'editor'})
 
         # Il doit y avoir 1 seule ligne de résultats.
         rows = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr')
@@ -185,7 +185,7 @@ class TestSearchFormService(TestController):
         # mais avec un utilisateur ne disposant pas des permissions adéquates.
         # On s'attend à n'obtenir aucun résultat.
         response = self.app.get('/?service=baz',
-            extra_environ={'REMOTE_USER': 'manager'})
+            extra_environ={'REMOTE_USER': 'editor'})
 
         # Il doit y avoir 1 seule ligne de résultats.
         rows = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr')

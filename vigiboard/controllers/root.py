@@ -159,7 +159,9 @@ class RootController(VigiboardRootController):
         if from_date:
             search['from_date'] = from_date.lower()
             try:
-                # TRANSLATORS: Format de date et heure.
+                # TRANSLATORS: Format de date et heure Python/JavaScript.
+                # TRANSLATORS: http://www.dynarch.com/static/jscalendar-1.0/doc/html/reference.html#node_sec_5.3.5
+                # TRANSLATORS: http://docs.python.org/release/2.5/lib/module-time.html
                 from_date = datetime.strptime(
                     from_date, _('%Y-%m-%d %I:%M:%S %p'))
             except ValueError:
@@ -172,6 +174,8 @@ class RootController(VigiboardRootController):
             search['to_date'] = to_date.lower()
             try:
                 # TRANSLATORS: Format de date et heure.
+                # TRANSLATORS: http://www.dynarch.com/static/jscalendar-1.0/doc/html/reference.html#node_sec_5.3.5
+                # TRANSLATORS: http://docs.python.org/release/2.5/lib/module-time.html
                 to_date = datetime.strptime(
                     to_date, _('%Y-%m-%d %I:%M:%S %p'))
             except ValueError:

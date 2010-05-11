@@ -78,17 +78,17 @@ class TestSearchFormHostGroup(TestController):
         # contenant un hôte 'bar', ainsi qu'un événement
         # et un événement corrélé sur cet hôte.
         # De plus, on donne l'autorisation aux utilisateurs
-        # ayant la permission 'manage' de voir cette alerte.
+        # ayant la permission 'edit' de voir cette alerte.
         hostgroup = insert_deps()
-        manage = Permission.by_permission_name(u'manage')
-        manage.supitemgroups.append(hostgroup)
+        edit = Permission.by_permission_name(u'edit')
+        edit.supitemgroups.append(hostgroup)
         DBSession.flush()
         transaction.commit()
 
         # On envoie une requête avec recherche sur le groupe d'hôtes créé,
         # on s'attend à recevoir 1 résultat.
         response = self.app.get('/?supitemgroup=foo',
-            extra_environ={'REMOTE_USER': 'manager'})
+            extra_environ={'REMOTE_USER': 'editor'})
 
         # Il doit y avoir 1 seule ligne de résultats.
         rows = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr')
@@ -105,7 +105,7 @@ class TestSearchFormHostGroup(TestController):
         # On envoie une requête avec recherche sur un groupe d'hôtes
         # qui n'existe pas, on s'attend à n'obtenir aucun résultat.
         response = self.app.get('/?supitemgroup=foot',
-            extra_environ={'REMOTE_USER': 'manager'})
+            extra_environ={'REMOTE_USER': 'editor'})
 
         # Il doit y avoir 1 seule ligne de résultats.
         rows = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr')
@@ -132,7 +132,7 @@ class TestSearchFormHostGroup(TestController):
         # mais avec un utilisateur ne disposant pas des permissions adéquates.
         # On s'attend à n'obtenir aucun résultat.
         response = self.app.get('/?supitemgroup=foo',
-            extra_environ={'REMOTE_USER': 'manager'})
+            extra_environ={'REMOTE_USER': 'editor'})
 
         # Il doit y avoir 1 seule ligne de résultats.
         rows = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr')

@@ -89,6 +89,9 @@ class TestController(unittest.TestCase):
         permission.usergroups.append(group)
         DBSession.flush()
 
+        import transaction
+        transaction.commit()
+
 
     def tearDown(self):
         """Method called by nose after running each test"""
