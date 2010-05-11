@@ -76,7 +76,7 @@ msgstr "10 minutes"
 #: vigiboard/tests/functional/test_search_form_misc.py:129
 #, python-format
 msgid "%Y-%m-%d %I:%M:%S %p"
-msgstr "%d-%m-%Y %I:%M:%S"
+msgstr "%d-%m-%Y %H:%M:%S"
 
 #: vigiboard/controllers/root.py:272
 msgid "No masked event or access denied"

@@ -157,7 +157,7 @@ class RootController(VigiboardRootController):
                 '%%%s%%' % trouble_ticket))
 
         if from_date:
-            search['from_date'] = from_date
+            search['from_date'] = from_date.lower()
             try:
                 # TRANSLATORS: Format de date et heure.
                 from_date = datetime.strptime(
@@ -169,7 +169,7 @@ class RootController(VigiboardRootController):
                 aggregates.add_filter(CorrEvent.timestamp_active >= from_date)
 
         if to_date:
-            search['to_date'] = to_date
+            search['to_date'] = to_date.lower()
             try:
                 # TRANSLATORS: Format de date et heure.
                 to_date = datetime.strptime(
