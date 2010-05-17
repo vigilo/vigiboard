@@ -9,9 +9,8 @@ from tw.forms import TableForm, SingleSelectField, TextField, \
                         HiddenField, Label
 
 __all__ = (
-    'EditEventForm',
     'edit_event_status_options',
-    'create_edit_event_form',
+    'EditEventForm',
 )
 
 edit_event_status_options = [
@@ -30,8 +29,8 @@ class EditEventForm(TableForm):
     liste déroulante pour le nouveau status
 
     Ce widget permet de répondre aux exigences suivantes :
-    - VIGILO_EXIG_VIGILO_BAC_0060
-    - VIGILO_EXIG_VIGILO_BAC_0110
+        - VIGILO_EXIG_VIGILO_BAC_0060
+        - VIGILO_EXIG_VIGILO_BAC_0110
     """
 
     class fields(WidgetsList):
@@ -42,7 +41,4 @@ class EditEventForm(TableForm):
         ack = SingleSelectField(label_text=l_('Acknowledgement Status'),
                                 options=edit_event_status_options)
         last_modification = HiddenField()
-    
-create_edit_event_form = EditEventForm("edit_event_form",
-    submit_text=l_('Apply'), action=tg.url('/update'))
 

@@ -2,12 +2,13 @@
 # vim:set expandtab tabstop=4 shiftwidth=4:
 """Le formulaire de recherche/filtrage."""
 
-import tg
 from pylons.i18n import lazy_ugettext as l_
 from tw.api import WidgetsList
 from tw.forms import TableForm, TextField, CalendarDateTimePicker
 
-__all__ = ('SearchForm', 'create_search_form')
+__all__ = (
+    'SearchForm',
+)
 
 class SearchForm(TableForm):
     """
@@ -17,8 +18,8 @@ class SearchForm(TableForm):
     le ticket d'incidence, et la date.
 
     Ce widget permet de répondre aux exigences suivantes :
-    - VIGILO_EXIG_VIGILO_BAC_0070
-    - VIGILO_EXIG_VIGILO_BAC_0100
+        - VIGILO_EXIG_VIGILO_BAC_0070
+        - VIGILO_EXIG_VIGILO_BAC_0100
     """
         
     method = 'GET'
@@ -38,7 +39,4 @@ class SearchForm(TableForm):
             label_text = l_('To'),
             button_text = l_("Choose"),
             not_empty = False)
-    
-create_search_form = SearchForm("search_form",
-    submit_text=l_('Search'), action=tg.url('/'))
 
