@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # vim:set expandtab tabstop=4 shiftwidth=4: 
-"""Vigiboard Controller"""
+"""VigiBoard Controller"""
 
 from datetime import datetime
 from time import mktime
@@ -67,6 +67,7 @@ class RootController(VigiboardRootController):
         return dict(kwargs)
     
     class DefaultSchema(schema.Schema):
+        """Schéma de validation de la méthode default."""
         page = validators.Int(min=1, if_missing=1, if_invalid=1)
         supitemgroup = validators.String(if_missing=None)
         host = validators.String(if_missing=None)
@@ -98,9 +99,9 @@ class RootController(VigiboardRootController):
         @param trouble_ticket: Idem que host mais sur les tickets attribués
 
         Cette méthode permet de satisfaire les exigences suivantes : 
-        - VIGILO_EXIG_VIGILO_BAC_0040, 
-        - VIGILO_EXIG_VIGILO_BAC_0070,
-        - VIGILO_EXIG_VIGILO_BAC_0100,
+            - VIGILO_EXIG_VIGILO_BAC_0040, 
+            - VIGILO_EXIG_VIGILO_BAC_0070,
+            - VIGILO_EXIG_VIGILO_BAC_0100,
         """
         user = get_current_user()
         aggregates = VigiboardRequest(user)
@@ -224,6 +225,7 @@ class RootController(VigiboardRootController):
 
 
     class MaskedEventsSchema(schema.Schema):
+        """Schéma de validation de la méthode masked_events."""
         idcorrevent = validators.Int(not_empty=True)
         page = validators.Int(min=1, if_missing=1, if_invalid=1)
 
@@ -234,10 +236,11 @@ class RootController(VigiboardRootController):
     @require(access_restriction)
     def masked_events(self, idcorrevent, page):
         """
-        Affichage de la liste des événements bruts masqués dans un
-        événement corrélé (agrégés).
+        Affichage de la liste des événements bruts masqués d'un événement
+        corrélé (événements agrégés dans l'événement corrélé).
 
-        @param idevent: identifiant de l'événement souhaité
+        @param idcorrevent: identifiant de l'événement corrélé souhaité.
+        @type idcorrevent: C{int}
         """
         user = get_current_user()
 
@@ -330,6 +333,7 @@ class RootController(VigiboardRootController):
 
 
     class EventSchema(schema.Schema):
+        """Schéma de validation de la méthode event."""
         idevent = validators.Int(not_empty=True)
         page = validators.Int(min=1, if_missing=1, if_invalid=1)
 
@@ -345,13 +349,12 @@ class RootController(VigiboardRootController):
 
         @param idevent: identifiant de l'événement brut souhaité.
         @type idevent: C{int}
+        @param page: numéro de la page à afficher.
+        @type page: C{int}
 
-        Cette méthode permet de satisfaire
-        l'exigence VIGILO_EXIG_VIGILO_BAC_0080.
+        Cette méthode permet de satisfaire l'exigence
+        VIGILO_EXIG_VIGILO_BAC_0080.
         """
-        if not page:
-            page = 1
-
         user = get_current_user()
         events = VigiboardRequest(user, False)
         events.add_table(
@@ -418,6 +421,7 @@ class RootController(VigiboardRootController):
 
 
     class ItemSchema(schema.Schema):
+        """Schéma de validation de la méthode item."""
         page = validators.Int(min=1, if_missing=1, if_invalid=1)
         host = validators.String(not_empty=True)
         service = validators.String(if_missing=None)
@@ -433,11 +437,12 @@ class RootController(VigiboardRootController):
         jamais ouverts sur l'hôte / service demandé.
         Pour accéder à cette page, l'utilisateur doit être authentifié.
 
+        @param page: Numéro de la page à afficher.
         @param host: Nom de l'hôte souhaité.
         @param service: Nom du service souhaité
 
-        Cette méthode permet de satisfaire
-        l'exigence VIGILO_EXIG_VIGILO_BAC_0080.
+        Cette méthode permet de satisfaire l'exigence
+        VIGILO_EXIG_VIGILO_BAC_0080.
         """
         idsupitem = SupItem.get_supitem(host, service)
 
@@ -500,6 +505,7 @@ class RootController(VigiboardRootController):
 
 
     class UpdateSchema(schema.Schema):
+        """Schéma de validation de la méthode update."""
         id = validators.Regex(r'^[0-9]+(,[0-9]+)*,?$')
         last_modification = validators.Number(not_empty=True)
         trouble_ticket = validators.String(if_missing='')
@@ -530,9 +536,9 @@ class RootController(VigiboardRootController):
         @param ack: Nouvel état d'acquittement des événements sélectionnés.
 
         Cette méthode permet de satisfaire les exigences suivantes : 
-        - VIGILO_EXIG_VIGILO_BAC_0020,
-        - VIGILO_EXIG_VIGILO_BAC_0060,
-        - VIGILO_EXIG_VIGILO_BAC_0110.
+            - VIGILO_EXIG_VIGILO_BAC_0020,
+            - VIGILO_EXIG_VIGILO_BAC_0060,
+            - VIGILO_EXIG_VIGILO_BAC_0110.
         """
 
         # On vérifie que des identifiants ont bien été transmis via
@@ -637,6 +643,7 @@ class RootController(VigiboardRootController):
 
 
     class GetPluginValueSchema(schema.Schema):
+        """Schéma de validation de la méthode get_plugin_value."""
         idcorrevent = validators.Int(not_empty=True)
         plugin_name = validators.OneOf(
             [unicode(i[0]) for i in config.get('vigiboard_plugins', [])],

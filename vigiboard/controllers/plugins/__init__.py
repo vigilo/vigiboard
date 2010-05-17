@@ -31,7 +31,7 @@ class VigiboardRequestPlugin(object):
 
         Cette méthode DEVRAIT être surchargée dans les classes dérivées.
 
-        @param idcorrevent: Identifiant du L{CorrEvent} à interroger.
+        @param idcorrevent: Identifiant du C{CorrEvent} à interroger.
         @type idcorrevent: C{int}
         @return: Dictionnaire contenant la ou les valeur(s) correspondantes.
         @rtype: C{dict}

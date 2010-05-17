@@ -2,11 +2,11 @@
 # vim:set expandtab tabstop=4 shiftwidth=4:
 """
 Un plugin pour VigiBoard qui ajoute 3 colonnes au tableau des événements :
--   la première colonne contient l'état d'acquittement de l'événement.
--   la seconde colonne contient un lien permettant d'éditer certaines
-    propriétés associées à l'événement corrélé.
--   la dernière colonne permet de (dé)sélectionner l'événement pour
-    effectuer un traitement par lot.
+    -   la première colonne contient l'état d'acquittement de l'événement.
+    -   la seconde colonne contient un lien permettant d'éditer certaines
+        propriétés associées à l'événement corrélé.
+    -   la dernière colonne permet de (dé)sélectionner l'événement pour
+        effectuer un traitement par lot.
 """
 from vigiboard.controllers.plugins import VigiboardRequestPlugin
 

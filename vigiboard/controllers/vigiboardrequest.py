@@ -5,7 +5,7 @@
 from time import mktime
 from logging import getLogger
 
-from tg import config, tmpl_context, request
+from tg import config, tmpl_context, request, url
 from tg.i18n import get_lang
 from pylons.i18n import ugettext as _
 from paste.deploy.converters import asbool
@@ -18,8 +18,8 @@ from vigilo.models.session import DBSession
 from vigilo.models.tables import Event, CorrEvent, EventHistory, \
                         Host, LowLevelService, StateName
 from vigilo.models.tables.secondary_tables import SUPITEM_GROUP_TABLE
-from vigiboard.widgets.edit_event import create_edit_event_form
-from vigiboard.widgets.search_form import create_search_form
+from vigiboard.widgets.edit_event import EditEventForm
+from vigiboard.widgets.search_form import SearchForm
 from vigiboard.controllers.plugins import VigiboardRequestPlugin
 
 LOGGER = getLogger(__name__)
@@ -422,6 +422,8 @@ class VigiboardRequest():
         # TRANSLATORS: Format de date et heure compatible Python/JavaScript.
         tmpl_context.calendar_date_format = _('%Y-%m-%d %I:%M:%S %p')
 
-        tmpl_context.edit_event_form = create_edit_event_form
-        tmpl_context.search_form = create_search_form
+        tmpl_context.edit_event_form = EditEventForm("edit_event_form",
+            submit_text=l_('Apply'), action=url('/update'))
+        tmpl_context.search_form = SearchForm("search_form",
+            submit_text=l_('Search'), action=url('/'))
 
