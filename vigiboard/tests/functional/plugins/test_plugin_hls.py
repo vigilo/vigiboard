@@ -6,9 +6,10 @@ import transaction
 from nose.tools import assert_equal
 
 from vigilo.models.session import DBSession
-from vigilo.models.tables import Permission, StateName, \
+from vigilo.models.tables import Permission, DataPermission, StateName, \
                             SupItemGroup, Host, HighLevelService, \
-                            Event, CorrEvent, ImpactedPath, ImpactedHLS
+                            Event, CorrEvent, ImpactedPath, ImpactedHLS, \
+                            User, UserGroup
 from vigilo.models.tables.grouphierarchy import GroupHierarchy
 from vigiboard.tests import TestController
 
@@ -27,8 +28,12 @@ def populate_DB():
     ))
 
     # On lui octroie les permissions
-    manage_perm = Permission.by_permission_name(u'manage')
-    hostmanagers.permissions.append(manage_perm)
+    usergroup = UserGroup.by_group_name(u'users_with_access')
+    DBSession.add(DataPermission(
+        group=hostmanagers,
+        usergroup=usergroup,
+        access=u'r',
+    ))
     DBSession.flush()
 
     # On crée un hôte de test.
@@ -68,7 +73,6 @@ def populate_DB():
     DBSession.flush()
     
     transaction.commit()
-
     return aggregate
 
 def add_paths(path_number, path_length, idsupitem):
@@ -123,7 +127,40 @@ class TestHLSPlugin(TestController):
     Classe de test du contrôleur listant les services 
     de haut niveau impactés par un évènement corrélé.
     """
-    
+    def setUp(self):
+        super(TestHLSPlugin, self).setUp()
+        perm = Permission.by_permission_name(u'vigiboard-access')
+
+        user = User(
+            user_name=u'access',
+            fullname=u'',
+            email=u'user.has@access',
+        )
+        usergroup = UserGroup(
+            group_name=u'users_with_access',
+        )
+        usergroup.permissions.append(perm)
+        user.usergroups.append(usergroup)
+        DBSession.add(user)
+        DBSession.add(usergroup)
+        DBSession.flush()
+
+        user = User(
+            user_name=u'no_access',
+            fullname=u'',
+            email=u'user.has.no@access',
+        )
+        usergroup = UserGroup(
+            group_name=u'users_without_access',
+        )
+        usergroup.permissions.append(perm)
+        user.usergroups.append(usergroup)
+        DBSession.add(user)
+        DBSession.add(usergroup)
+        DBSession.flush()
+
+        self.aggregate = populate_DB()
+
     def test_no_impacted_hls(self):
         """
         Retour du plugin HLS pour 0 HLS impacté
@@ -132,16 +169,15 @@ class TestHLSPlugin(TestController):
         """
         
         # On peuple la base de données avant le test.
-        aggregate = populate_DB()
-        DBSession.add(aggregate)
-        add_paths(0, 0, aggregate.events[0].idsupitem)
-        DBSession.add(aggregate)
+        DBSession.add(self.aggregate)
+        add_paths(0, 0, self.aggregate.events[0].idsupitem)
+        DBSession.add(self.aggregate)
         
         ### 1er cas : l'utilisateur n'est pas connecté.
         # On vérifie que le plugin retourne bien une erreur 401.
         resp = self.app.post(
             '/get_plugin_value', 
-            {"idcorrevent" : str(aggregate.idcorrevent),
+            {"idcorrevent" : str(self.aggregate.idcorrevent),
              "plugin_name" : "hls"},
             status = 401,)
         
@@ -150,17 +186,17 @@ class TestHLSPlugin(TestController):
         # On vérifie que le plugin retourne bien une erreur 404.
         resp = self.app.post(
             '/get_plugin_value', 
-            {"idcorrevent" : str(aggregate.idcorrevent),
+            {"idcorrevent" : str(self.aggregate.idcorrevent),
              "plugin_name" : "hls"},
             status = 404,
-            extra_environ={'REMOTE_USER': 'editor'})
+            extra_environ={'REMOTE_USER': 'no_access'})
         
         ### 3ème cas : l'utilisateur a cette fois les droits.
         resp = self.app.post(
             '/get_plugin_value', 
-            {"idcorrevent" : str(aggregate.idcorrevent),
+            {"idcorrevent" : str(self.aggregate.idcorrevent),
              "plugin_name" : "hls"},
-            extra_environ={'REMOTE_USER': 'manager'})
+            extra_environ={'REMOTE_USER': 'access'})
         # On vérifie que le plugin ne retourne toujours rien.
         assert_equal(resp.json, {"services": []})
     
@@ -172,16 +208,15 @@ class TestHLSPlugin(TestController):
         """
         
         # On peuple la base de données avant le test.
-        aggregate = populate_DB()
-        DBSession.add(aggregate)
-        add_paths(1, 2, aggregate.events[0].idsupitem)
-        DBSession.add(aggregate)
+        DBSession.add(self.aggregate)
+        add_paths(1, 2, self.aggregate.events[0].idsupitem)
+        DBSession.add(self.aggregate)
         
         ### 1er cas : l'utilisateur n'est pas connecté.
         # On vérifie que le plugin retourne bien une erreur 401.
         resp = self.app.post(
             '/get_plugin_value', 
-            {"idcorrevent" : str(aggregate.idcorrevent),
+            {"idcorrevent" : str(self.aggregate.idcorrevent),
              "plugin_name" : "hls"},
             status = 401,)
         
@@ -191,17 +226,17 @@ class TestHLSPlugin(TestController):
         ### avec les informations liées à cet utilisateur).
         resp = self.app.post(
             '/get_plugin_value', 
-            {"idcorrevent" : str(aggregate.idcorrevent),
+            {"idcorrevent" : str(self.aggregate.idcorrevent),
              "plugin_name" : "hls"},
             status = 404,
-            extra_environ={'REMOTE_USER': 'editor'})
+            extra_environ={'REMOTE_USER': 'no_access'})
         
         ### 3ème cas : l'utilisateur a cette fois les droits.
         resp = self.app.post(
             '/get_plugin_value', 
-            {"idcorrevent" : str(aggregate.idcorrevent),
+            {"idcorrevent" : str(self.aggregate.idcorrevent),
              "plugin_name" : "hls"},
-            extra_environ={'REMOTE_USER': 'manager'})
+            extra_environ={'REMOTE_USER': 'access'})
         # On vérifie que le plugin retourne bien les 2 HLS impactés.
         assert_equal(resp.json, {"services": ['HLS12']})
     
@@ -213,16 +248,15 @@ class TestHLSPlugin(TestController):
         """
         
         # On peuple la base de données avant le test.
-        aggregate = populate_DB()
-        DBSession.add(aggregate)
-        add_paths(2, 2, aggregate.events[0].idsupitem)
-        DBSession.add(aggregate)
+        DBSession.add(self.aggregate)
+        add_paths(2, 2, self.aggregate.events[0].idsupitem)
+        DBSession.add(self.aggregate)
         
         ### 1er cas : l'utilisateur n'est pas connecté.
         # On vérifie que le plugin retourne bien une erreur 401.
         resp = self.app.post(
             '/get_plugin_value', 
-            {"idcorrevent" : str(aggregate.idcorrevent),
+            {"idcorrevent" : str(self.aggregate.idcorrevent),
              "plugin_name" : "hls"},
             status = 401,)
         
@@ -230,17 +264,17 @@ class TestHLSPlugin(TestController):
         ### droits sur l'hôte ayant causé le correvent.
         resp = self.app.post(
             '/get_plugin_value', 
-            {"idcorrevent" : str(aggregate.idcorrevent),
+            {"idcorrevent" : str(self.aggregate.idcorrevent),
              "plugin_name" : "hls"},
             status = 404,
-            extra_environ={'REMOTE_USER': 'editor'})
+            extra_environ={'REMOTE_USER': 'no_access'})
         
         ### 3ème cas : l'utilisateur a cette fois les droits.
         resp = self.app.post(
             '/get_plugin_value', 
-            {"idcorrevent" : str(aggregate.idcorrevent),
+            {"idcorrevent" : str(self.aggregate.idcorrevent),
              "plugin_name" : "hls"},
-            extra_environ={'REMOTE_USER': 'manager'})
+            extra_environ={'REMOTE_USER': 'access'})
         # On vérifie que le plugin retourne bien les 4 HLS impactés.
         assert_equal(resp.json, {"services": ['HLS12', 'HLS22']})
 

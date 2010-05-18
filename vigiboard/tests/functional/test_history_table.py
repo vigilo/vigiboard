@@ -12,7 +12,9 @@ import transaction
 from vigilo.models.session import DBSession
 from vigilo.models.tables import Event, EventHistory, CorrEvent, \
                             Permission, StateName, Host, \
-                            SupItemGroup, LowLevelService
+                            SupItemGroup, LowLevelService, \
+                            Permission, DataPermission, User, \
+                            UserGroup
 from vigilo.models.tables.grouphierarchy import GroupHierarchy
 from vigiboard.tests import TestController
 
@@ -29,9 +31,12 @@ def populate_DB():
         hops=0,
     ))
 
-    # On ajoute la permission 'manage' à ces deux groupes.
-    manage_perm = Permission.by_permission_name(u'manage')
-    supitemmanagers.permissions.append(manage_perm)
+    usergroup = UserGroup.by_group_name(u'users_with_access')
+    DBSession.add(DataPermission(
+        group=supitemmanagers,
+        usergroup=usergroup,
+        access=u'r',
+    ))
     DBSession.flush()
 
     # On crée un hôte de test, et on l'ajoute au groupe d'hôtes.
@@ -108,6 +113,38 @@ class TestHistoryTable(TestController):
     Teste la table qui affiche l'historique des actions
     sur un événement brut.
     """
+    def setUp(self):
+        super(TestHistoryTable, self).setUp()
+        perm = Permission.by_permission_name(u'vigiboard-access')
+
+        user = User(
+            user_name=u'access',
+            fullname=u'',
+            email=u'user.has@access',
+        )
+        usergroup = UserGroup(
+            group_name=u'users_with_access',
+        )
+        usergroup.permissions.append(perm)
+        user.usergroups.append(usergroup)
+        DBSession.add(user)
+        DBSession.add(usergroup)
+        DBSession.flush()
+
+        user = User(
+            user_name=u'limited_access',
+            fullname=u'',
+            email=u'user.has.no@access',
+        )
+        usergroup = UserGroup(
+            group_name=u'users_with_limited_access',
+        )
+        usergroup.permissions.append(perm)
+        user.usergroups.append(usergroup)
+        DBSession.add(user)
+        DBSession.add(usergroup)
+        DBSession.flush()
+
 
     def test_cause_host_history(self):
         """Historique de la cause d'un événement corrélé sur un hôte."""
@@ -128,7 +165,7 @@ class TestHistoryTable(TestController):
             status = 401)
 
         # L'utilisateur N'A PAS les bonnes permissions.
-        environ = {'REMOTE_USER': 'editor'}
+        environ = {'REMOTE_USER': 'limited_access'}
         
         # On s'attend à ce qu'une erreur 302 soit renvoyée, et à
         # ce qu'un message d'erreur précise à l'utilisateur qu'il
@@ -144,7 +181,7 @@ class TestHistoryTable(TestController):
             '//div[@id="flash"]/div[@class="error"]')))
 
         # L'utilisateur a les bonnes permissions.
-        environ = {'REMOTE_USER': 'manager'}
+        environ = {'REMOTE_USER': 'access'}
         
         # On s'attend à ce que le statut de la requête soit 200.
         response = self.app.get(
@@ -180,7 +217,7 @@ class TestHistoryTable(TestController):
             status = 401)
 
         # L'utilisateur N'A PAS les bonnes permissions.
-        environ = {'REMOTE_USER': 'editor'}
+        environ = {'REMOTE_USER': 'limited_access'}
         
         # On s'attend à ce qu'une erreur 302 soit renvoyée, et à
         # ce qu'un message d'erreur précise à l'utilisateur qu'il
@@ -196,7 +233,7 @@ class TestHistoryTable(TestController):
             '//div[@id="flash"]/div[@class="error"]')))
 
         # L'utilisateur a les bonnes permissions.
-        environ = {'REMOTE_USER': 'manager'}
+        environ = {'REMOTE_USER': 'access'}
         
         # On s'attend à ce que le statut de la requête soit 200.
         response = self.app.get(

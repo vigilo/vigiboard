@@ -9,11 +9,43 @@ from datetime import datetime
 import transaction
 
 from vigilo.models.session import DBSession
-from vigilo.models.tables import Event, EventHistory, CorrEvent, \
-                            Permission, StateName, Host, \
-                            LowLevelService, SupItemGroup
+from vigilo.models.tables import Event, EventHistory, CorrEvent, User, \
+                            Permission, StateName, Host, UserGroup, \
+                            LowLevelService, SupItemGroup, DataPermission
 from vigilo.models.tables.grouphierarchy import GroupHierarchy
 from vigiboard.tests import TestController
+
+def populate_accounts():
+        perm = Permission.by_permission_name(u'vigiboard-access')
+
+        user = User(
+            user_name=u'access',
+            fullname=u'',
+            email=u'user.has@access',
+        )
+        usergroup = UserGroup(
+            group_name=u'users_with_access',
+        )
+        usergroup.permissions.append(perm)
+        user.usergroups.append(usergroup)
+        DBSession.add(user)
+        DBSession.add(usergroup)
+        DBSession.flush()
+
+        user = User(
+            user_name=u'limited_access',
+            fullname=u'',
+            email=u'user.has.no@access',
+        )
+        usergroup = UserGroup(
+            group_name=u'users_with_limited_access',
+        )
+        usergroup.permissions.append(perm)
+        user.usergroups.append(usergroup)
+        DBSession.add(user)
+        DBSession.add(usergroup)
+        DBSession.flush()
+        transaction.commit()
 
 def populate_DB(caused_by_service):
     """ Peuple la base de données. """
@@ -29,9 +61,12 @@ def populate_DB(caused_by_service):
     ))
     DBSession.flush()
 
-    # On ajoute la permission 'manage' à ces deux groupes.
-    manage_perm = Permission.by_permission_name(u'manage')
-    supitemmanagers.permissions.append(manage_perm)
+    usergroup = UserGroup.by_group_name(u'users_with_access')
+    DBSession.add(DataPermission(
+        group=supitemmanagers,
+        usergroup=usergroup,
+        access=u'r',
+    ))
     DBSession.flush()
 
     # On crée un hôte de test, et on l'ajoute au groupe d'hôtes.
@@ -141,6 +176,10 @@ class TestRawEventsTableAnonymousLLS(TestController):
     """
     test_service = True
 
+    def setUp(self):
+        super(TestRawEventsTableAnonymousLLS, self).setUp()
+        populate_accounts()
+
     def test_table(self):
         """Événements masqués d'un agrégat sur un LLS en anonyme."""
         # On peuple la BDD avec un hôte, un service de bas niveau,
@@ -172,6 +211,10 @@ class TestRawEventsTableWithoutPermsLLS(TestController):
     """
     test_service = True
 
+    def setUp(self):
+        super(TestRawEventsTableWithoutPermsLLS, self).setUp()
+        populate_accounts()
+
     def test_table(self):
         """Événements masqués d'un agrégat sur un LLS sans permissions."""
         # On peuple la BDD avec un hôte, un service de bas niveau,
@@ -179,7 +222,7 @@ class TestRawEventsTableWithoutPermsLLS(TestController):
         idcorrevent = populate_DB(self.test_service)
         transaction.commit()
 
-        environ = {'REMOTE_USER': 'editor'}
+        environ = {'REMOTE_USER': 'limited_access'}
 
         # On s'attend à ce qu'une erreur 302 soit renvoyée, et à
         # ce qu'un message d'erreur précise à l'utilisateur qu'il
@@ -221,6 +264,10 @@ class TestRawEventsTableWithPermsLLS(TestController):
     """
     test_service = True
 
+    def setUp(self):
+        super(TestRawEventsTableWithPermsLLS, self).setUp()
+        populate_accounts()
+
     def test_table(self):
         """Événements masqués d'un agrégat sur un LLS avec permissions."""
         # On peuple la BDD avec un hôte, un service de bas niveau,
@@ -228,7 +275,7 @@ class TestRawEventsTableWithPermsLLS(TestController):
         idcorrevent = populate_DB(True)
         transaction.commit()
 
-        environ = {'REMOTE_USER': 'manager'}
+        environ = {'REMOTE_USER': 'access'}
 
         # On s'attend à ce qu'une erreur 302 soit renvoyée, et à
         # ce qu'un message d'erreur précise à l'utilisateur qu'il

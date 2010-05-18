@@ -10,7 +10,8 @@ from vigiboard.tests import TestController
 from vigilo.models.session import DBSession
 from vigilo.models.tables import SupItemGroup, Host, Permission, \
                                     StateName, LowLevelService, \
-                                    Event, CorrEvent
+                                    Event, CorrEvent, User, UserGroup, \
+                                    DataPermission
 from vigilo.models.tables.grouphierarchy import GroupHierarchy
 
 def insert_deps():
@@ -92,6 +93,22 @@ def insert_deps():
 
 class TestSearchFormService(TestController):
     """Teste la récupération d'événements selon le groupe de services."""
+    def setUp(self):
+        super(TestSearchFormService, self).setUp()
+        perm = Permission.by_permission_name(u'vigiboard-access')
+        user = User(
+            user_name=u'user',
+            fullname=u'',
+            email=u'some.random@us.er',
+        )
+        usergroup = UserGroup(
+            group_name=u'users',
+        )
+        user.usergroups.append(usergroup)
+        usergroup.permissions.append(perm)
+        DBSession.add(user)
+        DBSession.add(usergroup)
+        DBSession.flush()
 
     def test_search_service_when_allowed_by_host(self):
         """
@@ -103,17 +120,19 @@ class TestSearchFormService(TestController):
         # à un groupe d'hôtes pour lesquels l'utilisateur
         # a les permissions.
         hostgroup = insert_deps()[0]
-        print "Adding permission for 'editor' on host group '%s'" % \
-            hostgroup.name
-        edit = Permission.by_permission_name(u'edit')
-        edit.supitemgroups.append(hostgroup)
+        usergroup = UserGroup.by_group_name(u'users')
+        DBSession.add(DataPermission(
+            group=hostgroup,
+            usergroup=usergroup,
+            access=u'r',
+        ))
         DBSession.flush()
         transaction.commit()
 
         # On envoie une requête avec recherche sur le service créé,
         # on s'attend à recevoir 1 résultat.
         response = self.app.get('/?service=baz',
-            extra_environ={'REMOTE_USER': 'editor'})
+            extra_environ={'REMOTE_USER': 'user'})
 
         # Il doit y avoir 1 seule ligne de résultats.
         rows = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr')
@@ -135,17 +154,19 @@ class TestSearchFormService(TestController):
         # Le service est rattaché à un groupe de services
         # pour lesquel l'utilisateur a les permissions.
         servicegroup = insert_deps()[1]
-        print "Adding permission for 'editor' on service group '%s'" % \
-            servicegroup.name
-        edit = Permission.by_permission_name(u'edit')
-        edit.supitemgroups.append(servicegroup)
+        usergroup = UserGroup.by_group_name(u'users')
+        DBSession.add(DataPermission(
+            group=servicegroup,
+            usergroup=usergroup,
+            access=u'r',
+        ))
         DBSession.flush()
         transaction.commit()
 
         # On envoie une requête avec recherche sur le service créé,
         # on s'attend à recevoir 1 résultat.
         response = self.app.get('/?service=baz',
-            extra_environ={'REMOTE_USER': 'editor'})
+            extra_environ={'REMOTE_USER': 'user'})
 
         # Il doit y avoir 1 seule ligne de résultats.
         rows = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr')
@@ -159,10 +180,11 @@ class TestSearchFormService(TestController):
 
     def test_search_inexistent_service(self):
         """Teste la recherche par service sur un service inexistant."""
+        transaction.commit()
         # On envoie une requête avec recherche sur un service
         # qui n'existe pas, on s'attend à n'obtenir aucun résultat.
         response = self.app.get('/?service=bad',
-            extra_environ={'REMOTE_USER': 'editor'})
+            extra_environ={'REMOTE_USER': 'user'})
 
         # Il doit y avoir 1 seule ligne de résultats.
         rows = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr')
@@ -185,7 +207,7 @@ class TestSearchFormService(TestController):
         # mais avec un utilisateur ne disposant pas des permissions adéquates.
         # On s'attend à n'obtenir aucun résultat.
         response = self.app.get('/?service=baz',
-            extra_environ={'REMOTE_USER': 'editor'})
+            extra_environ={'REMOTE_USER': 'user'})
 
         # Il doit y avoir 1 seule ligne de résultats.
         rows = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr')

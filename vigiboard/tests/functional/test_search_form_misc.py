@@ -10,7 +10,8 @@ import transaction
 from vigiboard.tests import TestController
 from vigilo.models.session import DBSession
 from vigilo.models.tables import SupItemGroup, Host, Permission, \
-                                   Event, CorrEvent, StateName
+                                    Event, CorrEvent, StateName, \
+                                    User, UserGroup, DataPermission
 from vigilo.models.tables.grouphierarchy import GroupHierarchy
 
 def insert_deps():
@@ -65,15 +66,36 @@ def insert_deps():
     DBSession.add(correvent)
     DBSession.flush()
 
-    # On attribut les permissions.
-    manage = Permission.by_permission_name(u'manage')
-    manage.supitemgroups.append(hostgroup)
+    # On donne l'accès aux données.
+    usergroup = UserGroup.by_group_name(u'users')
+    DBSession.add(DataPermission(
+        group=hostgroup,
+        usergroup=usergroup,
+        access=u'r',
+    ))
     DBSession.flush()
     return timestamp
 
 
 class TestSearchFormMisc(TestController):
     """Teste la récupération d'événements selon le nom d'hôte."""
+    def setUp(self):
+        super(TestSearchFormMisc, self).setUp()
+        perm = Permission.by_permission_name(u'vigiboard-access')
+        user = User(
+            user_name=u'user',
+            fullname=u'',
+            email=u'some.random@us.er',
+        )
+        usergroup = UserGroup(
+            group_name=u'users',
+        )
+        user.usergroups.append(usergroup)
+        usergroup.permissions.append(perm)
+        DBSession.add(user)
+        DBSession.add(usergroup)
+        DBSession.flush()
+
     def test_search_by_output(self):
         """Teste la recherche sur le message issu de Nagios."""
         insert_deps()
@@ -82,7 +104,7 @@ class TestSearchFormMisc(TestController):
         # Permet également de vérifier que la recherche est
         # insensible à la casse.
         response = self.app.get('/?output=hello',
-            extra_environ={'REMOTE_USER': 'manager'})
+            extra_environ={'REMOTE_USER': 'user'})
 
         # Il doit y avoir 1 seule ligne de résultats.
         rows = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr')
@@ -102,7 +124,7 @@ class TestSearchFormMisc(TestController):
         # Permet également de vérifier que la recherche est
         # insensible à la casse.
         response = self.app.get('/?trouble_ticket=bar',
-            extra_environ={'REMOTE_USER': 'manager'})
+            extra_environ={'REMOTE_USER': 'user'})
         transaction.commit()
 
         # Il doit y avoir 1 seule ligne de résultats.
@@ -135,7 +157,7 @@ class TestSearchFormMisc(TestController):
                 'from_date': from_date,
                 'to_date': to_date,
             },
-            extra_environ={'REMOTE_USER': 'manager'})
+            extra_environ={'REMOTE_USER': 'user'})
         transaction.commit()
 
         # Il doit y avoir 1 seule ligne de résultats.

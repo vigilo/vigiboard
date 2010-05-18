@@ -16,9 +16,9 @@ from time import mktime
 import transaction
 
 from vigilo.models.session import DBSession
-from vigilo.models.tables import Event, EventHistory, CorrEvent, \
-                            Permission, StateName, Host, \
-                            SupItemGroup, LowLevelService
+from vigilo.models.tables import Event, EventHistory, CorrEvent, User, \
+                            Permission, StateName, Host, UserGroup, \
+                            SupItemGroup, LowLevelService, DataPermission
 from vigilo.models.tables.grouphierarchy import GroupHierarchy
 from vigiboard.tests import TestController
 
@@ -36,9 +36,12 @@ def populate_DB():
     ))
     DBSession.flush()
 
-    # On ajoute la permission 'manage' à ces deux groupes.
-    manage_perm = Permission.by_permission_name(u'manage')
-    supitemmanagers.permissions.append(manage_perm)
+    usergroup = UserGroup.by_group_name(u'users_with_access')
+    DBSession.add(DataPermission(
+        group=supitemmanagers,
+        usergroup=usergroup,
+        access=u'w',
+    ))
     DBSession.flush()
 
     # On crée un 2 hôtes, et on les ajoute au groupe d'hôtes.
@@ -122,6 +125,41 @@ def add_correvent_caused_by(supitem, timestamp,
 
 class TestRootController(TestController):
     """ Classe de test du root controller """
+    def setUp(self):
+        super(TestRootController, self).setUp()
+        perm = Permission.by_permission_name(u'vigiboard-access')
+        perm2 = Permission.by_permission_name(u'vigiboard-update')
+
+        user = User(
+            user_name=u'access',
+            fullname=u'',
+            email=u'user.has@access',
+        )
+        usergroup = UserGroup(
+            group_name=u'users_with_access',
+        )
+        usergroup.permissions.append(perm)
+        usergroup.permissions.append(perm2)
+        user.usergroups.append(usergroup)
+        DBSession.add(user)
+        DBSession.add(usergroup)
+        DBSession.flush()
+
+        user = User(
+            user_name=u'limited_access',
+            fullname=u'',
+            email=u'user.has.no@access',
+        )
+        usergroup = UserGroup(
+            group_name=u'users_with_limited_access',
+        )
+        usergroup.permissions.append(perm)
+        usergroup.permissions.append(perm2)
+        user.usergroups.append(usergroup)
+        DBSession.add(user)
+        DBSession.add(usergroup)
+        DBSession.flush()
+
     def test_index(self):
         """Test that access to the root webpage is restricted."""
 
@@ -153,8 +191,8 @@ class TestRootController(TestController):
             }, status = 401)
         
         ### 2ème cas : L'utilisateur utilisé pour
-        # se connecter à Vigiboard est 'editor'.
-        environ = {'REMOTE_USER': 'editor'}
+        # se connecter à Vigiboard est 'limited_access'.
+        environ = {'REMOTE_USER': 'limited_access'}
         
         # On s'attend à ce qu'une erreur 302 soit renvoyée, et à
         # ce qu'un message d'erreur précise à l'utilisateur qu'il
@@ -172,8 +210,8 @@ class TestRootController(TestController):
             '//div[@id="flash"]/div[@class="error"]'))
 
         ### 3ème cas : L'utilisateur utilisé pour
-        # se connecter à Vigiboard est 'manager'.
-        environ = {'REMOTE_USER': 'manager'}
+        # se connecter à Vigiboard est 'access'.
+        environ = {'REMOTE_USER': 'access'}
         
         # On s'attend à ce que le statut de la requête soit 302,
         # et à ce qu'un message informe l'utilisateur que les
@@ -227,8 +265,8 @@ class TestRootController(TestController):
             }, status = 401)
         
         ### 2ème cas : L'utilisateur utilisé pour
-        # se connecter à Vigiboard est 'editor'.
-        environ = {'REMOTE_USER': 'editor'}
+        # se connecter à Vigiboard est 'limited_access'.
+        environ = {'REMOTE_USER': 'limited_access'}
         
         # On s'attend à ce qu'une erreur 302 soit renvoyée, et à
         # ce qu'un message d'erreur précise à l'utilisateur qu'il
@@ -246,8 +284,8 @@ class TestRootController(TestController):
             '//div[@id="flash"]/div[@class="error"]'))
 
         ### 3ème cas : L'utilisateur utilisé pour
-        # se connecter à Vigiboard est 'manager'.
-        environ = {'REMOTE_USER': 'manager'}
+        # se connecter à Vigiboard est 'access'.
+        environ = {'REMOTE_USER': 'access'}
         
         # On s'attend à ce que le statut de la requête soit 302,
         # et à ce qu'un message informe l'utilisateur que les
@@ -299,8 +337,8 @@ class TestRootController(TestController):
             }, status = 401)
         
         ### 2ème cas : L'utilisateur utilisé pour
-        # se connecter à Vigiboard est 'editor'.
-        environ = {'REMOTE_USER': 'editor'}
+        # se connecter à Vigiboard est 'limited_access'.
+        environ = {'REMOTE_USER': 'limited_access'}
         
         # On s'attend à ce qu'une erreur 302 soit renvoyée, et à
         # ce qu'un message d'erreur précise à l'utilisateur qu'il
@@ -318,8 +356,8 @@ class TestRootController(TestController):
             '//div[@id="flash"]/div[@class="error"]'))
 
         ### 3ème cas : L'utilisateur utilisé pour
-        # se connecter à Vigiboard est 'manager'.
-        environ = {'REMOTE_USER': 'manager'}
+        # se connecter à Vigiboard est 'access'.
+        environ = {'REMOTE_USER': 'access'}
         
         # On s'attend à ce que le statut de la requête soit 302,
         # et à ce qu'un message informe l'utilisateur que les
@@ -373,8 +411,8 @@ class TestRootController(TestController):
             }, status = 401)
         
         ### 2ème cas : L'utilisateur utilisé pour
-        # se connecter à Vigiboard est 'editor'.
-        environ = {'REMOTE_USER': 'editor'}
+        # se connecter à Vigiboard est 'limited_access'.
+        environ = {'REMOTE_USER': 'limited_access'}
         
         # On s'attend à ce qu'une erreur 302 soit renvoyée, et à
         # ce qu'un message d'erreur précise à l'utilisateur qu'il
@@ -392,8 +430,8 @@ class TestRootController(TestController):
             '//div[@id="flash"]/div[@class="error"]'))
 
         ### 3ème cas : L'utilisateur utilisé pour
-        # se connecter à Vigiboard est 'manager'.
-        environ = {'REMOTE_USER': 'manager'}
+        # se connecter à Vigiboard est 'access'.
+        environ = {'REMOTE_USER': 'access'}
         
         # On s'attend à ce que le statut de la requête soit 302,
         # et à ce qu'un message informe l'utilisateur que les
@@ -452,8 +490,8 @@ class TestRootController(TestController):
         
         transaction.commit()
         
-        # L'utilisateur utilisé pour se connecter à Vigiboard est 'manager'.
-        environ = {'REMOTE_USER': 'manager'}
+        # L'utilisateur utilisé pour se connecter à Vigiboard est 'access'.
+        environ = {'REMOTE_USER': 'access'}
         
         # On s'attend à ce que le statut de la requête soit 302, et
         # à ce qu'un message d'erreur avise l'utilisateur que des

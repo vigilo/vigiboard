@@ -9,9 +9,9 @@ import transaction
 
 from vigiboard.tests import TestController
 from vigilo.models.session import DBSession
-from vigilo.models.tables import SupItemGroup, \
-                            Host, Permission, StateName, \
-                            LowLevelService, Event, CorrEvent
+from vigilo.models.tables import SupItemGroup, User, UserGroup, \
+                            Permission, DataPermission, StateName, \
+                            LowLevelService, Event, CorrEvent, Host
 from vigilo.models.tables.grouphierarchy import GroupHierarchy
 
 def insert_deps(return_service):
@@ -101,23 +101,64 @@ def insert_deps(return_service):
     DBSession.add(correvent)
     DBSession.flush()
 
+    usergroup = UserGroup.by_group_name(u'users_with_access')
+    DBSession.add(DataPermission(
+        usergroup=usergroup,
+        group=hostgroup,
+        access=u'r',
+    ))
+    DBSession.flush()
+
+    transaction.commit()
+    correvent = DBSession.query(CorrEvent).first()
+    event = DBSession.query(Event).first()
+
     return (hostgroup, correvent.idcorrevent, event.idevent)
 
 class TestDetailsPlugin(TestController):
     """Teste le dialogue pour l'accès aux historiques."""
+    def setUp(self):
+        super(TestDetailsPlugin, self).setUp()
+        perm = Permission.by_permission_name(u'vigiboard-access')
+
+        user = User(
+            user_name=u'access',
+            fullname=u'',
+            email=u'user.has@access',
+        )
+        usergroup = UserGroup(
+            group_name=u'users_with_access',
+        )
+        usergroup.permissions.append(perm)
+        user.usergroups.append(usergroup)
+        DBSession.add(user)
+        DBSession.add(usergroup)
+        DBSession.flush()
+
+        user = User(
+            user_name=u'no_access',
+            fullname=u'',
+            email=u'user.has.no@access',
+        )
+        usergroup = UserGroup(
+            group_name=u'users_without_access',
+        )
+        usergroup.permissions.append(perm)
+        user.usergroups.append(usergroup)
+        DBSession.add(user)
+        DBSession.add(usergroup)
+        DBSession.flush()
+
+        transaction.commit()
 
     def test_details_plugin_LLS_alert_when_allowed(self):
         """Dialogue des détails avec un LLS et les bons droits."""
         hostgroup, idcorrevent, idcause = insert_deps(True)
-        manage = Permission.by_permission_name(u'manage')
-        manage.supitemgroups.append(hostgroup)
-        DBSession.flush()
-        transaction.commit()
 
         response = self.app.post('/get_plugin_value', {
                 'idcorrevent': idcorrevent,
                 'plugin_name': 'details',
-            }, extra_environ={'REMOTE_USER': 'manager'})
+            }, extra_environ={'REMOTE_USER': 'access'})
         json = response.json
 
         # Le contenu de "eventdetails" varie facilement.
@@ -138,15 +179,11 @@ class TestDetailsPlugin(TestController):
     def test_details_plugin_host_alert_when_allowed(self):
         """Dialogue des détails avec un hôte et les bons droits."""
         hostgroup, idcorrevent, idcause = insert_deps(False)
-        manage = Permission.by_permission_name(u'manage')
-        manage.supitemgroups.append(hostgroup)
-        DBSession.flush()
-        transaction.commit()
 
         response = self.app.post('/get_plugin_value', {
                 'idcorrevent': idcorrevent,
                 'plugin_name': 'details',
-            }, extra_environ={'REMOTE_USER': 'manager'})
+            }, extra_environ={'REMOTE_USER': 'access'})
         json = response.json
 
         # Le contenu de "eventdetails" varie facilement.
@@ -168,8 +205,6 @@ class TestDetailsPlugin(TestController):
     def test_details_plugin_LLS_when_forbidden(self):
         """Dialogue des détails avec un LLS et des droits insuffisants."""
         idcorrevent = insert_deps(True)[1]
-        DBSession.flush()
-        transaction.commit()
 
         # Le contrôleur renvoie une erreur 404 (HTTPNotFound)
         # lorsque l'utilisateur n'a pas les permissions nécessaires sur
@@ -177,14 +212,12 @@ class TestDetailsPlugin(TestController):
         self.app.post('/get_plugin_value', {
                 'idcorrevent': idcorrevent,
                 'plugin_name': 'details',
-            }, extra_environ={'REMOTE_USER': 'editor'},
+            }, extra_environ={'REMOTE_USER': 'no_access'},
             status=404)
 
     def test_details_plugin_host_when_forbidden(self):
         """Dialogue des détails avec un hôte et des droits insuffisants."""
         idcorrevent = insert_deps(False)[1]
-        DBSession.flush()
-        transaction.commit()
 
         # Le contrôleur renvoie une erreur 404 (HTTPNotFound)
         # lorsque l'utilisateur n'a pas les permissions nécessaires sur
@@ -192,14 +225,12 @@ class TestDetailsPlugin(TestController):
         self.app.post('/get_plugin_value', {
                 'idcorrevent': idcorrevent,
                 'plugin_name': 'details',
-            }, extra_environ={'REMOTE_USER': 'editor'},
+            }, extra_environ={'REMOTE_USER': 'no_access'},
             status=404)
 
     def test_details_plugin_LLS_anonymous(self):
         """Dialogue des détails avec un LLS et en anonyme."""
         idcorrevent = insert_deps(True)[1]
-        DBSession.flush()
-        transaction.commit()
 
         # Le contrôleur renvoie une erreur 401 (HTTPUnauthorized)
         # lorsque l'utilisateur n'est pas authentifié.
@@ -211,8 +242,6 @@ class TestDetailsPlugin(TestController):
     def test_details_plugin_host_anonymous(self):
         """Dialogue des détails avec un hôte et en anonyme."""
         idcorrevent = insert_deps(False)[1]
-        DBSession.flush()
-        transaction.commit()
 
         # Le contrôleur renvoie une erreur 401 (HTTPUnauthorized)
         # lorsque l'utilisateur n'est pas authentifié.

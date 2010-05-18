@@ -9,9 +9,9 @@ from datetime import datetime
 import transaction
 
 from vigilo.models.session import DBSession
-from vigilo.models.tables import Event, CorrEvent, \
+from vigilo.models.tables import Event, CorrEvent, DataPermission, \
                             Permission, StateName, Host, SupItemGroup, \
-                            LowLevelService
+                            LowLevelService, User, UserGroup, Permission
 from vigilo.models.tables.grouphierarchy import GroupHierarchy
 from vigiboard.tests import TestController
 
@@ -41,11 +41,24 @@ def populate_DB():
     ))
     DBSession.flush()
 
-    manage_perm = Permission.by_permission_name(u'manage')
-    edit_perm = Permission.by_permission_name(u'edit')
+    usergroup = UserGroup.by_group_name(u'users_with_access')
+    DBSession.add(DataPermission(
+        group=hostmanagers,
+        usergroup=usergroup,
+        access=u'r',
+    ))
+    DBSession.add(DataPermission(
+        group=hosteditors,
+        usergroup=usergroup,
+        access=u'r',
+    ))
 
-    hostmanagers.permissions.append(manage_perm)
-    hosteditors.permissions.append(edit_perm)
+    usergroup = UserGroup.by_group_name(u'users_with_limited_access')
+    DBSession.add(DataPermission(
+        group=hosteditors,
+        usergroup=usergroup,
+        access=u'r',
+    ))
     DBSession.flush()
 
     # Création des hôtes de test.
@@ -161,18 +174,50 @@ class TestEventTable(TestController):
     """
     Test du tableau d'événements de Vigiboard
     """
+    def setUp(self):
+        super(TestEventTable, self).setUp()
+        perm = Permission.by_permission_name(u'vigiboard-access')
+
+        user = User(
+            user_name=u'access',
+            fullname=u'',
+            email=u'user.has@access',
+        )
+        usergroup = UserGroup(
+            group_name=u'users_with_access',
+        )
+        usergroup.permissions.append(perm)
+        user.usergroups.append(usergroup)
+        DBSession.add(user)
+        DBSession.add(usergroup)
+        DBSession.flush()
+
+        user = User(
+            user_name=u'limited_access',
+            fullname=u'',
+            email=u'user.has.no@access',
+        )
+        usergroup = UserGroup(
+            group_name=u'users_with_limited_access',
+        )
+        usergroup.permissions.append(perm)
+        user.usergroups.append(usergroup)
+        DBSession.add(user)
+        DBSession.add(usergroup)
+        DBSession.flush()
+
+        populate_DB()
+
 
     def test_homepage(self):
         """
         Tableau des événements (page d'accueil).
         """
-        populate_DB()
-
         # L'utilisateur n'est pas authentifié.
         response = self.app.get('/', status=401)
 
         # L'utilisateur est authentifié avec des permissions réduites.
-        environ = {'REMOTE_USER': 'editor'}
+        environ = {'REMOTE_USER': 'limited_access'}
         response = self.app.get('/', extra_environ=environ)
 
         # Il doit y avoir 2 lignes de résultats.
@@ -186,7 +231,7 @@ class TestEventTable(TestController):
         assert_true(len(cols) > 1)
 
         # L'utilisateur est authentifié avec des permissions plus étendues.
-        environ = {'REMOTE_USER': 'manager'}
+        environ = {'REMOTE_USER': 'access'}
         response = self.app.get('/', extra_environ=environ)
 
         # Il doit y avoir 4 lignes de résultats.
@@ -203,7 +248,6 @@ class TestEventTable(TestController):
         """
         Tableau des événements corrélés pour un service de bas niveau.
         """
-        populate_DB()
         url = '/item/1/%s/%s' % ('managerhost', 'managerservice')
 
         # L'utilisateur n'est pas authentifié.
@@ -212,7 +256,7 @@ class TestEventTable(TestController):
         # L'utilisateur dispose de permissions restreintes.
         # Il n'a pas accès aux événements corrélés sur le service donné.
         # Donc, on s'attend à être redirigé avec un message d'erreur.
-        environ = {'REMOTE_USER': 'editor'}
+        environ = {'REMOTE_USER': 'limited_access'}
         response = self.app.get(url, extra_environ=environ, status=302)
         response = response.follow(status = 200, extra_environ = environ)
         assert_true(len(response.lxml.xpath(
@@ -221,7 +265,7 @@ class TestEventTable(TestController):
         # L'utilisateur dispose de permissions plus étendues.
         # Il doit avoir accès à l'historique.
         # Ici, il n'y a qu'un seul événement corrélé pour ce service.
-        environ = {'REMOTE_USER': 'manager'}
+        environ = {'REMOTE_USER': 'access'}
         response = self.app.get(url, extra_environ=environ, status=200)
 
         # Il doit y avoir 1 ligne de résultats.
@@ -233,7 +277,6 @@ class TestEventTable(TestController):
         """
         Tableau des événements corrélés pour un hôte.
         """
-        populate_DB()
         url = '/item/1/%s/' % ('managerhost', )
 
         # L'utilisateur n'est pas authentifié.
@@ -242,7 +285,7 @@ class TestEventTable(TestController):
         # L'utilisateur dispose de permissions restreintes.
         # Il n'a pas accès aux événements corrélés sur le service donné.
         # Donc, on s'attend à être redirigé avec un message d'erreur.
-        environ = {'REMOTE_USER': 'editor'}
+        environ = {'REMOTE_USER': 'limited_access'}
         response = self.app.get(url, extra_environ=environ, status=302)
         response = response.follow(status = 200, extra_environ = environ)
         assert_true(len(response.lxml.xpath(
@@ -251,7 +294,7 @@ class TestEventTable(TestController):
         # L'utilisateur dispose de permissions plus étendues.
         # Il doit avoir accès à l'historique.
         # Ici, il n'y a qu'un seul événement corrélé pour ce service.
-        environ = {'REMOTE_USER': 'manager'}
+        environ = {'REMOTE_USER': 'access'}
         response = self.app.get(url, extra_environ=environ, status=200)
 
         # Il doit y avoir 1 ligne de résultats.

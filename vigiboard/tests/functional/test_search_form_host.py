@@ -9,7 +9,8 @@ import transaction
 from vigiboard.tests import TestController
 from vigilo.models.session import DBSession
 from vigilo.models.tables import SupItemGroup, Host, Permission, \
-                                    Event, CorrEvent, StateName
+                                    Event, CorrEvent, StateName, \
+                                    User, UserGroup, DataPermission
 from vigilo.models.tables.grouphierarchy import GroupHierarchy
 
 def insert_deps():
@@ -71,6 +72,22 @@ def insert_deps():
 
 class TestSearchFormHost(TestController):
     """Teste la récupération d'événements selon le nom d'hôte."""
+    def setUp(self):
+        super(TestSearchFormHost, self).setUp()
+        perm = Permission.by_permission_name(u'vigiboard-access')
+        user = User(
+            user_name=u'user',
+            fullname=u'',
+            email=u'some.random@us.er',
+        )
+        usergroup = UserGroup(
+            group_name=u'users',
+        )
+        user.usergroups.append(usergroup)
+        usergroup.permissions.append(perm)
+        DBSession.add(user)
+        DBSession.add(usergroup)
+        DBSession.flush()
 
     def test_search_host_when_allowed(self):
         """Teste la recherche par hôte avec les bons droits."""
@@ -78,15 +95,19 @@ class TestSearchFormHost(TestController):
         # L'hôte est rattaché à un groupe d'hôtes
         # pour lesquel l'utilisateur a les permissions.
         hostgroup = insert_deps()
-        edit = Permission.by_permission_name(u'edit')
-        edit.supitemgroups.append(hostgroup)
+        usergroup = UserGroup.by_group_name(u'users')
+        DBSession.add(DataPermission(
+            group=hostgroup,
+            usergroup=usergroup,
+            access=u'r',
+        ))
         DBSession.flush()
         transaction.commit()
 
         # On envoie une requête avec recherche sur l'hôte créé,
         # on s'attend à recevoir 1 résultat.
         response = self.app.get('/?host=bar',
-            extra_environ={'REMOTE_USER': 'editor'})
+            extra_environ={'REMOTE_USER': 'user'})
 
         # Il doit y avoir 1 seule ligne de résultats.
         rows = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr')
@@ -102,8 +123,9 @@ class TestSearchFormHost(TestController):
         """Teste la recherche par hôte sur un hôte inexistant."""
         # On envoie une requête avec recherche sur un hôte
         # qui n'existe pas, on s'attend à n'obtenir aucun résultat.
+        transaction.commit()
         response = self.app.get('/?host=bad',
-            extra_environ={'REMOTE_USER': 'editor'})
+            extra_environ={'REMOTE_USER': 'user'})
 
         # Il doit y avoir 1 seule ligne de résultats.
         rows = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr')
@@ -127,7 +149,7 @@ class TestSearchFormHost(TestController):
         # mais avec un utilisateur ne disposant pas des permissions adéquates.
         # On s'attend à n'obtenir aucun résultat.
         response = self.app.get('/?host=bar',
-            extra_environ={'REMOTE_USER': 'editor'})
+            extra_environ={'REMOTE_USER': 'user'})
 
         # Il doit y avoir 1 seule ligne de résultats.
         rows = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr')
