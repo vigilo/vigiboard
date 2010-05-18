@@ -58,7 +58,6 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_sysconfdir}/vigilo
 %config(noreplace) %{_sysconfdir}/vigilo/%{module}
 %{_sysconfdir}/httpd/conf/webapps.d/%{module}.conf
-%{_bindir}/*
 %{python_sitelib}/*
 
 
