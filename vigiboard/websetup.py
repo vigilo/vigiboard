@@ -15,6 +15,16 @@ def populate_db(bind):
     from vigilo.models.session import DBSession
     from vigilo.models import tables
 
+    print "Testing whether VigiBoard was already installed"
+    installed = DBSession.query(
+            tables.Permission.permission_name
+        ).filter(tables.Permission.permission_name == u'vigiboard-access'
+        ).scalar()
+
+    if installed:
+        print "VigiGraph has already been installed"
+        return
+
     DBSession.add(tables.Permission(
         permission_name=u'vigiboard-access',
         description=u'Gives access to VigiBoard',
