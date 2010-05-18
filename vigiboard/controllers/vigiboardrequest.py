@@ -58,7 +58,7 @@ class VigiboardRequest():
         lang = lang.replace('_', '-')
         lang = lang.split('-')[0]
 
-        self.user_groups = user.supitemgroups(False)
+        self.user_groups = [ug[0] for ug in user.supitemgroups() if ug[1]]
         self.lang = lang
         self.generaterq = False
 
@@ -423,7 +423,7 @@ class VigiboardRequest():
         tmpl_context.calendar_date_format = _('%Y-%m-%d %I:%M:%S %p')
 
         tmpl_context.edit_event_form = EditEventForm("edit_event_form",
-            submit_text=l_('Apply'), action=url('/update'))
+            submit_text=_('Apply'), action=url('/update'))
         tmpl_context.search_form = SearchForm("search_form",
-            submit_text=l_('Search'), action=url('/'))
+            submit_text=_('Search'), action=url('/'))
 

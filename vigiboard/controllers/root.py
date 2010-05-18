@@ -43,13 +43,13 @@ class RootController(VigiboardRootController):
     autocomplete = AutoCompleteController()
 
     # Prédicat pour la restriction de l'accès aux interfaces.
-    # L'utilisateur doit avoir la permission "vigiboard-read"
+    # L'utilisateur doit avoir la permission "vigiboard-access"
     # ou appartenir au groupe "managers" pour accéder à VigiBoard.
     access_restriction = All(
         not_anonymous(msg=l_("You need to be authenticated")),
         Any(in_group('managers'),
-            has_permission('vigiboard-read'),
-            msg=l_("You don't have read access to VigiBoard"))
+            has_permission('vigiboard-access'),
+            msg=l_("You don't have access to VigiBoard"))
     )
 
     def process_form_errors(self, *argv, **kwargv):
@@ -520,7 +520,7 @@ class RootController(VigiboardRootController):
         All(
             not_anonymous(msg=l_("You need to be authenticated")),
             Any(in_group('managers'),
-                has_permission('vigiboard-write'),
+                has_permission('vigiboard-update'),
                 msg=l_("You don't have write access to VigiBoard"))
         ))
     @expose()
