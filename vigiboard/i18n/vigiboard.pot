@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: vigiboard 2.0.0\n"
 "Report-Msgid-Bugs-To: contact@projet-vigilo.org\n"
-"POT-Creation-Date: 2010-04-23 11:48+0200\n"
+"POT-Creation-Date: 2010-05-18 17:16+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,110 +17,129 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 0.9.4\n"
 
+#: ../turbogears/src/vigilo/turbogears/helpers.py:66
+#, python-format
+msgid "Failed to get URL: %s"
+msgstr ""
+
+#: ../turbogears/src/vigilo/turbogears/helpers.py:75
+#, python-format
+msgid "Failed to convert DS %s on %s: value was %s (max: %s)"
+msgstr ""
+
 #: ../turbogears/src/vigilo/turbogears/controllers/error.py:26
 msgid "We're sorry but we weren't able to process this request."
 msgstr ""
 
-#: ../turbogears/src/vigilo/turbogears/controllers/proxy.py:98
+#: ../turbogears/src/vigilo/turbogears/controllers/proxy.py:97
 #, python-format
 msgid "No such monitored host: %s"
 msgstr ""
 
-#: ../turbogears/src/vigilo/turbogears/controllers/proxy.py:138
+#: ../turbogears/src/vigilo/turbogears/controllers/proxy.py:142
 #, python-format
 msgid "Access denied to host \"%(host)s\" and service \"%(service)s\""
 msgstr ""
 
-#: ../turbogears/src/vigilo/turbogears/controllers/proxy.py:144
+#: ../turbogears/src/vigilo/turbogears/controllers/proxy.py:148
 #, python-format
 msgid "Access denied to host \"%s\""
 msgstr ""
 
-#: ../turbogears/src/vigilo/turbogears/controllers/proxy.py:153
+#: ../turbogears/src/vigilo/turbogears/controllers/proxy.py:157
 #, python-format
 msgid "No %(server_type)s server configured to monitor \"%(host)s\""
 msgstr ""
 
-#: ../turbogears/src/vigilo/turbogears/controllers/proxy.py:193
-#: vigiboard/controllers/root.py:71 vigiboard/controllers/root.py:218
-#: vigiboard/controllers/root.py:324 vigiboard/controllers/root.py:413
-#: vigiboard/controllers/root.py:500 vigiboard/controllers/root.py:611
-msgid "You need to be authenticated"
-msgstr ""
-
-#: vigiboard/config/app_cfg.py:95
+#: vigiboard/config/app_cfg.py:86
 msgid "Never"
 msgstr ""
 
-#: vigiboard/config/app_cfg.py:96
+#: vigiboard/config/app_cfg.py:87
 msgid "30 seconds"
 msgstr ""
 
-#: vigiboard/config/app_cfg.py:97
+#: vigiboard/config/app_cfg.py:88
 msgid "1 minute"
 msgstr ""
 
-#: vigiboard/config/app_cfg.py:98
+#: vigiboard/config/app_cfg.py:89
 msgid "5 minutes"
 msgstr ""
 
-#: vigiboard/config/app_cfg.py:99
+#: vigiboard/config/app_cfg.py:90
 msgid "10 minutes"
+msgstr ""
+
+#: vigiboard/controllers/root.py:49 vigiboard/controllers/root.py:521
+msgid "You need to be authenticated"
+msgstr ""
+
+#: vigiboard/controllers/root.py:52
+msgid "You don't have access to VigiBoard"
 msgstr ""
 
 #. TRANSLATORS: Format de date et heure compatible Python/JavaScript.
 #. TRANSLATORS: Format de date et heure.
-#: vigiboard/controllers/root.py:152 vigiboard/controllers/root.py:164
-#: vigiboard/controllers/vigiboardrequest.py:413
-#: vigiboard/tests/functional/test_search_form_misc.py:127
-#: vigiboard/tests/functional/test_search_form_misc.py:129
+#: vigiboard/controllers/root.py:167 vigiboard/controllers/root.py:181
+#: vigiboard/controllers/vigiboardrequest.py:423
+#: vigiboard/tests/functional/test_search_form_misc.py:149
+#: vigiboard/tests/functional/test_search_form_misc.py:151
 #, python-format
 msgid "%Y-%m-%d %I:%M:%S %p"
 msgstr ""
 
-#: vigiboard/controllers/root.py:272
+#: vigiboard/controllers/root.py:291
 msgid "No masked event or access denied"
 msgstr ""
 
-#: vigiboard/controllers/root.py:355
+#: vigiboard/controllers/root.py:374
 msgid "No such event or access denied"
 msgstr ""
 
-#: vigiboard/controllers/root.py:443
+#: vigiboard/controllers/root.py:464
 msgid "No access to this host/service or no event yet"
 msgstr ""
 
-#: vigiboard/controllers/root.py:522
+#: vigiboard/controllers/root.py:524
+msgid "You don't have write access to VigiBoard"
+msgstr ""
+
+#: vigiboard/controllers/root.py:547
 msgid "No event has been selected"
 msgstr ""
 
-#: vigiboard/controllers/root.py:548
+#: vigiboard/controllers/root.py:573
 msgid ""
 "Changes have occurred since the page was last displayed, your changes HAVE "
 "NOT been saved."
 msgstr ""
 
-#: vigiboard/controllers/root.py:554
+#: vigiboard/controllers/root.py:579
 msgid "No access to this event"
 msgstr ""
 
-#: vigiboard/controllers/root.py:595
+#: vigiboard/controllers/root.py:610
+msgid "You don't have administrative access to VigiBoard"
+msgstr ""
+
+#: vigiboard/controllers/root.py:641
 msgid "Updated successfully"
 msgstr ""
 
-#: vigiboard/controllers/root.py:631
+#: vigiboard/controllers/root.py:678
 msgid "No such incident or insufficient permissions"
 msgstr ""
 
-#: vigiboard/controllers/root.py:636
+#: vigiboard/controllers/root.py:683
 msgid "No such plugin"
 msgstr ""
 
-#: vigiboard/controllers/root.py:646
+#: vigiboard/controllers/root.py:693
 msgid "Not a valid plugin"
 msgstr ""
 
-#: vigiboard/controllers/root.py:648
+#: vigiboard/controllers/root.py:695
 msgid "Plugin could not be loaded"
 msgstr ""
 
@@ -147,28 +166,40 @@ msgstr ""
 msgid "We hope to see you soon!"
 msgstr ""
 
-#: vigiboard/controllers/vigiboardrequest.py:209
+#: vigiboard/controllers/vigiboardrequest.py:219
 #, python-format
 msgid "No such plugin \"%s\""
 msgstr ""
 
-#: vigiboard/widgets/edit_event.py:18
+#: vigiboard/controllers/vigiboardrequest.py:426
+msgid "Apply"
+msgstr ""
+
+#: vigiboard/controllers/vigiboardrequest.py:428
+msgid "Search"
+msgstr ""
+
+#: vigiboard/widgets/edit_event.py:17
 msgid "No change"
 msgstr ""
 
-#: vigiboard/widgets/edit_event.py:19
+#: vigiboard/widgets/edit_event.py:18
 msgid "Change to None"
 msgstr ""
 
-#: vigiboard/widgets/edit_event.py:20
+#: vigiboard/widgets/edit_event.py:19
 msgid "Change to Acknowledged"
 msgstr ""
 
-#: vigiboard/widgets/edit_event.py:21
+#: vigiboard/widgets/edit_event.py:20
 msgid "Change to Closed"
 msgstr ""
 
-#: vigiboard/widgets/edit_event.py:38 vigiboard/widgets/search_form.py:32
+#: vigiboard/widgets/edit_event.py:21
+msgid "Force to Closed"
+msgstr ""
+
+#: vigiboard/widgets/edit_event.py:38 vigiboard/widgets/search_form.py:33
 msgid "Trouble Ticket"
 msgstr ""
 
@@ -180,39 +211,31 @@ msgstr ""
 msgid "Acknowledgement Status"
 msgstr ""
 
-#: vigiboard/widgets/edit_event.py:46
-msgid "Apply"
-msgstr ""
-
-#: vigiboard/widgets/search_form.py:28
+#: vigiboard/widgets/search_form.py:29
 msgid "Group"
 msgstr ""
 
-#: vigiboard/widgets/search_form.py:29
+#: vigiboard/widgets/search_form.py:30
 msgid "Host"
 msgstr ""
 
-#: vigiboard/widgets/search_form.py:30
+#: vigiboard/widgets/search_form.py:31
 msgid "Service"
 msgstr ""
 
-#: vigiboard/widgets/search_form.py:31
+#: vigiboard/widgets/search_form.py:32
 msgid "Output"
 msgstr ""
 
-#: vigiboard/widgets/search_form.py:34
+#: vigiboard/widgets/search_form.py:35
 msgid "From"
 msgstr ""
 
-#: vigiboard/widgets/search_form.py:35 vigiboard/widgets/search_form.py:39
+#: vigiboard/widgets/search_form.py:36 vigiboard/widgets/search_form.py:40
 msgid "Choose"
 msgstr ""
 
-#: vigiboard/widgets/search_form.py:38
+#: vigiboard/widgets/search_form.py:39
 msgid "To"
-msgstr ""
-
-#: vigiboard/widgets/search_form.py:43
-msgid "Search"
 msgstr ""
 
