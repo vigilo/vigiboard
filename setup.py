@@ -62,8 +62,8 @@ setup(
         'paste.app_install': [
             'main = pylons.util:PylonsInstaller',
         ],
-        'console_scripts': [
-            'vigiboard-init-db = vigiboard.websetup:init_db',
+        'vigilo.models': [
+            'populate_db = vigiboard.websetup:populate_db',
         ],
     },
     data_files=[
