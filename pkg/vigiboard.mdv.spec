@@ -20,6 +20,7 @@ Requires:   python >= 2.5
 Requires:   python-setuptools
 Requires:   vigilo-turbogears
 Requires:   python-tw.forms
+Requires:   apache-mod_wsgi
 
 Buildarch:  noarch
 
