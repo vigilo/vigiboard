@@ -43,9 +43,6 @@ base_config.sa_auth.post_logout_url = '/post_logout'
 # Settings specific to Vigiboard #
 ##################################
 
-# Vigiboard version
-base_config['vigilo_version'] = u'2.0-pre0.1'
-
 # Configuration des liens
 # Les elements suivants peuvent etre utilises dans la chaine de formatage :
 # - %(idcorrevent)d : identifiant de l'aggregat (alerte correlee)
