@@ -8,13 +8,13 @@
 
 #os.environ['PYTHON_EGG_CACHE'] = '/tmp/vigiboard/python-eggs'
 
-#from paste.script.util.logging_config import fileConfig
-#fileConfig(basedir + ini_file)
-
 import os.path
 ini_file = '/etc/vigilo/vigiboard/settings.ini'
 ini_file = os.path.join('/', *ini_file.split('/'))
 
 from paste.deploy import loadapp
 application = loadapp('config:%s' % ini_file)
+
+from paste.script.util.logging_config import fileConfig
+fileConfig(ini_file)
 

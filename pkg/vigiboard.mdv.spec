@@ -59,9 +59,8 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_sysconfdir}/vigilo
 %config(noreplace) %{_sysconfdir}/vigilo/%{module}
 %{_sysconfdir}/httpd/conf/webapps.d/%{module}.conf
+%config(noreplace) %{_sysconfdir}/logrotate.d/%{module}
+%dir %{_localstatedir}/log/vigilo/
+%attr(750,apache,apache) %{_localstatedir}/log/vigilo/%{module}
 %{python_sitelib}/*
 
-
-%changelog
-* Mon Feb 08 2010 Aurelien Bompard <aurelien.bompard@c-s.fr>
-- initial package
