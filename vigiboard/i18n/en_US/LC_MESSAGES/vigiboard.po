@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: vigiboard 2.0.0\n"
 "Report-Msgid-Bugs-To: contact@projet-vigilo.org\n"
-"POT-Creation-Date: 2010-05-18 17:16+0200\n"
-"PO-Revision-Date: 2010-05-18 17:22+0200\n"
+"POT-Creation-Date: 2010-06-10 09:56+0200\n"
+"PO-Revision-Date: 2010-06-10 09:56+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: en <LL@li.org>\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
@@ -51,23 +51,28 @@ msgstr "Access denied to host \"%s\""
 msgid "No %(server_type)s server configured to monitor \"%(host)s\""
 msgstr "No %(server_type)s server configured to monitor \"%(host)s\""
 
-#: vigiboard/config/app_cfg.py:86
+#: ../turbogears/src/vigilo/turbogears/controllers/proxy.py:180
+#, python-format
+msgid "Fetching '%s' through the proxy"
+msgstr "Fetching '%s' through the proxy"
+
+#: vigiboard/config/app_cfg.py:83
 msgid "Never"
 msgstr "Never"
 
-#: vigiboard/config/app_cfg.py:87
+#: vigiboard/config/app_cfg.py:84
 msgid "30 seconds"
 msgstr "30 seconds"
 
-#: vigiboard/config/app_cfg.py:88
+#: vigiboard/config/app_cfg.py:85
 msgid "1 minute"
 msgstr "1 minute"
 
-#: vigiboard/config/app_cfg.py:89
+#: vigiboard/config/app_cfg.py:86
 msgid "5 minutes"
 msgstr "5 minutes"
 
-#: vigiboard/config/app_cfg.py:90
+#: vigiboard/config/app_cfg.py:87
 msgid "10 minutes"
 msgstr "10 minutes"
 
