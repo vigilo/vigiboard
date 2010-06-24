@@ -132,30 +132,30 @@ class RootController(VigiboardRootController):
             aggregates.add_join((SupItemGroup, SupItemGroup.idgroup == \
                 aggregates.items.c.idsupitemgroup))
             aggregates.add_filter(
-                SupItemGroup.name.ilike('%%%s%%' % supitemgroup))
+                SupItemGroup.name.ilike('%s' % supitemgroup))
 
         if host:
             search['host'] = host
             host = sql_escape_like(host)
             aggregates.add_filter(aggregates.items.c.hostname.ilike(
-                '%%%s%%' % host))
+                '%s' % host))
 
         if service:
             search['service'] = service
             service = sql_escape_like(service)
             aggregates.add_filter(aggregates.items.c.servicename.ilike(
-                '%%%s%%' % service))
+                '%s' % service))
 
         if output:
             search['output'] = output
             output = sql_escape_like(output)
-            aggregates.add_filter(Event.message.ilike('%%%s%%' % output))
+            aggregates.add_filter(Event.message.ilike('%s' % output))
 
         if trouble_ticket:
             search['tt'] = trouble_ticket
             trouble_ticket = sql_escape_like(trouble_ticket)
             aggregates.add_filter(CorrEvent.trouble_ticket.ilike(
-                '%%%s%%' % trouble_ticket))
+                '%s' % trouble_ticket))
 
         if from_date:
             search['from_date'] = from_date.lower()
