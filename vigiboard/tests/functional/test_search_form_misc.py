@@ -103,7 +103,7 @@ class TestSearchFormMisc(TestController):
 
         # Permet également de vérifier que la recherche est
         # insensible à la casse.
-        response = self.app.get('/?output=hello',
+        response = self.app.get('/?output=hello*',
             extra_environ={'REMOTE_USER': 'user'})
 
         # Il doit y avoir 1 seule ligne de résultats.
@@ -123,7 +123,7 @@ class TestSearchFormMisc(TestController):
 
         # Permet également de vérifier que la recherche est
         # insensible à la casse.
-        response = self.app.get('/?trouble_ticket=bar',
+        response = self.app.get('/?trouble_ticket=*bar*',
             extra_environ={'REMOTE_USER': 'user'})
         transaction.commit()
 
