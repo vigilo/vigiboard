@@ -547,12 +547,9 @@ class RootController(VigiboardRootController):
             flash(_('No event has been selected'), 'warning')
             raise redirect(request.environ.get('HTTP_REFERER', '/'))
 
-        # Le filtre permet d'éliminer les chaines vides contenues dans le
-        # tableau ('a,b,' -> split -> ['a','b',''] -> filter -> ['a','b']).
-        ids = map(int, filter(len, id.split(',')))
-
-        # Si l'utilisateur édite plusieurs événements à la fois,
-        # il nous faut chacun des identifiants
+        # On récupère la liste de tous les identifiants des événements
+        # à mettre à jour.
+        ids = map(int, id.strip(',').split(','))
 
         user = get_current_user()
         events = VigiboardRequest(user)
@@ -578,20 +575,33 @@ class RootController(VigiboardRootController):
         if not events.num_rows():
             flash(_('No access to this event'), 'error')
             redirect('/')
-        
-        # Modification des événements et création d'un historique
-        # pour chacun d'eux.
-        for req in events.req:
-            event = req
 
+        if ack == u'Forced':
+            condition = Any(
+                in_group('managers'),
+                has_permission('vigiboard-admin'),
+                msg=l_("You don't have administrative access "
+                        "to VigiBoard"))
+            try:
+                condition.check_authorization(request.environ)
+            except NotAuthorizedError, e:
+                reason = unicode(e)
+                flash(reason, 'error')
+                raise redirect(request.environ.get('HTTP_REFERER', '/'))
+
+        # Modification des événements et création d'un historique
+        # chaque fois que cela est nécessaire.
+        for event in events.req:
             if trouble_ticket and trouble_ticket != event.trouble_ticket:
                 history = EventHistory(
                         type_action="Ticket change",
                         idevent=event.idcause,
                         value=unicode(trouble_ticket),
-                        text="Changed trouble ticket from '%s' to '%s'" % (
-                            event.trouble_ticket, trouble_ticket
-                        ),
+                        text="Changed trouble ticket from '%(from)s' "
+                             "to '%(to)s'" % {
+                            'from': event.trouble_ticket,
+                            'to': trouble_ticket,
+                        },
                         username=user.user_name,
                         timestamp=datetime.now(),
                     )
@@ -600,28 +610,27 @@ class RootController(VigiboardRootController):
 
             # Changement du statut d'acquittement.
             if ack != u'NoChange':
+                changed_ack = ack
                 # Pour forcer l'acquittement d'un événement,
                 # il faut en plus avoir la permission
                 # "vigiboard-admin".
                 if ack == u'Forced':
-                    condition = Any(
-                        in_group('managers'),
-                        has_permission('vigiboard-admin'),
-                        msg=l_("You don't have administrative access "
-                                "to VigiBoard"))
-                    try:
-                        condition.check_authorization(request.environ)
-                    except NotAuthorizedError, e:
-                        reason = unicode(e)
-                        flash(reason, 'error')
-                        raise redirect(request.environ.get('HTTP_REFERER', '/'))
-                    else:
-                        ack = u'AAClosed'
-                        # On met systématiquement l'état à "OK", même s'il
-                        # s'agit d'un hôte. Techniquement, c'est incorrect,
-                        # mais comme on fait ça pour masquer l'événement...
-                        event.cause.current_state = \
-                            StateName.statename_to_value(u'OK')
+                    changed_ack = u'AAClosed'
+                    # On met systématiquement l'état à "OK", même s'il
+                    # s'agit d'un hôte. Techniquement, c'est incorrect,
+                    # mais comme on fait ça pour masquer l'événement...
+                    event.cause.current_state = \
+                        StateName.statename_to_value(u'OK')
+
+                    history = EventHistory(
+                            type_action="Forced change state",
+                            idevent=event.idcause,
+                            value=u'OK',
+                            text="Forced state to 'OK'",
+                            username=user.user_name,
+                            timestamp=datetime.now(),
+                        )
+                    DBSession.add(history)
 
                 history = EventHistory(
                         type_action="Acknowledgement change state",
@@ -629,13 +638,13 @@ class RootController(VigiboardRootController):
                         value=ack,
                         text="Changed acknowledgement status "
                             "from '%s' to '%s'" % (
-                            event.status, ack
+                            event.status, changed_ack
                         ),
                         username=user.user_name,
                         timestamp=datetime.now(),
                     )
                 DBSession.add(history)
-                event.status = ack
+                event.status = changed_ack
 
         DBSession.flush()
         flash(_('Updated successfully'))
@@ -725,7 +734,7 @@ class RootController(VigiboardRootController):
         session['theme'] = theme
         session.save()
         return dict()
-    
+
 def get_last_modification_timestamp(event_id_list, 
                                     value_if_none=datetime.now()):
     """
