@@ -52,10 +52,10 @@ base_config.sa_auth.post_logout_url = '/post_logout'
 #
 # Permet de satisfaire l'exigence VIGILO_EXIG_VIGILO_BAC_0130.
 base_config['vigiboard_links.eventdetails'] = {
-    'nagios': [u'Nagios host details', 'http://example1.com/%(idcorrevent)d'],
-    'metrology': [u'Metrology details', 'http://example2.com/%(idcorrevent)d'],
-    'security': [u'Security details', 'http://example3.com/%(idcorrevent)d'],
-    'servicetype': [u'Service Type', 'http://example4.com/%(idcorrevent)d'],
+    'nagios': [u'Nagios host details', '/nagios/%(host)s/cgi-bin/status.cgi?host=%(host)s'],
+    'metrology': [u'Metrology details', 'http://example.com/?host=%(host)s'],
+    'security': [u'Security details', 'http://security.example.com/?host=%(host)s'],
+    'inventory': [u'Inventory', 'http://glpi.example.com/?host=%(host)s'],
     'documentation': [u'Documentation', 'http://doc.example.com/?q=%(message)s'],
 }
 
@@ -64,7 +64,7 @@ base_config['vigiboard_links.eventdetails'] = {
 # - %(host)s
 # - %(service)s
 # - %(tt)s
-base_config['vigiboard_links.tt'] = 'http://example4.com/%(idcorrevent)d/%(tt)s'
+base_config['vigiboard_links.tt'] = 'http://bugs.example.com/?ticket=%(tt)s'
 
 # Plugins to use
 base_config['vigiboard_plugins'] = [

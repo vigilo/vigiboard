@@ -9,7 +9,7 @@ applications externes.
 import urllib
 
 from tg.exceptions import HTTPForbidden
-from tg import config
+from tg import config, url
 
 from vigiboard.controllers.vigiboardrequest import VigiboardRequest
 from vigiboard.controllers.plugins import VigiboardRequestPlugin
@@ -61,7 +61,7 @@ class PluginDetails(VigiboardRequestPlugin):
             else:
                 service = None
 
-            eventdetails[edname] = edlink[1] % {
+            eventdetails[edname] = url(edlink[1]) % {
                 'idcorrevent': idcorrevent,
                 'host': urllib.quote(event.hostname),
                 'service': service,
