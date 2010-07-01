@@ -22,10 +22,12 @@ from vigilo.models.session import DBSession
 from vigilo.models.tables import Event, EventHistory, CorrEvent, Host, \
                                     SupItem, SupItemGroup, LowLevelService, \
                                     StateName
+from vigilo.models.tables.grouphierarchy import GroupHierarchy
 from vigilo.models.functions import sql_escape_like
 from vigilo.models.tables.secondary_tables import EVENTSAGGREGATE_TABLE
 
 from vigilo.turbogears.controllers.autocomplete import AutoCompleteController
+from vigilo.turbogears.controllers.proxy import ProxyController
 from vigilo.turbogears.helpers import get_current_user
 
 from vigiboard.controllers.vigiboardrequest import VigiboardRequest
@@ -41,6 +43,9 @@ class RootController(VigiboardRootController):
     Le controller général de vigiboard
     """
     autocomplete = AutoCompleteController()
+    nagios = ProxyController('nagios', '/nagios/',
+        not_anonymous(l_('You need to be authenticated')))
+
 
     # Prédicat pour la restriction de l'accès aux interfaces.
     # L'utilisateur doit avoir la permission "vigiboard-access"
@@ -734,6 +739,32 @@ class RootController(VigiboardRootController):
         session['theme'] = theme
         session.save()
         return dict()
+
+    @require(access_restriction)
+    @expose('json')
+    def get_groups(self, idgroup=None):
+        user = get_current_user()
+        groups = DBSession.query(
+                    SupItemGroup.idgroup,
+                    SupItemGroup.name,
+                ).join(
+                    (GroupHierarchy, GroupHierarchy.idchild == \
+                        SupItemGroup.idgroup),
+                )
+
+        is_manager = in_group('managers').is_met(request.environ)
+        if not is_manager:
+            user_groups = [ug[0] for ug in user.supitemgroups() if ug[1]]
+            groups = groups.filter(SupItemGroup.idgroup.in_(user_groups))
+
+        # Cas des groupes racines (parents les plus élevés dans l'arbre).
+        if idgroup:
+            groups = groups.filter(GroupHierarchy.idparent == idgroup)
+        else:
+            groups = groups
+
+        groups = [(g.idgroup, g.name) for g in groups.all()]
+        return dict(groups=groups)
 
 def get_last_modification_timestamp(event_id_list, 
                                     value_if_none=datetime.now()):
