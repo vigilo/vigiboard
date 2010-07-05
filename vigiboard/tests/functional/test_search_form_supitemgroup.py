@@ -17,15 +17,15 @@ def insert_deps():
     """Insère les dépendances nécessaires aux tests."""
     timestamp = datetime.now()
 
-    hostgroup = SupItemGroup(
+    supitemgroup = SupItemGroup(
         name=u'foo',
     )
-    DBSession.add(hostgroup)
+    DBSession.add(supitemgroup)
     DBSession.flush()
 
     DBSession.add(GroupHierarchy(
-        parent=hostgroup,
-        child=hostgroup,
+        parent=supitemgroup,
+        child=supitemgroup,
         hops=0,
     ))
     DBSession.flush()
@@ -44,7 +44,7 @@ def insert_deps():
     DBSession.add(host)
     DBSession.flush()
 
-    hostgroup.supitems.append(host)
+    supitemgroup.supitems.append(host)
     DBSession.flush()
 
     event = Event(
@@ -68,12 +68,12 @@ def insert_deps():
     correvent.events.append(event)
     DBSession.add(correvent)
     DBSession.flush()
-    return hostgroup
+    return supitemgroup
 
-class TestSearchFormHostGroup(TestController):
-    """Teste la récupération d'événements selon le groupe d'hôtes."""
+class TestSearchFormSupItemGroup(TestController):
+    """Teste la récupération d'événements selon le supitemgroup."""
     def setUp(self):
-        super(TestSearchFormHostGroup, self).setUp()
+        super(TestSearchFormSupItemGroup, self).setUp()
         perm = Permission.by_permission_name(u'vigiboard-access')
         user = User(
             user_name=u'user',
@@ -89,17 +89,18 @@ class TestSearchFormHostGroup(TestController):
         DBSession.add(usergroup)
         DBSession.flush()
 
-    def test_search_hostgroup_when_allowed(self):
-        """Teste la recherche par hostgroup avec les bons droits d'accès."""
+    def test_search_supitemgroup_when_allowed(self):
+        """Teste la recherche par supitemgroup avec les bons droits d'accès."""
         # On crée un groupe d'hôte appelé 'foo',
         # contenant un hôte 'bar', ainsi qu'un événement
         # et un événement corrélé sur cet hôte.
         # De plus, on donne l'autorisation aux utilisateurs
         # ayant la permission 'edit' de voir cette alerte.
-        hostgroup = insert_deps()
+        supitemgroup = insert_deps()
+        idgroup = supitemgroup.idgroup
         usergroup = UserGroup.by_group_name(u'users')
         DBSession.add(DataPermission(
-            group=hostgroup,
+            group=supitemgroup,
             usergroup=usergroup,
             access=u'r',
         ))
@@ -108,7 +109,7 @@ class TestSearchFormHostGroup(TestController):
 
         # On envoie une requête avec recherche sur le groupe d'hôtes créé,
         # on s'attend à recevoir 1 résultat.
-        response = self.app.get('/?supitemgroup=foo',
+        response = self.app.get('/?supitemgroup=%d' % idgroup,
             extra_environ={'REMOTE_USER': 'user'})
 
         # Il doit y avoir 1 seule ligne de résultats.
@@ -121,12 +122,12 @@ class TestSearchFormHostGroup(TestController):
         print "There are %d columns in the result set" % len(cols)
         assert_true(len(cols) > 1)
 
-    def test_search_inexistent_hostgroup(self):
-        """Teste la recherche par hostgroup sur un groupe inexistant."""
+    def test_search_inexistent_supitemgroup(self):
+        """Teste la recherche par supitemgroup sur un groupe inexistant."""
         # On envoie une requête avec recherche sur un groupe d'hôtes
         # qui n'existe pas, on s'attend à n'obtenir aucun résultat.
         transaction.commit()
-        response = self.app.get('/?supitemgroup=foot',
+        response = self.app.get('/?supitemgroup=%d' % -42,
             extra_environ={'REMOTE_USER': 'user'})
 
         # Il doit y avoir 1 seule ligne de résultats.
@@ -140,20 +141,21 @@ class TestSearchFormHostGroup(TestController):
         print "There are %d columns in the result set" % len(cols)
         assert_equal(len(cols), 1)
 
-    def test_search_hostgroup_when_disallowed(self):
-        """Teste la recherche par hostgroup SANS les droits d'accès."""
+    def test_search_supitemgroup_when_disallowed(self):
+        """Teste la recherche par supitemgroup SANS les droits d'accès."""
         # On crée un groupe d'hôte appelé 'foo',
         # contenant un hôte 'bar', ainsi qu'un événement
         # et un événement corrélé sur cet hôte.
         # MAIS, on NE DONNE PAS l'autorisation aux utilisateurs
         # de voir cette alerte, donc elle ne doit jamais apparaître.
-        insert_deps()
+        supitemgroup = insert_deps()
+        idgroup = supitemgroup.idgroup
         transaction.commit()
 
         # On envoie une requête avec recherche sur le groupe d'hôtes créé,
         # mais avec un utilisateur ne disposant pas des permissions adéquates.
         # On s'attend à n'obtenir aucun résultat.
-        response = self.app.get('/?supitemgroup=foo',
+        response = self.app.get('/?supitemgroup=%d' % idgroup,
             extra_environ={'REMOTE_USER': 'user'})
 
         # Il doit y avoir 1 seule ligne de résultats.
