@@ -32,7 +32,9 @@ from vigilo.turbogears.helpers import get_current_user
 
 from vigiboard.controllers.vigiboardrequest import VigiboardRequest
 from vigiboard.controllers.vigiboard_controller import VigiboardRootController
+
 from vigiboard.widgets.edit_event import edit_event_status_options
+from vigiboard.widgets.search_form import create_search_form, get_calendar_lang
 
 __all__ = ('RootController', 'get_last_modification_timestamp', 
            'date_to_timestamp')
@@ -74,7 +76,7 @@ class RootController(VigiboardRootController):
     class DefaultSchema(schema.Schema):
         """Schéma de validation de la méthode default."""
         page = validators.Int(min=1, if_missing=1, if_invalid=1)
-        supitemgroup = validators.String(if_missing=None)
+        supitemgroup = validators.Int(if_missing=None, if_invalid=None)
         host = validators.String(if_missing=None)
         service = validators.String(if_missing=None)
         output = validators.String(if_missing=None)
@@ -120,24 +122,13 @@ class RootController(VigiboardRootController):
             Event.idsupitem == aggregates.items.c.idsupitem))
         aggregates.add_order_by(asc(aggregates.items.c.hostname))
         
-        search = {
-            'host': '',
-            'service': '',
-            'output': '',
-            'tt': '',
-            'from_date': '',
-            'to_date': '',
-            'supitemgroup': '',
-        }
+        search = {}
 
         # Application des filtres si nécessaire
         if supitemgroup:
             search['supitemgroup'] = supitemgroup
-            supitemgroup = sql_escape_like(supitemgroup)
-            aggregates.add_join((SupItemGroup, SupItemGroup.idgroup == \
-                aggregates.items.c.idsupitemgroup))
-            aggregates.add_filter(
-                SupItemGroup.name.ilike('%s' % supitemgroup))
+            aggregates.add_filter(aggregates.items.c.idsupitemgroup == \
+                supitemgroup)
 
         if host:
             search['host'] = host
@@ -224,7 +215,9 @@ class RootController(VigiboardRootController):
             nb_pages = nb_pages,
             page = page,
             event_edit_status_options = edit_event_status_options,
+            search_form = create_search_form,
             search = search,
+            get_calendar_lang = get_calendar_lang,
             refresh_times = config['vigiboard_refresh_times'],
         )
 
@@ -324,16 +317,10 @@ class RootController(VigiboardRootController):
             },
             nb_pages = nb_pages,
             page = page,
-            search = {
-                'host': '',
-                'service': '',
-                'output': '',
-                'tt': '',
-                'from_date': '',
-                'to_date': '',
-                'supitemgroup': '',
-            },
-           refresh_times=config['vigiboard_refresh_times'],
+            search_form = create_search_form,
+            search = {},
+            get_calendar_lang = get_calendar_lang,
+            refresh_times=config['vigiboard_refresh_times'],
         )
 
 
@@ -412,16 +399,10 @@ class RootController(VigiboardRootController):
             nb_pages = nb_pages,
             page = page,
             history = history_entries,
-            search = {
-                'host': '',
-                'service': '',
-                'output': '',
-                'tt': '',
-                'from_date': '',
-                'to_date': '',
-                'supitemgroup': '',
-            },
-           refresh_times=config['vigiboard_refresh_times'],
+            search_form = create_search_form,
+            search = {},
+            get_calendar_lang = get_calendar_lang,
+            refresh_times=config['vigiboard_refresh_times'],
         )
 
 
@@ -496,15 +477,9 @@ class RootController(VigiboardRootController):
             nb_pages = nb_pages,
             page = page,
             event_edit_status_options = edit_event_status_options,
-            search = {
-                'host': '',
-                'service': '',
-                'output': '',
-                'tt': '',
-                'from_date': '',
-                'to_date': '',
-                'supitemgroup': '',
-            },
+            search_form = create_search_form,
+            search = {},
+            get_calendar_lang = get_calendar_lang,
             refresh_times=config['vigiboard_refresh_times'],
         )
 
@@ -742,15 +717,17 @@ class RootController(VigiboardRootController):
 
     @require(access_restriction)
     @expose('json')
-    def get_groups(self, idgroup=None):
+    def get_groups(self):
         user = get_current_user()
         groups = DBSession.query(
                     SupItemGroup.idgroup,
                     SupItemGroup.name,
+                    GroupHierarchy.idparent,
                 ).join(
                     (GroupHierarchy, GroupHierarchy.idchild == \
                         SupItemGroup.idgroup),
-                )
+                ).filter(GroupHierarchy.hops <= 1
+                ).order_by(GroupHierarchy.hops.asc())
 
         is_manager = in_group('managers').is_met(request.environ)
         if not is_manager:
@@ -758,13 +735,37 @@ class RootController(VigiboardRootController):
             groups = groups.filter(SupItemGroup.idgroup.in_(user_groups))
 
         # Cas des groupes racines (parents les plus élevés dans l'arbre).
-        if idgroup:
-            groups = groups.filter(GroupHierarchy.idparent == idgroup)
-        else:
-            groups = groups
+#        if idgroup:
+#            groups = groups.filter(GroupHierarchy.idparent == idgroup)
 
-        groups = [(g.idgroup, g.name) for g in groups.all()]
-        return dict(groups=groups)
+        hierarchy = {}
+
+        def find_parent(idgroup):
+            def __find_parent(hier, idgroup):
+                if idgroup in hier:
+                    return hier[idgroup]['children']
+                for g in hier:
+                    res = __find_parent(hier[g]['children'], idgroup)
+                    if res:
+                        return res
+                return None
+            parent = __find_parent(hierarchy, idgroup)
+            if parent is None:
+                return hierarchy
+            return parent
+
+        for g in groups.all():
+            parent = find_parent(g.idparent)
+            if g.idgroup in hierarchy:
+                parent[g.idgroup] = hierarchy[g.idgroup]
+                del hierarchy[g.idgroup]
+            else:
+                parent[g.idgroup] = {
+                    'name': g.name,
+                    'children': {},
+                }
+
+        return dict(groups=hierarchy)
 
 def get_last_modification_timestamp(event_id_list, 
                                     value_if_none=datetime.now()):

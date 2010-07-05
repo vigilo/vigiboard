@@ -6,7 +6,6 @@ from time import mktime
 from logging import getLogger
 
 from tg import config, tmpl_context, request, url
-from tg.i18n import get_lang
 from pylons.i18n import ugettext as _
 from paste.deploy.converters import asbool
 from repoze.what.predicates import in_group
@@ -19,7 +18,6 @@ from vigilo.models.tables import Event, CorrEvent, EventHistory, \
                         Host, LowLevelService, StateName
 from vigilo.models.tables.secondary_tables import SUPITEM_GROUP_TABLE
 from vigiboard.widgets.edit_event import EditEventForm
-from vigiboard.widgets.search_form import SearchForm
 from vigiboard.controllers.plugins import VigiboardRequestPlugin
 
 LOGGER = getLogger(__name__)
@@ -44,22 +42,7 @@ class VigiboardRequest():
         l'utilisateur sur les données manipulées.
         """
 
-        # TODO: Utiliser le champ "language" du modèle pour cet utilisateur ?
-        # On récupère la langue du navigateur de l'utilisateur
-        lang = get_lang()
-        if not lang:
-            lang = config['lang']
-        else:
-            lang = lang[0]
-
-        # TODO: Il faudrait gérer les cas où tout nous intéresse dans "lang".
-        # Si l'identifiant de langage est composé (ex: "fr_FR"),
-        # on ne récupère que la 1ère partie.
-        lang = lang.replace('_', '-')
-        lang = lang.split('-')[0]
-
         self.user_groups = [ug[0] for ug in user.supitemgroups() if ug[1]]
-        self.lang = lang
         self.generaterq = False
 
         is_manager = in_group('managers').is_met(request.environ)
@@ -418,12 +401,6 @@ class VigiboardRequest():
         tmpl_context.last_modification = \
             mktime(get_last_modification_timestamp(ids).timetuple())
 
-        tmpl_context.calendar_lang = self.lang
-        # TRANSLATORS: Format de date et heure compatible Python/JavaScript.
-        tmpl_context.calendar_date_format = _('%Y-%m-%d %I:%M:%S %p')
-
         tmpl_context.edit_event_form = EditEventForm("edit_event_form",
             submit_text=_('Apply'), action=url('/update'))
-        tmpl_context.search_form = SearchForm("search_form",
-            submit_text=_('Search'), action=url('/'))
 
