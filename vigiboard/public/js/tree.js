@@ -28,9 +28,8 @@ var TreeGroup = new Class({
             method: "get",
             url: this.options.url,
             onSuccess: function(groups) {
-                groups = new Hash(groups.groups);
-                $each(groups, function(item, key) {
-                    this.addItem(key, item, this.tree);
+                $each(groups.groups, function(item) {
+                    this.addItem(item, this.tree);
                 }, this);
             }.bind(this)
         });
@@ -38,20 +37,19 @@ var TreeGroup = new Class({
     },
 
     /* Ajout d'un element à l'arbre */
-    addItem: function(idgroup, data, parent) {
+    addItem: function(data, parent) {
         var subfolder;
-        var children = new Hash(data.children);
-        if (children.getLength()) {
+        if (data.children.length) {
             subfolder = new Jx.TreeFolder({
                 label: data.name,
-                data: idgroup,
+                data: data.idgroup,
                 image: this.options.app_path+"images/map-list.png",
             });
         }
         else {
             subfolder = new Jx.TreeItem({
                 label: data.name,
-                data: idgroup,
+                data: data.idgroup,
                 image: this.options.app_path+"images/map.png",
             });
         }
@@ -63,8 +61,8 @@ var TreeGroup = new Class({
         }.bind(this));
         parent.append(subfolder);
 
-        $each(children, function(item, key) {
-            this.addItem(key, item, subfolder);
+        $each(data.children, function(item) {
+            this.addItem(item, subfolder);
         }, this);
     },
 

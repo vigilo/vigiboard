@@ -718,6 +718,7 @@ class RootController(VigiboardRootController):
     @require(access_restriction)
     @expose('json')
     def get_groups(self):
+        hierarchy = []
         user = get_current_user()
         groups = DBSession.query(
                     SupItemGroup.idgroup,
@@ -727,25 +728,21 @@ class RootController(VigiboardRootController):
                     (GroupHierarchy, GroupHierarchy.idchild == \
                         SupItemGroup.idgroup),
                 ).filter(GroupHierarchy.hops <= 1
-                ).order_by(GroupHierarchy.hops.asc())
+                ).order_by(GroupHierarchy.hops.asc()
+                ).order_by(SupItemGroup.name.asc())
 
         is_manager = in_group('managers').is_met(request.environ)
         if not is_manager:
             user_groups = [ug[0] for ug in user.supitemgroups() if ug[1]]
             groups = groups.filter(SupItemGroup.idgroup.in_(user_groups))
 
-        # Cas des groupes racines (parents les plus élevés dans l'arbre).
-#        if idgroup:
-#            groups = groups.filter(GroupHierarchy.idparent == idgroup)
-
-        hierarchy = {}
-
         def find_parent(idgroup):
             def __find_parent(hier, idgroup):
-                if idgroup in hier:
-                    return hier[idgroup]['children']
                 for g in hier:
-                    res = __find_parent(hier[g]['children'], idgroup)
+                    if g['idgroup'] == idgroup:
+                        return g['children']
+                for g in hier:
+                    res = __find_parent(g['children'], idgroup)
                     if res:
                         return res
                 return None
@@ -756,14 +753,17 @@ class RootController(VigiboardRootController):
 
         for g in groups.all():
             parent = find_parent(g.idparent)
-            if g.idgroup in hierarchy:
-                parent[g.idgroup] = hierarchy[g.idgroup]
-                del hierarchy[g.idgroup]
+            for item in hierarchy:
+                if item['idgroup'] == g.idgroup:
+                    parent.append(item)
+                    hierarchy.remove(item)
+                    break
             else:
-                parent[g.idgroup] = {
+                parent.append({
+                    'idgroup': g.idgroup,
                     'name': g.name,
-                    'children': {},
-                }
+                    'children': [],
+                })
 
         return dict(groups=hierarchy)
 
