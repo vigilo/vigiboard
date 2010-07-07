@@ -33,7 +33,7 @@ def insert_deps():
         checkhostcmd=u'',
         description=u'',
         hosttpl=u'',
-        mainip=u'127.0.0.1',
+        address=u'127.0.0.1',
         snmpport=42,
         snmpcommunity=u'public',
         snmpversion=u'3',

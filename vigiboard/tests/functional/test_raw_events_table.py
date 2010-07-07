@@ -75,7 +75,7 @@ def populate_DB(caused_by_service):
         checkhostcmd = u'halt',
         snmpcommunity = u'public',
         hosttpl = u'/dev/null',
-        mainip = u'192.168.1.1',
+        address = u'192.168.1.1',
         snmpport = 42,
         weight = 42,
     )
@@ -143,7 +143,7 @@ def add_masked_event(idcorrevent):
         checkhostcmd = u'halt',
         snmpcommunity = u'public',
         hosttpl = u'/dev/null',
-        mainip = u'192.168.1.%d' % nb_hosts,
+        address = u'192.168.1.%d' % nb_hosts,
         snmpport = 42,
         weight = 42,
     )

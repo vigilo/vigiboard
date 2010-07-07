@@ -50,7 +50,7 @@ def populate_DB():
         checkhostcmd = u'halt',
         snmpcommunity = u'public',
         hosttpl = u'/dev/null',
-        mainip = u'192.168.1.1',
+        address = u'192.168.1.1',
         snmpport = 42,
         weight = 42,
     )
@@ -61,7 +61,7 @@ def populate_DB():
         checkhostcmd = u'halt',
         snmpcommunity = u'public',
         hosttpl = u'/dev/null',
-        mainip = u'192.168.1.1',
+        address = u'192.168.1.1',
         snmpport = 42,
         weight = 42,
     )
