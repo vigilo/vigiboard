@@ -16,7 +16,7 @@ from sqlalchemy import asc
 from sqlalchemy.sql import func
 from repoze.what.predicates import Any, All, in_group, \
                                     has_permission, not_anonymous
-from formencode import validators, schema
+from formencode import schema
 
 from vigilo.models.session import DBSession
 from vigilo.models.tables import Event, EventHistory, CorrEvent, Host, \
@@ -431,6 +431,9 @@ class RootController(VigiboardRootController):
         VIGILO_EXIG_VIGILO_BAC_0080.
         """
         idsupitem = SupItem.get_supitem(host, service)
+        if not idsupitem:
+            flash(_('No such host/service'), 'error')
+            redirect('/')
 
         user = get_current_user()
         aggregates = VigiboardRequest(user, False)
