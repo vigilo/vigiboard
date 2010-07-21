@@ -15,7 +15,6 @@ from vigilo.models.tables import Event, EventHistory, CorrEvent, \
                             SupItemGroup, LowLevelService, \
                             Permission, DataPermission, User, \
                             UserGroup
-from vigilo.models.tables.grouphierarchy import GroupHierarchy
 from vigiboard.tests import TestController
 
 def populate_DB():
@@ -24,12 +23,6 @@ def populate_DB():
     supitemmanagers = SupItemGroup(name=u'managersgroup')
     DBSession.add(supitemmanagers)
     DBSession.flush()
-
-    DBSession.add(GroupHierarchy(
-        parent=supitemmanagers,
-        child=supitemmanagers,
-        hops=0,
-    ))
 
     usergroup = UserGroup.by_group_name(u'users_with_access')
     DBSession.add(DataPermission(

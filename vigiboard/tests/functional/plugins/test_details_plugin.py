@@ -12,7 +12,6 @@ from vigilo.models.session import DBSession
 from vigilo.models.tables import SupItemGroup, User, UserGroup, \
                             Permission, DataPermission, StateName, \
                             LowLevelService, Event, CorrEvent, Host
-from vigilo.models.tables.grouphierarchy import GroupHierarchy
 
 def insert_deps(return_service):
     """
@@ -30,12 +29,6 @@ def insert_deps(return_service):
 
     hostgroup = SupItemGroup(name=u'foo')
     DBSession.add(hostgroup)
-
-    DBSession.add(GroupHierarchy(
-        parent=hostgroup,
-        child=hostgroup,
-        hops=0,
-    ))
 
     host = Host(
         name=u'bar',
@@ -56,12 +49,6 @@ def insert_deps(return_service):
 
     servicegroup = SupItemGroup(name=u'bar')
     DBSession.add(servicegroup)
-
-    DBSession.add(GroupHierarchy(
-        parent=servicegroup,
-        child=servicegroup,
-        hops=0,
-    ))
 
     service = LowLevelService(
         host=host,

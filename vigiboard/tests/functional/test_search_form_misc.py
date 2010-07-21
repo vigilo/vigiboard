@@ -12,7 +12,6 @@ from vigilo.models.session import DBSession
 from vigilo.models.tables import SupItemGroup, Host, Permission, \
                                     Event, CorrEvent, StateName, \
                                     User, UserGroup, DataPermission
-from vigilo.models.tables.grouphierarchy import GroupHierarchy
 
 def insert_deps():
     """Insère les dépendances nécessaires aux tests."""
@@ -35,13 +34,6 @@ def insert_deps():
     hostgroup = SupItemGroup(name=u'foo')
     hostgroup.supitems.append(host)
     DBSession.add(hostgroup)
-    DBSession.flush()
-
-    DBSession.add(GroupHierarchy(
-        parent=hostgroup,
-        child=hostgroup,
-        hops=0,
-    ))
     DBSession.flush()
 
     event = Event(

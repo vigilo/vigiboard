@@ -12,33 +12,15 @@ from vigilo.models.session import DBSession
 from vigilo.models.tables import Event, CorrEvent, DataPermission, \
                             Permission, StateName, Host, SupItemGroup, \
                             LowLevelService, User, UserGroup, Permission
-from vigilo.models.tables.grouphierarchy import GroupHierarchy
 from vigiboard.tests import TestController
 
 def populate_DB():
     """ Peuple la base de données. """
     # On ajoute les groupes et leurs dépendances
-    hosteditors = SupItemGroup(name=u'editorsgroup')
-    DBSession.add(hosteditors)
     hostmanagers = SupItemGroup(name=u'managersgroup')
     DBSession.add(hostmanagers)
-    DBSession.flush()
-
-    DBSession.add(GroupHierarchy(
-        parent=hosteditors,
-        child=hosteditors,
-        hops=0,
-    ))
-    DBSession.add(GroupHierarchy(
-        parent=hostmanagers,
-        child=hostmanagers,
-        hops=0,
-    ))
-    DBSession.add(GroupHierarchy(
-        parent=hostmanagers,
-        child=hosteditors,
-        hops=1,
-    ))
+    hosteditors = SupItemGroup(name=u'editorsgroup', parent=hostmanagers)
+    DBSession.add(hosteditors)
     DBSession.flush()
 
     usergroup = UserGroup.by_group_name(u'users_with_access')
