@@ -50,9 +50,6 @@ setup(
         'vigiboard': [
             ('**.py', 'python', None),
         ],
-        '../turbogears/src': [
-            ('**.py', 'python', None),
-        ],
     },
 
     entry_points={
