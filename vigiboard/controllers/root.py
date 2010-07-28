@@ -218,7 +218,6 @@ class RootController(VigiboardRootController):
             search_form = create_search_form,
             search = search,
             get_calendar_lang = get_calendar_lang,
-            refresh_times = config['vigiboard_refresh_times'],
         )
 
 
@@ -320,7 +319,6 @@ class RootController(VigiboardRootController):
             search_form = create_search_form,
             search = {},
             get_calendar_lang = get_calendar_lang,
-            refresh_times=config['vigiboard_refresh_times'],
         )
 
 
@@ -402,7 +400,6 @@ class RootController(VigiboardRootController):
             search_form = create_search_form,
             search = {},
             get_calendar_lang = get_calendar_lang,
-            refresh_times=config['vigiboard_refresh_times'],
         )
 
 
@@ -483,7 +480,6 @@ class RootController(VigiboardRootController):
             search_form = create_search_form,
             search = {},
             get_calendar_lang = get_calendar_lang,
-            refresh_times=config['vigiboard_refresh_times'],
         )
 
 

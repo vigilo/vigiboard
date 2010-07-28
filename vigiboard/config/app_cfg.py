@@ -79,11 +79,3 @@ base_config['vigiboard_plugins'] = [
     ('status', 'PluginStatus'),
 ]
 
-base_config['vigiboard_refresh_times'] = (
-    (0, l_('Never')),
-    (30, l_('30 seconds')),
-    (60, l_('1 minute')),
-    (300, l_('5 minutes')),
-    (600, l_('10 minutes')),
-)
-
