@@ -28,6 +28,7 @@ from vigilo.models.tables.secondary_tables import EVENTSAGGREGATE_TABLE
 
 from vigilo.turbogears.controllers.autocomplete import AutoCompleteController
 from vigilo.turbogears.controllers.proxy import ProxyController
+from vigilo.turbogears.controllers.api.root import ApiRootController
 from vigilo.turbogears.helpers import get_current_user
 
 from vigiboard.controllers.vigiboardrequest import VigiboardRequest
@@ -47,6 +48,7 @@ class RootController(VigiboardRootController):
     autocomplete = AutoCompleteController()
     nagios = ProxyController('nagios', '/nagios/',
         not_anonymous(l_('You need to be authenticated')))
+    api = ApiRootController("/api")
 
 
     # Prédicat pour la restriction de l'accès aux interfaces.
