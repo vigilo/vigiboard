@@ -8,8 +8,8 @@ from vigiboard.config.environment import load_environment
 from pkg_resources import resource_filename
 from paste.cascade import Cascade
 from paste.urlparser import StaticURLParser
-from repoze.who.config import make_middleware_with_config \
-                            as make_who_with_config
+from repoze.who.plugins.testutil import make_middleware_with_config \
+                                    as make_who_with_config
 
 __all__ = ['make_app']
 
@@ -55,5 +55,6 @@ def make_app(global_conf, full_stack=True, **app_conf):
         app_conf.get('auth.config', 'who.ini'),
         app_conf.get('auth.log_file', 'stdout'),
         app_conf.get('auth.log_level', 'debug'),
+        app_conf.get('skip_authentication')
     )
     return app
