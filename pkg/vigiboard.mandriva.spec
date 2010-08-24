@@ -104,7 +104,7 @@ make PYTHON=%{_bindir}/python SYSCONFDIR=%{_sysconfdir}
 
 %install
 rm -rf $RPM_BUILD_ROOT
-make install \
+make install_files \
 	DESTDIR=$RPM_BUILD_ROOT \
 	SYSCONFDIR=%{_sysconfdir} \
 	PYTHON=%{_bindir}/python
@@ -123,5 +123,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_sysconfdir}/httpd/conf/webapps.d/%{module}.conf
 %dir %{_localstatedir}/log/vigilo/
 %attr(750,apache,apache) %{_localstatedir}/log/vigilo/%{module}
+%attr(750,apache,apache) %{_localstatedir}/cache/vigilo/sessions
 %{python_sitelib}/*
 

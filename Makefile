@@ -1,7 +1,9 @@
 NAME := vigiboard
 all: build
 
-install:
+install: install_files install_permissions
+
+install_files:
 	$(PYTHON) setup.py install --single-version-externally-managed --root=$(DESTDIR) --record=INSTALLED_FILES
 	mkdir -p $(DESTDIR)$(HTTPD_DIR)
 	ln -f -s $(SYSCONFDIR)/vigilo/$(NAME)/$(NAME).conf $(DESTDIR)$(HTTPD_DIR)/
@@ -11,6 +13,11 @@ install:
 	mv $(DESTDIR)`grep '$(NAME)/config/app_cfg.py$$' INSTALLED_FILES` $(DESTDIR)$(SYSCONFDIR)/vigilo/$(NAME)/
 	ln -s $(SYSCONFDIR)/vigilo/$(NAME)/app_cfg.py $(DESTDIR)`grep '$(NAME)/config/app_cfg.py$$' INSTALLED_FILES`
 	echo $(SYSCONFDIR)/vigilo/$(NAME)/app_cfg.py >> INSTALLED_FILES
+	mkdir -p $(DESTDIR)/var/cache/vigilo/sessions
+
+install_permissions:
+	chmod 750 $(DESTDIR)/var/cache/vigilo/sessions
+	chown apache: $(DESTDIR)/var/cache/vigilo/sessions
 
 include buildenv/Makefile.common
 
