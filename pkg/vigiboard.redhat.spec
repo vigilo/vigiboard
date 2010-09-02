@@ -123,7 +123,7 @@ rm -rf $RPM_BUILD_ROOT
 %doc COPYING
 %dir %{_sysconfdir}/vigilo
 %config(noreplace) %{_sysconfdir}/vigilo/%{module}
-%{_sysconfdir}/httpd/conf/webapps.d/%{module}.conf
+%{_sysconfdir}/httpd/conf.d/%{module}.conf
 %dir %{_localstatedir}/log/vigilo/
 %attr(750,apache,apache) %{_localstatedir}/log/vigilo/%{module}
 %attr(750,apache,apache) %{_localstatedir}/cache/vigilo/sessions
