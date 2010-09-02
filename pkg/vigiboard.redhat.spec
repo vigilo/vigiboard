@@ -112,13 +112,13 @@ make install_files \
 	SYSCONFDIR=%{_sysconfdir} \
 	PYTHON=%{__python}
 
-%find_lang %{name}
+# %find_lang %{name} # ne fonctionne qu'avec les fichiers dans /usr/share/locale/
 
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-%files -f %{name}.lang
+%files
 %defattr(-,root,root)
 %doc COPYING
 %dir %{_sysconfdir}/vigilo
@@ -128,4 +128,3 @@ rm -rf $RPM_BUILD_ROOT
 %attr(750,apache,apache) %{_localstatedir}/log/vigilo/%{module}
 %attr(750,apache,apache) %{_localstatedir}/cache/vigilo/sessions
 %{python26_sitelib}/*
-
