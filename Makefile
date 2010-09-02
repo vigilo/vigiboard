@@ -1,6 +1,11 @@
 NAME := vigiboard
 all: build
 
+include buildenv/Makefile.common
+PKGNAME := $(NAME)
+MODULE := $(NAME)
+CODEPATH := $(NAME)
+
 install: install_files install_permissions
 
 install_files:
@@ -19,10 +24,6 @@ install_permissions:
 	chmod 750 $(DESTDIR)/var/cache/vigilo/sessions
 	chown apache: $(DESTDIR)/var/cache/vigilo/sessions
 
-include buildenv/Makefile.common
-
-MODULE := $(NAME)
-CODEPATH := $(NAME)
 
 lint: lint_pylint
 tests: tests_nose
