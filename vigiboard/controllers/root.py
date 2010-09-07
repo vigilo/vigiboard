@@ -6,7 +6,7 @@ from datetime import datetime
 from time import mktime
 import math
 
-from tg.exceptions import HTTPNotFound, HTTPInternalServerError, NotAuthorizedError
+from tg.exceptions import HTTPNotFound, HTTPInternalServerError
 from tg import expose, validate, require, flash, \
     tmpl_context, request, config, session, redirect
 from tw.forms import validators
@@ -15,7 +15,8 @@ from pylons.i18n import lazy_ugettext as l_
 from sqlalchemy import asc
 from sqlalchemy.sql import func
 from repoze.what.predicates import Any, All, in_group, \
-                                    has_permission, not_anonymous
+                                    has_permission, not_anonymous, \
+                                    NotAuthorizedError
 from formencode import schema
 
 from vigilo.models.session import DBSession
