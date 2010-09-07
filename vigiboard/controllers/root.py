@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-# vim:set expandtab tabstop=4 shiftwidth=4: 
+# vim:set expandtab tabstop=4 shiftwidth=4:
 """VigiBoard Controller"""
 
 from datetime import datetime
 from time import mktime
 import math
 
-from tg.exceptions import HTTPNotFound, HTTPInternalServerError
+from tg.exceptions import HTTPNotFound, HTTPInternalServerError, NotAuthorizedError
 from tg import expose, validate, require, flash, \
     tmpl_context, request, config, session, redirect
 from tw.forms import validators
@@ -37,7 +37,7 @@ from vigiboard.controllers.vigiboard_controller import VigiboardRootController
 from vigiboard.widgets.edit_event import edit_event_status_options
 from vigiboard.widgets.search_form import create_search_form, get_calendar_lang
 
-__all__ = ('RootController', 'get_last_modification_timestamp', 
+__all__ = ('RootController', 'get_last_modification_timestamp',
            'date_to_timestamp')
 
 # pylint: disable-msg=R0201
@@ -74,7 +74,7 @@ class RootController(VigiboardRootController):
     def handle_validation_errors_json(self, *args, **kwargs):
         kwargs['errors'] = tmpl_context.form_errors
         return dict(kwargs)
-    
+
     class DefaultSchema(schema.Schema):
         """Schéma de validation de la méthode default."""
         page = validators.Int(min=1, if_missing=1, if_invalid=1)
@@ -107,8 +107,8 @@ class RootController(VigiboardRootController):
         @param output: Idem que host mais sur le text explicatif
         @param trouble_ticket: Idem que host mais sur les tickets attribués
 
-        Cette méthode permet de satisfaire les exigences suivantes : 
-            - VIGILO_EXIG_VIGILO_BAC_0040, 
+        Cette méthode permet de satisfaire les exigences suivantes :
+            - VIGILO_EXIG_VIGILO_BAC_0040,
             - VIGILO_EXIG_VIGILO_BAC_0070,
             - VIGILO_EXIG_VIGILO_BAC_0100,
         """
@@ -120,10 +120,10 @@ class RootController(VigiboardRootController):
             aggregates.items.c.servicename
         )
         aggregates.add_join((Event, CorrEvent.idcause == Event.idevent))
-        aggregates.add_join((aggregates.items, 
+        aggregates.add_join((aggregates.items,
             Event.idsupitem == aggregates.items.c.idsupitem))
         aggregates.add_order_by(asc(aggregates.items.c.hostname))
-        
+
         search = {}
 
         # Application des filtres si nécessaire
@@ -255,7 +255,7 @@ class RootController(VigiboardRootController):
             EVENTSAGGREGATE_TABLE.c.idevent == Event.idevent))
         events.add_join((CorrEvent, CorrEvent.idcorrevent == \
             EVENTSAGGREGATE_TABLE.c.idcorrevent))
-        events.add_join((events.items, 
+        events.add_join((events.items,
             Event.idsupitem == events.items.c.idsupitem))
         events.add_filter(Event.idevent != CorrEvent.idcause)
         events.add_filter(CorrEvent.idcorrevent == idcorrevent)
@@ -358,7 +358,7 @@ class RootController(VigiboardRootController):
             EVENTSAGGREGATE_TABLE.c.idevent == Event.idevent))
         events.add_join((CorrEvent, CorrEvent.idcorrevent == \
             EVENTSAGGREGATE_TABLE.c.idcorrevent))
-        events.add_join((events.items, 
+        events.add_join((events.items,
             Event.idsupitem == events.items.c.idsupitem))
         events.add_filter(Event.idevent == idevent)
 
@@ -465,7 +465,7 @@ class RootController(VigiboardRootController):
             id_first_row = 0
         else:
             id_first_row += 1
-        
+
         return dict(
             hostname = host,
             servicename = service,
@@ -509,14 +509,14 @@ class RootController(VigiboardRootController):
         """
         Mise à jour d'un événement suivant les arguments passés.
         Cela peut être un changement de ticket ou un changement de statut.
-        
+
         @param id: Le ou les identifiants des événements à traiter
         @param last_modification: La date de la dernière modification
             dont l'utilisateur est au courant.
         @param trouble_ticket: Nouveau numéro du ticket associé.
         @param ack: Nouvel état d'acquittement des événements sélectionnés.
 
-        Cette méthode permet de satisfaire les exigences suivantes : 
+        Cette méthode permet de satisfaire les exigences suivantes :
             - VIGILO_EXIG_VIGILO_BAC_0020,
             - VIGILO_EXIG_VIGILO_BAC_0060,
             - VIGILO_EXIG_VIGILO_BAC_0110.
@@ -539,7 +539,7 @@ class RootController(VigiboardRootController):
         events.add_join((events.items, 
             Event.idsupitem == events.items.c.idsupitem))
         events.add_filter(CorrEvent.idcorrevent.in_(ids))
-        
+
         events.generate_request()
         idevents = [cause.idcause for cause in events.req]
 
