@@ -56,7 +56,7 @@ class SearchForm(twf.TableForm):
         - VIGILO_EXIG_VIGILO_BAC_0070
         - VIGILO_EXIG_VIGILO_BAC_0100
     """
-        
+
     method = 'GET'
     style = 'display: none'
 
@@ -80,7 +80,7 @@ def get_calendar_lang():
     # On récupère la langue du navigateur de l'utilisateur
     lang = get_lang()
     if not lang:
-        lang = config['lang']
+        lang = tg.config['lang']
     else:
         lang = lang[0]
 
