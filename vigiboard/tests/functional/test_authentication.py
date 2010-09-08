@@ -39,7 +39,7 @@ class TestAuthentication(TestController):
         home_page = post_login.follow(status=302)
         assert 'authtkt' in home_page.request.cookies, \
                'Session cookie was not defined: %s' % home_page.request.cookies
-        assert home_page.location == '/'
+        assert home_page.location == 'http://localhost/'
 
     def test_logout(self):
         """Logouts must work correctly"""
@@ -54,6 +54,7 @@ class TestAuthentication(TestController):
         assert resp.location.startswith('/post_logout')
         # Finally, redirected to the home page:
         home_page = resp.follow(status=302)
-        assert home_page.request.cookies.get('authtkt') == '', \
+        assert home_page.request.cookies.get('authtkt') == '' \
+                or home_page.request.cookies.get('authtkt') == 'INVALID', \
                'Session cookie was not deleted: %s' % home_page.request.cookies
-        assert home_page.location == '/', home_page.location
+        assert home_page.location == 'http://localhost/', home_page.location
