@@ -61,7 +61,7 @@ class PluginDetails(VigiboardRequestPlugin):
             else:
                 service = None
 
-            eventdetails[edname] = url(edlink[1]) % {
+            eventdetails[unicode(edname)] = url(edlink[1]) % {
                 'idcorrevent': idcorrevent,
                 'host': urllib.quote(event.hostname),
                 'service': service,

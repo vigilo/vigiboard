@@ -36,11 +36,26 @@ base_config.package = vigiboard
 #
 # Permet de satisfaire l'exigence VIGILO_EXIG_VIGILO_BAC_0130.
 base_config['vigiboard_links.eventdetails'] = {
-    'nagios': [u'Nagios host details', '/nagios/%(host)s/cgi-bin/status.cgi?host=%(host)s'],
-    'metrology': [u'Metrology details', 'http://example.com/?host=%(host)s'],
-    'security': [u'Security details', 'http://security.example.com/?host=%(host)s'],
-    'inventory': [u'Inventory', 'http://cmdb.example.com/?host=%(host)s'],
-    'documentation': [u'Documentation', 'http://doc.example.com/?q=%(message)s'],
+    'nagios': [
+        'Nagios host details',
+        '/nagios/%(host)s/cgi-bin/status.cgi?host=%(host)s'
+    ],
+    'metrology': [
+        'Metrology details',
+        'http://example.com/?host=%(host)s'
+    ],
+    'security': [
+        'Security details',
+        'http://security.example.com/?host=%(host)s'
+    ],
+    'inventory': [
+        'Inventory',
+        'http://cmdb.example.com/?host=%(host)s'
+    ],
+    'documentation': [
+        'Documentation',
+        'http://doc.example.com/?q=%(message)s'
+    ],
 }
 
 # URL des tickets, possibilités:
