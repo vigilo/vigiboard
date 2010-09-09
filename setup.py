@@ -68,6 +68,7 @@ setup(
             'deployment/vigiboard.conf',
             'deployment/vigiboard.wsgi',
             'deployment/settings.ini',
+            'deployment/who.ini',
         ]),
     ],
 )
