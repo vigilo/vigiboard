@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: vigiboard 2.0.0\n"
 "Report-Msgid-Bugs-To: contact@projet-vigilo.org\n"
 "POT-Creation-Date: 2010-06-10 09:56+0200\n"
-"PO-Revision-Date: 2010-08-23 13:15+0200\n"
+"PO-Revision-Date: 2010-09-10 18:12+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: en <LL@li.org>\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
@@ -17,48 +17,48 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 0.9.4\n"
 
-#: vigiboard/controllers/root.py:50 vigiboard/controllers/root.py:58
-#: vigiboard/controllers/root.py:502
+#: vigiboard/controllers/root.py:51 vigiboard/controllers/root.py:59
+#: vigiboard/controllers/root.py:503
 msgid "You need to be authenticated"
 msgstr "You need to be authenticated"
 
-#: vigiboard/controllers/root.py:61
+#: vigiboard/controllers/root.py:62
 msgid "You don't have access to VigiBoard"
 msgstr "You don't have access to VigiBoard"
 
 #. TRANSLATORS: Format de date et heure.
-#: vigiboard/controllers/root.py:165 vigiboard/controllers/root.py:179
+#: vigiboard/controllers/root.py:166 vigiboard/controllers/root.py:180
 #: vigiboard/tests/functional/test_search_form_misc.py:141
 #: vigiboard/tests/functional/test_search_form_misc.py:143
 #, python-format
 msgid "%Y-%m-%d %I:%M:%S %p"
 msgstr "%Y-%m-%d %I:%M:%S %p"
 
-#: vigiboard/controllers/root.py:290
+#: vigiboard/controllers/root.py:291
 msgid "No masked event or access denied"
 msgstr "No masked event or access denied"
 
-#: vigiboard/controllers/root.py:366
+#: vigiboard/controllers/root.py:367
 msgid "No such event or access denied"
 msgstr "No such event or access denied"
 
-#: vigiboard/controllers/root.py:434
+#: vigiboard/controllers/root.py:435
 msgid "No such host/service"
 msgstr "No such host/service"
 
-#: vigiboard/controllers/root.py:452
+#: vigiboard/controllers/root.py:453
 msgid "No access to this host/service or no event yet"
 msgstr "No access to this host/service or no event yet"
 
-#: vigiboard/controllers/root.py:505
+#: vigiboard/controllers/root.py:506
 msgid "You don't have write access to VigiBoard"
 msgstr "You don't have write access to VigiBoard"
 
-#: vigiboard/controllers/root.py:528
+#: vigiboard/controllers/root.py:529
 msgid "No event has been selected"
 msgstr "No event has been selected"
 
-#: vigiboard/controllers/root.py:551
+#: vigiboard/controllers/root.py:552
 msgid ""
 "Changes have occurred since the page was last displayed, your changes "
 "HAVE NOT been saved."
@@ -66,31 +66,31 @@ msgstr ""
 "Changes have occurred since the page was last displayed, your changes "
 "HAVE NOT been saved."
 
-#: vigiboard/controllers/root.py:557
+#: vigiboard/controllers/root.py:558
 msgid "No access to this event"
 msgstr "No access to this event"
 
-#: vigiboard/controllers/root.py:564
+#: vigiboard/controllers/root.py:565
 msgid "You don't have administrative access to VigiBoard"
 msgstr "You don't have administrative access to VigiBoard"
 
-#: vigiboard/controllers/root.py:631
+#: vigiboard/controllers/root.py:632
 msgid "Updated successfully"
 msgstr "Updated successfully"
 
-#: vigiboard/controllers/root.py:668
+#: vigiboard/controllers/root.py:669
 msgid "No such incident or insufficient permissions"
 msgstr "No such incident or insufficient permissions"
 
-#: vigiboard/controllers/root.py:673
+#: vigiboard/controllers/root.py:674
 msgid "No such plugin"
 msgstr "No such plugin"
 
-#: vigiboard/controllers/root.py:683
+#: vigiboard/controllers/root.py:684
 msgid "Not a valid plugin"
 msgstr "Not a valid plugin"
 
-#: vigiboard/controllers/root.py:685
+#: vigiboard/controllers/root.py:686
 msgid "Plugin could not be loaded"
 msgstr "Plugin could not be loaded"
 
