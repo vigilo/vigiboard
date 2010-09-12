@@ -5,6 +5,7 @@ include buildenv/Makefile.common
 PKGNAME := $(NAME)
 MODULE := $(NAME)
 CODEPATH := $(NAME)
+EPYDOC_PARSE := vigiboard\.(widgets|controllers)
 
 install: install_files install_permissions
 
