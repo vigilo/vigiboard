@@ -53,7 +53,7 @@ def make_app(global_conf, full_stack=True, **app_conf):
     app = make_who_with_config(
         app, global_conf,
         app_conf.get('auth.config', 'who.ini'),
-        app_conf.get('auth.log_file', 'stdout'),
+        app_conf.get('auth.log_file', None),
         app_conf.get('auth.log_level', 'debug'),
         app_conf.get('skip_authentication')
     )

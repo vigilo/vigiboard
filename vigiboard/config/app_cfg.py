@@ -15,7 +15,6 @@ convert them into boolean, for example, you should use the
 """
 
 from vigilo.turbogears import VigiloAppConfig
-from pylons.i18n import lazy_ugettext as l_
 
 import vigiboard
 from vigiboard.lib import app_globals, helpers
