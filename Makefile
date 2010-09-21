@@ -7,25 +7,27 @@ MODULE := $(NAME)
 CODEPATH := $(NAME)
 EPYDOC_PARSE := vigiboard\.(widgets|controllers)
 
-install: install_files install_permissions
-
-install_files:
+install:
 	$(PYTHON) setup.py install --single-version-externally-managed --root=$(DESTDIR) --record=INSTALLED_FILES
 	chmod a+rX -R $(DESTDIR)$(PREFIX)/lib*/python*/*
+	# Permissions de la conf
+	chmod a+rX -R $(DESTDIR)$(SYSCONFDIR)/vigilo/$(NAME)
+	[ `id -u` -eq 0 ] && chgrp $(HTTPD_USER) $(DESTDIR)$(SYSCONFDIR)/vigilo/$(NAME)/*.ini
+	chmod 640 $(DESTDIR)$(SYSCONFDIR)/vigilo/$(NAME)/*.ini
 	# Apache
 	mkdir -p $(DESTDIR)$(HTTPD_DIR)
 	ln -f -s $(SYSCONFDIR)/vigilo/$(NAME)/$(NAME).conf $(DESTDIR)$(HTTPD_DIR)/
 	echo $(HTTPD_DIR)/$(NAME).conf >> INSTALLED_FILES
-	mkdir -p $(DESTDIR)/var/log/vigilo/$(NAME)
+	mkdir -p $(DESTDIR)$(LOCALSTATEDIR)/log/vigilo/$(NAME)
 	# Déplacement du app_cfg.py
 	mv $(DESTDIR)`grep '$(NAME)/config/app_cfg.py$$' INSTALLED_FILES` $(DESTDIR)$(SYSCONFDIR)/vigilo/$(NAME)/
 	ln -s $(SYSCONFDIR)/vigilo/$(NAME)/app_cfg.py $(DESTDIR)`grep '$(NAME)/config/app_cfg.py$$' INSTALLED_FILES`
 	echo $(SYSCONFDIR)/vigilo/$(NAME)/app_cfg.py >> INSTALLED_FILES
-	mkdir -p $(DESTDIR)/var/cache/vigilo/sessions
+	# Cache
+	mkdir -p $(DESTDIR)$(LOCALSTATEDIR)/cache/vigilo/sessions
+	chmod 750 $(DESTDIR)$(LOCALSTATEDIR)/cache/vigilo/sessions
+	chown $(HTTPD_USER): $(DESTDIR)$(LOCALSTATEDIR)/cache/vigilo/sessions
 
-install_permissions:
-	chmod 750 $(DESTDIR)/var/cache/vigilo/sessions
-	chown apache: $(DESTDIR)/var/cache/vigilo/sessions
 
 
 lint: lint_pylint

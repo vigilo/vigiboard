@@ -119,7 +119,11 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 %doc COPYING
 %dir %{_sysconfdir}/vigilo
-%config(noreplace) %{_sysconfdir}/vigilo/%{module}
+%dir %{_sysconfdir}/vigilo/%{module}
+%config(noreplace) %{_sysconfdir}/vigilo/%{module}/*.conf
+%config(noreplace) %{_sysconfdir}/vigilo/%{module}/*.py
+%config(noreplace) %{_sysconfdir}/vigilo/%{module}/*.wsgi
+%config(noreplace) %attr(640,root,apache) %{_sysconfdir}/vigilo/%{module}/*.ini
 %{_sysconfdir}/httpd/conf/webapps.d/%{module}.conf
 %dir %{_localstatedir}/log/vigilo/
 %attr(750,apache,apache) %{_localstatedir}/log/vigilo/%{module}
