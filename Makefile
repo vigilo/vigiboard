@@ -26,7 +26,7 @@ install:
 	# Cache
 	mkdir -p $(DESTDIR)$(LOCALSTATEDIR)/cache/vigilo/sessions
 	chmod 750 $(DESTDIR)$(LOCALSTATEDIR)/cache/vigilo/sessions
-	chown $(HTTPD_USER): $(DESTDIR)$(LOCALSTATEDIR)/cache/vigilo/sessions
+	[ `id -u` -ne 0 ] || chown $(HTTPD_USER): $(DESTDIR)$(LOCALSTATEDIR)/cache/vigilo/sessions
 
 
 
