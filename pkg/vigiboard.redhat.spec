@@ -107,7 +107,7 @@ make PYTHON=%{__python} SYSCONFDIR=%{_sysconfdir}
 
 %install
 rm -rf $RPM_BUILD_ROOT
-make install_files \
+make install \
 	DESTDIR=$RPM_BUILD_ROOT \
 	SYSCONFDIR=%{_sysconfdir} \
 	PYTHON=%{__python}
