@@ -36,19 +36,19 @@ base_config.package = vigiboard
 # Permet de satisfaire l'exigence VIGILO_EXIG_VIGILO_BAC_0130.
 base_config['vigiboard_links.eventdetails'] = {
     'nagios': [
-        'Nagios host details',
+        u'Détail de l\'hôte dans Nagios',
         '/nagios/%(host)s/cgi-bin/status.cgi?host=%(host)s'
     ],
     'metrology': [
-        'Metrology details',
+        u'Détail de la métrologie',
         'http://vigilo.example.com/vigigraph/rpc/fullHostPage?host=%(host)s'
     ],
     'security': [
-        'Security details',
+        u'Détail de la sécurité',
         'http://security.example.com/?host=%(host)s'
     ],
     'inventory': [
-        'Inventory',
+        'Inventaire',
         'http://cmdb.example.com/?host=%(host)s'
     ],
     'documentation': [
