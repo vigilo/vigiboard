@@ -41,7 +41,7 @@ base_config['vigiboard_links.eventdetails'] = {
     ],
     'metrology': [
         'Metrology details',
-        'http://example.com/?host=%(host)s'
+        'http://vigilo.example.com/vigigraph/rpc/fullHostPage?host=%(host)s'
     ],
     'security': [
         'Security details',
