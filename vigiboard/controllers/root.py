@@ -163,7 +163,8 @@ class RootController(VigiboardRootController):
                 # TRANSLATORS: http://www.dynarch.com/static/jscalendar-1.0/doc/html/reference.html#node_sec_5.3.5
                 # TRANSLATORS: http://docs.python.org/release/2.5/lib/module-time.html
                 from_date = datetime.strptime(
-                    from_date, _('%Y-%m-%d %I:%M:%S %p'))
+                    from_date.encode('utf8'),
+                    _('%Y-%m-%d %I:%M:%S %p').encode('utf8'))
             except ValueError:
                 # On ignore silencieusement la date invalide reçue.
                 pass
@@ -177,7 +178,8 @@ class RootController(VigiboardRootController):
                 # TRANSLATORS: http://www.dynarch.com/static/jscalendar-1.0/doc/html/reference.html#node_sec_5.3.5
                 # TRANSLATORS: http://docs.python.org/release/2.5/lib/module-time.html
                 to_date = datetime.strptime(
-                    to_date, _('%Y-%m-%d %I:%M:%S %p'))
+                    to_date.encode('utf8'),
+                    _('%Y-%m-%d %I:%M:%S %p').encode('utf8'))
             except ValueError:
                 # On ignore silencieusement la date invalide reçue.
                 pass
@@ -443,7 +445,7 @@ class RootController(VigiboardRootController):
             aggregates.items.c.servicename,
         )
         aggregates.add_join((Event, CorrEvent.idcause == Event.idevent))
-        aggregates.add_join((aggregates.items, 
+        aggregates.add_join((aggregates.items,
             Event.idsupitem == aggregates.items.c.idsupitem))
         aggregates.add_filter(aggregates.items.c.idsupitem == idsupitem)
 
@@ -537,14 +539,14 @@ class RootController(VigiboardRootController):
         events = VigiboardRequest(user)
         events.add_table(CorrEvent)
         events.add_join((Event, CorrEvent.idcause == Event.idevent))
-        events.add_join((events.items, 
+        events.add_join((events.items,
             Event.idsupitem == events.items.c.idsupitem))
         events.add_filter(CorrEvent.idcorrevent.in_(ids))
 
         events.generate_request()
         idevents = [cause.idcause for cause in events.req]
 
-        # Si des changements sont survenus depuis que la 
+        # Si des changements sont survenus depuis que la
         # page est affichée, on en informe l'utilisateur.
         last_modification = datetime.fromtimestamp(last_modification)
         cur_last_modification = get_last_modification_timestamp(idevents, None)
@@ -587,7 +589,7 @@ class RootController(VigiboardRootController):
                         username=user.user_name,
                         timestamp=datetime.now(),
                     )
-                DBSession.add(history)   
+                DBSession.add(history)
                 event.trouble_ticket = trouble_ticket
 
             # Changement du statut d'acquittement.
@@ -659,7 +661,7 @@ class RootController(VigiboardRootController):
         events = VigiboardRequest(user, False)
         events.add_table(CorrEvent.idcorrevent)
         events.add_join((Event, CorrEvent.idcause == Event.idevent))
-        events.add_join((events.items, 
+        events.add_join((events.items,
             Event.idsupitem == events.items.c.idsupitem))
         events.add_filter(CorrEvent.idcorrevent == idcorrevent)
 
@@ -769,10 +771,10 @@ class RootController(VigiboardRootController):
 
         return dict(groups=hierarchy)
 
-def get_last_modification_timestamp(event_id_list, 
+def get_last_modification_timestamp(event_id_list,
                                     value_if_none=datetime.now()):
     """
-    Récupère le timestamp de la dernière modification 
+    Récupère le timestamp de la dernière modification
     opérée sur l'un des événements dont l'identifiant
     fait partie de la liste passée en paramètre.
     """
@@ -809,4 +811,3 @@ def get_plugins_instances():
         except ImportError:
             pass
     return plugins_instances
-
