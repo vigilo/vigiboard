@@ -39,6 +39,8 @@ This application is part of the Vigilo Project <http://vigilo-project.org>
 
 %prep
 %setup -q -n %{module}-%{version}
+# A cause des permissions sur /var/log/httpd sur Red Hat
+sed -i -e '/<IfModule mod_wsgi\.c>/a WSGISocketPrefix run/wsgi' deployment/%{module}.conf
 
 %build
 make PYTHON=%{__python} SYSCONFDIR=%{_sysconfdir}
