@@ -1,5 +1,23 @@
 # -*- coding: utf-8 -*-
-# vim:set expandtab tabstop=4 shiftwidth=4: 
+# vim:set expandtab tabstop=4 shiftwidth=4:
+################################################################################
+#
+# Copyright (C) 2007-2009 CS-SI
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License version 2 as
+# published by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+################################################################################
+
 """
 Controller for authentification
 """
@@ -16,13 +34,13 @@ LOGGER = logging.getLogger(__name__)
 class VigiboardRootController(BaseController):
     """
     The root controller for the vigiboard application.
-    
+
     All the other controllers and WSGI applications should be mounted on this
     controller. For example::
-    
+
         panel = ControlPanelController()
         another_app = AnotherWSGIApplication()
-    
+
     Keep in mind that WSGI applications shouldn't be mounted directly: They
     must be wrapped around with :class:`tg.controllers.WSGIAppController`.
     """
@@ -66,4 +84,3 @@ class VigiboardRootController(BaseController):
             })
         flash(_('We hope to see you soon!'))
         redirect(came_from)
-
