@@ -19,7 +19,37 @@ from vigilo.turbogears import VigiloAppConfig
 import vigiboard
 from vigiboard.lib import app_globals, helpers
 
-base_config = VigiloAppConfig('vigiboard')
+class VigiboardConfig(VigiloAppConfig):
+    def setup_sqlalchemy(self):
+        super(VigiboardConfig, self).setup_sqlalchemy()
+
+        # On est obligés d'attendre que la base de données
+        # soit configurée pour charger les plugins.
+        from pkg_resources import working_set
+        from vigiboard.controllers.plugins import VigiboardRequestPlugin
+        from tg import config
+
+        plugins = []
+        for plugin_name in config['vigiboard_plugins']:
+            try:
+                ep = working_set.iter_entry_points(
+                        "vigiboard.columns", plugin_name).next()
+            except StopIteration:
+                pass
+
+            if ep.name in dict(plugins):
+                continue
+
+            try:
+                plugin_class = ep.load(require=True)
+                if issubclass(plugin_class, VigiboardRequestPlugin):
+                    plugins.append((unicode(ep.name), plugin_class()))
+            except:
+                # @TODO: lever une erreur ?
+                pass
+        config['columns_plugins'] = plugins
+
+base_config = VigiboardConfig('vigiboard')
 base_config.package = vigiboard
 
 ##################################
@@ -34,28 +64,24 @@ base_config.package = vigiboard
 # - %(message) : le message transmis par Nagios dans l'alerte
 #
 # Permet de satisfaire l'exigence VIGILO_EXIG_VIGILO_BAC_0130.
-base_config['vigiboard_links.eventdetails'] = {
-    'nagios': [
+base_config['vigiboard_links.eventdetails'] = (
+    (
         u'Détail de l\'hôte dans Nagios',
         '/nagios/%(host)s/cgi-bin/status.cgi?host=%(host)s'
-    ],
-    'metrology': [
+    ), (
         u'Détail de la métrologie',
         'http://vigilo.example.com/vigigraph/rpc/fullHostPage?host=%(host)s'
-    ],
-    'security': [
+    ), (
         u'Détail de la sécurité',
         'http://security.example.com/?host=%(host)s'
-    ],
-    'inventory': [
+    ), (
         'Inventaire',
         'http://cmdb.example.com/?host=%(host)s'
-    ],
-    'documentation': [
+    ), (
         'Documentation',
         'http://doc.example.com/?q=%(message)s'
-    ],
-}
+    ),
+)
 
 # URL des tickets, possibilités:
 # - %(idcorrevent)d
@@ -65,14 +91,14 @@ base_config['vigiboard_links.eventdetails'] = {
 base_config['vigiboard_links.tt'] = 'http://bugs.example.com/?ticket=%(tt)s'
 
 # Plugins to use
-base_config['vigiboard_plugins'] = [
-    ('details', 'PluginDetails'),
-    ('date', 'PluginDate'),
-    ('priority', 'PluginPriority'),
-    ('occurrences', 'PluginOccurrences'),
-    ('hostname', 'PluginHostname'),
-    ('servicename', 'PluginServicename'),
-    ('output', 'PluginOutput'),
-    ('hls', 'PluginHLS'),
-    ('status', 'PluginStatus'),
-]
+base_config['vigiboard_plugins'] = (
+    'details',
+    'date',
+    'priority',
+    'occurrences',
+    'hostname',
+    'servicename',
+    'output',
+    'hls',
+    'status',
+)

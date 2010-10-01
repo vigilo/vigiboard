@@ -18,6 +18,7 @@ from repoze.what.predicates import Any, All, in_group, \
                                     has_permission, not_anonymous, \
                                     NotAuthorizedError
 from formencode import schema
+from pkg_resources import working_set
 
 from vigilo.models.session import DBSession
 from vigilo.models.tables import Event, EventHistory, CorrEvent, Host, \
@@ -211,7 +212,6 @@ class RootController(VigiboardRootController):
             hostname = None,
             servicename = None,
             events = aggregates.events,
-            plugins = get_plugins_instances(),
             rows_info = {
                 'id_first_row': id_first_row,
                 'id_last_row': id_last_row,
@@ -313,7 +313,6 @@ class RootController(VigiboardRootController):
             hostname = hostname,
             servicename = servicename,
             events = events.events,
-            plugins = get_plugins_instances(),
             rows_info = {
                 'id_first_row': id_first_row,
                 'id_last_row': id_last_row,
@@ -393,7 +392,6 @@ class RootController(VigiboardRootController):
             idevent = idevent,
             hostname = event.hostname,
             servicename = event.servicename,
-            plugins = get_plugins_instances(),
             rows_info = {
                 'id_first_row': id_first_row,
                 'id_last_row': id_last_row,
@@ -473,7 +471,6 @@ class RootController(VigiboardRootController):
             hostname = host,
             servicename = service,
             events = aggregates.events,
-            plugins = get_plugins_instances(),
             rows_info = {
                 'id_first_row': id_first_row,
                 'id_last_row': id_last_row,
@@ -638,9 +635,7 @@ class RootController(VigiboardRootController):
     class GetPluginValueSchema(schema.Schema):
         """Schéma de validation de la méthode get_plugin_value."""
         idcorrevent = validators.Int(not_empty=True)
-        plugin_name = validators.OneOf(
-            [unicode(i[0]) for i in config.get('vigiboard_plugins', [])],
-            not_empty=True, hideList=True)
+        plugin_name = validators.String(not_empty=True)
         # Permet de passer des paramètres supplémentaires au plugin.
         allow_extra_fields = True
 
@@ -654,7 +649,10 @@ class RootController(VigiboardRootController):
         Permet de récupérer la valeur d'un plugin associée à un CorrEvent
         donné via JSON.
         """
-        plugins = config.get('vigiboard_plugins', {})
+        plugins = dict(config['columns_plugins'])
+        if plugin_name not in plugins:
+            raise HTTPNotFound(_("No such plugin '%s'") % plugin_name)
+
         # Permet de vérifier si l'utilisateur a bien les permissions
         # pour accéder à cet événement et si l'événement existe.
         user = get_current_user()
@@ -671,21 +669,7 @@ class RootController(VigiboardRootController):
             raise HTTPNotFound(_('No such incident or insufficient '
                                 'permissions'))
 
-        plugin_class = [p[1] for p in plugins if p[0] == plugin_name]
-        if not plugin_class:
-            raise HTTPNotFound(_('No such plugin'))
-
-        plugin_class = plugin_class[0]
-        try:
-            mypac = __import__(
-                'vigiboard.controllers.plugins.' + plugin_name,
-                globals(), locals(), [plugin_class], -1)
-            plugin = getattr(mypac, plugin_class)
-            if callable(plugin):
-                return plugin().get_value(idcorrevent, *arg, **krgv)
-            raise HTTPInternalServerError(_('Not a valid plugin'))
-        except ImportError:
-            raise HTTPInternalServerError(_('Plugin could not be loaded'))
+        return plugins[plugin_name].get_value(idcorrevent, *arg, **krgv)
 
     @validate(validators={
         "fontsize": validators.Regex(
@@ -789,25 +773,3 @@ def get_last_modification_timestamp(event_id_list,
             last_modification_timestamp = value_if_none
     return datetime.fromtimestamp(mktime(
         last_modification_timestamp.timetuple()))
-
-def get_plugins_instances():
-    """
-    Renvoie une liste d'instances de plugins pour VigiBoard.
-
-    @return: Liste de tuples contenant le nom du plugin
-        et l'instance associée.
-    @rtype: C{list} of C{tuple}
-    """
-    plugins = config.get('vigiboard_plugins', [])
-    plugins_instances = []
-    for (plugin_name, plugin_class) in plugins:
-        try:
-            mypac = __import__(
-                'vigiboard.controllers.plugins.' + plugin_name,
-                globals(), locals(), [plugin_class], -1)
-            plugin = getattr(mypac, plugin_class)
-            if callable(plugin):
-                plugins_instances.append((plugin_name, plugin()))
-        except ImportError:
-            pass
-    return plugins_instances

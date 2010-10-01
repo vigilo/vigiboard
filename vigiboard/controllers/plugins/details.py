@@ -43,7 +43,7 @@ class PluginDetails(VigiboardRequestPlugin):
             events.items.c.servicename,
         )
         events.add_join((CorrEvent, CorrEvent.idcause == Event.idevent))
-        events.add_join((events.items, 
+        events.add_join((events.items,
             Event.idsupitem == events.items.c.idsupitem))
         events.add_filter(CorrEvent.idcorrevent == idcorrevent)
 
@@ -53,8 +53,7 @@ class PluginDetails(VigiboardRequestPlugin):
 
         event = events.req[0]
         eventdetails = {}
-        for edname, edlink in \
-                config['vigiboard_links.eventdetails'].iteritems():
+        for edname, edlink in enumerate(config['vigiboard_links.eventdetails']):
 
             if event.servicename:
                 service = urllib.quote(event.servicename)
@@ -81,5 +80,3 @@ class PluginDetails(VigiboardRequestPlugin):
                 eventdetails = eventdetails,
                 idcause = event[0].idevent,
             )
-
-

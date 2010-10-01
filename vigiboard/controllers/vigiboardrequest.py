@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# vim:set expandtab tabstop=4 shiftwidth=4: 
+# vim:set expandtab tabstop=4 shiftwidth=4:
 """Gestion de la requête, des plugins et de l'affichage du Vigiboard"""
 
 from time import mktime
@@ -177,7 +177,7 @@ class VigiboardRequest():
                     self.add_outer_join(*i.outerjoin)
                 if i.filter:
                     self.add_filter(*i.filter)
-                if i.groupby:    
+                if i.groupby:
                     self.add_group_by(*i.groupby)
                 if i.orderby:
                     self.add_order_by(*i.orderby)
@@ -191,15 +191,8 @@ class VigiboardRequest():
         if self.generaterq:
             return
 
-        for plug in config.get('vigiboard_plugins', []):
-            try:
-                mypac = __import__(
-                    'vigiboard.controllers.plugins.' +\
-                            plug[0], globals(), locals(), [plug[1]], -1)
-                self.add_plugin(getattr(mypac, plug[1])())
-            except ImportError:
-                # On loggue l'erreur et on ignore le plugin.
-                LOGGER.error(_('No such plugin "%s"') % plug[0])
+        for plugin in config['columns_plugins']:
+            self.add_plugin(plugin)
 
         # Toutes les requêtes ont besoin de récupérer l'état courant
         # de l'événement.
@@ -246,10 +239,10 @@ class VigiboardRequest():
 
         @param argv: Liste des tables à ajouter
         """
-        
+
         # On vérifie qu'il n'y a pas de doublons dans la liste finale
         # des tables.
-        
+
         for i in argv :
             for j in self.table:
                 if str(i) == str(j):
@@ -263,10 +256,10 @@ class VigiboardRequest():
 
         @param argv: Liste des jointures à ajouter
         """
-        
+
         # On vérifie qu'il n'y a pas de doublons dans la liste finale
         # des jointures.
-        
+
         for i in argv:
             for j in self.join:
                 if str(i) == str(j):
@@ -280,15 +273,15 @@ class VigiboardRequest():
 
         @param argv: Liste des jointures externes à ajouter
         """
-        
+
         # On vérifie qu'il n'y a pas de doublons dans la liste finale
         # des jointures externes.
-        
+
         for i in argv:
             for j in self.outerjoin:
                 if str(i) == str(j):
                     break
-            self.outerjoin.append(i)    
+            self.outerjoin.append(i)
 
     def add_filter(self, *argv):
         """
@@ -296,10 +289,10 @@ class VigiboardRequest():
 
         @param argv: Liste des filtres à ajouter
         """
-        
+
         # On vérifie qu'il n'y a pas de doublons dans la liste finale
         # des filtres.
-        
+
         for i in argv:
             for j in self.filter:
                 if str(i) == str(j):
@@ -312,10 +305,10 @@ class VigiboardRequest():
 
         @param argv: Liste des groupements à ajouter
         """
-        
+
         # On vérifie qu'il n'y a pas de doublons dans la liste finale
         # des groupements.
-        
+
         for i in argv:
             for j in self.groupby:
                 try:
@@ -333,10 +326,10 @@ class VigiboardRequest():
 
         @param argv: Liste des ordres à ajouter
         """
-        
+
         # On vérifie qu'il n'y a pas de doublons dans la liste finale
         # des ordres.
-        
+
         for i in argv:
             for j in self.orderby:
                 if str(i) == str(j):
@@ -353,7 +346,7 @@ class VigiboardRequest():
         @param first_row: Indice de début de la liste des événements
         @param last_row: Indice de fin de la liste des événements
         """
-        
+
         # Si la requête n'est pas générée, on le fait
         self.generate_request()
 
@@ -403,4 +396,3 @@ class VigiboardRequest():
 
         tmpl_context.edit_event_form = EditEventForm("edit_event_form",
             submit_text=_('Apply'), action=url('/update'))
-
