@@ -62,6 +62,19 @@ setup(
         'vigilo.models': [
             'populate_db = vigiboard.websetup:populate_db',
         ],
+        'vigiboard.columns': [
+            'id = vigiboard.controllers.plugins.id:PluginId',
+            'test = vigiboard.controllers.plugins.test:PluginTest',
+            'details = vigiboard.controllers.plugins.details:PluginDetails',
+            'date = vigiboard.controllers.plugins.date:PluginDate',
+            'priority = vigiboard.controllers.plugins.priority:PluginPriority',
+            'occurrences = vigiboard.controllers.plugins.occurrences:PluginOccurrences',
+            'hostname = vigiboard.controllers.plugins.hostname:PluginHostname',
+            'servicename = vigiboard.controllers.plugins.servicename:PluginServicename',
+            'output = vigiboard.controllers.plugins.output:PluginOutput',
+            'hls = vigiboard.controllers.plugins.hls:PluginHLS',
+            'status = vigiboard.controllers.plugins.status:PluginStatus',
+        ]
     },
     data_files=[
         (os.path.join(sysconfdir, 'vigilo/vigiboard/'), [
@@ -72,4 +85,3 @@ setup(
         ]),
     ],
 )
-
