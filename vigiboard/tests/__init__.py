@@ -8,12 +8,11 @@ import unittest
 from tg import config
 from paste.deploy import loadapp
 from paste.script.appinstall import SetupCommand
-from routes import url_for
 from webtest import TestApp
 
 from vigilo.models.session import metadata, DBSession
 
-__all__ = ['setup_db', 'teardown_db', 'TestController', 'url_for']
+__all__ = ['setup_db', 'teardown_db', 'TestController']
 
 def setup_db():
     """Method used to build a database"""
