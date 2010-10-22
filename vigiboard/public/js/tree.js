@@ -2,7 +2,7 @@
  * VigiBoard, composant de Vigilo.
  * (c) CSSI 2009-2010 <contact@projet-vigilo.org>
  * Licence : GNU GPL v2 ou superieure
- * 
+ *
  */
 
 /*
@@ -21,7 +21,7 @@ var TreeGroup = new Class({
         this.dlg = new Jx.Dialog({
             label: this.options.title,
             modal: true,
-            content: container,
+            content: container
         });
 
         var req = new Request.JSON({
@@ -43,14 +43,14 @@ var TreeGroup = new Class({
             subfolder = new Jx.TreeFolder({
                 label: data.name,
                 data: data.idgroup,
-                image: this.options.app_path+"images/map-list.png",
+                image: this.options.app_path+"images/map-list.png"
             });
         }
         else {
             subfolder = new Jx.TreeItem({
                 label: data.name,
                 data: data.idgroup,
-                image: this.options.app_path+"images/map.png",
+                image: this.options.app_path+"images/map.png"
             });
         }
 
@@ -70,4 +70,3 @@ var TreeGroup = new Class({
         this.dlg.open();
     }
 });
-

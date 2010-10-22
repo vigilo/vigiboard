@@ -3,7 +3,7 @@ Autocompleter.Request.VigiloJSON = new Class({
     Extends: Autocompleter.Request,
 
     options: {
-        resVar: 'results',
+        resVar: 'results'
     },
 
     initialize: function(el, url, options) {
@@ -20,4 +20,3 @@ Autocompleter.Request.VigiloJSON = new Class({
     }
 
 });
-
