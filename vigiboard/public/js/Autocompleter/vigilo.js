@@ -10,7 +10,7 @@ Autocompleter.Request.VigiloJSON = new Class({
         this.parent(el, options);
         this.request = new Request.JSON($merge({
             'url': url,
-            'link': 'cancel',
+            'link': 'cancel'
         }, this.options.ajaxOptions)).addEvent('onComplete', this.queryResponse.bind(this));
     },
 
