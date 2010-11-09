@@ -65,7 +65,7 @@ def make_app(global_conf, full_stack=True, **app_conf):
     common_static = StaticURLParser(resource_filename(
         'vigilo.themes.public', 'common'))
     local_static = StaticURLParser(resource_filename(
-                'vigiboard', 'public'))
+        'vigiboard', 'public'))
     app = Cascade([app_static, common_static, local_static, app])
 
     app = make_who_with_config(
