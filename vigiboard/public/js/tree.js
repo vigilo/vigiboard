@@ -42,15 +42,13 @@ var TreeGroup = new Class({
         if (data.children.length) {
             subfolder = new Jx.TreeFolder({
                 label: data.name,
-                data: data.idgroup,
-                image: this.options.app_path+"images/map-list.png"
+                data: data.idgroup
             });
         }
         else {
             subfolder = new Jx.TreeItem({
                 label: data.name,
-                data: data.idgroup,
-                image: this.options.app_path+"images/map.png"
+                data: data.idgroup
             });
         }
 
