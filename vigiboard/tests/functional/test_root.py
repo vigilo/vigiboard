@@ -66,7 +66,6 @@ def populate_DB():
         host = host1,
         servicename = u'service1',
         command = u'halt',
-        op_dep = u'+',
         weight = 42,
     )
     DBSession.add(service1)
@@ -75,7 +74,6 @@ def populate_DB():
         host = host2,
         servicename = u'service2',
         command = u'halt',
-        op_dep = u'+',
         weight = 42,
     )
     DBSession.add(service2)

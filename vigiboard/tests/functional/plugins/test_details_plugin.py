@@ -55,7 +55,6 @@ def insert_deps(return_service):
         command=u'',
         weight=42,
         servicename=u'baz',
-        op_dep=u'&',
     )
     DBSession.add(service)
     DBSession.flush()

@@ -66,7 +66,6 @@ def populate_DB():
     # Création des services techniques de test.
     service_template = {
         'command': u'halt',
-        'op_dep': u'+',
         'weight': 42,
     }
 

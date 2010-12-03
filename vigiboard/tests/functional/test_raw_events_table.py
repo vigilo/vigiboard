@@ -80,7 +80,6 @@ def populate_DB(caused_by_service):
         host = managerhost,
         servicename = u'managerservice',
         command = u'halt',
-        op_dep = u'+',
         weight = 42,
     )
     DBSession.add(managerservice)

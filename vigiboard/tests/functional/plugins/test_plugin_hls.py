@@ -80,7 +80,6 @@ def add_paths(path_number, path_length, idsupitem):
 
     # Création de services de haut niveau dans la BDD.
     hls_template = {
-        'op_dep': u'&',
         'message': u'Bar',
         'warning_threshold': 60,
         'critical_threshold': 80,
