@@ -94,7 +94,7 @@ msgstr "Ungültige Anmeldeinformationen"
 #: vigiboard/controllers/vigiboard_controller.py:69
 #, python-format
 msgid "\"%(username)s\" logged in (from %(IP)s)"
-msgstr "\"%(username)n\" (aus %(IP)s) angemeldet"
+msgstr "\"%(username)s\" (aus %(IP)s) angemeldet"
 
 #: vigiboard/controllers/vigiboard_controller.py:73
 #, python-format
