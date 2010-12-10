@@ -47,7 +47,7 @@ def populate_db(bind):
     for (permission_name, description) in permissions.iteritems():
         if not tables.Permission.by_permission_name(unicode(permission_name)):
             DBSession.add(tables.Permission(
-                permission_name=permission_name,
-                description=description,
+                permission_name=unicode(permission_name),
+                description=unicode(description),
             ))
     DBSession.flush()
