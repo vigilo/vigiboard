@@ -551,7 +551,7 @@ class RootController(VigiboardRootController):
         ids = map(int, id.strip(',').split(','))
 
         user = get_current_user()
-        events = VigiboardRequest(user)
+        events = VigiboardRequest(user, access_needed=['w'])
         events.add_table(CorrEvent)
         events.add_join((Event, CorrEvent.idcause == Event.idevent))
         events.add_join((events.items,
@@ -723,55 +723,174 @@ class RootController(VigiboardRootController):
 
     @require(access_restriction)
     @expose('json')
-    def get_groups(self):
-        hierarchy = []
-        user = get_current_user()
-        groups = DBSession.query(
-                    SupItemGroup.idgroup,
-                    SupItemGroup.name,
-                    GroupHierarchy.idparent,
-                ).join(
-                    (GroupHierarchy, GroupHierarchy.idchild == \
-                        SupItemGroup.idgroup),
-                ).filter(GroupHierarchy.hops <= 1
-                ).order_by(GroupHierarchy.hops.asc()
-                ).order_by(SupItemGroup.name.asc())
+    def get_groups(self, parent_id=None):
+        """
+        Affiche un étage de l'arbre de
+        sélection des hôtes et groupes d'hôtes.
 
+        @param parent_id: identifiant du groupe d'hôte parent
+        @type  parent_id: C{int} or None
+        """
+
+        # Si l'identifiant du groupe parent n'est pas
+        # spécifié, on retourne la liste des groupes racines,
+        # fournie par la méthode get_root_hosts_groups.
+        if parent_id is None:
+            return self.get_root_host_groups()
+
+        # TODO: Utiliser un schéma de validation
+        parent_id = int(parent_id)
+
+        # On vérifie si le groupe parent fait partie des
+        # groupes auxquel l'utilisateur a accès, et on
+        # retourne une liste vide dans le cas contraire
         is_manager = in_group('managers').is_met(request.environ)
         if not is_manager:
-            user_groups = [ug[0] for ug in user.supitemgroups() if ug[1]]
-            groups = groups.filter(SupItemGroup.idgroup.in_(user_groups))
-
-        def find_parent(idgroup):
-            def __find_parent(hier, idgroup):
-                for g in hier:
-                    if g['idgroup'] == idgroup:
-                        return g['children']
-                for g in hier:
-                    res = __find_parent(g['children'], idgroup)
-                    if res:
-                        return res
-                return None
-            parent = __find_parent(hierarchy, idgroup)
-            if parent is None:
-                return hierarchy
-            return parent
-
-        for g in groups.all():
-            parent = find_parent(g.idparent)
-            for item in hierarchy:
-                if item['idgroup'] == g.idgroup:
-                    parent.append(item)
-                    hierarchy.remove(item)
-                    break
+            direct_access = False
+            user = get_current_user()
+            user_groups = dict(user.supitemgroups())
+            # On regarde d'abord si le groupe fait partie de ceux
+            # auquels l'utilisateur a explicitement accès, ou s'il
+            # est un parent des groupes auxquels l'utilisateur a accès
+            if parent_id in user_groups.keys():
+                direct_access = user_groups[parent_id]
+            # Dans le cas contraire, on vérifie si le groupe est un
+            # sous-groupe des groupes auxquels l'utilisateur a accès
             else:
-                parent.append({
-                    'idgroup': g.idgroup,
-                    'name': g.name,
-                    'children': [],
-                })
+                id_list = [ug for ug in user_groups.keys() if user_groups[ug]]
+                child_groups = DBSession.query(SupItemGroup.idgroup
+                    ).distinct(
+                    ).join(
+                        (GroupHierarchy,
+                            GroupHierarchy.idchild == SupItemGroup.idgroup),
+                    ).filter(GroupHierarchy.idparent.in_(id_list)
+                    ).filter(GroupHierarchy.hops > 0
+                    ).all()
+                for ucg in child_groups:
+                    if ucg.idgroup == parent_id:
+                        direct_access = True
+                        break
+                # Sinon, l'utilisateur n'a pas accès à ce groupe
+                else:
+                    return dict(groups = [], leaves = [])
 
-        return dict(groups=hierarchy)
+        # On récupère la liste des groupes dont
+        # l'identifiant du parent est passé en paramètre
+        db_groups = DBSession.query(
+            SupItemGroup
+        ).join(
+            (GroupHierarchy, GroupHierarchy.idchild == \
+                SupItemGroup.idgroup),
+        ).filter(GroupHierarchy.hops == 1
+        ).filter(GroupHierarchy.idparent == parent_id
+        ).order_by(SupItemGroup.name.asc())
+        if not is_manager and not direct_access:
+            id_list = [ug for ug in user_groups.keys()]
+            db_groups = db_groups.filter(
+                SupItemGroup.idgroup.in_(id_list))
+        groups = []
+        for group in db_groups.all():
+            groups.append({
+                'id'   : group.idgroup,
+                'name' : group.name,
+            })
+
+        return dict(groups = groups, leaves = [])
+
+    def get_root_host_groups(self):
+        """
+        Retourne tous les groupes racines (c'est à dire n'ayant
+        aucun parent) d'hôtes auquel l'utilisateur a accès.
+
+        @return: Un dictionnaire contenant la liste de ces groupes.
+        @rtype : C{dict} of C{list} of C{dict} of C{mixed}
+        """
+
+        # On récupère tous les groupes qui ont un parent.
+        children = DBSession.query(
+            SupItemGroup,
+        ).distinct(
+        ).join(
+            (GroupHierarchy, GroupHierarchy.idchild == SupItemGroup.idgroup)
+        ).filter(GroupHierarchy.hops > 0)
+
+        # Ensuite on les exclut de la liste des groupes,
+        # pour ne garder que ceux qui sont au sommet de
+        # l'arbre et qui constituent nos "root groups".
+        root_groups = DBSession.query(
+            SupItemGroup,
+        ).except_(children
+        ).order_by(SupItemGroup.name)
+
+        # On filtre ces groupes racines afin de ne
+        # retourner que ceux auquels l'utilisateur a accès
+        user = get_current_user()
+        is_manager = in_group('managers').is_met(request.environ)
+        if not is_manager:
+            user_groups = [ug[0] for ug in user.supitemgroups()]
+            root_groups = root_groups.filter(
+                SupItemGroup.idgroup.in_(user_groups))
+
+        groups = []
+        for group in root_groups.all():
+            groups.append({
+                'id'   : group.idgroup,
+                'name' : group.name,
+            })
+
+        return dict(groups = groups, leaves=[])
+
+#    @require(access_restriction)
+#    @expose('json')
+#    def get_groups(self):
+#        hierarchy = []
+#        user = get_current_user()
+#        groups = DBSession.query(
+#                    SupItemGroup.idgroup,
+#                    SupItemGroup.name,
+#                    GroupHierarchy.idparent,
+#                ).join(
+#                    (GroupHierarchy, GroupHierarchy.idchild == \
+#                        SupItemGroup.idgroup),
+#                ).filter(GroupHierarchy.hops <= 1
+#                ).order_by(GroupHierarchy.hops.asc()
+#                ).order_by(SupItemGroup.name.asc())
+
+#        is_manager = in_group('managers').is_met(request.environ)
+#        if not is_manager:
+#            user_groups = [ug[0] for ug in user.supitemgroups() if ug[1]]
+#            groups = groups.filter(SupItemGroup.idgroup.in_(user_groups))
+
+#        def find_parent(idgroup):
+#            def __find_parent(hier, idgroup):
+#                for g in hier:
+#                    if g['idgroup'] == idgroup:
+#                        return g['children']
+#                for g in hier:
+#                    res = __find_parent(g['children'], idgroup)
+#                    if res:
+#                        return res
+#                return None
+#            parent = __find_parent(hierarchy, idgroup)
+#            if parent is None:
+#                return hierarchy
+#            return parent
+
+#        for g in groups.all():
+#            parent = find_parent(g.idparent)
+#            for item in hierarchy:
+#                if item['idgroup'] == g.idgroup:
+#                    parent.append(item)
+#                    hierarchy.remove(item)
+#                    break
+#            else:
+#                parent.append({
+#                    'idgroup': g.idgroup,
+#                    'name': g.name,
+#                    'children': [],
+#                })
+
+#        return dict(groups=hierarchy)
 
 def get_last_modification_timestamp(event_id_list,
                                     value_if_none=datetime.now()):
