@@ -551,7 +551,7 @@ class RootController(VigiboardRootController):
         ids = map(int, id.strip(',').split(','))
 
         user = get_current_user()
-        events = VigiboardRequest(user, access_needed=['w'])
+        events = VigiboardRequest(user)
         events.add_table(CorrEvent)
         events.add_join((Event, CorrEvent.idcause == Event.idevent))
         events.add_join((events.items,
@@ -839,58 +839,6 @@ class RootController(VigiboardRootController):
             })
 
         return dict(groups = groups, leaves=[])
-
-#    @require(access_restriction)
-#    @expose('json')
-#    def get_groups(self):
-#        hierarchy = []
-#        user = get_current_user()
-#        groups = DBSession.query(
-#                    SupItemGroup.idgroup,
-#                    SupItemGroup.name,
-#                    GroupHierarchy.idparent,
-#                ).join(
-#                    (GroupHierarchy, GroupHierarchy.idchild == \
-#                        SupItemGroup.idgroup),
-#                ).filter(GroupHierarchy.hops <= 1
-#                ).order_by(GroupHierarchy.hops.asc()
-#                ).order_by(SupItemGroup.name.asc())
-
-#        is_manager = in_group('managers').is_met(request.environ)
-#        if not is_manager:
-#            user_groups = [ug[0] for ug in user.supitemgroups() if ug[1]]
-#            groups = groups.filter(SupItemGroup.idgroup.in_(user_groups))
-
-#        def find_parent(idgroup):
-#            def __find_parent(hier, idgroup):
-#                for g in hier:
-#                    if g['idgroup'] == idgroup:
-#                        return g['children']
-#                for g in hier:
-#                    res = __find_parent(g['children'], idgroup)
-#                    if res:
-#                        return res
-#                return None
-#            parent = __find_parent(hierarchy, idgroup)
-#            if parent is None:
-#                return hierarchy
-#            return parent
-
-#        for g in groups.all():
-#            parent = find_parent(g.idparent)
-#            for item in hierarchy:
-#                if item['idgroup'] == g.idgroup:
-#                    parent.append(item)
-#                    hierarchy.remove(item)
-#                    break
-#            else:
-#                parent.append({
-#                    'idgroup': g.idgroup,
-#                    'name': g.name,
-#                    'children': [],
-#                })
-
-#        return dict(groups=hierarchy)
 
 def get_last_modification_timestamp(event_id_list,
                                     value_if_none=datetime.now()):
