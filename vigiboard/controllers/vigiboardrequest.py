@@ -60,7 +60,6 @@ class VigiboardRequest():
         l'utilisateur sur les données manipulées.
         """
 
-        self.user_groups = [ug[0] for ug in user.supitemgroups() if ug[1]]
         self.generaterq = False
 
         is_manager = in_group('managers').is_met(request.environ)
@@ -100,11 +99,12 @@ class VigiboardRequest():
         # Les managers ont accès à tout, les autres sont soumis
         # aux vérifications classiques d'accès aux données.
         if not is_manager:
+            user_groups = [ug[0] for ug in user.supitemgroups() if ug[1]]
             lls_query = lls_query.filter(
-                SUPITEM_GROUP_TABLE.c.idgroup.in_(self.user_groups)
+                SUPITEM_GROUP_TABLE.c.idgroup.in_(user_groups)
             )
             host_query = host_query.filter(
-                SUPITEM_GROUP_TABLE.c.idgroup.in_(self.user_groups)
+                SUPITEM_GROUP_TABLE.c.idgroup.in_(user_groups)
             )
 
 
