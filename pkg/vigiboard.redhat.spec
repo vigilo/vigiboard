@@ -55,6 +55,9 @@ make install \
 # %find_lang %{name} # ne fonctionne qu'avec les fichiers dans /usr/share/locale/
 
 
+%post
+/sbin/service httpd condrestart > /dev/null 2>&1 || :
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
