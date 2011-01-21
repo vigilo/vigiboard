@@ -615,17 +615,18 @@ class RootController(VigiboardRootController):
                 # "vigiboard-admin".
                 if ack == u'Forced':
                     changed_ack = u'AAClosed'
+                    cause = event.cause
                     # On met systématiquement l'événement à l'état "OK",
                     # même s'il s'agit d'un hôte.
                     # Techniquement, c'est incorrect, mais on fait ça
                     # pour masquer l'événement de toutes façons...
-                    event.cause.current_state = \
+                    cause.current_state = \
                         StateName.statename_to_value(u'OK')
 
                     # Mise à jour de l'état dans State, pour que
                     # VigiMap soit également mis à jour.
                     DBSession.query(State).filter(
-                            State.idsupitem == event.idcause,
+                            State.idsupitem == cause.idsupitem,
                         ).update({
                             'state': StateName.statename_to_value(u'OK'),
                         })
