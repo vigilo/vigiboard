@@ -41,7 +41,7 @@ from pkg_resources import working_set
 from vigilo.models.session import DBSession
 from vigilo.models.tables import Event, EventHistory, CorrEvent, Host, \
                                     SupItem, SupItemGroup, LowLevelService, \
-                                    StateName
+                                    StateName, State
 from vigilo.models.tables.grouphierarchy import GroupHierarchy
 from vigilo.models.functions import sql_escape_like
 from vigilo.models.tables.secondary_tables import EVENTSAGGREGATE_TABLE

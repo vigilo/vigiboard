@@ -15,36 +15,36 @@ from vigilo.models.tables import Event, EventHistory, CorrEvent, User, \
 from vigiboard.tests import TestController
 
 def populate_accounts():
-        perm = Permission.by_permission_name(u'vigiboard-access')
+    perm = Permission.by_permission_name(u'vigiboard-access')
 
-        user = User(
-            user_name=u'access',
-            fullname=u'',
-            email=u'user.has@access',
-        )
-        usergroup = UserGroup(
-            group_name=u'users_with_access',
-        )
-        usergroup.permissions.append(perm)
-        user.usergroups.append(usergroup)
-        DBSession.add(user)
-        DBSession.add(usergroup)
-        DBSession.flush()
+    user = User(
+        user_name=u'access',
+        fullname=u'',
+        email=u'user.has@access',
+    )
+    usergroup = UserGroup(
+        group_name=u'users_with_access',
+    )
+    usergroup.permissions.append(perm)
+    user.usergroups.append(usergroup)
+    DBSession.add(user)
+    DBSession.add(usergroup)
+    DBSession.flush()
 
-        user = User(
-            user_name=u'limited_access',
-            fullname=u'',
-            email=u'user.has.no@access',
-        )
-        usergroup = UserGroup(
-            group_name=u'users_with_limited_access',
-        )
-        usergroup.permissions.append(perm)
-        user.usergroups.append(usergroup)
-        DBSession.add(user)
-        DBSession.add(usergroup)
-        DBSession.flush()
-        transaction.commit()
+    user = User(
+        user_name=u'limited_access',
+        fullname=u'',
+        email=u'user.has.no@access',
+    )
+    usergroup = UserGroup(
+        group_name=u'users_with_limited_access',
+    )
+    usergroup.permissions.append(perm)
+    user.usergroups.append(usergroup)
+    DBSession.add(user)
+    DBSession.add(usergroup)
+    DBSession.flush()
+    transaction.commit()
 
 def populate_DB(caused_by_service):
     """ Peuple la base de données. """
@@ -63,7 +63,7 @@ def populate_DB(caused_by_service):
 
     # On crée un hôte de test, et on l'ajoute au groupe d'hôtes.
     managerhost = Host(
-        name = u'managerhost',      
+        name = u'managerhost',
         checkhostcmd = u'halt',
         snmpcommunity = u'public',
         hosttpl = u'/dev/null',
@@ -93,7 +93,7 @@ def populate_DB(caused_by_service):
 
     # Ajout d'un événement
     event = Event(
-        supitem = supitem, 
+        supitem = supitem,
         message = u'foo',
         current_state = StateName.statename_to_value(u"WARNING"),
         timestamp = datetime.now(),
@@ -104,17 +104,17 @@ def populate_DB(caused_by_service):
     # Ajout des historiques
     DBSession.add(EventHistory(
         type_action=u'Nagios update state',
-        idevent=event.idevent, 
+        idevent=event.idevent,
         timestamp=datetime.now()))
     DBSession.add(EventHistory(
         type_action=u'Acknowlegement change state',
-        idevent=event.idevent, 
+        idevent=event.idevent,
         timestamp=datetime.now()))
     DBSession.flush()
 
     # Ajout d'un événement corrélé
     aggregate = CorrEvent(
-        idcause = event.idevent, 
+        idcause = event.idevent,
         timestamp_active = datetime.now(),
         priority = 1,
         status = u"None")
@@ -130,7 +130,7 @@ def add_masked_event(idcorrevent):
     nb_hosts = DBSession.query(Host).count()
 
     masked_host = Host(
-        name = u'masked host #%d' % nb_hosts,      
+        name = u'masked host #%d' % nb_hosts,
         checkhostcmd = u'halt',
         snmpcommunity = u'public',
         hosttpl = u'/dev/null',
@@ -220,7 +220,7 @@ class TestRawEventsTableWithoutPermsLLS(TestController):
         # n'a pas accès aux informations concernant cet évènement.
         response = self.app.get(
             '/masked_events/%d' % idcorrevent,
-            status = 302, 
+            status = 302,
             extra_environ = environ)
         response = response.follow(status = 200, extra_environ = environ)
         assert_true(len(response.lxml.xpath(
@@ -234,7 +234,7 @@ class TestRawEventsTableWithoutPermsLLS(TestController):
         add_masked_event(idcorrevent)
         response = self.app.get(
             '/masked_events/%d' % idcorrevent,
-            status = 302, 
+            status = 302,
             extra_environ = environ)
         response = response.follow(status = 200, extra_environ = environ)
         assert_true(len(response.lxml.xpath(
@@ -305,4 +305,3 @@ class TestRawEventsTableWithPermsHost(TestRawEventsTableWithPermsLLS):
     def test_table(self):
         """Événements masqués d'un agrégat sur un hôte avec permissions."""
         super(TestRawEventsTableWithPermsHost, self).test_table()
-
