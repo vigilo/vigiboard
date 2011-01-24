@@ -23,11 +23,11 @@ __all__ = ['setup_app', 'populate_db']
 
 def setup_app(command, conf, variables):
     """Place any commands to setup vigiboard here"""
-    from vigilo.turbogears import populate_db
+    from vigilo.turbogears import populate_db as tg_pop_db
     from vigiboard.config.environment import load_environment
 
     load_environment(conf.global_conf, conf.local_conf)
-    populate_db()
+    tg_pop_db()
 
 def populate_db(bind):
     from vigilo.models.session import DBSession
