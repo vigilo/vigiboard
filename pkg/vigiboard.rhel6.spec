@@ -67,5 +67,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_sysconfdir}/httpd/conf.d/%{module}.conf
 %dir %{_localstatedir}/log/vigilo/
 %attr(750,apache,apache) %{_localstatedir}/log/vigilo/%{module}
+%config(noreplace) %{_sysconfdir}/logrotate.d/%{module}
 %attr(750,apache,apache) %{_localstatedir}/cache/vigilo/sessions
 %{python_sitelib}/*
