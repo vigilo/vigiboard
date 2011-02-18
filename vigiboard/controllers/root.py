@@ -28,8 +28,7 @@ from tg.exceptions import HTTPNotFound, HTTPInternalServerError
 from tg import expose, validate, require, flash, \
     tmpl_context, request, config, session, redirect
 from tw.forms import validators
-from pylons.i18n import ugettext as _
-from pylons.i18n import lazy_ugettext as l_
+from pylons.i18n import ugettext as _, lazy_ugettext as l_
 from sqlalchemy import asc
 from sqlalchemy.sql import func
 from repoze.what.predicates import Any, All, in_group, \
@@ -149,11 +148,12 @@ class RootController(VigiboardRootController):
         # Application des filtres si nécessaire
         if supitemgroup:
             search['supitemgroup'] = supitemgroup
-            aggregates.add_filter(aggregates.items.c.idsupitemgroup == \
-                supitemgroup)
+            aggregates.add_join((GroupHierarchy, GroupHierarchy.idchild ==
+                aggregates.items.c.idsupitemgroup))
+            aggregates.add_filter(GroupHierarchy.idparent == supitemgroup)
 
         if host:
-            search['host'] = host
+            search['host_'] = host
             host = sql_escape_like(host)
             aggregates.add_filter(aggregates.items.c.hostname.ilike(
                 '%s' % host))
@@ -209,13 +209,13 @@ class RootController(VigiboardRootController):
         total_rows = aggregates.num_rows()
         items_per_page = int(config['vigiboard_items_per_page'])
 
-        # Si le numéro de page dépasse le nombre de pages existantes,
-        # on redirige automatiquement vers la 1ère page.
-        if total_rows and items_per_page * (page-1) > total_rows:
-            redirect('/', page=1, **search)
-
         id_first_row = items_per_page * (page-1)
         id_last_row = min(id_first_row + items_per_page, total_rows)
+
+        # Si le numéro de page dépasse le nombre de pages existantes,
+        # on redirige automatiquement vers la 1ère page.
+        if total_rows and id_first_row >= total_rows:
+            redirect('/', page=total_rows / items_per_page, **search)
 
         aggregates.format_events(id_first_row, id_last_row)
         aggregates.generate_tmpl_context()
@@ -311,7 +311,8 @@ class RootController(VigiboardRootController):
             flash(_('No masked event or access denied'), 'error')
             redirect('/')
 
-        # Calcul des éléments à afficher et du nombre de pages possibles
+         # Calcul des éléments à afficher et du nombre de pages possibles
+        total_rows = events.num_rows()
         items_per_page = int(config['vigiboard_items_per_page'])
 
         id_first_row = items_per_page * (page-1)
@@ -642,7 +643,7 @@ class RootController(VigiboardRootController):
                     DBSession.add(history)
 
                 history = EventHistory(
-                        type_action="Acknowledgement change state",
+                        type_action=u"Acknowledgement change state",
                         idevent=event.idcause,
                         value=ack,
                         text="Changed acknowledgement status "
