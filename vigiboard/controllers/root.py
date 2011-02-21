@@ -31,6 +31,7 @@ from tw.forms import validators
 from pylons.i18n import ugettext as _, lazy_ugettext as l_
 from sqlalchemy import asc
 from sqlalchemy.sql import func
+from sqlalchemy.orm import aliased
 from repoze.what.predicates import Any, All, in_group, \
                                     has_permission, not_anonymous, \
                                     NotAuthorizedError
@@ -41,7 +42,6 @@ from vigilo.models.session import DBSession
 from vigilo.models.tables import Event, EventHistory, CorrEvent, Host, \
                                     SupItem, SupItemGroup, LowLevelService, \
                                     StateName, State
-from vigilo.models.tables.grouphierarchy import GroupHierarchy
 from vigilo.models.functions import sql_escape_like
 from vigilo.models.tables.secondary_tables import EVENTSAGGREGATE_TABLE
 
@@ -147,33 +147,35 @@ class RootController(VigiboardRootController):
 
         # Application des filtres si nécessaire
         if supitemgroup:
-            search['supitemgroup'] = supitemgroup
-            aggregates.add_join((GroupHierarchy, GroupHierarchy.idchild ==
-                aggregates.items.c.idsupitemgroup))
-            aggregates.add_filter(GroupHierarchy.idparent == supitemgroup)
+            base = DBSession.query(SupItemGroup).get(supitemgroup)
+            if base:
+                search['supitemgroup'] = supitemgroup
+                sig = aliased(SupItemGroup)
+                aggregates.add_join(
+                    (sig, aggregates.items.c.idsupitemgroup == sig.idgroup),
+                )
+                aggregates.add_filter(sig.left >= base.left)
+                aggregates.add_filter(sig.right <= base.right)
 
         if host:
             search['host_'] = host
             host = sql_escape_like(host)
-            aggregates.add_filter(aggregates.items.c.hostname.ilike(
-                '%s' % host))
+            aggregates.add_filter(aggregates.items.c.hostname.ilike(host))
 
         if service:
             search['service'] = service
             service = sql_escape_like(service)
-            aggregates.add_filter(aggregates.items.c.servicename.ilike(
-                '%s' % service))
+            aggregates.add_filter(aggregates.items.c.servicename.ilike(service))
 
         if output:
             search['output'] = output
             output = sql_escape_like(output)
-            aggregates.add_filter(Event.message.ilike('%s' % output))
+            aggregates.add_filter(Event.message.ilike(output))
 
         if trouble_ticket:
             search['tt'] = trouble_ticket
             trouble_ticket = sql_escape_like(trouble_ticket)
-            aggregates.add_filter(CorrEvent.trouble_ticket.ilike(
-                '%s' % trouble_ticket))
+            aggregates.add_filter(CorrEvent.trouble_ticket.ilike(trouble_ticket))
 
         if from_date:
             search['from_date'] = from_date.lower()
@@ -204,6 +206,7 @@ class RootController(VigiboardRootController):
                 pass
             else:
                 aggregates.add_filter(CorrEvent.timestamp_active <= to_date)
+
 
         # Calcul des éléments à afficher et du nombre de pages possibles
         total_rows = aggregates.num_rows()
@@ -749,56 +752,27 @@ class RootController(VigiboardRootController):
         if parent_id is None:
             return self.get_root_host_groups()
 
-        # TODO: Utiliser un schéma de validation
-        parent_id = int(parent_id)
+        parent = DBSession.query(SupItemGroup).get(parent_id)
 
         # On vérifie si le groupe parent fait partie des
         # groupes auxquel l'utilisateur a accès, et on
         # retourne une liste vide dans le cas contraire
         is_manager = in_group('managers').is_met(request.environ)
-        if not is_manager:
-            direct_access = False
-            user = get_current_user()
-            user_groups = dict(user.supitemgroups())
-            # On regarde d'abord si le groupe fait partie de ceux
-            # auquels l'utilisateur a explicitement accès, ou s'il
-            # est un parent des groupes auxquels l'utilisateur a accès
-            if parent_id in user_groups.keys():
-                direct_access = user_groups[parent_id]
-            # Dans le cas contraire, on vérifie si le groupe est un
-            # sous-groupe des groupes auxquels l'utilisateur a accès
-            else:
-                id_list = [ug for ug in user_groups.keys() if user_groups[ug]]
-                child_groups = DBSession.query(SupItemGroup.idgroup
-                    ).distinct(
-                    ).join(
-                        (GroupHierarchy,
-                            GroupHierarchy.idchild == SupItemGroup.idgroup),
-                    ).filter(GroupHierarchy.idparent.in_(id_list)
-                    ).filter(GroupHierarchy.hops > 0
-                    ).all()
-                for ucg in child_groups:
-                    if ucg.idgroup == parent_id:
-                        direct_access = True
-                        break
-                # Sinon, l'utilisateur n'a pas accès à ce groupe
-                else:
-                    return dict(groups = [], leaves = [])
 
         # On récupère la liste des groupes dont
         # l'identifiant du parent est passé en paramètre
         db_groups = DBSession.query(
             SupItemGroup
-        ).join(
-            (GroupHierarchy, GroupHierarchy.idchild == \
-                SupItemGroup.idgroup),
-        ).filter(GroupHierarchy.hops == 1
-        ).filter(GroupHierarchy.idparent == parent_id
+        ).filter(SupItemGroup.depth == parent.depth + 1
+        ).filter(SupItemGroup.left > parent.left
+        ).filter(SupItemGroup.right < parent.right
         ).order_by(SupItemGroup.name.asc())
-        if not is_manager and not direct_access:
-            id_list = [ug for ug in user_groups.keys()]
-            db_groups = db_groups.filter(
-                SupItemGroup.idgroup.in_(id_list))
+
+        if not is_manager:
+            user = get_current_user()
+            user_groups = [g[0] for g in user.supitemgroups() if g[1]]
+            db_groups = db_groups.filter(SupItemGroup.idgroup.in_(user_groups))
+
         groups = []
         for group in db_groups.all():
             groups.append({
@@ -817,33 +791,20 @@ class RootController(VigiboardRootController):
         @rtype : C{dict} of C{list} of C{dict} of C{mixed}
         """
 
-        # On récupère tous les groupes qui ont un parent.
-        children = DBSession.query(
-            SupItemGroup,
-        ).distinct(
-        ).join(
-            (GroupHierarchy, GroupHierarchy.idchild == SupItemGroup.idgroup)
-        ).filter(GroupHierarchy.hops > 0)
-
-        # Ensuite on les exclut de la liste des groupes,
-        # pour ne garder que ceux qui sont au sommet de
-        # l'arbre et qui constituent nos "root groups".
-        root_groups = DBSession.query(
-            SupItemGroup,
-        ).except_(children
-        ).order_by(SupItemGroup.name)
+        root_groups = SupItemGroup.get_top_groups()
 
         # On filtre ces groupes racines afin de ne
         # retourner que ceux auquels l'utilisateur a accès
         user = get_current_user()
         is_manager = in_group('managers').is_met(request.environ)
         if not is_manager:
-            user_groups = [ug[0] for ug in user.supitemgroups()]
-            root_groups = root_groups.filter(
-                SupItemGroup.idgroup.in_(user_groups))
+            user_groups = [sig[0] for sig in user.supitemgroups()]
+            for root_group in root_groups:
+                if root_group.idgroup not in user_groups:
+                    root_groups.remove(root_group)
 
         groups = []
-        for group in root_groups.all():
+        for group in root_groups:
             groups.append({
                 'id'   : group.idgroup,
                 'name' : group.name,

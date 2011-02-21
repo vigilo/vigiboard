@@ -12,6 +12,7 @@ from vigilo.models.session import DBSession
 from vigilo.models.tables import Event, EventHistory, CorrEvent, User, \
                             Permission, StateName, Host, UserGroup, \
                             LowLevelService, SupItemGroup, DataPermission
+from vigilo.models.demo.functions import *
 from vigiboard.tests import TestController
 
 def populate_accounts():
@@ -49,9 +50,7 @@ def populate_accounts():
 def populate_DB(caused_by_service):
     """ Peuple la base de données. """
     # On ajoute un groupe d'hôtes et un groupe de services.
-    supitemmanagers = SupItemGroup(name = u'managersgroup')
-    DBSession.add(supitemmanagers)
-    DBSession.flush()
+    supitemmanagers = add_supitemgroup('managersgroup')
 
     usergroup = UserGroup.by_group_name(u'users_with_access')
     DBSession.add(DataPermission(

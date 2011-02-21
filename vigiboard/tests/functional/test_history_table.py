@@ -12,17 +12,15 @@ import transaction
 from vigilo.models.session import DBSession
 from vigilo.models.tables import Event, EventHistory, CorrEvent, \
                             Permission, StateName, Host, \
-                            SupItemGroup, LowLevelService, \
                             Permission, DataPermission, User, \
-                            UserGroup
+                            LowLevelService, UserGroup
+from vigilo.models.demo.functions import *
 from vigiboard.tests import TestController
 
 def populate_DB():
     """ Peuple la base de données. """
     # On ajoute un groupe d'hôtes et un groupe de services.
-    supitemmanagers = SupItemGroup(name=u'managersgroup')
-    DBSession.add(supitemmanagers)
-    DBSession.flush()
+    supitemmanagers = add_supitemgroup('managersgroup')
 
     usergroup = UserGroup.by_group_name(u'users_with_access')
     DBSession.add(DataPermission(
@@ -34,7 +32,7 @@ def populate_DB():
 
     # On crée un hôte de test, et on l'ajoute au groupe d'hôtes.
     managerhost = Host(
-        name = u'managerhost',      
+        name = u'managerhost',
         checkhostcmd = u'halt',
         snmpcommunity = u'public',
         hosttpl = u'/dev/null',
@@ -56,19 +54,19 @@ def populate_DB():
     DBSession.add(managerservice)
     supitemmanagers.supitems.append(managerservice)
     DBSession.flush()
-    
+
     return (managerhost, managerservice)
 
 def add_correvent_caused_by(supitem):
     """
-    Ajoute dans la base de données un évènement corrélé causé 
+    Ajoute dans la base de données un évènement corrélé causé
     par un incident survenu sur l'item passé en paramètre.
     Génère un historique pour les tests.
     """
 
     # Ajout d'un événement
     event = Event(
-        supitem = supitem, 
+        supitem = supitem,
         message = u'foo',
         current_state = StateName.statename_to_value(u"WARNING"),
         timestamp = datetime.now(),
@@ -79,26 +77,26 @@ def add_correvent_caused_by(supitem):
     # Ajout des historiques
     DBSession.add(EventHistory(
         type_action=u'Nagios update state',
-        idevent=event.idevent, 
+        idevent=event.idevent,
         timestamp=datetime.now()))
     DBSession.add(EventHistory(
         type_action=u'Acknowlegement change state',
-        idevent=event.idevent, 
+        idevent=event.idevent,
         timestamp=datetime.now()))
     DBSession.flush()
 
     # Ajout d'un événement corrélé
     aggregate = CorrEvent(
-        idcause = event.idevent, 
+        idcause = event.idevent,
         timestamp_active = datetime.now(),
         priority = 1,
         status = u"None")
     aggregate.events.append(event)
     DBSession.add(aggregate)
     DBSession.flush()
-    
+
     return event.idevent
-    
+
 
 class TestHistoryTable(TestController):
     """
@@ -144,7 +142,7 @@ class TestHistoryTable(TestController):
         # On peuple la BDD avec un hôte, un service de bas niveau,
         # et un groupe d'hôtes et de services associés à ces items.
         (managerhost, managerservice) = populate_DB()
-        
+
         # On ajoute un évènement corrélé causé par l'hôte
         idevent = add_correvent_caused_by(managerhost)
         transaction.commit()
@@ -158,13 +156,13 @@ class TestHistoryTable(TestController):
 
         # L'utilisateur N'A PAS les bonnes permissions.
         environ = {'REMOTE_USER': 'limited_access'}
-        
+
         # On s'attend à ce qu'une erreur 302 soit renvoyée, et à
         # ce qu'un message d'erreur précise à l'utilisateur qu'il
         # n'a pas accès aux informations concernant cet évènement.
         response = self.app.get(
             '/event/%d' % idevent,
-            status = 302, 
+            status = 302,
             extra_environ = environ)
 
         # On suit la redirection.
@@ -174,11 +172,11 @@ class TestHistoryTable(TestController):
 
         # L'utilisateur a les bonnes permissions.
         environ = {'REMOTE_USER': 'access'}
-        
+
         # On s'attend à ce que le statut de la requête soit 200.
         response = self.app.get(
             '/event/%d' % idevent,
-            status = 200, 
+            status = 200,
             extra_environ = environ)
 
         # Il doit y avoir 2 lignes de résultats.
@@ -195,10 +193,10 @@ class TestHistoryTable(TestController):
         # On peuple la BDD avec un hôte, un service de bas niveau,
         # et un groupe d'hôtes et de services associés à ces items.
         (managerhost, managerservice) = populate_DB()
-        
+
         # On ajoute un évènement corrélé causé par le service
         idevent = add_correvent_caused_by(managerservice)
-        
+
         transaction.commit()
 
         # L'utilisateur n'est pas authentifié.
@@ -210,13 +208,13 @@ class TestHistoryTable(TestController):
 
         # L'utilisateur N'A PAS les bonnes permissions.
         environ = {'REMOTE_USER': 'limited_access'}
-        
+
         # On s'attend à ce qu'une erreur 302 soit renvoyée, et à
         # ce qu'un message d'erreur précise à l'utilisateur qu'il
         # n'a pas accès aux informations concernant cet évènement.
         response = self.app.get(
             '/event/%d' % idevent,
-            status = 302, 
+            status = 302,
             extra_environ = environ)
 
         # On suit la redirection.
@@ -226,11 +224,11 @@ class TestHistoryTable(TestController):
 
         # L'utilisateur a les bonnes permissions.
         environ = {'REMOTE_USER': 'access'}
-        
+
         # On s'attend à ce que le statut de la requête soit 200.
         response = self.app.get(
             '/event/%d' % idevent,
-            status = 200, 
+            status = 200,
             extra_environ = environ)
 
         # Il doit y avoir 2 lignes de résultats.
@@ -240,4 +238,3 @@ class TestHistoryTable(TestController):
         rows = response.lxml.xpath(
             '//table[contains(@class,"vigitable")]/tbody/tr')
         assert_equal(len(rows), 2)
-

@@ -244,7 +244,7 @@ class VigiboardRequest():
         Retourne le nombre de lignes de la requête.
         Si celle-ci n'est pas encore générée, on le fait.
 
-        @return: Nombre de ligne
+        @return: Nombre de lignes
         """
 
         self.generate_request()

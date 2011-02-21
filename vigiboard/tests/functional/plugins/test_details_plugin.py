@@ -9,9 +9,10 @@ import transaction
 
 from vigiboard.tests import TestController
 from vigilo.models.session import DBSession
-from vigilo.models.tables import SupItemGroup, User, UserGroup, \
+from vigilo.models.tables import User, UserGroup, \
                             Permission, DataPermission, StateName, \
                             LowLevelService, Event, CorrEvent, Host
+from vigilo.models.demo.functions import *
 
 def insert_deps(return_service):
     """
@@ -27,8 +28,7 @@ def insert_deps(return_service):
     """
     timestamp = datetime.now()
 
-    hostgroup = SupItemGroup(name=u'foo')
-    DBSession.add(hostgroup)
+    hostgroup = add_supitemgroup(name=u'foo')
 
     host = Host(
         name=u'bar',
@@ -47,8 +47,7 @@ def insert_deps(return_service):
     hostgroup.supitems.append(host)
     DBSession.flush()
 
-    servicegroup = SupItemGroup(name=u'bar')
-    DBSession.add(servicegroup)
+    servicegroup = add_supitemgroup(name=u'bar')
 
     service = LowLevelService(
         host=host,
@@ -235,4 +234,3 @@ class TestDetailsPlugin(TestController):
                 'idcorrevent': idcorrevent,
                 'plugin_name': 'details',
             }, status=401)
-
