@@ -8,16 +8,19 @@ import transaction
 
 from vigiboard.tests import TestController
 from vigilo.models.session import DBSession
-from vigilo.models.tables import Host, Permission, StateName, \
+from vigilo.models.tables import SupItemGroup, Host, Permission, StateName, \
                                     Event, CorrEvent, User, UserGroup, \
                                     DataPermission
-from vigilo.models.demo.functions import *
 
 def insert_deps():
     """Insère les dépendances nécessaires aux tests."""
     timestamp = datetime.now()
 
-    supitemgroup = add_supitemgroup(name=u'foo')
+    supitemgroup = SupItemGroup(
+        name=u'foo',
+    )
+    DBSession.add(supitemgroup)
+    DBSession.flush()
 
     host = Host(
         name=u'bar',
@@ -157,3 +160,4 @@ class TestSearchFormSupItemGroup(TestController):
         cols = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr/td')
         print "There are %d columns in the result set" % len(cols)
         assert_equal(len(cols), 1)
+

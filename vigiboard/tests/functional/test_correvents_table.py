@@ -10,16 +10,18 @@ import transaction
 
 from vigilo.models.session import DBSession
 from vigilo.models.tables import Event, CorrEvent, DataPermission, \
-                            Permission, StateName, Host, \
+                            Permission, StateName, Host, SupItemGroup, \
                             LowLevelService, User, UserGroup, Permission
-from vigilo.models.demo.functions import *
 from vigiboard.tests import TestController
 
 def populate_DB():
     """ Peuple la base de données. """
     # On ajoute les groupes et leurs dépendances
-    hostmanagers = add_supitemgroup(name=u'managersgroup')
-    hosteditors = add_supitemgroup(name=u'editorsgroup')
+    hostmanagers = SupItemGroup(name=u'managersgroup')
+    DBSession.add(hostmanagers)
+    hosteditors = SupItemGroup(name=u'editorsgroup', parent=hostmanagers)
+    DBSession.add(hosteditors)
+    DBSession.flush()
 
     usergroup = UserGroup.by_group_name(u'users_with_access')
     DBSession.add(DataPermission(
@@ -280,3 +282,4 @@ class TestEventTable(TestController):
         rows = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr')
         print "There are %d rows in the result set" % len(rows)
         assert_equal(len(rows), 1)
+
