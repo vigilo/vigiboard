@@ -33,8 +33,10 @@ from sqlalchemy.sql.expression import or_, null as expr_null, union
 
 from vigilo.models.session import DBSession
 from vigilo.models.tables import Event, CorrEvent, EventHistory, \
-                        Host, LowLevelService, StateName
-from vigilo.models.tables.secondary_tables import SUPITEM_GROUP_TABLE
+                        Host, LowLevelService, StateName, DataPermission
+from vigilo.models.tables.grouphierarchy import GroupHierarchy
+from vigilo.models.tables.secondary_tables import SUPITEM_GROUP_TABLE, \
+        USER_GROUP_TABLE
 from vigiboard.widgets.edit_event import EditEventForm
 from vigiboard.controllers.plugins import VigiboardRequestPlugin
 
@@ -99,14 +101,31 @@ class VigiboardRequest():
         # Les managers ont accès à tout, les autres sont soumis
         # aux vérifications classiques d'accès aux données.
         if not is_manager:
-            user_groups = [ug[0] for ug in user.supitemgroups() if ug[1]]
-            lls_query = lls_query.filter(
-                SUPITEM_GROUP_TABLE.c.idgroup.in_(user_groups)
-            )
-            host_query = host_query.filter(
-                SUPITEM_GROUP_TABLE.c.idgroup.in_(user_groups)
-            )
+#            user_groups = [ug[0] for ug in user.supitemgroups() if ug[1]]
+#            lls_query = lls_query.filter(
+#                SUPITEM_GROUP_TABLE.c.idgroup.in_(user_groups)
+#            )
+#            host_query = host_query.filter(
+#                SUPITEM_GROUP_TABLE.c.idgroup.in_(user_groups)
+#            )
 
+            lls_query = lls_query.join(
+                (GroupHierarchy,
+                    GroupHierarchy.idchild == SUPITEM_GROUP_TABLE.c.idgroup),
+                (DataPermission,
+                    DataPermission.idgroup == GroupHierarchy.idparent),
+                (USER_GROUP_TABLE, USER_GROUP_TABLE.c.idgroup == \
+                    DataPermission.idusergroup),
+            ).filter(USER_GROUP_TABLE.c.username == user.user_name)
+
+            host_query = host_query.join(
+                (GroupHierarchy,
+                    GroupHierarchy.idchild == SUPITEM_GROUP_TABLE.c.idgroup),
+                (DataPermission,
+                    DataPermission.idgroup == GroupHierarchy.idparent),
+                (USER_GROUP_TABLE, USER_GROUP_TABLE.c.idgroup == \
+                    DataPermission.idusergroup),
+            ).filter(USER_GROUP_TABLE.c.username == user.user_name)
 
         # Objet Selectable renvoyant des informations sur un SupItem
         # concerné par une alerte, avec prise en compte des droits d'accès.
