@@ -777,7 +777,8 @@ class RootController(VigiboardRootController):
                         GroupHierarchy_aliased.idchild == SupItemGroup.idgroup),
                 ).filter(USER_GROUP_TABLE.c.username == user.user_name
                 ).filter(GroupHierarchy_aliased.idparent == parent_id
-                ).all()
+                ).filter(GroupHierarchy_aliased.idchild != parent_id
+                ).distinct().all()
 
         groups = []
         for group in supitem_groups:
