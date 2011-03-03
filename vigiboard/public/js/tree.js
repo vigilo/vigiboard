@@ -98,11 +98,11 @@ var TreeGroup = new Class({
     },
 
     selectGroup: function() {
+        this.retrieve_tree_items(this.tree, true);
         this.dlg.open();
     },
 
     redraw: function() {
         this.tree.clear();
-        this.retrieve_tree_items(this.tree, true);
     }
 });
