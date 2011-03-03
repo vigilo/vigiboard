@@ -57,6 +57,7 @@ def make_app(global_conf, full_stack=True, **app_conf):
     """
     app = make_base_app(global_conf, full_stack=full_stack, **app_conf)
 
+    # Ajout du middleware d'authentification.
     app = make_who_with_config(
         app, global_conf,
         app_conf.get('auth.config', 'who.ini'),
@@ -64,6 +65,9 @@ def make_app(global_conf, full_stack=True, **app_conf):
         None,
         app_conf.get('skip_authentication')
     )
+    # On force l'utilisation d'un logger nommé "auth"
+    # pour la compatibilité avec TurboGears.
+    app.logger = getLogger('auth')
 
     # On définit 2 middlewares pour fichiers statiques qui cherchent
     # les fichiers dans le thème actuellement chargé.
@@ -76,7 +80,4 @@ def make_app(global_conf, full_stack=True, **app_conf):
     local_static = StaticURLParser(resource_filename(
         'vigiboard', 'public'))
     app = Cascade([app_static, common_static, local_static, app])
-    # On force l'utilisation d'un logger nommé "auth"
-    # pour la compatibilité avec TurboGears.
-    app.logger = getLogger('auth')
     return app
