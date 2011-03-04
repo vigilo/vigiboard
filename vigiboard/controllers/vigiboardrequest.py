@@ -29,7 +29,7 @@ from paste.deploy.converters import asbool
 from repoze.what.predicates import in_group
 
 from sqlalchemy import not_, and_, asc, desc
-from sqlalchemy.sql.expression import or_, null as expr_null, union
+from sqlalchemy.sql.expression import or_, null as expr_null, union_all
 
 from vigilo.models.session import DBSession
 from vigilo.models.tables import Event, CorrEvent, EventHistory, \
@@ -129,11 +129,13 @@ class VigiboardRequest():
 
         # Objet Selectable renvoyant des informations sur un SupItem
         # concerné par une alerte, avec prise en compte des droits d'accès.
-        # On est obligés d'utiliser sqlalchemy.sql.expression.union
+        # On est obligés d'utiliser sqlalchemy.sql.expression.union_all
         # pour indiquer à SQLAlchemy de NE PAS regrouper les tables
         # dans la requête principale, sans quoi les résultats sont
         # incorrects.
-        self.items = union(lls_query, host_query, correlate=False).alias()
+        # Dans PostgreSQL, UNION ALL est beaucoup plus rapide que UNION
+        # du fait des performances limitées du DISTINCT.
+        self.items = union_all(lls_query, host_query, correlate=False).alias()
 
         # Éléments à retourner (SELECT ...)
         self.table = []
