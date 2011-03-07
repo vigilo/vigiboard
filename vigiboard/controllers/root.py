@@ -32,6 +32,7 @@ from pylons.i18n import ugettext as _, lazy_ugettext as l_
 from sqlalchemy import asc
 from sqlalchemy.sql import func
 from sqlalchemy.orm import aliased
+from sqlalchemy.orm import contains_eager
 from repoze.what.predicates import Any, All, in_group, \
                                     has_permission, not_anonymous, \
                                     NotAuthorizedError
@@ -135,12 +136,15 @@ class RootController(VigiboardRootController):
         """
         user = get_current_user()
         aggregates = VigiboardRequest(user)
+
         aggregates.add_table(
             CorrEvent,
             aggregates.items.c.hostname,
             aggregates.items.c.servicename
         )
         aggregates.add_join((Event, CorrEvent.idcause == Event.idevent))
+        aggregates.add_contains_eager(CorrEvent.cause)
+        aggregates.add_group_by(Event)
         aggregates.add_join((aggregates.items,
             Event.idsupitem == aggregates.items.c.idsupitem))
         aggregates.add_order_by(asc(aggregates.items.c.hostname))
@@ -228,10 +232,21 @@ class RootController(VigiboardRootController):
         else:
             id_first_row += 1
 
+        # Récupération des données des plugins
+        plugins_data = {}
+        plugins = dict(config['columns_plugins'])
+        for plugin in plugins:
+            plugin_data = plugins[plugin].get_bulk_data(
+                [event[0].idcorrevent for event in aggregates.events]
+            )
+            if plugin_data :
+                plugins_data[plugin] = plugin_data
+
         return dict(
             hostname = None,
             servicename = None,
             events = aggregates.events,
+            plugins_data = plugins_data,
             rows_info = {
                 'id_first_row': id_first_row,
                 'id_last_row': id_last_row,
@@ -293,12 +308,8 @@ class RootController(VigiboardRootController):
                 SupItem,
             ).join(
                 (Event, Event.idsupitem == SupItem.idsupitem),
-                (EVENTSAGGREGATE_TABLE, EVENTSAGGREGATE_TABLE.c.idevent ==
-                    Event.idevent),
-                (CorrEvent, CorrEvent.idcorrevent ==
-                    EVENTSAGGREGATE_TABLE.c.idcorrevent),
+                (CorrEvent, Event.idevent == CorrEvent.idcause),
             ).filter(CorrEvent.idcorrevent == idcorrevent
-            ).filter(Event.idevent == CorrEvent.idcause
             ).one()
 
         if isinstance(cause_supitem, LowLevelService):
@@ -334,6 +345,7 @@ class RootController(VigiboardRootController):
             hostname = hostname,
             servicename = servicename,
             events = events.events,
+            plugins_data = {},
             rows_info = {
                 'id_first_row': id_first_row,
                 'id_last_row': id_last_row,
@@ -413,6 +425,7 @@ class RootController(VigiboardRootController):
             idevent = idevent,
             hostname = event.hostname,
             servicename = event.servicename,
+            plugins_data = {},
             rows_info = {
                 'id_first_row': id_first_row,
                 'id_last_row': id_last_row,
@@ -492,6 +505,7 @@ class RootController(VigiboardRootController):
             hostname = host,
             servicename = service,
             events = aggregates.events,
+            plugins_data = {},
             rows_info = {
                 'id_first_row': id_first_row,
                 'id_last_row': id_last_row,
@@ -675,7 +689,7 @@ class RootController(VigiboardRootController):
         error_handler = handle_validation_errors_json)
     @expose('json')
     @require(access_restriction)
-    def get_plugin_value(self, idcorrevent, plugin_name, *arg, **krgv):
+    def plugin_json(self, idcorrevent, plugin_name, *arg, **krgv):
         """
         Permet de récupérer la valeur d'un plugin associée à un CorrEvent
         donné via JSON.
@@ -700,7 +714,7 @@ class RootController(VigiboardRootController):
             raise HTTPNotFound(_('No such incident or insufficient '
                                 'permissions'))
 
-        return plugins[plugin_name].get_value(idcorrevent, *arg, **krgv)
+        return plugins[plugin_name].get_json_data(idcorrevent, *arg, **krgv)
 
     @validate(validators={
         "fontsize": validators.Regex(
@@ -754,34 +768,35 @@ class RootController(VigiboardRootController):
         # TODO: Utiliser un schéma de validation
         parent_id = int(parent_id)
 
-        # On vérifie si le groupe parent fait partie des
-        # groupes auxquel l'utilisateur a accès, et on
-        # retourne une liste vide dans le cas contraire
+        # On récupère la liste des groupes de supitems dont
+        # l'identifiant du parent est passé en paramètre.
+        supitem_groups = DBSession.query(
+                SupItemGroup.idgroup,
+                SupItemGroup.name,
+            ).join(
+                (GroupHierarchy,
+                    GroupHierarchy.idchild == SupItemGroup.idgroup),
+            ).filter(GroupHierarchy.idparent == parent_id
+            ).filter(GroupHierarchy.idchild != parent_id)
+
+        # Si l'utilisateur n'appartient pas au groupe 'managers',
+        # on filtre les résultats en fonction de ses permissions.
         is_manager = in_group('managers').is_met(request.environ)
         if not is_manager:
             user = get_current_user()
             GroupHierarchy_aliased = aliased(GroupHierarchy,
                 name='GroupHierarchy_aliased')
-            supitem_groups = DBSession.query(
-                    SupItemGroup.idgroup,
-                    SupItemGroup.name,
-                ).join(
-                    (GroupHierarchy,
-                        GroupHierarchy.idchild == SupItemGroup.idgroup),
-                    (DataPermission,
-                        DataPermission.idgroup == GroupHierarchy.idparent),
-                    (USER_GROUP_TABLE, USER_GROUP_TABLE.c.idgroup == \
-                        DataPermission.idusergroup),
-                ).join(
-                    (GroupHierarchy_aliased,
-                        GroupHierarchy_aliased.idchild == SupItemGroup.idgroup),
-                ).filter(USER_GROUP_TABLE.c.username == user.user_name
-                ).filter(GroupHierarchy_aliased.idparent == parent_id
-                ).filter(GroupHierarchy_aliased.idchild != parent_id
-                ).distinct().all()
+            supitem_groups.join(
+                (GroupHierarchy_aliased,
+                    GroupHierarchy_aliased.idchild == SupItemGroup.idgroup),
+                (DataPermission,
+                    DataPermission.idgroup == GroupHierarchy_aliased.idparent),
+                (USER_GROUP_TABLE, USER_GROUP_TABLE.c.idgroup == \
+                    DataPermission.idusergroup),
+            ).filter(USER_GROUP_TABLE.c.username == user.user_name)
 
         groups = []
-        for group in supitem_groups:
+        for group in supitem_groups.distinct().all():
             groups.append({
                 'id'   : group.idgroup,
                 'name' : group.name,

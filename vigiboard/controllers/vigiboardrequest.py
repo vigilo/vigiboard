@@ -30,6 +30,7 @@ from repoze.what.predicates import in_group
 
 from sqlalchemy import not_, and_, asc, desc
 from sqlalchemy.sql.expression import or_, null as expr_null, union_all
+from sqlalchemy.orm import contains_eager
 
 from vigilo.models.session import DBSession
 from vigilo.models.tables import Event, CorrEvent, EventHistory, \
@@ -101,13 +102,6 @@ class VigiboardRequest():
         # Les managers ont accès à tout, les autres sont soumis
         # aux vérifications classiques d'accès aux données.
         if not is_manager:
-#            user_groups = [ug[0] for ug in user.supitemgroups() if ug[1]]
-#            lls_query = lls_query.filter(
-#                SUPITEM_GROUP_TABLE.c.idgroup.in_(user_groups)
-#            )
-#            host_query = host_query.filter(
-#                SUPITEM_GROUP_TABLE.c.idgroup.in_(user_groups)
-#            )
 
             lls_query = lls_query.join(
                 (GroupHierarchy,
@@ -142,6 +136,9 @@ class VigiboardRequest():
 
         # Tables sur lesquelles porte la récupération (JOIN)
         self.join = []
+
+        # Options à ajouter la requête
+        self.option = []
 
         # Tables sur lesquelles porte la récupération (OUTER JOIN)
         self.outerjoin = []
@@ -247,6 +244,7 @@ class VigiboardRequest():
         # query et join ont besoin de referrence
         self.req = self.req.query(*self.table)
         self.req = self.req.join(*self.join)
+        self.req = self.req.options(*self.option)
 
         # le reste, non
         for i in self.outerjoin:
@@ -304,6 +302,29 @@ class VigiboardRequest():
                 if str(i) == str(j):
                     break
             self.join.append(i)
+
+    def add_option(self, *argv):
+        """
+        Ajoute une ou plusieurs options à la requête.
+
+        @param argv: Liste des options à ajouter
+        """
+
+        # On vérifie qu'il n'y a pas de doublons
+        # dans la liste finale des options.
+
+        for i in argv:
+            for j in self.option:
+                if str(i) == str(j):
+                    break
+            self.option.append(i)
+
+    def add_contains_eager(self, relation):
+        """
+        Ajoute une option de type contains_eager à la
+        requête pour la relation passée en paramètre.
+        """
+        self.add_option(contains_eager(relation))
 
     def add_outer_join(self, *argv):
         """

@@ -42,17 +42,35 @@ class VigiboardRequestPlugin(object):
         self.style = style
         self.object_name = object_name
 
-    def get_value(self, idcorrevent, *args, **kwargs):
+    def get_bulk_data(self, events_ids):
         """
-        Cette méthode est appelée lorsque l'on demande la valeur du plugin
-        grâce à la méthode get_plugin_value du L{RootController} de VigiBoard.
+        Cette méthode est appelée par le L{RootController} : elle
+        retourne toutes les données affichées par le plugin dans le
+        tableau des évènements de la page principale de VigiBoard.
 
         Cette méthode DEVRAIT être surchargée dans les classes dérivées.
 
+        @param event_ids: Liste des identifiants des C{CorrEvent} affichés
+            sur la page.
+        @type events_id:  C{List} of C{int}
+        @return: Dictionnaire associant à chaque identifiant
+            d'évènement les données à afficher par le plugin.
+        @rtype:  C{dict}
+        """
+        pass
+
+    def get_json_data(self, idcorrevent, *args, **kwargs):
+        """
+        Cette méthode est appelée par le template du plugin via
+        la méthode get_plugin_json_data du L{RootController} de VigiBoard.
+
+        Cette méthode DEVRAIT être surchargée dans les classes dérivées
+        si le plugin en question doit avoir recours à une requête JSON.
+
         @param idcorrevent: Identifiant du C{CorrEvent} à interroger.
-        @type idcorrevent: C{int}
+        @type idcorrevent:  C{int}
         @return: Dictionnaire contenant la ou les valeur(s) correspondantes.
-        @rtype: C{dict}
+        @rtype:  C{dict}
         """
         pass
 

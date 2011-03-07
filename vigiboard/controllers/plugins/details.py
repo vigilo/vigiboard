@@ -40,7 +40,7 @@ class PluginDetails(VigiboardRequestPlugin):
     externes.
     """
 
-    def get_value(self, idcorrevent, *args, **kwargs):
+    def get_json_data(self, idcorrevent, *args, **kwargs):
         """
         Renvoie les éléments pour l'affichage de la fenêtre de dialogue
         contenant des détails sur un événement corrélé.

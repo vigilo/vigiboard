@@ -37,6 +37,9 @@ from vigilo.turbogears import VigiloAppConfig
 import vigiboard
 from vigiboard.lib import app_globals, helpers
 
+import logging
+LOGGER = logging.getLogger(__name__)
+
 class VigiboardConfig(VigiloAppConfig):
     def setup_sqlalchemy(self):
         super(VigiboardConfig, self).setup_sqlalchemy()
@@ -62,9 +65,9 @@ class VigiboardConfig(VigiloAppConfig):
                 plugin_class = ep.load(require=True)
                 if issubclass(plugin_class, VigiboardRequestPlugin):
                     plugins.append((unicode(ep.name), plugin_class()))
-            except:
-                # @TODO: lever une erreur ?
-                pass
+            except Exception, e:
+                LOGGER.error('Unable to import plugin %s : %s' % (plugin_name, e))
+
         config['columns_plugins'] = plugins
 
 base_config = VigiboardConfig('vigiboard')

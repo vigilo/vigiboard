@@ -32,15 +32,21 @@ class PluginTest(VigiboardRequestPlugin):
     "Hello world" pour chaque événement du tableau.
     """
 
-    def get_value(self, idcorrevent, *args, **kwargs):
+    def get_bulk_data(self, events_ids):
         """
-        Cette méthode est appelée depuis le template associé à ce plugin,
-        mais également lorsque l'on demande la valeur du plugin grâce à la
-        méthode get_plugin_value du L{RootController} de VigiBoard.
+        Cette méthode est appelée par le L{RootController} de VigiBoard.
+        Elle renvoie les données à afficher pour chaque évènement.
 
-        @param idcorrevent: Identifiant du C{CorrEvent} à interroger.
-        @type idcorrevent: C{int}
-        @return: Dictionnaire contenant un texte statique.
-        @rtype: C{dict}
+        @param events_ids: Liste des identifiants des événements corrélés
+            à afficher.
+        @type  events_ids: C{int}
+        @return: Un dictionnaire associant à chaque identifiant d'évènement
+            un texte statique.
+        @rtype:  C{dict}
         """
-        return {'text': 'Hello world'}
+        plugin_data = {}
+        for event in events_ids:
+            plugin_data[event] = 'Hello world'
+
+        return plugin_data
+

@@ -31,7 +31,7 @@ def populate_DB():
 
     # On crée un hôte de test.
     host = Host(
-        name = u'host', 
+        name = u'host',
         checkhostcmd = u'halt',
         snmpcommunity = u'public',
         hosttpl = u'/dev/null',
@@ -57,24 +57,24 @@ def populate_DB():
 
     # On ajoute un évènement corrélé causé par cet évènement 'brut'.
     aggregate = CorrEvent(
-        idcause = event1.idevent, 
+        idcause = event1.idevent,
         timestamp_active = datetime.now(),
         priority = 1,
         status = u'None')
     aggregate.events.append(event1)
     DBSession.add(aggregate)
     DBSession.flush()
-    
+
     transaction.commit()
     return aggregate
 
 def add_paths(path_number, path_length, idsupitem):
-    """ 
+    """
     Ajoute path_number chemins de services de haut niveau impactés
     dans la base de donnée. Leur longeur sera égale à path_length.
     La 3ème valeur passée en paramètre est l'id du supitem impactant.
-     
-    path_number * path_length services de 
+
+    path_number * path_length services de
     haut niveau sont créés dans l'opération.
     """
 
@@ -89,34 +89,34 @@ def add_paths(path_number, path_length, idsupitem):
 
     # Création des chemins de services de haut niveau impactés.
     for j in range(path_number):
-        
+
         # On crée le chemin en lui-même
         path = ImpactedPath(idsupitem = idsupitem)
         DBSession.add(path)
         DBSession.flush()
-        
+
         # Pour chaque étage du chemin,
         for i in range(path_length):
             # on ajoute un service de haut niveau dans la BDD,
             hls = HighLevelService(
-                servicename = u'HLS' + str(j + 1) + str(i + 1), 
+                servicename = u'HLS' + str(j + 1) + str(i + 1),
                 **hls_template)
             DBSession.add(hls)
-            # et on ajoute un étage au chemin contenant ce service. 
+            # et on ajoute un étage au chemin contenant ce service.
             DBSession.add(
                 ImpactedHLS(
                     path = path,
                     hls = hls,
                     distance = i + 1,
                     ))
-    
+
     DBSession.flush()
     transaction.commit()
 
 
 class TestHLSPlugin(TestController):
     """
-    Classe de test du contrôleur listant les services 
+    Classe de test du contrôleur listant les services
     de haut niveau impactés par un évènement corrélé.
     """
     def setUp(self):
@@ -137,136 +137,71 @@ class TestHLSPlugin(TestController):
         DBSession.add(usergroup)
         DBSession.flush()
 
-        user = User(
-            user_name=u'no_access',
-            fullname=u'',
-            email=u'user.has.no@access',
-        )
-        usergroup = UserGroup(
-            group_name=u'users_without_access',
-        )
-        usergroup.permissions.append(perm)
-        user.usergroups.append(usergroup)
-        DBSession.add(user)
-        DBSession.add(usergroup)
-        DBSession.flush()
-
         self.aggregate = populate_DB()
 
     def test_no_impacted_hls(self):
         """
-        Retour du plugin HLS pour 0 HLS impacté
-        Teste la valeur de retour du plugin lorsque
+        Données affichée par le plugin HLS pour 0 HLS impacté
+        Teste les données affichées par le  plugin lorsque
         aucun service de haut niveau n'est impacté.
         """
-        
+
         # On peuple la base de données avant le test.
         DBSession.add(self.aggregate)
         add_paths(0, 0, self.aggregate.events[0].idsupitem)
         DBSession.add(self.aggregate)
-        
-        ### 1er cas : l'utilisateur n'est pas connecté.
-        # On vérifie que le plugin retourne bien une erreur 401.
+
+        # On accède à la page principale de VigiBoard
         resp = self.app.post(
-            '/get_plugin_value', 
-            {"idcorrevent" : str(self.aggregate.idcorrevent),
-             "plugin_name" : "hls"},
-            status = 401,)
-        
-        ### 2ème cas : l'utilisateur n'a pas les
-        ### droits sur l'hôte ayant causé le correvent.
-        # On vérifie que le plugin retourne bien une erreur 404.
-        resp = self.app.post(
-            '/get_plugin_value', 
-            {"idcorrevent" : str(self.aggregate.idcorrevent),
-             "plugin_name" : "hls"},
-            status = 404,
-            extra_environ={'REMOTE_USER': 'no_access'})
-        
-        ### 3ème cas : l'utilisateur a cette fois les droits.
-        resp = self.app.post(
-            '/get_plugin_value', 
-            {"idcorrevent" : str(self.aggregate.idcorrevent),
-             "plugin_name" : "hls"},
-            extra_environ={'REMOTE_USER': 'access'})
-        # On vérifie que le plugin ne retourne toujours rien.
-        assert_equal(resp.json, {"services": []})
-    
+            '/', extra_environ={'REMOTE_USER': 'access'})
+
+        # On s'assure que la colonne des HLS
+        # impactés est vide pour notre évènement.
+        plugin_data = resp.lxml.xpath('//table[@class="vigitable"]'
+            '/tbody/tr/td[@class="plugin_hls"]/text()')
+        assert_equal(plugin_data[0].strip(), "")
+
     def test_1_impacted_hls_path(self):
         """
-        Retour du plugin HLS pour 1 chemin impacté
-        Teste la valeur de retour du plugin lorsqu'un
-        chemin de services de haut niveau est impacté.
+        Données affichée par le plugin HLS pour 1 chemin impacté
+        Teste les données affichées par le  plugin lorsque
+        1 chemin de services de haut niveau est impacté.
         """
-        
+
         # On peuple la base de données avant le test.
         DBSession.add(self.aggregate)
         add_paths(1, 2, self.aggregate.events[0].idsupitem)
         DBSession.add(self.aggregate)
-        
-        ### 1er cas : l'utilisateur n'est pas connecté.
-        # On vérifie que le plugin retourne bien une erreur 401.
+
+        # On accède à la page principale de VigiBoard
         resp = self.app.post(
-            '/get_plugin_value', 
-            {"idcorrevent" : str(self.aggregate.idcorrevent),
-             "plugin_name" : "hls"},
-            status = 401,)
-        
-        ### 2ème cas : l'utilisateur n'a pas les droits
-        ### sur l'hôte ayant causé le correvent, on doit
-        ### obtenir une erreur 404 (pas d'événement trouvé
-        ### avec les informations liées à cet utilisateur).
-        resp = self.app.post(
-            '/get_plugin_value', 
-            {"idcorrevent" : str(self.aggregate.idcorrevent),
-             "plugin_name" : "hls"},
-            status = 404,
-            extra_environ={'REMOTE_USER': 'no_access'})
-        
-        ### 3ème cas : l'utilisateur a cette fois les droits.
-        resp = self.app.post(
-            '/get_plugin_value', 
-            {"idcorrevent" : str(self.aggregate.idcorrevent),
-             "plugin_name" : "hls"},
-            extra_environ={'REMOTE_USER': 'access'})
-        # On vérifie que le plugin retourne bien les 2 HLS impactés.
-        assert_equal(resp.json, {"services": ['HLS12']})
-    
+            '/', extra_environ={'REMOTE_USER': 'access'})
+
+        # On s'assure que la colonne des HLS impactés contient
+        # bien le nom de notre HLS de plus haut niveau impacté.
+        plugin_data = resp.lxml.xpath('//table[@class="vigitable"]'
+            '/tbody/tr/td[@class="plugin_hls"]/text()')
+        assert_equal(plugin_data[0].strip(), "HLS12")
+
     def test_2_impacted_hls_path(self):
         """
-        Retour du plugin HLS pour 2 chemins impactés
-        Teste la valeur de retour du plugin lorsque deux
-        chemins de services de haut niveau sont impactés.
+        Données affichée par le plugin HLS pour 2 chemins impactés
+        Teste les données affichées par le plugin lorsque
+        2 chemins de services de haut niveau sont impactés.
         """
-        
+
         # On peuple la base de données avant le test.
         DBSession.add(self.aggregate)
         add_paths(2, 2, self.aggregate.events[0].idsupitem)
         DBSession.add(self.aggregate)
-        
-        ### 1er cas : l'utilisateur n'est pas connecté.
-        # On vérifie que le plugin retourne bien une erreur 401.
+
+        # On accède à la page principale de VigiBoard
         resp = self.app.post(
-            '/get_plugin_value', 
-            {"idcorrevent" : str(self.aggregate.idcorrevent),
-             "plugin_name" : "hls"},
-            status = 401,)
-        
-        ### 2ème cas : l'utilisateur n'a pas les
-        ### droits sur l'hôte ayant causé le correvent.
-        resp = self.app.post(
-            '/get_plugin_value', 
-            {"idcorrevent" : str(self.aggregate.idcorrevent),
-             "plugin_name" : "hls"},
-            status = 404,
-            extra_environ={'REMOTE_USER': 'no_access'})
-        
-        ### 3ème cas : l'utilisateur a cette fois les droits.
-        resp = self.app.post(
-            '/get_plugin_value', 
-            {"idcorrevent" : str(self.aggregate.idcorrevent),
-             "plugin_name" : "hls"},
-            extra_environ={'REMOTE_USER': 'access'})
-        # On vérifie que le plugin retourne bien les 4 HLS impactés.
-        assert_equal(resp.json, {"services": ['HLS12', 'HLS22']})
+            '/', extra_environ={'REMOTE_USER': 'access'})
+
+        # On s'assure que la colonne des HLS contient bien
+        # le nombre de HLS de plus haut niveau impactés,
+        plugin_data = resp.lxml.xpath('//table[@class="vigitable"]'
+            '/tbody/tr/td[@class="plugin_hls"]/a/text()')
+        assert_equal(plugin_data[0].strip(), "2")
 

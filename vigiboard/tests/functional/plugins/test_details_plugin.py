@@ -141,7 +141,7 @@ class TestDetailsPlugin(TestController):
         """Dialogue des détails avec un LLS et les bons droits."""
         hostgroup, idcorrevent, idcause = insert_deps(True)
 
-        response = self.app.post('/get_plugin_value', {
+        response = self.app.post('/plugin_json', {
                 'idcorrevent': idcorrevent,
                 'plugin_name': 'details',
             }, extra_environ={'REMOTE_USER': 'access'})
@@ -166,7 +166,7 @@ class TestDetailsPlugin(TestController):
         """Dialogue des détails avec un hôte et les bons droits."""
         hostgroup, idcorrevent, idcause = insert_deps(False)
 
-        response = self.app.post('/get_plugin_value', {
+        response = self.app.post('/plugin_json', {
                 'idcorrevent': idcorrevent,
                 'plugin_name': 'details',
             }, extra_environ={'REMOTE_USER': 'access'})
@@ -195,7 +195,7 @@ class TestDetailsPlugin(TestController):
         # Le contrôleur renvoie une erreur 404 (HTTPNotFound)
         # lorsque l'utilisateur n'a pas les permissions nécessaires sur
         # les données ou qu'aucun événement correspondant n'est trouvé.
-        self.app.post('/get_plugin_value', {
+        self.app.post('/plugin_json', {
                 'idcorrevent': idcorrevent,
                 'plugin_name': 'details',
             }, extra_environ={'REMOTE_USER': 'no_access'},
@@ -208,7 +208,7 @@ class TestDetailsPlugin(TestController):
         # Le contrôleur renvoie une erreur 404 (HTTPNotFound)
         # lorsque l'utilisateur n'a pas les permissions nécessaires sur
         # les données ou qu'aucun événement correspondant n'est trouvé.
-        self.app.post('/get_plugin_value', {
+        self.app.post('/plugin_json', {
                 'idcorrevent': idcorrevent,
                 'plugin_name': 'details',
             }, extra_environ={'REMOTE_USER': 'no_access'},
@@ -220,7 +220,7 @@ class TestDetailsPlugin(TestController):
 
         # Le contrôleur renvoie une erreur 401 (HTTPUnauthorized)
         # lorsque l'utilisateur n'est pas authentifié.
-        self.app.post('/get_plugin_value', {
+        self.app.post('/plugin_json', {
                 'idcorrevent': idcorrevent,
                 'plugin_name': 'details',
             }, status=401)
@@ -231,7 +231,7 @@ class TestDetailsPlugin(TestController):
 
         # Le contrôleur renvoie une erreur 401 (HTTPUnauthorized)
         # lorsque l'utilisateur n'est pas authentifié.
-        self.app.post('/get_plugin_value', {
+        self.app.post('/plugin_json', {
                 'idcorrevent': idcorrevent,
                 'plugin_name': 'details',
             }, status=401)
