@@ -33,6 +33,7 @@ from sqlalchemy import asc
 from sqlalchemy.sql import func
 from sqlalchemy.orm import aliased
 from sqlalchemy.orm import contains_eager
+from sqlalchemy.sql.expression import or_
 from repoze.what.predicates import Any, All, in_group, \
                                     has_permission, not_anonymous, \
                                     NotAuthorizedError
@@ -46,7 +47,7 @@ from vigilo.models.tables import Event, EventHistory, CorrEvent, Host, \
 from vigilo.models.tables.grouphierarchy import GroupHierarchy
 from vigilo.models.functions import sql_escape_like
 from vigilo.models.tables.secondary_tables import EVENTSAGGREGATE_TABLE, \
-        USER_GROUP_TABLE
+        USER_GROUP_TABLE, SUPITEM_GROUP_TABLE
 
 from vigilo.turbogears.controllers.autocomplete import AutoCompleteController
 from vigilo.turbogears.controllers.proxy import ProxyController
@@ -694,23 +695,44 @@ class RootController(VigiboardRootController):
         Permet de récupérer la valeur d'un plugin associée à un CorrEvent
         donné via JSON.
         """
+
+        # Vérification de l'existence du plugin
         plugins = dict(config['columns_plugins'])
         if plugin_name not in plugins:
             raise HTTPNotFound(_("No such plugin '%s'") % plugin_name)
 
-        # Permet de vérifier si l'utilisateur a bien les permissions
-        # pour accéder à cet événement et si l'événement existe.
+        # Récupération du nom de l'utilisateur
         user = get_current_user()
-        events = VigiboardRequest(user, False)
-        events.add_table(CorrEvent.idcorrevent)
-        events.add_join((Event, CorrEvent.idcause == Event.idevent))
-        events.add_join((events.items,
-            Event.idsupitem == events.items.c.idsupitem))
-        events.add_filter(CorrEvent.idcorrevent == idcorrevent)
+
+        # Vérification des permissions de l'utilisateur
+        events = DBSession.query(
+            CorrEvent.idcorrevent
+        ).join(
+            (Event, Event.idevent == CorrEvent.idcause),
+        ).outerjoin(
+            (LowLevelService, LowLevelService.idservice == Event.idsupitem),
+        ).join(
+            (SUPITEM_GROUP_TABLE,
+                or_(
+                    SUPITEM_GROUP_TABLE.c.idsupitem == \
+                        LowLevelService.idhost,
+                    SUPITEM_GROUP_TABLE.c.idsupitem == \
+                        Event.idsupitem,
+                )
+            ),
+        ).join(
+            (GroupHierarchy, GroupHierarchy.idchild == SUPITEM_GROUP_TABLE.c.idgroup),
+        ).join(
+            (DataPermission, DataPermission.idgroup == GroupHierarchy.idparent),
+        ).join(
+            (USER_GROUP_TABLE, USER_GROUP_TABLE.c.idgroup == DataPermission.idusergroup),
+        ).filter(USER_GROUP_TABLE.c.username == user.user_name
+        ).filter(CorrEvent.idcorrevent == idcorrevent
+        ).count()
 
         # Pas d'événement ou permission refusée. On ne distingue pas
         # les 2 cas afin d'éviter la divulgation d'informations.
-        if not events.num_rows():
+        if events == 0:
             raise HTTPNotFound(_('No such incident or insufficient '
                                 'permissions'))
 
