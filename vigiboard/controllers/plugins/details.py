@@ -29,9 +29,12 @@ import urllib
 from tg.exceptions import HTTPForbidden
 from tg import config, url
 
-from vigiboard.controllers.vigiboardrequest import VigiboardRequest
+from sqlalchemy.sql.expression import null as expr_null, union_all
+from vigilo.models.session import DBSession
+from vigilo.models.tables import Event, \
+    CorrEvent, Host, LowLevelService, StateName
+
 from vigiboard.controllers.plugins import VigiboardRequestPlugin
-from vigilo.models.tables import CorrEvent, Event, StateName
 from vigilo.turbogears.helpers import get_current_user
 
 class PluginDetails(VigiboardRequestPlugin):
@@ -50,51 +53,59 @@ class PluginDetails(VigiboardRequestPlugin):
         """
 
         # Obtention de données sur l'événement et sur son historique
-        user = get_current_user()
-        if user is None:
-            return None
-
-        events = VigiboardRequest(user, False)
-        events.add_table(
-            Event,
-            events.items.c.hostname,
-            events.items.c.servicename,
+        host_query = DBSession.query(
+            Host.idhost.label("idsupitem"),
+            Host.name.label("host"),
+            expr_null().label("service"),
         )
-        events.add_join((CorrEvent, CorrEvent.idcause == Event.idevent))
-        events.add_join((events.items,
-            Event.idsupitem == events.items.c.idsupitem))
-        events.add_filter(CorrEvent.idcorrevent == idcorrevent)
+        lls_query = DBSession.query(
+            LowLevelService.idservice.label("idsupitem"),
+            Host.name.label("host"),
+            LowLevelService.servicename.label("service"),
+        ).join(
+            (Host, Host.idhost == LowLevelService.idhost),
+        )
+        supitems = union_all(lls_query, host_query, correlate=False).alias()
+        event = DBSession.query(
+            CorrEvent.idcorrevent,
+            CorrEvent.idcause,
+            supitems.c.host,
+            supitems.c.service,
+            Event.message,
+            Event.initial_state,
+            Event.current_state,
+            Event.peak_state
+        ).join(
+            (Event, Event.idevent == CorrEvent.idcause),
+            (supitems, supitems.c.idsupitem == Event.idsupitem),
+        ).filter(CorrEvent.idcorrevent == idcorrevent
+        ).first()
 
-        # Vérification que au moins un des identifiants existe et est éditable
-        if events.num_rows() != 1:
-            raise HTTPForbidden()
-
-        event = events.req[0]
         eventdetails = {}
         for edname, edlink in enumerate(config['vigiboard_links.eventdetails']):
 
-            if event.servicename:
-                service = urllib.quote(event.servicename)
+            if event.service:
+                service = urllib.quote(event.service)
             else:
                 service = None
 
             eventdetails[unicode(edname)] = url(edlink[1]) % {
                 'idcorrevent': idcorrevent,
-                'host': urllib.quote(event.hostname),
+                'host': urllib.quote(event.host),
                 'service': service,
-                'message': urllib.quote(event[0].message),
+                'message': urllib.quote(event.message.encode('utf-8')),
             }
 
         return dict(
                 current_state = StateName.value_to_statename(
-                                    event[0].current_state),
+                                    event.current_state),
                 initial_state = StateName.value_to_statename(
-                                    event[0].initial_state),
+                                    event.initial_state),
                 peak_state = StateName.value_to_statename(
-                                    event[0].peak_state),
+                                    event.peak_state),
                 idcorrevent = idcorrevent,
-                host = event.hostname,
-                service = event.servicename,
+                host = event.host,
+                service = event.service,
                 eventdetails = eventdetails,
-                idcause = event[0].idevent,
+                idcause = event.idcause,
             )
