@@ -15,7 +15,7 @@ var TreeGroup = new Class({
         this.setOptions(options);
 
         /* L'objet tree se réfère à un élément div*/
-        this.container = new Element('div')
+        this.container = new Element('div');
         this.container.setStyle("padding", "0 10px 10px 10px");
         this.tree = new Jx.Tree({parent: this.container});
 
