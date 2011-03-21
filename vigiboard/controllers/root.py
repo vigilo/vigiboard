@@ -25,8 +25,9 @@ from time import mktime
 import math
 
 from tg.exceptions import HTTPNotFound, HTTPInternalServerError
-from tg import expose, validate, require, flash, \
+from tg import expose, validate, require, flash, url, \
     tmpl_context, request, config, session, redirect
+from webhelpers import paginate
 from tw.forms import validators
 from pylons.i18n import ugettext as _, lazy_ugettext as l_
 from sqlalchemy import asc
@@ -57,7 +58,8 @@ from vigilo.turbogears.helpers import get_current_user
 from vigiboard.controllers.vigiboardrequest import VigiboardRequest
 from vigiboard.controllers.vigiboard_controller import VigiboardRootController
 
-from vigiboard.widgets.edit_event import edit_event_status_options
+from vigiboard.widgets.edit_event import edit_event_status_options, \
+                                            EditEventForm
 from vigiboard.widgets.search_form import create_search_form, get_calendar_lang
 
 __all__ = ('RootController', 'get_last_modification_timestamp',
@@ -212,48 +214,34 @@ class RootController(VigiboardRootController):
             else:
                 aggregates.add_filter(CorrEvent.timestamp_active <= to_date)
 
-        # Calcul des éléments à afficher et du nombre de pages possibles
-        total_rows = aggregates.num_rows()
+        # Pagination des résultats
+        aggregates.generate_request()
         items_per_page = int(config['vigiboard_items_per_page'])
-
-        id_first_row = items_per_page * (page-1)
-        id_last_row = min(id_first_row + items_per_page, total_rows)
-
-        # Si le numéro de page dépasse le nombre de pages existantes,
-        # on redirige automatiquement vers la 1ère page.
-        if total_rows and id_first_row >= total_rows:
-            redirect('/', page=total_rows / items_per_page, **search)
-
-        aggregates.format_events(id_first_row, id_last_row)
-        aggregates.generate_tmpl_context()
-
-        nb_pages = int(math.ceil(total_rows / (items_per_page + 0.0)))
-        if not total_rows:
-            id_first_row = 0
-        else:
-            id_first_row += 1
+        page = paginate.Page(aggregates.req, page=page, items_per_page=items_per_page)
 
         # Récupération des données des plugins
         plugins_data = {}
         plugins = dict(config['columns_plugins'])
+
+        ids_events = [event[0].idcause for event in page.items]
+        ids_correvents = [event[0].idcorrevent for event in page.items]
         for plugin in plugins:
-            plugin_data = plugins[plugin].get_bulk_data(
-                [event[0].idcorrevent for event in aggregates.events]
-            )
-            if plugin_data :
+            plugin_data = plugins[plugin].get_bulk_data(ids_correvents)
+            if plugin_data:
                 plugins_data[plugin] = plugin_data
+
+        # Ajout des formulaires et préparation
+        # des données pour ces formulaires.
+        tmpl_context.last_modification = \
+            mktime(get_last_modification_timestamp(ids_events).timetuple())
+
+        tmpl_context.edit_event_form = EditEventForm("edit_event_form",
+            submit_text=_('Apply'), action=url('/update'))
 
         return dict(
             hostname = None,
             servicename = None,
-            events = aggregates.events,
             plugins_data = plugins_data,
-            rows_info = {
-                'id_first_row': id_first_row,
-                'id_last_row': id_last_row,
-                'total_rows': total_rows,
-            },
-            nb_pages = nb_pages,
             page = page,
             event_edit_status_options = edit_event_status_options,
             search_form = create_search_form,
@@ -319,40 +307,21 @@ class RootController(VigiboardRootController):
         elif isinstance(cause_supitem, Host):
             hostname = cause_supitem.name
 
+        # Pagination des résultats
+        events.generate_request()
+        items_per_page = int(config['vigiboard_items_per_page'])
+        page = paginate.Page(events.req, page=page, items_per_page=items_per_page)
+
         # Vérification que l'événement existe
-        total_rows = events.num_rows()
-        if total_rows < 1:
+        if not page.item_count:
             flash(_('No masked event or access denied'), 'error')
             redirect('/')
-
-         # Calcul des éléments à afficher et du nombre de pages possibles
-        total_rows = events.num_rows()
-        items_per_page = int(config['vigiboard_items_per_page'])
-
-        id_first_row = items_per_page * (page-1)
-        id_last_row = min(id_first_row + items_per_page, total_rows)
-
-        events.format_events(id_first_row, id_last_row)
-        events.generate_tmpl_context()
-
-        nb_pages = int(math.ceil(total_rows / (items_per_page + 0.0)))
-        if not total_rows:
-            id_first_row = 0
-        else:
-            id_first_row += 1
 
         return dict(
             idcorrevent = idcorrevent,
             hostname = hostname,
             servicename = servicename,
-            events = events.events,
             plugins_data = {},
-            rows_info = {
-                'id_first_row': id_first_row,
-                'id_last_row': id_last_row,
-                'total_rows': total_rows,
-            },
-            nb_pages = nb_pages,
             page = page,
             search_form = create_search_form,
             search = {},
@@ -406,20 +375,9 @@ class RootController(VigiboardRootController):
         events.generate_tmpl_context()
         history = events.format_history()
 
-        total_rows = history.count()
+        # Pagination des résultats
         items_per_page = int(config['vigiboard_items_per_page'])
-
-        id_first_row = items_per_page * (page-1)
-        id_last_row = min(id_first_row + items_per_page, total_rows)
-
-        history_entries = history[id_first_row : id_last_row]
-
-        nb_pages = int(math.ceil(total_rows / (items_per_page + 0.0)))
-        if not total_rows:
-            id_first_row = 0
-        else:
-            id_first_row += 1
-
+        page = paginate.Page(history, page=page, items_per_page=items_per_page)
         event = events.req[0]
 
         return dict(
@@ -427,14 +385,7 @@ class RootController(VigiboardRootController):
             hostname = event.hostname,
             servicename = event.servicename,
             plugins_data = {},
-            rows_info = {
-                'id_first_row': id_first_row,
-                'id_last_row': id_last_row,
-                'total_rows': total_rows,
-            },
-            nb_pages = nb_pages,
             page = page,
-            history = history_entries,
             search_form = create_search_form,
             search = {},
             get_calendar_lang = get_calendar_lang,
@@ -482,37 +433,29 @@ class RootController(VigiboardRootController):
             Event.idsupitem == aggregates.items.c.idsupitem))
         aggregates.add_filter(aggregates.items.c.idsupitem == idsupitem)
 
+        # Pagination des résultats
+        aggregates.generate_request()
+        items_per_page = int(config['vigiboard_items_per_page'])
+        page = paginate.Page(aggregates.req, page=page, items_per_page=items_per_page)
+
         # Vérification qu'il y a au moins 1 événement qui correspond
-        total_rows = aggregates.num_rows()
-        if not total_rows:
+        if not page.item_count:
             flash(_('No access to this host/service or no event yet'), 'error')
             redirect('/')
 
-        items_per_page = int(config['vigiboard_items_per_page'])
+        # Ajout des formulaires et préparation
+        # des données pour ces formulaires.
+        ids_events = [event[0].idcause for event in page.items]
+        tmpl_context.last_modification = \
+            mktime(get_last_modification_timestamp(ids_events).timetuple())
 
-        id_first_row = items_per_page * (page-1)
-        id_last_row = min(id_first_row + items_per_page, total_rows)
-
-        aggregates.format_events(id_first_row, id_last_row)
-        aggregates.generate_tmpl_context()
-
-        nb_pages = int(math.ceil(total_rows / (items_per_page + 0.0)))
-        if not total_rows:
-            id_first_row = 0
-        else:
-            id_first_row += 1
+        tmpl_context.edit_event_form = EditEventForm("edit_event_form",
+            submit_text=_('Apply'), action=url('/update'))
 
         return dict(
             hostname = host,
             servicename = service,
-            events = aggregates.events,
             plugins_data = {},
-            rows_info = {
-                'id_first_row': id_first_row,
-                'id_last_row': id_last_row,
-                'total_rows': total_rows,
-            },
-            nb_pages = nb_pages,
             page = page,
             event_edit_status_options = edit_event_status_options,
             search_form = create_search_form,
