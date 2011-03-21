@@ -701,40 +701,43 @@ class RootController(VigiboardRootController):
         if plugin_name not in plugins:
             raise HTTPNotFound(_("No such plugin '%s'") % plugin_name)
 
-        # Récupération du nom de l'utilisateur
-        user = get_current_user()
+        is_manager = in_group('managers').is_met(request.environ)
+        if not is_manager:
 
-        # Vérification des permissions de l'utilisateur
-        events = DBSession.query(
-            CorrEvent.idcorrevent
-        ).join(
-            (Event, Event.idevent == CorrEvent.idcause),
-        ).outerjoin(
-            (LowLevelService, LowLevelService.idservice == Event.idsupitem),
-        ).join(
-            (SUPITEM_GROUP_TABLE,
-                or_(
-                    SUPITEM_GROUP_TABLE.c.idsupitem == \
-                        LowLevelService.idhost,
-                    SUPITEM_GROUP_TABLE.c.idsupitem == \
-                        Event.idsupitem,
-                )
-            ),
-        ).join(
-            (GroupHierarchy, GroupHierarchy.idchild == SUPITEM_GROUP_TABLE.c.idgroup),
-        ).join(
-            (DataPermission, DataPermission.idgroup == GroupHierarchy.idparent),
-        ).join(
-            (USER_GROUP_TABLE, USER_GROUP_TABLE.c.idgroup == DataPermission.idusergroup),
-        ).filter(USER_GROUP_TABLE.c.username == user.user_name
-        ).filter(CorrEvent.idcorrevent == idcorrevent
-        ).count()
+            # Récupération du nom de l'utilisateur
+            user = get_current_user()
 
-        # Pas d'événement ou permission refusée. On ne distingue pas
-        # les 2 cas afin d'éviter la divulgation d'informations.
-        if events == 0:
-            raise HTTPNotFound(_('No such incident or insufficient '
-                                'permissions'))
+            # Vérification des permissions de l'utilisateur
+            events = DBSession.query(
+                CorrEvent.idcorrevent
+            ).join(
+                (Event, Event.idevent == CorrEvent.idcause),
+            ).outerjoin(
+                (LowLevelService, LowLevelService.idservice == Event.idsupitem),
+            ).join(
+                (SUPITEM_GROUP_TABLE,
+                    or_(
+                        SUPITEM_GROUP_TABLE.c.idsupitem == \
+                            LowLevelService.idhost,
+                        SUPITEM_GROUP_TABLE.c.idsupitem == \
+                            Event.idsupitem,
+                    )
+                ),
+            ).join(
+                (GroupHierarchy, GroupHierarchy.idchild == SUPITEM_GROUP_TABLE.c.idgroup),
+            ).join(
+                (DataPermission, DataPermission.idgroup == GroupHierarchy.idparent),
+            ).join(
+                (USER_GROUP_TABLE, USER_GROUP_TABLE.c.idgroup == DataPermission.idusergroup),
+            ).filter(USER_GROUP_TABLE.c.username == user.user_name
+            ).filter(CorrEvent.idcorrevent == idcorrevent
+            ).count()
+
+            # Pas d'événement ou permission refusée. On ne distingue pas
+            # les 2 cas afin d'éviter la divulgation d'informations.
+            if events == 0:
+                raise HTTPNotFound(_('No such incident or insufficient '
+                                    'permissions'))
 
         return plugins[plugin_name].get_json_data(idcorrevent, *arg, **krgv)
 
