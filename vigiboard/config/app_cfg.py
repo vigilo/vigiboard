@@ -113,6 +113,7 @@ base_config['vigiboard_links.tt'] = 'http://bugs.example.com/?ticket=%(tt)s'
 
 # Plugins to use
 base_config['vigiboard_plugins'] = (
+#    'id',
     'details',
     'date',
     'priority',
@@ -122,4 +123,5 @@ base_config['vigiboard_plugins'] = (
     'output',
     'hls',
     'status',
+#    'test',
 )
