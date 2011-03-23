@@ -644,16 +644,17 @@ class RootController(VigiboardRootController):
         if plugin_name not in plugins:
             raise HTTPNotFound(_("No such plugin '%s'") % plugin_name)
 
+        # Récupération de la liste des évènements corrélés
+        events = DBSession.query(CorrEvent.idcorrevent)
+
+        # Filtrage des évènements en fonction des permissions de
+        # l'utilisateur (s'il n'appartient pas au groupe 'managers')
         is_manager = in_group('managers').is_met(request.environ)
         if not is_manager:
 
-            # Récupération du nom de l'utilisateur
             user = get_current_user()
 
-            # Vérification des permissions de l'utilisateur
-            events = DBSession.query(
-                CorrEvent.idcorrevent
-            ).join(
+            events = events.join(
                 (Event, Event.idevent == CorrEvent.idcause),
             ).outerjoin(
                 (LowLevelService, LowLevelService.idservice == Event.idsupitem),
@@ -667,21 +668,29 @@ class RootController(VigiboardRootController):
                     )
                 ),
             ).join(
-                (GroupHierarchy, GroupHierarchy.idchild == SUPITEM_GROUP_TABLE.c.idgroup),
+                (GroupHierarchy,
+                    GroupHierarchy.idchild == SUPITEM_GROUP_TABLE.c.idgroup),
             ).join(
-                (DataPermission, DataPermission.idgroup == GroupHierarchy.idparent),
+                (DataPermission,
+                    DataPermission.idgroup == GroupHierarchy.idparent),
             ).join(
-                (USER_GROUP_TABLE, USER_GROUP_TABLE.c.idgroup == DataPermission.idusergroup),
-            ).filter(USER_GROUP_TABLE.c.username == user.user_name
-            ).filter(CorrEvent.idcorrevent == idcorrevent
-            ).count()
+                (USER_GROUP_TABLE,
+                    USER_GROUP_TABLE.c.idgroup == DataPermission.idusergroup),
+            ).filter(USER_GROUP_TABLE.c.username == user.user_name)
 
-            # Pas d'événement ou permission refusée. On ne distingue pas
-            # les 2 cas afin d'éviter la divulgation d'informations.
-            if events == 0:
-                raise HTTPNotFound(_('No such incident or insufficient '
-                                    'permissions'))
+        # Filtrage des évènements en fonction
+        # de l'identifiant passé en paramètre
+        events = events.filter(CorrEvent.idcorrevent == idcorrevent).count()
 
+        # Pas d'événement ou permission refusée. On ne distingue pas
+        # les 2 cas afin d'éviter la divulgation d'informations.
+        if events == 0:
+            raise HTTPNotFound(_('No such incident or insufficient '
+                                'permissions'))
+
+        # L'évènement existe bien, et l'utilisateur dispose
+        # des permissions appropriées. On fait alors appel au
+        # plugin pour récupérer les informations à retourner.
         return plugins[plugin_name].get_json_data(idcorrevent, *arg, **krgv)
 
     @validate(validators={
