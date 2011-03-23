@@ -162,6 +162,28 @@ class TestDetailsPlugin(TestController):
             "initial_state": "WARNING"
         })
 
+        # On répète les mêmes tests pour l'utilisateur' manager'
+        response = self.app.post('/plugin_json', {
+                'idcorrevent': idcorrevent,
+                'plugin_name': 'details',
+            }, extra_environ={'REMOTE_USER': 'manager'})
+        json = response.json
+
+        # Le contenu de "eventdetails" varie facilement.
+        # On le teste séparément.
+        json.pop('eventdetails', None)
+        assert_true('eventdetails' in response.json)
+
+        assert_equal(json, {
+            "idcorrevent": idcorrevent,
+            "idcause": idcause,
+            "service": "baz",
+            "peak_state": "WARNING",
+            "current_state": "WARNING",
+            "host": "bar",
+            "initial_state": "WARNING"
+        })
+
     def test_details_plugin_host_alert_when_allowed(self):
         """Dialogue des détails avec un hôte et les bons droits."""
         hostgroup, idcorrevent, idcause = insert_deps(False)
@@ -170,6 +192,28 @@ class TestDetailsPlugin(TestController):
                 'idcorrevent': idcorrevent,
                 'plugin_name': 'details',
             }, extra_environ={'REMOTE_USER': 'access'})
+        json = response.json
+
+        # Le contenu de "eventdetails" varie facilement.
+        # On le teste séparément.
+        json.pop('eventdetails', None)
+        assert_true('eventdetails' in response.json)
+
+        assert_equal(json, {
+            "idcorrevent": idcorrevent,
+            "idcause": idcause,
+            "service": None,
+            "peak_state": "WARNING",
+            "current_state": "WARNING",
+            "host": "bar",
+            "initial_state": "WARNING"
+        })
+
+        # On répète les mêmes tests pour l'utilisateur' manager'
+        response = self.app.post('/plugin_json', {
+                'idcorrevent': idcorrevent,
+                'plugin_name': 'details',
+            }, extra_environ={'REMOTE_USER': 'manager'})
         json = response.json
 
         # Le contenu de "eventdetails" varie facilement.
