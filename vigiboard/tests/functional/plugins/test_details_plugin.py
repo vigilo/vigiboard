@@ -237,31 +237,6 @@ class TestDetailsPlugin(TestController):
             "initial_state": "WARNING"
         })
 
-    def test_details_plugin_host_alert_when_allowed(self):
-        """Dialogue des détails avec un hôte et les bons droits."""
-        hostgroup, idcorrevent, idcause = insert_deps(False)
-
-        response = self.app.post('/plugin_json', {
-                'idcorrevent': idcorrevent,
-                'plugin_name': 'details',
-            }, extra_environ={'REMOTE_USER': 'access'})
-        json = response.json
-
-        # Le contenu de "eventdetails" varie facilement.
-        # On le teste séparément.
-        json.pop('eventdetails', None)
-        assert_true('eventdetails' in response.json)
-
-        assert_equal(json, {
-            "idcorrevent": idcorrevent,
-            "idcause": idcause,
-            "service": None,
-            "peak_state": "WARNING",
-            "current_state": "WARNING",
-            "host": "bar",
-            "initial_state": "WARNING"
-        })
-
     def test_details_plugin_LLS_when_forbidden(self):
         """Dialogue des détails avec un LLS et des droits insuffisants."""
         idcorrevent = insert_deps(True)[1]
