@@ -141,7 +141,7 @@ class TestHLSPlugin(TestController):
 
     def test_no_impacted_hls(self):
         """
-        Données affichée par le plugin HLS pour 0 HLS impacté
+        Données affichées par le plugin HLS pour 0 HLS impacté
         Teste les données affichées par le  plugin lorsque
         aucun service de haut niveau n'est impacté.
         """
@@ -163,7 +163,7 @@ class TestHLSPlugin(TestController):
 
     def test_1_impacted_hls_path(self):
         """
-        Données affichée par le plugin HLS pour 1 chemin impacté
+        Données affichées par le plugin HLS pour 1 chemin impacté
         Teste les données affichées par le  plugin lorsque
         1 chemin de services de haut niveau est impacté.
         """
@@ -185,7 +185,7 @@ class TestHLSPlugin(TestController):
 
     def test_2_impacted_hls_path(self):
         """
-        Données affichée par le plugin HLS pour 2 chemins impactés
+        Données affichées par le plugin HLS pour 2 chemins impactés
         Teste les données affichées par le plugin lorsque
         2 chemins de services de haut niveau sont impactés.
         """
@@ -204,4 +204,3 @@ class TestHLSPlugin(TestController):
         plugin_data = resp.lxml.xpath('//table[@class="vigitable"]'
             '/tbody/tr/td[@class="plugin_hls"]/a/text()')
         assert_equal(plugin_data[0].strip(), "2")
-
