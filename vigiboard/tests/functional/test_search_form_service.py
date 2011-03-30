@@ -17,7 +17,7 @@ def insert_deps():
     """Insère les dépendances nécessaires aux tests."""
     timestamp = datetime.now()
 
-    hostgroup = SupItemGroup(name=u'foo')
+    hostgroup = SupItemGroup(name=u'foo', parent=None)
     DBSession.add(hostgroup)
 
     host = Host(
@@ -37,7 +37,7 @@ def insert_deps():
     hostgroup.supitems.append(host)
     DBSession.flush()
 
-    servicegroup = SupItemGroup(name=u'bar')
+    servicegroup = SupItemGroup(name=u'bar', parent=None)
     DBSession.add(servicegroup)
     DBSession.flush()
 
@@ -86,9 +86,7 @@ class TestSearchFormService(TestController):
             fullname=u'',
             email=u'some.random@us.er',
         )
-        usergroup = UserGroup(
-            group_name=u'users',
-        )
+        usergroup = UserGroup(group_name=u'users')
         user.usergroups.append(usergroup)
         usergroup.permissions.append(perm)
         DBSession.add(user)
@@ -204,4 +202,3 @@ class TestSearchFormService(TestController):
         cols = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr/td')
         print "There are %d columns in the result set" % len(cols)
         assert_equal(len(cols), 1)
-

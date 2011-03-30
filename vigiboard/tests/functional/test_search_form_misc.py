@@ -31,7 +31,7 @@ def insert_deps():
     DBSession.add(host)
     DBSession.flush()
 
-    hostgroup = SupItemGroup(name=u'foo')
+    hostgroup = SupItemGroup(name=u'foo', parent=None)
     hostgroup.supitems.append(host)
     DBSession.add(hostgroup)
     DBSession.flush()
@@ -79,9 +79,7 @@ class TestSearchFormMisc(TestController):
             fullname=u'',
             email=u'some.random@us.er',
         )
-        usergroup = UserGroup(
-            group_name=u'users',
-        )
+        usergroup = UserGroup(group_name=u'users')
         user.usergroups.append(usergroup)
         usergroup.permissions.append(perm)
         DBSession.add(user)
@@ -161,4 +159,3 @@ class TestSearchFormMisc(TestController):
         cols = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr/td')
         print "There are %d columns in the result set" % len(cols)
         assert_true(len(cols) > 1)
-

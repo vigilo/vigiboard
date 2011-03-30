@@ -17,7 +17,7 @@ from vigiboard.tests import TestController
 def populate_DB():
     """ Peuple la base de données. """
     # On ajoute les groupes et leurs dépendances
-    hostmanagers = SupItemGroup(name=u'managersgroup')
+    hostmanagers = SupItemGroup(name=u'managersgroup', parent=None)
     DBSession.add(hostmanagers)
     hosteditors = SupItemGroup(name=u'editorsgroup', parent=hostmanagers)
     DBSession.add(hosteditors)
@@ -164,9 +164,7 @@ class TestEventTable(TestController):
             fullname=u'',
             email=u'user.has@access',
         )
-        usergroup = UserGroup(
-            group_name=u'users_with_access',
-        )
+        usergroup = UserGroup(group_name=u'users_with_access')
         usergroup.permissions.append(perm)
         user.usergroups.append(usergroup)
         DBSession.add(user)
@@ -178,9 +176,7 @@ class TestEventTable(TestController):
             fullname=u'',
             email=u'user.has.no@access',
         )
-        usergroup = UserGroup(
-            group_name=u'users_with_limited_access',
-        )
+        usergroup = UserGroup(group_name=u'users_with_limited_access')
         usergroup.permissions.append(perm)
         user.usergroups.append(usergroup)
         DBSession.add(user)
@@ -282,4 +278,3 @@ class TestEventTable(TestController):
         rows = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr')
         print "There are %d rows in the result set" % len(rows)
         assert_equal(len(rows), 1)
-

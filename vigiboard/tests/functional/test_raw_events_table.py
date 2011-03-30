@@ -22,9 +22,7 @@ def populate_accounts():
         fullname=u'',
         email=u'user.has@access',
     )
-    usergroup = UserGroup(
-        group_name=u'users_with_access',
-    )
+    usergroup = UserGroup(group_name=u'users_with_access')
     usergroup.permissions.append(perm)
     user.usergroups.append(usergroup)
     DBSession.add(user)
@@ -36,9 +34,7 @@ def populate_accounts():
         fullname=u'',
         email=u'user.has.no@access',
     )
-    usergroup = UserGroup(
-        group_name=u'users_with_limited_access',
-    )
+    usergroup = UserGroup(group_name=u'users_with_limited_access')
     usergroup.permissions.append(perm)
     user.usergroups.append(usergroup)
     DBSession.add(user)
@@ -49,7 +45,7 @@ def populate_accounts():
 def populate_DB(caused_by_service):
     """ Peuple la base de données. """
     # On ajoute un groupe d'hôtes et un groupe de services.
-    supitemmanagers = SupItemGroup(name = u'managersgroup')
+    supitemmanagers = SupItemGroup(name = u'managersgroup', parent=None)
     DBSession.add(supitemmanagers)
     DBSession.flush()
 

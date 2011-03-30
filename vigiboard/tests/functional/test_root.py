@@ -11,6 +11,7 @@ Please read http://pythonpaste.org/webtest/ for more information.
 
 """
 from nose.tools import assert_true, assert_false, assert_equal
+from nose import SkipTest
 from datetime import datetime
 from time import mktime
 import transaction
@@ -20,11 +21,12 @@ from vigilo.models.tables import Event, EventHistory, CorrEvent, User, \
                             Permission, StateName, Host, UserGroup, \
                             SupItemGroup, LowLevelService, DataPermission
 from vigiboard.tests import TestController
+from tg import config
 
 def populate_DB():
     """ Peuple la base de données. """
     # On ajoute un groupe d'hôtes et un groupe de services.
-    supitemmanagers = SupItemGroup(name = u'managersgroup')
+    supitemmanagers = SupItemGroup(name = u'managersgroup', parent=None)
     DBSession.add(supitemmanagers)
     DBSession.flush()
 
@@ -38,7 +40,7 @@ def populate_DB():
 
     # On crée un 2 hôtes, et on les ajoute au groupe d'hôtes.
     host1 = Host(
-        name = u'host1',      
+        name = u'host1',
         checkhostcmd = u'halt',
         snmpcommunity = u'public',
         hosttpl = u'/dev/null',
@@ -49,7 +51,7 @@ def populate_DB():
     DBSession.add(host1)
     supitemmanagers.supitems.append(host1)
     host2 = Host(
-        name = u'host2',      
+        name = u'host2',
         checkhostcmd = u'halt',
         snmpcommunity = u'public',
         hosttpl = u'/dev/null',
@@ -79,20 +81,20 @@ def populate_DB():
     DBSession.add(service2)
     supitemmanagers.supitems.append(service2)
     DBSession.flush()
-    
+
     return ([host1, host2], [service1, service2])
 
 def add_correvent_caused_by(supitem, timestamp,
         correvent_status=u"None", event_status=u"WARNING"):
     """
-    Ajoute dans la base de données un évènement corrélé causé 
+    Ajoute dans la base de données un évènement corrélé causé
     par un incident survenu sur l'item passé en paramètre.
     Génère un historique pour les tests.
     """
 
     # Ajout d'un événement
     event = Event(
-        supitem = supitem, 
+        supitem = supitem,
         message = u'foo',
         current_state = StateName.statename_to_value(event_status),
         timestamp = datetime.now(),
@@ -102,14 +104,14 @@ def add_correvent_caused_by(supitem, timestamp,
 
     # Ajout d'un événement corrélé
     aggregate = CorrEvent(
-        idcause = event.idevent, 
+        idcause = event.idevent,
         timestamp_active = timestamp,
         priority = 1,
         status = correvent_status)
     aggregate.events.append(event)
     DBSession.add(aggregate)
     DBSession.flush()
-    
+
     return aggregate.idcorrevent
 
 
@@ -125,9 +127,7 @@ class TestRootController(TestController):
             fullname=u'',
             email=u'user.has@access',
         )
-        usergroup = UserGroup(
-            group_name=u'users_with_access',
-        )
+        usergroup = UserGroup(group_name=u'users_with_access')
         usergroup.permissions.append(perm)
         usergroup.permissions.append(perm2)
         user.usergroups.append(usergroup)
@@ -140,9 +140,7 @@ class TestRootController(TestController):
             fullname=u'',
             email=u'user.has.no@access',
         )
-        usergroup = UserGroup(
-            group_name=u'users_with_limited_access',
-        )
+        usergroup = UserGroup(group_name=u'users_with_limited_access')
         usergroup.permissions.append(perm)
         usergroup.permissions.append(perm2)
         user.usergroups.append(usergroup)
@@ -163,13 +161,13 @@ class TestRootController(TestController):
         # On peuple la BDD avec 2 hôtes, 2 services de bas niveau,
         # et un groupe d'hôtes et de services associés à ces items.
         (hosts, services) = populate_DB()
-        
+
         # On ajoute 2 évènements corrélés causés par ces hôtes
         timestamp = datetime.now()
         correvent1_id = add_correvent_caused_by(hosts[0], timestamp)
         correvent2_id = add_correvent_caused_by(hosts[1], timestamp)
         transaction.commit()
-        
+
         ### 1er cas : L'utilisateur n'est pas connecté.
         # On vérifie que le plugin retourne bien une erreur 401.
         response = self.app.post(
@@ -179,11 +177,11 @@ class TestRootController(TestController):
                 "trouble_ticket" : u"foo",
                 "ack" : u'NoChange',
             }, status = 401)
-        
+
         ### 2ème cas : L'utilisateur utilisé pour
         # se connecter à Vigiboard est 'limited_access'.
         environ = {'REMOTE_USER': 'limited_access'}
-        
+
         # On s'attend à ce qu'une erreur 302 soit renvoyée, et à
         # ce qu'un message d'erreur précise à l'utilisateur qu'il
         # n'a pas la permission de modifier ces évènements.
@@ -194,7 +192,7 @@ class TestRootController(TestController):
                 "trouble_ticket" : u"foo",
                 "last_modification": mktime(timestamp.timetuple()),
             }, status = 302, extra_environ = environ)
-        
+
         response = response.follow(status=200, extra_environ = environ)
         assert_true(response.lxml.xpath(
             '//div[@id="flash"]/div[@class="error"]'))
@@ -202,7 +200,7 @@ class TestRootController(TestController):
         ### 3ème cas : L'utilisateur utilisé pour
         # se connecter à Vigiboard est 'access'.
         environ = {'REMOTE_USER': 'access'}
-        
+
         # On s'attend à ce que le statut de la requête soit 302,
         # et à ce qu'un message informe l'utilisateur que les
         # évènements corrélés sélectionnées ont bien été mis à jour.
@@ -213,20 +211,20 @@ class TestRootController(TestController):
                 "trouble_ticket" : u"foo",
                 "ack" : u'NoChange',
             }, status = 302, extra_environ = environ)
-        
+
         response = response.follow(status=200, extra_environ = environ)
         assert_false(response.lxml.xpath(
             '//div[@id="flash"]/div[@class="error"]'))
         assert_true(response.lxml.xpath(
             '//div[@id="flash"]/div[@class="ok"]'))
-        
+
         # On s'assure que le ticket de l'évènement corrélé
         # a bien été mis à jour dans la base de données.
         correvents = DBSession.query(
             CorrEvent.trouble_ticket
             ).filter(CorrEvent.idcorrevent.in_([correvent1_id, correvent2_id])
             ).all()
-        
+
         assert_equal(correvents[0].trouble_ticket, u"foo")
         assert_equal(correvents[1].trouble_ticket, u"foo")
 
@@ -236,14 +234,14 @@ class TestRootController(TestController):
         # On peuple la BDD avec 2 hôtes, 2 services de bas niveau,
         # et un groupe d'hôtes et de services associés à ces items.
         (hosts, services) = populate_DB()
-        
+
         # On ajoute 2 évènements corrélés causés par ces hôtes
         timestamp = datetime.now()
         correvent1_id = add_correvent_caused_by(services[0], timestamp)
         correvent2_id = add_correvent_caused_by(services[1], timestamp)
-        
+
         transaction.commit()
-        
+
         ### 1er cas : L'utilisateur n'est pas connecté.
         # On vérifie que le plugin retourne bien une erreur 401.
         response = self.app.post(
@@ -253,11 +251,11 @@ class TestRootController(TestController):
                 "trouble_ticket" : u"foo",
                 "ack" : u'NoChange',
             }, status = 401)
-        
+
         ### 2ème cas : L'utilisateur utilisé pour
         # se connecter à Vigiboard est 'limited_access'.
         environ = {'REMOTE_USER': 'limited_access'}
-        
+
         # On s'attend à ce qu'une erreur 302 soit renvoyée, et à
         # ce qu'un message d'erreur précise à l'utilisateur qu'il
         # n'a pas la permission de modifier ces évènements.
@@ -268,7 +266,7 @@ class TestRootController(TestController):
                 "trouble_ticket" : u"foo",
                 "ack" : u'NoChange',
             }, status = 302, extra_environ = environ)
-        
+
         response = response.follow(status=200, extra_environ = environ)
         assert_true(response.lxml.xpath(
             '//div[@id="flash"]/div[@class="error"]'))
@@ -276,7 +274,7 @@ class TestRootController(TestController):
         ### 3ème cas : L'utilisateur utilisé pour
         # se connecter à Vigiboard est 'access'.
         environ = {'REMOTE_USER': 'access'}
-        
+
         # On s'attend à ce que le statut de la requête soit 302,
         # et à ce qu'un message informe l'utilisateur que les
         # évènements corrélés sélectionnées ont bien été mis à jour.
@@ -287,13 +285,13 @@ class TestRootController(TestController):
                 "trouble_ticket" : u"foo",
                 "ack" : u'NoChange',
             }, status = 302, extra_environ = environ)
-        
+
         response = response.follow(status=200, extra_environ = environ)
         assert_false(response.lxml.xpath(
             '//div[@id="flash"]/div[@class="error"]'))
         assert_true(response.lxml.xpath(
             '//div[@id="flash"]/div[@class="ok"]'))
-        
+
         # On s'assure que le ticket de l'évènement corrélé
         # a bien été mis à jour dans la base de données.
         correvents = DBSession.query(
@@ -309,13 +307,13 @@ class TestRootController(TestController):
         # On peuple la BDD avec 2 hôtes, 2 services de bas niveau,
         # et un groupe d'hôtes et de services associés à ces items.
         (hosts, services) = populate_DB()
-        
+
         # On ajoute 2 évènements corrélés causés par ces hôtes
         timestamp = datetime.now()
         correvent1_id = add_correvent_caused_by(hosts[0], timestamp)
         correvent2_id = add_correvent_caused_by(hosts[1], timestamp)
         transaction.commit()
-        
+
         ### 1er cas : L'utilisateur n'est pas connecté.
         # On vérifie que le plugin retourne bien une erreur 401.
         response = self.app.post(
@@ -325,11 +323,11 @@ class TestRootController(TestController):
                 "trouble_ticket" : "",
                 "ack" : u'Acknowledged',
             }, status = 401)
-        
+
         ### 2ème cas : L'utilisateur utilisé pour
         # se connecter à Vigiboard est 'limited_access'.
         environ = {'REMOTE_USER': 'limited_access'}
-        
+
         # On s'attend à ce qu'une erreur 302 soit renvoyée, et à
         # ce qu'un message d'erreur précise à l'utilisateur qu'il
         # n'a pas la permission de modifier ces évènements.
@@ -340,7 +338,7 @@ class TestRootController(TestController):
                 "trouble_ticket" : "",
                 "ack" : u'Acknowledged',
             }, status = 302, extra_environ = environ)
-        
+
         response = response.follow(status=200, extra_environ = environ)
         assert_true(response.lxml.xpath(
             '//div[@id="flash"]/div[@class="error"]'))
@@ -348,7 +346,7 @@ class TestRootController(TestController):
         ### 3ème cas : L'utilisateur utilisé pour
         # se connecter à Vigiboard est 'access'.
         environ = {'REMOTE_USER': 'access'}
-        
+
         # On s'attend à ce que le statut de la requête soit 302,
         # et à ce qu'un message informe l'utilisateur que les
         # évènements corrélés sélectionnées ont bien été mis à jour.
@@ -359,13 +357,13 @@ class TestRootController(TestController):
                 "trouble_ticket" : "",
                 "ack" : u'Acknowledged',
             }, status = 302, extra_environ = environ)
-        
+
         response = response.follow(status=200, extra_environ = environ)
         assert_false(response.lxml.xpath(
             '//div[@id="flash"]/div[@class="error"]'))
         assert_true(response.lxml.xpath(
             '//div[@id="flash"]/div[@class="ok"]'))
-        
+
         # On s'assure que le statut de l'évènement corrélé
         # a bien été mis à jour dans la base de données.
         correvents = DBSession.query(
@@ -382,14 +380,14 @@ class TestRootController(TestController):
         # On peuple la BDD avec 2 hôtes, 2 services de bas niveau,
         # et un groupe d'hôtes et de services associés à ces items.
         (hosts, services) = populate_DB()
-        
+
         # On ajoute 2 évènements corrélés causés par ces hôtes
         timestamp = datetime.now()
         correvent1_id = add_correvent_caused_by(services[0], timestamp)
         correvent2_id = add_correvent_caused_by(services[1], timestamp)
-        
+
         transaction.commit()
-        
+
         ### 1er cas : L'utilisateur n'est pas connecté.
         # On vérifie que le plugin retourne bien une erreur 401.
         response = self.app.post(
@@ -399,11 +397,11 @@ class TestRootController(TestController):
                 "trouble_ticket" : "",
                 "ack" : u'Acknowledged',
             }, status = 401)
-        
+
         ### 2ème cas : L'utilisateur utilisé pour
         # se connecter à Vigiboard est 'limited_access'.
         environ = {'REMOTE_USER': 'limited_access'}
-        
+
         # On s'attend à ce qu'une erreur 302 soit renvoyée, et à
         # ce qu'un message d'erreur précise à l'utilisateur qu'il
         # n'a pas la permission de modifier ces évènements.
@@ -414,7 +412,7 @@ class TestRootController(TestController):
                 "trouble_ticket" : "",
                 "ack" : u'Acknowledged',
             }, status = 302, extra_environ = environ)
-        
+
         response = response.follow(status=200, extra_environ = environ)
         assert_true(response.lxml.xpath(
             '//div[@id="flash"]/div[@class="error"]'))
@@ -422,7 +420,7 @@ class TestRootController(TestController):
         ### 3ème cas : L'utilisateur utilisé pour
         # se connecter à Vigiboard est 'access'.
         environ = {'REMOTE_USER': 'access'}
-        
+
         # On s'attend à ce que le statut de la requête soit 302,
         # et à ce qu'un message informe l'utilisateur que les
         # évènements corrélés sélectionnées ont bien été mis à jour.
@@ -433,13 +431,13 @@ class TestRootController(TestController):
                 "trouble_ticket" : "",
                 "ack" : u'Acknowledged',
             }, status = 302, extra_environ = environ)
-        
+
         response = response.follow(status=200, extra_environ = environ)
         assert_false(response.lxml.xpath(
             '//div[@id="flash"]/div[@class="error"]'))
         assert_true(response.lxml.xpath(
             '//div[@id="flash"]/div[@class="ok"]'))
-        
+
         # On s'assure que le statut de l'évènement corrélé
         # a bien été mis à jour dans la base de données.
         correvents = DBSession.query(
@@ -455,17 +453,17 @@ class TestRootController(TestController):
         # On peuple la BDD avec 2 hôtes, 2 services de bas niveau,
         # et un groupe d'hôtes et de services associés à ces items.
         (hosts, services) = populate_DB()
-        
+
         # On ajoute 2 évènements corrélés causés par ces hôtes
         timestamp = datetime.now()
         correvent1_id = add_correvent_caused_by(services[0], timestamp)
         correvent2_id = add_correvent_caused_by(services[1], timestamp)
-        
-        # Date de modification du premier évènement corrélé 
+
+        # Date de modification du premier évènement corrélé
         later_date = datetime.now()
         # Date du chargement de la page
         date = mktime(later_date.timetuple()) - 42
-        
+
         # On ajoute une entrée dans l'historique de l'évènement brut
         # causant le premier évènement corrélé, portant pour timestamp
         # une date postérieure à celle du chargement de la page.
@@ -477,12 +475,12 @@ class TestRootController(TestController):
             idevent = correvent1.idcause,
             timestamp = later_date))
         DBSession.flush()
-        
+
         transaction.commit()
-        
+
         # L'utilisateur utilisé pour se connecter à Vigiboard est 'access'.
         environ = {'REMOTE_USER': 'access'}
-        
+
         # On s'attend à ce que le statut de la requête soit 302, et
         # à ce qu'un message d'erreur avise l'utilisateur que des
         # changements sont intervenus depuis le chargement de la page.
@@ -493,11 +491,11 @@ class TestRootController(TestController):
                 "trouble_ticket" : "",
                 "ack" : u'Acknowledged',
             }, status = 302, extra_environ = environ)
-        
+
         response = response.follow(status=200, extra_environ = environ)
         assert_true(response.lxml.xpath(
             '//div[@id="flash"]/div[@class="warning"]'))
-        
+
         # On s'assure que le statut de l'évènement corrélé
         # n'a pas été modifié dans la base de données.
         status = DBSession.query(
@@ -506,3 +504,76 @@ class TestRootController(TestController):
             ).scalar()
         assert_equal(status, u'None')
 
+    def test_close_last_page(self):
+        """
+        Suppression de tous les événements de la dernière page.
+
+        Lorsqu'on supprime tous les événements de la page, on doit
+        implicitement afficher le contenu de la page d'avant.
+        """
+        raise SkipTest("Not ready yet")
+
+        # On crée autant d'événements qu'on peut en afficher par page + 1,
+        # afin d'avoir 2 pages dans le bac à événements.
+        items_per_page = int(config['vigiboard_items_per_page'])
+        for i in xrange(items_per_page + 1):
+            host = Host(
+                name = u'host%d' % i,
+                checkhostcmd = u'halt',
+                snmpcommunity = u'public',
+                hosttpl = u'/dev/null',
+                address = u'192.168.1.%d' % i,
+                snmpport = 42,
+                weight = 42,
+            )
+            DBSession.add(host)
+            DBSession.flush()
+            add_correvent_caused_by(host, datetime.now())
+#        transaction.commit()
+
+        environ = {'REMOTE_USER': 'manager'}
+
+        # On vérifie qu'on a 2 pages et que sur la 2ème page,
+        # il n'y a qu'un seul événement.
+        response = self.app.get('/?page=2', extra_environ=environ)
+
+        print [(e.idcorrevent, e.idcause) for e in DBSession.query(CorrEvent).all()]
+        raise ValueError, str(response.body).decode('ascii', 'ignore')
+
+        current_page = response.lxml.xpath(
+            '//span[@class="pager_curpage"]/text()')
+        assert_equal(2, int(current_page[0]))
+        rows = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr')
+        assert_equal(len(rows), 1)
+
+        # On force l'état de l'événement sur la 2ème page à 'OK'.
+        # - Tout d'abord, on récupère l'identifiant de l'événement en question.
+        idcorrevent = response.lxml.xpath('string(//table[@class="vigitable"]/tbody/tr/td[@class="plugin_details"]/a/@href)')
+        idcorrevent = int(idcorrevent.lstrip('#'))
+        # - Puis, on met à jour son état (en le forçant à OK).
+        # On s'attend à ce que le statut de la requête soit 302,
+        # et à ce qu'un message informe l'utilisateur que les
+        # évènements corrélés sélectionnées ont bien été mis à jour.
+        response = self.app.post(
+            '/update', {
+                "id" : str(idcorrevent),
+                "last_modification": mktime(datetime.now().timetuple()),
+                "trouble_ticket" : "",
+                "ack" : u'Forced',
+            }, status=302, extra_environ=environ)
+        # - On s'assure que la mise à jour a fonctionné.
+        response = response.follow(status=200, extra_environ=environ)
+        assert_false(response.lxml.xpath(
+            '//div[@id="flash"]/div[@class="error"]'))
+        assert_true(response.lxml.xpath(
+            '//div[@id="flash"]/div[@class="ok"]'))
+
+        # Une requête sur la 2ème page doit désormais afficher
+        # le contenu de la 1ère page, et le nombre d'événements
+        # doit être le même qu'au départ - 1.
+        response = self.app.get('/?page=2', extra_environ=environ)
+        current_page = response.lxml.xpath(
+            '//span[@class="pager_curpage"]/text()')
+        assert_equal(1, int(current_page[0]))
+        rows = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr')
+        assert_equal(len(rows), items_per_page)

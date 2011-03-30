@@ -25,17 +25,14 @@ applications externes.
 """
 
 import urllib
-
-from tg.exceptions import HTTPForbidden
 from tg import config, url
-
 from sqlalchemy.sql.expression import null as expr_null, union_all
+
 from vigilo.models.session import DBSession
 from vigilo.models.tables import Event, \
     CorrEvent, Host, LowLevelService, StateName
 
 from vigiboard.controllers.plugins import VigiboardRequestPlugin
-from vigilo.turbogears.helpers import get_current_user
 
 class PluginDetails(VigiboardRequestPlugin):
     """

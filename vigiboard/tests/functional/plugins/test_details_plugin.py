@@ -27,7 +27,7 @@ def insert_deps(return_service):
     """
     timestamp = datetime.now()
 
-    hostgroup = SupItemGroup(name=u'foo')
+    hostgroup = SupItemGroup(name=u'foo', parent=None)
     DBSession.add(hostgroup)
 
     host = Host(
@@ -47,7 +47,7 @@ def insert_deps(return_service):
     hostgroup.supitems.append(host)
     DBSession.flush()
 
-    servicegroup = SupItemGroup(name=u'bar')
+    servicegroup = SupItemGroup(name=u'bar', parent=None)
     DBSession.add(servicegroup)
 
     service = LowLevelService(
@@ -112,9 +112,7 @@ class TestDetailsPlugin(TestController):
             fullname=u'',
             email=u'user.has@access',
         )
-        usergroup = UserGroup(
-            group_name=u'users_with_access',
-        )
+        usergroup = UserGroup(group_name=u'users_with_access')
         usergroup.permissions.append(perm)
         user.usergroups.append(usergroup)
         DBSession.add(user)
@@ -126,9 +124,7 @@ class TestDetailsPlugin(TestController):
             fullname=u'',
             email=u'user.has.no@access',
         )
-        usergroup = UserGroup(
-            group_name=u'users_without_access',
-        )
+        usergroup = UserGroup(group_name=u'users_without_access')
         usergroup.permissions.append(perm)
         user.usergroups.append(usergroup)
         DBSession.add(user)

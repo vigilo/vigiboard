@@ -16,7 +16,7 @@ def populate_DB():
     """ Peuple la base de données. """
 
     # On ajoute un groupe d'hôtes
-    hostmanagers = SupItemGroup(name=u'managersgroup')
+    hostmanagers = SupItemGroup(name=u'managersgroup', parent=None)
     DBSession.add(hostmanagers)
     DBSession.flush()
 
@@ -128,9 +128,7 @@ class TestHLSPlugin(TestController):
             fullname=u'',
             email=u'user.has@access',
         )
-        usergroup = UserGroup(
-            group_name=u'users_with_access',
-        )
+        usergroup = UserGroup(group_name=u'users_with_access')
         usergroup.permissions.append(perm)
         user.usergroups.append(usergroup)
         DBSession.add(user)
