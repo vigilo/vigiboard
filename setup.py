@@ -74,6 +74,8 @@ setup(
             'output = vigiboard.controllers.plugins.output:PluginOutput',
             'hls = vigiboard.controllers.plugins.hls:PluginHLS',
             'status = vigiboard.controllers.plugins.status:PluginStatus',
+            'groups = vigiboard.controllers.plugins.groups:PluginGroups',
+            'masked_events = vigiboard.controllers.plugins.masked_events:PluginMaskedEvents',
         ]
     },
     data_files=[
