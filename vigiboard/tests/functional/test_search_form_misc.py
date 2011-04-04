@@ -133,12 +133,8 @@ class TestSearchFormMisc(TestController):
         transaction.commit()
 
         # Préparation des dates/heures.
-        # On réutilise le formattage attendu par le contrôleur
-        # (donc dépendant de la locale des tests, "fr" par défaut).
-        # TRANSLATORS: Format de date et heure.
-        from_date = timestamp.strftime(str(_("%Y-%m-%d %I:%M:%S %p")))
-        # TRANSLATORS: Format de date et heure.
-        to_date = datetime.max.strftime(str(_("%Y-%m-%d %I:%M:%S %p")))
+        from_date = timestamp.strftime("%Y-%m-%d %I:%M:%S %p")
+        to_date = datetime.max.strftime("%Y-%m-%d %I:%M:%S %p")
 
         # Permet également de vérifier que la recherche
         # par date est inclusive.
@@ -148,7 +144,6 @@ class TestSearchFormMisc(TestController):
                 'to_date': to_date,
             },
             extra_environ={'REMOTE_USER': 'user'})
-        transaction.commit()
 
         # Il doit y avoir 1 seule ligne de résultats.
         rows = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr')

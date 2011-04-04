@@ -22,9 +22,8 @@
 
 from datetime import datetime
 from time import mktime
-import math
 
-from tg.exceptions import HTTPNotFound, HTTPInternalServerError
+from tg.exceptions import HTTPNotFound
 from tg import expose, validate, require, flash, url, \
     tmpl_context, request, config, session, redirect
 from webhelpers import paginate
@@ -33,20 +32,17 @@ from pylons.i18n import ugettext as _, lazy_ugettext as l_
 from sqlalchemy import asc
 from sqlalchemy.sql import func
 from sqlalchemy.orm import aliased
-from sqlalchemy.orm import contains_eager
 from sqlalchemy.sql.expression import or_
 from repoze.what.predicates import Any, All, in_group, \
                                     has_permission, not_anonymous, \
                                     NotAuthorizedError
 from formencode import schema
-from pkg_resources import working_set
 
 from vigilo.models.session import DBSession
 from vigilo.models.tables import Event, EventHistory, CorrEvent, Host, \
                                     SupItem, SupItemGroup, LowLevelService, \
                                     StateName, State, DataPermission
 from vigilo.models.tables.grouphierarchy import GroupHierarchy
-from vigilo.models.functions import sql_escape_like
 from vigilo.models.tables.secondary_tables import EVENTSAGGREGATE_TABLE, \
         USER_GROUP_TABLE, SUPITEM_GROUP_TABLE
 
@@ -60,7 +56,7 @@ from vigiboard.controllers.vigiboard_controller import VigiboardRootController
 
 from vigiboard.widgets.edit_event import edit_event_status_options, \
                                             EditEventForm
-from vigiboard.widgets.search_form import create_search_form, get_calendar_lang
+from vigiboard.widgets.search_form import create_search_form
 
 __all__ = ('RootController', 'get_last_modification_timestamp',
            'date_to_timestamp')
@@ -88,7 +84,7 @@ class RootController(VigiboardRootController):
 
     def process_form_errors(self, *argv, **kwargv):
         """
-        Gestion des erreurs de validation : On affiche les erreurs
+        Gestion des erreurs de validation : on affiche les erreurs
         puis on redirige vers la dernière page accédée.
         """
         for k in tmpl_context.form_errors:
@@ -103,21 +99,20 @@ class RootController(VigiboardRootController):
     class DefaultSchema(schema.Schema):
         """Schéma de validation de la méthode default."""
         page = validators.Int(min=1, if_missing=1, if_invalid=1)
-        supitemgroup = validators.Int(if_missing=None, if_invalid=None)
-        host = validators.String(if_missing=None)
-        service = validators.String(if_missing=None)
-        output = validators.String(if_missing=None)
-        trouble_ticket = validators.String(if_missing=None)
-        from_date = validators.String(if_missing=None)
-        to_date = validators.String(if_missing=None)
+
+        # Nécessaire pour que les critères de recherche soient conservés.
+        allow_extra_fields = True
+
+        # 2ème validation, cette fois avec les champs
+        # du formulaire de recherche.
+        chained_validators = [create_search_form.validator]
 
     @validate(
         validators=DefaultSchema(),
         error_handler = process_form_errors)
     @expose('events_table.html')
     @require(access_restriction)
-    def default(self, page, supitemgroup, host, service,
-                output, trouble_ticket, from_date, to_date):
+    def default(self, page, **search):
         """
         Page d'accueil de Vigiboard. Elle affiche, suivant la page demandée
         (page 1 par defaut), la liste des événements, rangés par ordre de prise
@@ -125,12 +120,9 @@ class RootController(VigiboardRootController):
         Pour accéder à cette page, l'utilisateur doit être authentifié.
 
         @param page: Numéro de la page souhaitée, commence à 1
-        @param host: Si l'utilisateur souhaite sélectionner seulement certains
-                     événements suivant leur hôte, il peut placer une expression
-                     ici en suivant la structure du LIKE en SQL
-        @param service: Idem que host mais sur les services
-        @param output: Idem que host mais sur le text explicatif
-        @param trouble_ticket: Idem que host mais sur les tickets attribués
+        @type page: C{int}
+        @param search: Dictionnaire contenant les critères de recherche.
+        @type search: C{dict}
 
         Cette méthode permet de satisfaire les exigences suivantes :
             - VIGILO_EXIG_VIGILO_BAC_0040,
@@ -152,72 +144,25 @@ class RootController(VigiboardRootController):
             Event.idsupitem == aggregates.items.c.idsupitem))
         aggregates.add_order_by(asc(aggregates.items.c.hostname))
 
-        search = {}
+        # Application des filtres des plugins si nécessaire.
+        for plugin, instance in config.get('columns_plugins', []):
+            instance.handle_search_fields(aggregates, search)
 
-        # Application des filtres si nécessaire
-        if supitemgroup:
-            search['supitemgroup'] = supitemgroup
-            aggregates.add_join((GroupHierarchy, GroupHierarchy.idchild ==
-                aggregates.items.c.idsupitemgroup))
-            aggregates.add_filter(GroupHierarchy.idparent == supitemgroup)
-
-        if host:
-            search['host_'] = host
-            host = sql_escape_like(host)
-            aggregates.add_filter(aggregates.items.c.hostname.ilike(
-                '%s' % host))
-
-        if service:
-            search['service'] = service
-            service = sql_escape_like(service)
-            aggregates.add_filter(aggregates.items.c.servicename.ilike(
-                '%s' % service))
-
-        if output:
-            search['output'] = output
-            output = sql_escape_like(output)
-            aggregates.add_filter(Event.message.ilike('%s' % output))
-
-        if trouble_ticket:
-            search['tt'] = trouble_ticket
-            trouble_ticket = sql_escape_like(trouble_ticket)
-            aggregates.add_filter(CorrEvent.trouble_ticket.ilike(
-                '%s' % trouble_ticket))
-
-        if from_date:
-            search['from_date'] = from_date.lower()
-            try:
-                # TRANSLATORS: Format de date et heure Python/JavaScript.
-                # TRANSLATORS: http://www.dynarch.com/static/jscalendar-1.0/doc/html/reference.html#node_sec_5.3.5
-                # TRANSLATORS: http://docs.python.org/release/2.5/lib/module-time.html
-                from_date = datetime.strptime(
-                    from_date.encode('utf8'),
-                    _('%Y-%m-%d %I:%M:%S %p').encode('utf8'))
-            except ValueError:
-                # On ignore silencieusement la date invalide reçue.
-                pass
-            else:
-                aggregates.add_filter(CorrEvent.timestamp_active >= from_date)
-
-        if to_date:
-            search['to_date'] = to_date.lower()
-            try:
-                # TRANSLATORS: Format de date et heure Python/JavaScript.
-                # TRANSLATORS: http://www.dynarch.com/static/jscalendar-1.0/doc/html/reference.html#node_sec_5.3.5
-                # TRANSLATORS: http://docs.python.org/release/2.5/lib/module-time.html
-                to_date = datetime.strptime(
-                    to_date.encode('utf8'),
-                    _('%Y-%m-%d %I:%M:%S %p').encode('utf8'))
-            except ValueError:
-                # On ignore silencieusement la date invalide reçue.
-                pass
-            else:
-                aggregates.add_filter(CorrEvent.timestamp_active <= to_date)
+        # Certains arguments sont réservés dans url_for().
+        # On effectue les substitutions adéquates.
+        # Par exemple: "host" devient "host_".
+        reserved = ('host', )
+        copy = search.copy()
+        for column in copy:
+            if column in reserved:
+                search[column + '_'] = search[column]
+                del search[column]
 
         # Pagination des résultats
         aggregates.generate_request()
         items_per_page = int(config['vigiboard_items_per_page'])
-        page = paginate.Page(aggregates.req, page=page, items_per_page=items_per_page)
+        page = paginate.Page(aggregates.req, page=page,
+            items_per_page=items_per_page)
 
         # Récupération des données des plugins
         plugins_data = {}
@@ -246,7 +191,6 @@ class RootController(VigiboardRootController):
             event_edit_status_options = edit_event_status_options,
             search_form = create_search_form,
             search = search,
-            get_calendar_lang = get_calendar_lang,
         )
 
 
@@ -310,7 +254,8 @@ class RootController(VigiboardRootController):
         # Pagination des résultats
         events.generate_request()
         items_per_page = int(config['vigiboard_items_per_page'])
-        page = paginate.Page(events.req, page=page, items_per_page=items_per_page)
+        page = paginate.Page(events.req, page=page,
+            items_per_page=items_per_page)
 
         # Vérification que l'événement existe
         if not page.item_count:
@@ -325,7 +270,6 @@ class RootController(VigiboardRootController):
             page = page,
             search_form = create_search_form,
             search = {},
-            get_calendar_lang = get_calendar_lang,
         )
 
 
@@ -388,7 +332,6 @@ class RootController(VigiboardRootController):
             page = page,
             search_form = create_search_form,
             search = {},
-            get_calendar_lang = get_calendar_lang,
         )
 
 
@@ -436,7 +379,8 @@ class RootController(VigiboardRootController):
         # Pagination des résultats
         aggregates.generate_request()
         items_per_page = int(config['vigiboard_items_per_page'])
-        page = paginate.Page(aggregates.req, page=page, items_per_page=items_per_page)
+        page = paginate.Page(aggregates.req, page=page,
+            items_per_page=items_per_page)
 
         # Vérification qu'il y a au moins 1 événement qui correspond
         if not page.item_count:
@@ -460,7 +404,6 @@ class RootController(VigiboardRootController):
             event_edit_status_options = edit_event_status_options,
             search_form = create_search_form,
             search = {},
-            get_calendar_lang = get_calendar_lang,
         )
 
 
@@ -554,7 +497,7 @@ class RootController(VigiboardRootController):
         for event in events.req:
             if trouble_ticket and trouble_ticket != event.trouble_ticket:
                 history = EventHistory(
-                        type_action="Ticket change",
+                        type_action=u"Ticket change",
                         idevent=event.idcause,
                         value=unicode(trouble_ticket),
                         text="Changed trouble ticket from '%(from)s' "

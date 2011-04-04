@@ -65,8 +65,8 @@ class VigiboardConfig(VigiloAppConfig):
                 plugin_class = ep.load(require=True)
                 if issubclass(plugin_class, VigiboardRequestPlugin):
                     plugins.append((unicode(ep.name), plugin_class()))
-            except Exception, e:
-                LOGGER.error('Unable to import plugin %s : %s' % (plugin_name, e))
+            except:
+                LOGGER.exception(u'Unable to import plugin %s', plugin_name)
 
         config['columns_plugins'] = plugins
 
@@ -115,12 +115,14 @@ base_config['vigiboard_links.tt'] = 'http://bugs.example.com/?ticket=%(tt)s'
 base_config['vigiboard_plugins'] = (
 #    'id',
     'details',
+    'groups',
     'date',
     'priority',
     'occurrences',
     'hostname',
     'servicename',
     'output',
+    'masked_events',
     'hls',
     'status',
 #    'test',

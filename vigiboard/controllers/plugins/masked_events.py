@@ -19,28 +19,12 @@
 ################################################################################
 
 """
-Un plugin pour VigiBoard qui ajoute une colonne avec la sortie
-de la commande de test exécutée par Nagios sur cet hôte/service.
+Un plugin pour VigiBoard qui ajoute une colonne avec le nombre
+d'événements masqués d'un événement corrélé.
 """
-import tw.forms as twf
-from pylons.i18n import lazy_ugettext as l_
-
-from vigilo.models.tables import Event
-from vigilo.models.functions import sql_escape_like
 from vigiboard.controllers.plugins import VigiboardRequestPlugin
 
-class PluginOutput(VigiboardRequestPlugin):
-    """Ajoute une colonne avec le message de Nagios."""
-    def get_search_fields(self):
-        return [
-            twf.TextField(
-                'output',
-                label_text=l_('Output'),
-                validator=twf.validators.String(if_missing=None),
-            )
-        ]
-
-    def handle_search_fields(self, query, search):
-        if search.get('output'):
-            output = sql_escape_like(search['output'])
-            query.add_filter(Event.message.ilike(output))
+class PluginMaskedEvents(VigiboardRequestPlugin):
+    """
+    Affiche le nombre d'événements masqués par l'événement corrélé.
+    """

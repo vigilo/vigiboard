@@ -26,6 +26,11 @@ Un plugin pour VigiBoard qui ajoute 3 colonnes au tableau des événements :
     -   la dernière colonne permet de (dé)sélectionner l'événement pour
         effectuer un traitement par lot.
 """
+import tw.forms as twf
+from pylons.i18n import lazy_ugettext as l_
+
+from vigilo.models.tables import CorrEvent
+from vigilo.models.functions import sql_escape_like
 from vigiboard.controllers.plugins import VigiboardRequestPlugin
 
 class PluginStatus(VigiboardRequestPlugin):
@@ -40,3 +45,17 @@ class PluginStatus(VigiboardRequestPlugin):
         Ce plugin en ajoute 4, au lieu de 1 comme la plupart des plugins.
         """
         return 4
+
+    def get_search_fields(self):
+        return [
+            twf.TextField(
+                'trouble_ticket',
+                label_text=l_('Trouble Ticket'),
+                validator=twf.validators.String(if_missing=None),
+            )
+        ]
+
+    def handle_search_fields(self, query, search):
+        if search.get('trouble_ticket'):
+            tt = sql_escape_like(search['trouble_ticket'])
+            query.add_filter(CorrEvent.trouble_ticket.ilike(tt))

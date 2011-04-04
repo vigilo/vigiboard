@@ -86,3 +86,9 @@ class VigiboardRequestPlugin(object):
         @rtype: C{int}
         """
         return 1
+
+    def get_search_fields(self):
+        return []
+
+    def handle_search_fields(self, query, search):
+        pass

@@ -22,6 +22,10 @@
 Un plugin pour VigiBoard qui ajoute une colonne avec le nom du service
 à l'origine de l'événement corrélé.
 """
+import tw.forms as twf
+from pylons.i18n import lazy_ugettext as l_
+
+from vigilo.models.functions import sql_escape_like
 from vigiboard.controllers.plugins import VigiboardRequestPlugin
 
 class PluginServicename(VigiboardRequestPlugin):
@@ -30,3 +34,16 @@ class PluginServicename(VigiboardRequestPlugin):
     Si l'événement corrélé porte directement sur un hôte,
     alors le nom de service vaut None.
     """
+    def get_search_fields(self):
+        return [
+            twf.TextField(
+                'service',
+                label_text=l_('Service'),
+                validator=twf.validators.String(if_missing=None),
+            )
+        ]
+
+    def handle_search_fields(self, query, search):
+        if search.get('service'):
+            service = sql_escape_like(search['service'])
+            query.add_filter(query.items.c.servicename.ilike(service))
