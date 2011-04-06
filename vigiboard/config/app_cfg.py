@@ -122,7 +122,7 @@ base_config['vigiboard_plugins'] = (
     'hostname',
     'servicename',
     'output',
-    'masked_events',
+#    'masked_events',
     'hls',
     'status',
 #    'test',
