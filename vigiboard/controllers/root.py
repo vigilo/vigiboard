@@ -53,6 +53,7 @@ from vigilo.turbogears.helpers import get_current_user
 
 from vigiboard.controllers.vigiboardrequest import VigiboardRequest
 from vigiboard.controllers.vigiboard_controller import VigiboardRootController
+from vigiboard.controllers.feeds import FeedsController
 
 from vigiboard.widgets.edit_event import edit_event_status_options, \
                                             EditEventForm
@@ -70,7 +71,7 @@ class RootController(VigiboardRootController):
     nagios = ProxyController('nagios', '/nagios/',
         not_anonymous(l_('You need to be authenticated')))
     api = ApiRootController("/api")
-
+    feeds = FeedsController()
 
     # Prédicat pour la restriction de l'accès aux interfaces.
     # L'utilisateur doit avoir la permission "vigiboard-access"
