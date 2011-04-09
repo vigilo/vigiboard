@@ -23,11 +23,12 @@ sysconfdir = os.getenv("SYSCONFDIR", "/etc")
 setup(
     name='vigiboard',
     version='2.0.0',
-    description='IHM Module for the Dashboard',
     author='Vigilo Team',
     author_email='contact@projet-vigilo.org',
     zip_safe=False,
     license='http://www.gnu.org/licenses/gpl-2.0.html',
+    description="Vigilo event board",
+    long_description="Vigilo event board",
     url='http://www.projet-vigilo.org/',
     install_requires=[
         "vigilo-turbogears",

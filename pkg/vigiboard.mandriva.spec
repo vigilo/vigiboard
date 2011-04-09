@@ -1,17 +1,15 @@
-%define module  vigiboard
-%define name    vigilo-%{module}
-%define version 2.0.0
-%define release 1%{?svn}%{?dist}
+%define module  @SHORT_NAME@
 
-Name:       %{name}
-Summary:    Vigilo event board
-Version:    %{version}
-Release:    %{release}
+Name:       vigilo-%{module}
+Summary:    @SUMMARY@
+Version:    @VERSION@
+Release:    1%{?svn}%{?dist}
 Source0:    %{module}-%{version}.tar.gz
-URL:        http://www.projet-vigilo.org
+URL:        @URL@
 Group:      System/Servers
 BuildRoot:  %{_tmppath}/%{name}-%{version}-%{release}-build
 License:    GPLv2
+Buildarch:  noarch
 
 BuildRequires:   python-setuptools
 BuildRequires:   python-babel
@@ -84,16 +82,9 @@ Requires:   python-webtest
 Requires:   python-zope-interface
 Requires:   python-zope.sqlalchemy
 
-Buildarch:  noarch
-
-# Renommage
-Obsoletes: vigiboard < 1.0-1
-Provides:  vigiboard = %{version}-%{release}
-
-
 
 %description
-Vigilo event board.
+@DESCRIPTION@
 This application is part of the Vigilo Project <http://vigilo-project.org>
 
 %prep
@@ -133,4 +124,3 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) %{_sysconfdir}/logrotate.d/%{module}
 %attr(750,apache,apache) %{_localstatedir}/cache/vigilo/sessions
 %{python_sitelib}/*
-
