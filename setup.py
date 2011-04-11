@@ -21,7 +21,7 @@ tests_require = [
 sysconfdir = os.getenv("SYSCONFDIR", "/etc")
 
 setup(
-    name='vigiboard',
+    name='vigilo-vigiboard',
     version='2.0.0',
     author='Vigilo Team',
     author_email='contact@projet-vigilo.org',
