@@ -21,7 +21,6 @@
 """Gestion de la requête, des plugins et de l'affichage du Vigiboard"""
 
 from time import mktime
-from logging import getLogger
 
 from tg import config, tmpl_context, request, url
 from pylons.i18n import ugettext as _
@@ -34,14 +33,12 @@ from sqlalchemy.orm import contains_eager
 
 from vigilo.models.session import DBSession
 from vigilo.models.tables import Event, CorrEvent, EventHistory, \
-                        Host, LowLevelService, StateName, DataPermission
+    Host, LowLevelService, StateName, DataPermission, UserSupItem
 from vigilo.models.tables.grouphierarchy import GroupHierarchy
 from vigilo.models.tables.secondary_tables import SUPITEM_GROUP_TABLE, \
         USER_GROUP_TABLE
 from vigiboard.widgets.edit_event import EditEventForm
 from vigiboard.controllers.plugins import VigiboardRequestPlugin
-
-LOGGER = getLogger(__name__)
 
 class VigiboardRequest():
     """
@@ -55,7 +52,7 @@ class VigiboardRequest():
         'AAClosed': '_Ack',
     }
 
-    def __init__(self, user, mask_closed_events=True):
+    def __init__(self, user, mask_closed_events=True, supitemgroup=None):
         """
         Initialisation de l'objet qui effectue les requêtes de VigiBoard
         sur la base de données.
@@ -67,69 +64,84 @@ class VigiboardRequest():
 
         is_manager = in_group('managers').is_met(request.environ)
 
-        # Sélectionne tous les IDs des services auxquels
-        # l'utilisateur a accès.
-        lls_query = DBSession.query(
-            LowLevelService.idservice.label("idsupitem"),
-            LowLevelService.servicename.label("servicename"),
-            Host.name.label("hostname"),
-            SUPITEM_GROUP_TABLE.c.idgroup.label("idsupitemgroup"),
-        ).join(
-            (Host, Host.idhost == LowLevelService.idhost),
-        ).outerjoin(
-            (SUPITEM_GROUP_TABLE,
-                or_(
-                    SUPITEM_GROUP_TABLE.c.idsupitem == \
-                        LowLevelService.idhost,
-                    SUPITEM_GROUP_TABLE.c.idsupitem == \
-                        LowLevelService.idservice,
+        # Si l'utilisateur fait partie du groupe 'managers',
+        # il a accès à tous les hôtes/services sans restriction.
+        if is_manager:
+
+            # Sélection de tous les services de la BDD.
+            self.lls_query = DBSession.query(
+                LowLevelService.idservice.label("idsupitem"),
+                LowLevelService.servicename.label("servicename"),
+                Host.name.label("hostname"),
+            ).join(
+                (Host, Host.idhost == LowLevelService.idhost),
+            )
+            
+            # Ajout d'un filtre sur le groupe de supitems
+            if supitemgroup:
+                self.lls_query = self.lls_query.join(
+                    (SUPITEM_GROUP_TABLE,
+                        or_(
+                            SUPITEM_GROUP_TABLE.c.idsupitem == \
+                                LowLevelService.idhost,
+                            SUPITEM_GROUP_TABLE.c.idsupitem == \
+                                LowLevelService.idservice,
+                        )
+                    ),
+                    (GroupHierarchy, GroupHierarchy.idchild == 
+                        SUPITEM_GROUP_TABLE.c.idgroup)
+                ).filter(
+                    GroupHierarchy.idparent == supitemgroup
                 )
-            ),
-        )
 
-        # Sélectionne tous les IDs des hôtes auxquels
-        # l'utilisateur a accès.
-        host_query = DBSession.query(
-            Host.idhost.label("idsupitem"),
-            expr_null().label("servicename"),
-            Host.name.label("hostname"),
-            SUPITEM_GROUP_TABLE.c.idgroup.label('idsupitemgroup'),
-        ).join(
-            (SUPITEM_GROUP_TABLE, SUPITEM_GROUP_TABLE.c.idsupitem == \
-                Host.idhost),
-        )
+            self.lls_query = self.lls_query.distinct()
 
-        # Les managers ont accès à tout, les autres sont soumis
-        # aux vérifications classiques d'accès aux données.
-        if not is_manager:
+            # Sélection de tous les hôtes de la BDD.
+            self.host_query = DBSession.query(
+                Host.idhost.label("idsupitem"),
+                expr_null().label("servicename"),
+                Host.name.label("hostname"),
+            )
+            
+            # Ajout d'un filtre sur le groupe de supitems
+            if supitemgroup:
+                self.host_query = self.host_query.join(
+                    (SUPITEM_GROUP_TABLE,
+                        SUPITEM_GROUP_TABLE.c.idsupitem == \
+                            Host.idhost,
+                    ),
+                    (GroupHierarchy, GroupHierarchy.idchild == 
+                        SUPITEM_GROUP_TABLE.c.idgroup)
+                ).filter(
+                    GroupHierarchy.idparent == supitemgroup
+                )
 
-            lls_query = lls_query.join(
-                (GroupHierarchy,
-                    GroupHierarchy.idchild == SUPITEM_GROUP_TABLE.c.idgroup),
-                (DataPermission,
-                    DataPermission.idgroup == GroupHierarchy.idparent),
-                (USER_GROUP_TABLE, USER_GROUP_TABLE.c.idgroup == \
-                    DataPermission.idusergroup),
-            ).filter(USER_GROUP_TABLE.c.username == user.user_name)
+            self.host_query = self.host_query.distinct()
 
-            host_query = host_query.join(
-                (GroupHierarchy,
-                    GroupHierarchy.idchild == SUPITEM_GROUP_TABLE.c.idgroup),
-                (DataPermission,
-                    DataPermission.idgroup == GroupHierarchy.idparent),
-                (USER_GROUP_TABLE, USER_GROUP_TABLE.c.idgroup == \
-                    DataPermission.idusergroup),
-            ).filter(USER_GROUP_TABLE.c.username == user.user_name)
+            # Union des deux sélections précédentes
+            self.items = union_all(
+                self.lls_query,
+                self.host_query,
+                correlate=False
+            ).alias()
 
-        # Objet Selectable renvoyant des informations sur un SupItem
-        # concerné par une alerte, avec prise en compte des droits d'accès.
-        # On est obligés d'utiliser sqlalchemy.sql.expression.union_all
-        # pour indiquer à SQLAlchemy de NE PAS regrouper les tables
-        # dans la requête principale, sans quoi les résultats sont
-        # incorrects.
-        # Dans PostgreSQL, UNION ALL est beaucoup plus rapide que UNION
-        # du fait des performances limitées du DISTINCT.
-        self.items = union_all(lls_query, host_query, correlate=False).alias()
+        # Sinon, on ne récupère que les hôtes/services auquel il a accès.
+        else:
+            self.items = DBSession.query(
+                UserSupItem.idsupitem,
+                UserSupItem.servicename,
+                UserSupItem.hostname,
+            ).filter(
+                UserSupItem.username == user.user_name
+            )
+
+            # Ajout d'un filtre sur le groupe de supitems
+            if supitemgroup:
+                self.items = self.items.filter(
+                    UserSupItem.idsupitemgroup == supitemgroup
+                )
+            
+            self.items = self.items.distinct().subquery()
 
         # Éléments à retourner (SELECT ...)
         self.table = []

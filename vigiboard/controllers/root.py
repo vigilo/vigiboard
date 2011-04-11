@@ -130,8 +130,13 @@ class RootController(VigiboardRootController):
             - VIGILO_EXIG_VIGILO_BAC_0070,
             - VIGILO_EXIG_VIGILO_BAC_0100,
         """
+
         user = get_current_user()
-        aggregates = VigiboardRequest(user)
+        if 'supitemgroup' in search:
+            aggregates = VigiboardRequest(
+                user, supitemgroup=search['supitemgroup'])
+        else:
+            aggregates = VigiboardRequest(user)
 
         aggregates.add_table(
             CorrEvent,

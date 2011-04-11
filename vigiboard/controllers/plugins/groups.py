@@ -31,6 +31,9 @@ from vigilo.models.session import DBSession
 from vigilo.models.tables.group import Group
 from vigilo.models.tables.grouphierarchy import GroupHierarchy
 
+from repoze.what.predicates import in_group
+from tg import request
+
 class GroupSelector(twf.InputField):
     params = ["choose_text", "text_value", "clear_text"]
     choose_text = l_('Choose')
@@ -76,8 +79,4 @@ class PluginGroups(VigiboardRequestPlugin):
         ]
 
     def handle_search_fields(self, query, search):
-        if search.get('supitemgroup'):
-            query.add_join((GroupHierarchy, GroupHierarchy.idchild ==
-                query.items.c.idsupitemgroup))
-            query.add_filter(GroupHierarchy.idparent ==
-                search['supitemgroup'])
+        pass

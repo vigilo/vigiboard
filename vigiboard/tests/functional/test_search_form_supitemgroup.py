@@ -110,6 +110,16 @@ class TestSearchFormSupItemGroup(TestController):
         print "There are %d columns in the result set" % len(cols)
         assert_true(len(cols) > 1)
 
+        # Mêmes tests avec un utilisateur membre du groupe 'managers'
+        response = self.app.get('/?supitemgroup=%d' % idgroup,
+            extra_environ={'REMOTE_USER': 'manager'})
+        rows = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr')
+        print "There are %d rows in the result set" % len(rows)
+        assert_equal(len(rows), 1)
+        cols = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr/td')
+        print "There are %d columns in the result set" % len(cols)
+        assert_true(len(cols) > 1)
+
     def test_search_inexistent_supitemgroup(self):
         """Teste la recherche par supitemgroup sur un groupe inexistant."""
         # On envoie une requête avec recherche sur un groupe d'hôtes
@@ -125,6 +135,16 @@ class TestSearchFormSupItemGroup(TestController):
 
         # Il doit y avoir 1 seule colonne dans la ligne de résultats.
         # (la colonne contient le texte "Il n'y a aucun événément", traduit)
+        cols = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr/td')
+        print "There are %d columns in the result set" % len(cols)
+        assert_equal(len(cols), 1)
+
+        # Mêmes tests avec un utilisateur membre du groupe 'managers'
+        response = self.app.get('/?supitemgroup=%d' % -42,
+            extra_environ={'REMOTE_USER': 'manager'})
+        rows = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr')
+        print "There are %d rows in the result set" % len(rows)
+        assert_equal(len(rows), 1)
         cols = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr/td')
         print "There are %d columns in the result set" % len(cols)
         assert_equal(len(cols), 1)
