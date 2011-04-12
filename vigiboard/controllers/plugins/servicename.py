@@ -43,7 +43,7 @@ class PluginServicename(VigiboardRequestPlugin):
             )
         ]
 
-    def handle_search_fields(self, query, search):
+    def handle_search_fields(self, query, search, subqueries):
         if search.get('service'):
             service = sql_escape_like(search['service'])
             query.add_filter(query.items.c.servicename.ilike(service))

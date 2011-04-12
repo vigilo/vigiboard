@@ -90,5 +90,5 @@ class VigiboardRequestPlugin(object):
     def get_search_fields(self):
         return []
 
-    def handle_search_fields(self, query, search):
+    def handle_search_fields(self, query, search, subqueries):
         pass

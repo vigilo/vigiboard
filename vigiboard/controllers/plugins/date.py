@@ -77,7 +77,7 @@ class PluginDate(VigiboardRequestPlugin):
             ),
         ]
 
-    def handle_search_fields(self, query, search):
+    def handle_search_fields(self, query, search, subqueries):
         if search.get('from_date'):
             query.add_filter(tables.CorrEvent.timestamp_active >=
                 search['from_date'])

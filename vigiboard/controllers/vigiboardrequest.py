@@ -51,7 +51,7 @@ class VigiboardRequest():
         'AAClosed': '_Ack',
     }
 
-    def __init__(self, user, mask_closed_events=True, supitemgroup=None):
+    def __init__(self, user, mask_closed_events=True, search=None):
         """
         Initialisation de l'objet qui effectue les requêtes de VigiBoard
         sur la base de données.
@@ -59,6 +59,8 @@ class VigiboardRequest():
         l'utilisateur sur les données manipulées.
         """
 
+        # Permet s'appliquer des filtres de recherche aux sous-requêtes.
+        self.subqueries = []
         self.generaterq = False
 
         is_manager = in_group('managers').is_met(request.environ)
@@ -66,61 +68,36 @@ class VigiboardRequest():
         # Si l'utilisateur fait partie du groupe 'managers',
         # il a accès à tous les hôtes/services sans restriction.
         if is_manager:
-
             # Sélection de tous les services de la BDD.
-            self.lls_query = DBSession.query(
+            lls_query = DBSession.query(
                 LowLevelService.idservice.label("idsupitem"),
                 LowLevelService.servicename.label("servicename"),
                 Host.name.label("hostname"),
             ).join(
                 (Host, Host.idhost == LowLevelService.idhost),
-            )
-
-            # Ajout d'un filtre sur le groupe de supitems
-            if supitemgroup:
-                self.lls_query = self.lls_query.join(
-                    (SUPITEM_GROUP_TABLE,
-                        or_(
-                            SUPITEM_GROUP_TABLE.c.idsupitem == \
-                                LowLevelService.idhost,
-                            SUPITEM_GROUP_TABLE.c.idsupitem == \
-                                LowLevelService.idservice,
-                        )
-                    ),
-                    (GroupHierarchy, GroupHierarchy.idchild ==
-                        SUPITEM_GROUP_TABLE.c.idgroup)
-                ).filter(
-                    GroupHierarchy.idparent == supitemgroup
-                )
-
-            self.lls_query = self.lls_query.distinct()
+            ).distinct()
 
             # Sélection de tous les hôtes de la BDD.
-            self.host_query = DBSession.query(
+            host_query = DBSession.query(
                 Host.idhost.label("idsupitem"),
                 expr_null().label("servicename"),
                 Host.name.label("hostname"),
-            )
+            ).host_query.distinct()
 
-            # Ajout d'un filtre sur le groupe de supitems
-            if supitemgroup:
-                self.host_query = self.host_query.join(
-                    (SUPITEM_GROUP_TABLE,
-                        SUPITEM_GROUP_TABLE.c.idsupitem == \
-                            Host.idhost,
-                    ),
-                    (GroupHierarchy, GroupHierarchy.idchild ==
-                        SUPITEM_GROUP_TABLE.c.idgroup)
-                ).filter(
-                    GroupHierarchy.idparent == supitemgroup
-                )
-
-            self.host_query = self.host_query.distinct()
+            # Application des filtres des plugins si nécessaire.
+            if search is not None:
+                # On tire ici partie du fait que les listes sont passées
+                # par référence dans les fonctions.
+                subqueries = [lls_query, host_query]
+                for plugin, instance in config.get('columns_plugins', []):
+                    instance.handle_search_fields(self, search, )
+                lls_query = subqueries[0]
+                host_query = subqueries[1]
 
             # Union des deux sélections précédentes
             self.items = union_all(
-                self.lls_query,
-                self.host_query,
+                lls_query,
+                host_query,
                 correlate=False
             ).alias()
 
@@ -132,15 +109,18 @@ class VigiboardRequest():
                 UserSupItem.hostname,
             ).filter(
                 UserSupItem.username == user.user_name
-            )
+            ).distinct()
 
-            # Ajout d'un filtre sur le groupe de supitems
-            if supitemgroup:
-                items = items.filter(
-                    UserSupItem.idsupitemgroup == supitemgroup
-                )
+            # Application des filtres des plugins si nécessaire.
+            if search is not None:
+                # On tire ici partie du fait que les listes sont passées
+                # par référence dans les fonctions.
+                subqueries = [items]
+                for plugin, instance in config.get('columns_plugins', []):
+                    instance.handle_search_fields(self, search, subqueries)
+                items = subqueries[0]
 
-            self.items = items.distinct().subquery()
+            self.items = items.subquery()
 
         # Éléments à retourner (SELECT ...)
         self.table = []
@@ -266,7 +246,6 @@ class VigiboardRequest():
             self.req = self.req.group_by(i)
         for i in self.orderby:
             self.req = self.req.order_by(i)
-
         self.generaterq = True
 
     def num_rows(self):

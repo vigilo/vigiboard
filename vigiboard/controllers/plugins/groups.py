@@ -28,8 +28,10 @@ from pylons.i18n import lazy_ugettext as l_
 
 from vigiboard.controllers.plugins import VigiboardRequestPlugin
 from vigilo.models.session import DBSession
+from vigilo.models import tables
 from vigilo.models.tables.group import Group
 from vigilo.models.tables.grouphierarchy import GroupHierarchy
+from vigilo.models.tables.secondary_tables import SUPITEM_GROUP_TABLE
 
 from repoze.what.predicates import in_group
 from tg import request
@@ -78,5 +80,41 @@ class PluginGroups(VigiboardRequestPlugin):
             )
         ]
 
-    def handle_search_fields(self, query, search):
-        pass
+    def handle_search_fields(self, query, search, subqueries):
+        if search.get('supitemgroup') is None:
+            return
+
+        # Il s'agit d'un manager. On applique le filtre
+        # indépendamment aux 2 sous-requêtes.
+        if len(subqueries) == 2:
+            subqueries[0] = subqueries[0].join(
+                (SUPITEM_GROUP_TABLE,
+                    or_(
+                        SUPITEM_GROUP_TABLE.c.idsupitem == \
+                            tables.LowLevelService.idhost,
+                        SUPITEM_GROUP_TABLE.c.idsupitem == \
+                            tables.LowLevelService.idservice,
+                    )
+                ),
+                (GroupHierarchy, GroupHierarchy.idchild ==
+                    SUPITEM_GROUP_TABLE.c.idgroup)
+            ).filter(
+                GroupHierarchy.idparent == search['supitemgroup']
+            )
+
+            subqueries[1] = subqueries[1].join(
+                (SUPITEM_GROUP_TABLE,
+                    SUPITEM_GROUP_TABLE.c.idsupitem == \
+                        tables.Host.idhost,
+                ),
+                (GroupHierarchy, GroupHierarchy.idchild ==
+                    SUPITEM_GROUP_TABLE.c.idgroup)
+            ).filter(
+                GroupHierarchy.idparent == search['supitemgroup']
+            )
+
+        # Il s'agit d'un utilisateur normal.
+        else:
+            subqueries[0] = subqueries[0].filter(
+                tables.UserSupItem.idsupitemgroup == search['supitemgroup']
+            )

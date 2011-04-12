@@ -40,7 +40,7 @@ class PluginHostname(VigiboardRequestPlugin):
             )
         ]
 
-    def handle_search_fields(self, query, search):
+    def handle_search_fields(self, query, search, subqueries):
         if search.get('host'):
             host = sql_escape_like(search['host'])
             query.add_filter(query.items.c.hostname.ilike(host))

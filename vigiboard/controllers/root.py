@@ -132,11 +132,7 @@ class RootController(VigiboardRootController):
         """
 
         user = get_current_user()
-        if 'supitemgroup' in search:
-            aggregates = VigiboardRequest(
-                user, supitemgroup=search['supitemgroup'])
-        else:
-            aggregates = VigiboardRequest(user)
+        aggregates = VigiboardRequest(user, search=search)
 
         aggregates.add_table(
             CorrEvent,
@@ -149,10 +145,6 @@ class RootController(VigiboardRootController):
         aggregates.add_join((aggregates.items,
             Event.idsupitem == aggregates.items.c.idsupitem))
         aggregates.add_order_by(asc(aggregates.items.c.hostname))
-
-        # Application des filtres des plugins si nécessaire.
-        for plugin, instance in config.get('columns_plugins', []):
-            instance.handle_search_fields(aggregates, search)
 
         # Certains arguments sont réservés dans routes.util.url_for().
         # On effectue les substitutions adéquates.

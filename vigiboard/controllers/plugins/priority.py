@@ -109,7 +109,7 @@ class PluginPriority(VigiboardRequestPlugin):
             )
         ]
 
-    def handle_search_fields(self, query, search):
+    def handle_search_fields(self, query, search, subqueries):
         if (not search.get('priority')):
             return
 

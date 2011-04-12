@@ -55,7 +55,7 @@ class PluginStatus(VigiboardRequestPlugin):
             )
         ]
 
-    def handle_search_fields(self, query, search):
+    def handle_search_fields(self, query, search, subqueries):
         if search.get('trouble_ticket'):
             tt = sql_escape_like(search['trouble_ticket'])
             query.add_filter(CorrEvent.trouble_ticket.ilike(tt))

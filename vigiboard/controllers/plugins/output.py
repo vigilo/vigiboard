@@ -40,7 +40,7 @@ class PluginOutput(VigiboardRequestPlugin):
             )
         ]
 
-    def handle_search_fields(self, query, search):
+    def handle_search_fields(self, query, search, subqueries):
         if search.get('output'):
             output = sql_escape_like(search['output'])
             query.add_filter(Event.message.ilike(output))
