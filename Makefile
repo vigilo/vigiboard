@@ -6,8 +6,8 @@ MODULE := $(NAME)
 CODEPATH := $(NAME)
 EPYDOC_PARSE := vigiboard\.(widgets|controllers)
 
-install: install_python install_data
-install_pkg: install_python_pkg install_data
+install: build install_python install_data
+install_pkg: build install_python_pkg install_data
 
 install_python: settings.ini $(PYTHON)
 	$(PYTHON) setup.py install --record=INSTALLED_FILES
