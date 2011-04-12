@@ -154,15 +154,30 @@ class RootController(VigiboardRootController):
         for plugin, instance in config.get('columns_plugins', []):
             instance.handle_search_fields(aggregates, search)
 
-        # Certains arguments sont réservés dans url_for().
+        # Certains arguments sont réservés dans routes.util.url_for().
         # On effectue les substitutions adéquates.
         # Par exemple: "host" devient "host_".
-        reserved = ('host', )
-        copy = search.copy()
-        for column in copy:
+        reserved = ('host', 'anchor', 'protocol', 'qualified')
+        for column in search.copy():
             if column in reserved:
                 search[column + '_'] = search[column]
                 del search[column]
+
+        # On ne garde que les champs effectivement renseignés.
+        for column in search.copy():
+            if not search[column]:
+                del search[column]
+
+        # On sérialise les champs de type dict.
+        def serialize_dict(dct, key):
+            if isinstance(dct[key], dict):
+                for subkey in dct[key]:
+                    serialize_dict(dct[key], subkey)
+                    dct[key+'.'+subkey] = dct[key][subkey]
+                del dct[key]
+        fixed_search = search.copy()
+        for column in fixed_search.copy():
+            serialize_dict(fixed_search, column)
 
         # Pagination des résultats
         aggregates.generate_request()
@@ -197,6 +212,7 @@ class RootController(VigiboardRootController):
             event_edit_status_options = edit_event_status_options,
             search_form = create_search_form,
             search = search,
+            fixed_search = fixed_search,
         )
 
 
@@ -276,6 +292,7 @@ class RootController(VigiboardRootController):
             page = page,
             search_form = create_search_form,
             search = {},
+            fixed_search = {},
         )
 
 
@@ -338,6 +355,7 @@ class RootController(VigiboardRootController):
             page = page,
             search_form = create_search_form,
             search = {},
+            fixed_search = {},
         )
 
 
@@ -410,6 +428,7 @@ class RootController(VigiboardRootController):
             event_edit_status_options = edit_event_status_options,
             search_form = create_search_form,
             search = {},
+            fixed_search = {},
         )
 
 

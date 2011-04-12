@@ -18,7 +18,7 @@ class FeedsController(BaseController):
     # pylint: disable-msg=R0201,W0613
 
     @expose('atom.xml', content_type=CUSTOM_CONTENT_TYPE)
-    def atom(self, token):
+    def atom(self, token, username):
         """
         """
         response.headers['Content-Type'] = 'application/atom+xml'
