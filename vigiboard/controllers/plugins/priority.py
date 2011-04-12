@@ -27,7 +27,7 @@ from pylons.i18n import lazy_ugettext as l_
 from formencode import schema, validators
 
 from vigilo.models.tables import CorrEvent
-from vigiboard.controllers.plugins import VigiboardRequestPlugin
+from vigiboard.controllers.plugins import VigiboardRequestPlugin, ITEMS
 
 from tw.forms.fields import ContainerMixin, FormField
 from tw.core.base import WidgetsList
@@ -109,8 +109,8 @@ class PluginPriority(VigiboardRequestPlugin):
             )
         ]
 
-    def handle_search_fields(self, query, search, subqueries):
-        if (not search.get('priority')):
+    def handle_search_fields(self, query, search, state, subqueries):
+        if (not search.get('priority')) or state != ITEMS:
             return
 
         op = search['priority']['op']

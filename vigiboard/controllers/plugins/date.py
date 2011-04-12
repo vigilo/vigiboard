@@ -29,7 +29,7 @@ import tg
 
 from vigilo.models import tables
 
-from vigiboard.controllers.plugins import VigiboardRequestPlugin
+from vigiboard.controllers.plugins import VigiboardRequestPlugin, ITEMS
 from vigiboard.lib.dateformat import DateFormatConverter
 
 def get_calendar_lang():
@@ -77,7 +77,10 @@ class PluginDate(VigiboardRequestPlugin):
             ),
         ]
 
-    def handle_search_fields(self, query, search, subqueries):
+    def handle_search_fields(self, query, search, state, subqueries):
+        if state != ITEMS:
+            return
+
         if search.get('from_date'):
             query.add_filter(tables.CorrEvent.timestamp_active >=
                 search['from_date'])

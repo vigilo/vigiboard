@@ -26,7 +26,7 @@ import tw.forms as twf
 from pylons.i18n import lazy_ugettext as l_
 
 from vigilo.models.functions import sql_escape_like
-from vigiboard.controllers.plugins import VigiboardRequestPlugin
+from vigiboard.controllers.plugins import VigiboardRequestPlugin, ITEMS
 
 class PluginServicename(VigiboardRequestPlugin):
     """
@@ -43,7 +43,10 @@ class PluginServicename(VigiboardRequestPlugin):
             )
         ]
 
-    def handle_search_fields(self, query, search, subqueries):
+    def handle_search_fields(self, query, search, state, subqueries):
+        if state != ITEMS:
+            return
+
         if search.get('service'):
             service = sql_escape_like(search['service'])
             query.add_filter(query.items.c.servicename.ilike(service))

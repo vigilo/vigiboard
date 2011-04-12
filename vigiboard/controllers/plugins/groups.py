@@ -26,7 +26,7 @@ d'éléments supervisés auxquels appartient l'objet associé
 import tw.forms as twf
 from pylons.i18n import lazy_ugettext as l_
 
-from vigiboard.controllers.plugins import VigiboardRequestPlugin
+from vigiboard.controllers.plugins import VigiboardRequestPlugin, INNER
 from vigilo.models.session import DBSession
 from vigilo.models import tables
 from vigilo.models.tables.group import Group
@@ -36,6 +36,7 @@ from sqlalchemy.sql.expression import or_
 
 from repoze.what.predicates import in_group
 from tg import request
+from sqlalchemy import or_
 
 class GroupSelector(twf.InputField):
     params = ["choose_text", "text_value", "clear_text"]
@@ -81,8 +82,8 @@ class PluginGroups(VigiboardRequestPlugin):
             )
         ]
 
-    def handle_search_fields(self, query, search, subqueries):
-        if search.get('supitemgroup') is None:
+    def handle_search_fields(self, query, search, state, subqueries):
+        if search.get('supitemgroup') is None or state != INNER:
             return
 
         # Il s'agit d'un manager. On applique le filtre

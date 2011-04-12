@@ -37,7 +37,7 @@ from vigilo.models.tables import Event, CorrEvent, EventHistory, \
 from vigilo.models.tables.grouphierarchy import GroupHierarchy
 from vigilo.models.tables.secondary_tables import SUPITEM_GROUP_TABLE
 from vigiboard.widgets.edit_event import EditEventForm
-from vigiboard.controllers.plugins import VigiboardRequestPlugin
+from vigiboard.controllers.plugins import VigiboardRequestPlugin, INNER, ITEMS
 
 class VigiboardRequest():
     """
@@ -63,65 +63,6 @@ class VigiboardRequest():
         self.subqueries = []
         self.generaterq = False
 
-        is_manager = in_group('managers').is_met(request.environ)
-
-        # Si l'utilisateur fait partie du groupe 'managers',
-        # il a accès à tous les hôtes/services sans restriction.
-        if is_manager:
-            # Sélection de tous les services de la BDD.
-            lls_query = DBSession.query(
-                LowLevelService.idservice.label("idsupitem"),
-                LowLevelService.servicename.label("servicename"),
-                Host.name.label("hostname"),
-            ).join(
-                (Host, Host.idhost == LowLevelService.idhost),
-            ).distinct()
-
-            # Sélection de tous les hôtes de la BDD.
-            host_query = DBSession.query(
-                Host.idhost.label("idsupitem"),
-                expr_null().label("servicename"),
-                Host.name.label("hostname"),
-            ).distinct()
-
-            # Application des filtres des plugins si nécessaire.
-            if search is not None:
-                # On tire ici partie du fait que les listes sont passées
-                # par référence dans les fonctions.
-                subqueries = [lls_query, host_query]
-                for plugin, instance in config.get('columns_plugins', []):
-                    instance.handle_search_fields(self, search, subqueries)
-                lls_query = subqueries[0]
-                host_query = subqueries[1]
-
-            # Union des deux sélections précédentes
-            self.items = union_all(
-                lls_query,
-                host_query,
-                correlate=False
-            ).alias()
-
-        # Sinon, on ne récupère que les hôtes/services auquel il a accès.
-        else:
-            items = DBSession.query(
-                UserSupItem.idsupitem,
-                UserSupItem.servicename,
-                UserSupItem.hostname,
-            ).filter(
-                UserSupItem.username == user.user_name
-            ).distinct()
-
-            # Application des filtres des plugins si nécessaire.
-            if search is not None:
-                # On tire ici partie du fait que les listes sont passées
-                # par référence dans les fonctions.
-                subqueries = [items]
-                for plugin, instance in config.get('columns_plugins', []):
-                    instance.handle_search_fields(self, search, subqueries)
-                items = subqueries[0]
-
-            self.items = items.subquery()
-
         # Éléments à retourner (SELECT ...)
         self.table = []
 
@@ -136,15 +77,18 @@ class VigiboardRequest():
 
         # Critères de filtrage (WHERE)
         self.filter = []
-        if mask_closed_events:
-            self.filter.append(
-                # On masque les événements avec l'état OK
-                # et traités (status == u'AAClosed').
-                not_(and_(
-                    StateName.statename.in_([u'OK', u'UP']),
-                    CorrEvent.status == u'AAClosed'
-                ))
-            )
+
+        # Regroupements (GROUP BY)
+        # PostgreSQL est pointilleux sur les colonnes qui apparaissent
+        # dans la clause GROUP BY. Si une colonne apparaît dans ORDER BY,
+        # elle doit systématiquement apparaître AUSSI dans GROUP BY.
+        self.groupby = [
+            StateName.order,
+            Event.timestamp,
+            CorrEvent.status,
+            CorrEvent.priority,
+            StateName.statename,
+        ]
 
         # Permet de définir le sens de tri pour la priorité.
         if config['vigiboard_priority_order'] == 'asc':
@@ -173,22 +117,88 @@ class VigiboardRequest():
                 desc(StateName.order),                      # Etat courant
             ])
 
-
-        # Regroupements (GROUP BY)
-        # PostgreSQL est pointilleux sur les colonnes qui apparaissent
-        # dans la clause GROUP BY. Si une colonne apparaît dans ORDER BY,
-        # elle doit systématiquement apparaître AUSSI dans GROUP BY.
-        self.groupby = [
-            StateName.order,
-            Event.timestamp,
-            CorrEvent.status,
-            CorrEvent.priority,
-            StateName.statename,
-        ]
-
+        self.req = DBSession
         self.plugin = []
         self.events = []
-        self.req = DBSession
+
+
+        is_manager = in_group('managers').is_met(request.environ)
+
+        # Si l'utilisateur fait partie du groupe 'managers',
+        # il a accès à tous les hôtes/services sans restriction.
+        if is_manager:
+            # Sélection de tous les services de la BDD.
+            lls_query = DBSession.query(
+                LowLevelService.idservice.label("idsupitem"),
+                LowLevelService.servicename.label("servicename"),
+                Host.name.label("hostname"),
+            ).join(
+                (Host, Host.idhost == LowLevelService.idhost),
+            ).distinct()
+
+            # Sélection de tous les hôtes de la BDD.
+            host_query = DBSession.query(
+                Host.idhost.label("idsupitem"),
+                expr_null().label("servicename"),
+                Host.name.label("hostname"),
+            ).distinct()
+
+            # Application des filtres des plugins si nécessaire.
+            if search is not None:
+                # On tire ici partie du fait que les listes sont passées
+                # par référence dans les fonctions.
+                subqueries = [lls_query, host_query]
+                for plugin, instance in config.get('columns_plugins', []):
+                    instance.handle_search_fields(
+                        self, search, INNER, subqueries)
+                lls_query = subqueries[0]
+                host_query = subqueries[1]
+
+            # Union des deux sélections précédentes
+            self.items = union_all(
+                lls_query,
+                host_query,
+                correlate=False
+            ).alias()
+
+        # Sinon, on ne récupère que les hôtes/services auquel il a accès.
+        else:
+            items = DBSession.query(
+                UserSupItem.idsupitem,
+                UserSupItem.servicename,
+                UserSupItem.hostname,
+            ).filter(
+                UserSupItem.username == user.user_name
+            ).distinct()
+
+            # Application des filtres des plugins si nécessaire.
+            if search is not None:
+                # On tire ici partie du fait que les listes sont passées
+                # par référence dans les fonctions.
+                subqueries = [items]
+                for plugin, instance in config.get('columns_plugins', []):
+                    instance.handle_search_fields(
+                        self, search, INNER, subqueries)
+                items = subqueries[0]
+
+            # Permet d'avoir le même format que pour l'autre requête.
+            self.items = items.subquery()
+
+        if search is not None:
+            # 2nde passe pour les filtres : self.items est désormais défini.
+            for plugin, instance in config.get('columns_plugins', []):
+                instance.handle_search_fields(self, search, ITEMS, subqueries)
+
+        if mask_closed_events:
+            self.filter.append(
+                # On masque les événements avec l'état OK
+                # et traités (status == u'AAClosed').
+                not_(and_(
+                    StateName.statename.in_([u'OK', u'UP']),
+                    CorrEvent.status == u'AAClosed'
+                ))
+            )
+
 
     def add_plugin(self, *argv):
         """

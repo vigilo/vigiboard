@@ -25,7 +25,7 @@ import tw.forms as twf
 from pylons.i18n import lazy_ugettext as l_
 
 from vigilo.models.functions import sql_escape_like
-from vigiboard.controllers.plugins import VigiboardRequestPlugin
+from vigiboard.controllers.plugins import VigiboardRequestPlugin, ITEMS
 
 class PluginHostname(VigiboardRequestPlugin):
     """
@@ -40,7 +40,10 @@ class PluginHostname(VigiboardRequestPlugin):
             )
         ]
 
-    def handle_search_fields(self, query, search, subqueries):
+    def handle_search_fields(self, query, search, state, subqueries):
+        if state != ITEMS:
+            return
+
         if search.get('host'):
             host = sql_escape_like(search['host'])
             query.add_filter(query.items.c.hostname.ilike(host))

@@ -22,7 +22,11 @@
 Module complémentaire générique.
 """
 
-from pylons.i18n import ugettext as _
+# État lorsque les plugins sont appelés avec les sous-requêtes.
+INNER = 0
+# État lorsque les plugins sont appelés lorsque "items" est défini.
+ITEMS = 1
+
 
 class VigiboardRequestPlugin(object):
     """
@@ -90,5 +94,5 @@ class VigiboardRequestPlugin(object):
     def get_search_fields(self):
         return []
 
-    def handle_search_fields(self, query, search, subqueries):
+    def handle_search_fields(self, query, search, state, subqueries=None):
         pass
