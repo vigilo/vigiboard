@@ -14,7 +14,7 @@ install_python: $(PYTHON)
 install_python_pkg: $(PYTHON)
 	$(PYTHON) setup.py install --single-version-externally-managed --root=$(DESTDIR) --record=INSTALLED_FILES
 
-install_data: deployment/logrotate.con
+install_data: deployment/logrotate.conf
 	# Permissions de la conf
 	chmod a+rX -R $(DESTDIR)$(SYSCONFDIR)/vigilo/$(NAME)
 	[ `id -u` -ne 0 ] || chgrp $(HTTPD_USER) $(DESTDIR)$(SYSCONFDIR)/vigilo/$(NAME)/*.ini
