@@ -20,7 +20,6 @@
 
 """Le formulaire d'édition d'un événement."""
 
-import tg
 from pylons.i18n import lazy_ugettext as l_
 from tw.api import WidgetsList
 from tw.forms import TableForm, SingleSelectField, TextField, \
@@ -52,6 +51,9 @@ class EditEventForm(TableForm):
     """
 
     class fields(WidgetsList):
+        """
+        Champs du formulaire d'édition des événements.
+        """
         id = HiddenField('id')
         trouble_ticket = TextField(label_text=l_('Trouble Ticket'))
         warning = Label(suppress_label=True, text=l_('Warning: changing '

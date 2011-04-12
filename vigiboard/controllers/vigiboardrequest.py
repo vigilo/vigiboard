@@ -33,10 +33,9 @@ from sqlalchemy.orm import contains_eager
 
 from vigilo.models.session import DBSession
 from vigilo.models.tables import Event, CorrEvent, EventHistory, \
-    Host, LowLevelService, StateName, DataPermission, UserSupItem
+    Host, LowLevelService, StateName, UserSupItem
 from vigilo.models.tables.grouphierarchy import GroupHierarchy
-from vigilo.models.tables.secondary_tables import SUPITEM_GROUP_TABLE, \
-        USER_GROUP_TABLE
+from vigilo.models.tables.secondary_tables import SUPITEM_GROUP_TABLE
 from vigiboard.widgets.edit_event import EditEventForm
 from vigiboard.controllers.plugins import VigiboardRequestPlugin
 
@@ -76,7 +75,7 @@ class VigiboardRequest():
             ).join(
                 (Host, Host.idhost == LowLevelService.idhost),
             )
-            
+
             # Ajout d'un filtre sur le groupe de supitems
             if supitemgroup:
                 self.lls_query = self.lls_query.join(
@@ -88,7 +87,7 @@ class VigiboardRequest():
                                 LowLevelService.idservice,
                         )
                     ),
-                    (GroupHierarchy, GroupHierarchy.idchild == 
+                    (GroupHierarchy, GroupHierarchy.idchild ==
                         SUPITEM_GROUP_TABLE.c.idgroup)
                 ).filter(
                     GroupHierarchy.idparent == supitemgroup
@@ -102,7 +101,7 @@ class VigiboardRequest():
                 expr_null().label("servicename"),
                 Host.name.label("hostname"),
             )
-            
+
             # Ajout d'un filtre sur le groupe de supitems
             if supitemgroup:
                 self.host_query = self.host_query.join(
@@ -110,7 +109,7 @@ class VigiboardRequest():
                         SUPITEM_GROUP_TABLE.c.idsupitem == \
                             Host.idhost,
                     ),
-                    (GroupHierarchy, GroupHierarchy.idchild == 
+                    (GroupHierarchy, GroupHierarchy.idchild ==
                         SUPITEM_GROUP_TABLE.c.idgroup)
                 ).filter(
                     GroupHierarchy.idparent == supitemgroup
@@ -127,7 +126,7 @@ class VigiboardRequest():
 
         # Sinon, on ne récupère que les hôtes/services auquel il a accès.
         else:
-            self.items = DBSession.query(
+            items = DBSession.query(
                 UserSupItem.idsupitem,
                 UserSupItem.servicename,
                 UserSupItem.hostname,
@@ -137,11 +136,11 @@ class VigiboardRequest():
 
             # Ajout d'un filtre sur le groupe de supitems
             if supitemgroup:
-                self.items = self.items.filter(
+                items = items.filter(
                     UserSupItem.idsupitemgroup == supitemgroup
                 )
-            
-            self.items = self.items.distinct().subquery()
+
+            self.items = items.distinct().subquery()
 
         # Éléments à retourner (SELECT ...)
         self.table = []
