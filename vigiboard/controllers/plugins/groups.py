@@ -32,6 +32,7 @@ from vigilo.models import tables
 from vigilo.models.tables.group import Group
 from vigilo.models.tables.grouphierarchy import GroupHierarchy
 from vigilo.models.tables.secondary_tables import SUPITEM_GROUP_TABLE
+from sqlalchemy.sql.expression import or_
 
 from repoze.what.predicates import in_group
 from tg import request

@@ -82,7 +82,7 @@ class VigiboardRequest():
                 Host.idhost.label("idsupitem"),
                 expr_null().label("servicename"),
                 Host.name.label("hostname"),
-            ).host_query.distinct()
+            ).distinct()
 
             # Application des filtres des plugins si nécessaire.
             if search is not None:
@@ -90,7 +90,7 @@ class VigiboardRequest():
                 # par référence dans les fonctions.
                 subqueries = [lls_query, host_query]
                 for plugin, instance in config.get('columns_plugins', []):
-                    instance.handle_search_fields(self, search, )
+                    instance.handle_search_fields(self, search, subqueries)
                 lls_query = subqueries[0]
                 host_query = subqueries[1]
 
