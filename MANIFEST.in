@@ -3,4 +3,5 @@ recursive-include vigiboard/public *
 include deployment/settings.ini
 include deployment/vigiboard.wsgi
 include deployment/vigiboard.conf
-recursive-include buildenv Makefile.common buildout.*.cfg
+include buildenv/Makefile.common
+include buildenv/buildout.*.cfg
