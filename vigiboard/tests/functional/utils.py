@@ -17,9 +17,12 @@ from vigiboard.tests import TestController
 def populate_DB():
     """ Peuple la base de données. """
 
-    # Création des 3 groupes de supitems :
+    # Création des 4 groupes de supitems :
+    # - 1 groupe racine 'root' ;
+    root = SupItemGroup(name=u'root', parent=None)
+    DBSession.add(root)
     # - 1 groupe principal 'maingroup' ;
-    maingroup = SupItemGroup(name=u'maingroup', parent=None)
+    maingroup = SupItemGroup(name=u'maingroup', parent=root)
     DBSession.add(maingroup)
     # - 2 sous-groupes 'group1' et 'group2', faisant tous
     #   les deux parties du groupe principal 'maingroup'.
@@ -36,7 +39,7 @@ def populate_DB():
     usergroup = UserGroup(group_name=u'users_with_access')
     usergroup.permissions.append(vigiboard_perm)
     DBSession.add(DataPermission(
-        group = maingroup,
+        group = root,
         usergroup = usergroup,
         access = u'r',
     ))

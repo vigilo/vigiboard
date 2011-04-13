@@ -23,7 +23,8 @@ class TestSearchFormSupItemGroup(TestController):
     def test_search_supitemgroup_when_allowed(self):
         """Teste la recherche par supitemgroup avec les bons droits d'accès."""
 
-        # On récupère les 2 groupes de supitems utilisés lors de ces tests.
+        # On récupère les 3 groupes de supitems utilisés lors de ces tests.
+        root = SupItemGroup.by_group_name('root')
         maingroup = SupItemGroup.by_group_name('maingroup')
         group1 = SupItemGroup.by_group_name('group1')
 
@@ -52,6 +53,24 @@ class TestSearchFormSupItemGroup(TestController):
         environ = {'REMOTE_USER': 'limited_access'}
         response = self.app.get(
             '/?supitemgroup=%d' % maingroup.idgroup,
+            extra_environ=environ
+        )
+
+        # Il doit y avoir 2 lignes dans la réponse.
+        rows = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr')
+        print "There are %d rows in the result set" % len(rows)
+        assert_equal(len(rows), 2)
+
+        # Il doit y avoir plusieurs colonnes dans la réponse.
+        cols = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr/td')
+        print "There are %d columns in the result set" % len(cols)
+        assert_true(len(cols) > 1)
+
+        # Le même utilisateur effectue une recherche à partir du groupe racine.
+        # On s'attend donc à ce que la requête retourne également 2 résultats.
+        environ = {'REMOTE_USER': 'limited_access'}
+        response = self.app.get(
+            '/?supitemgroup=%d' % root.idgroup,
             extra_environ=environ
         )
 
