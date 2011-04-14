@@ -14,3 +14,7 @@
 /PasteScript-*.egg
 /vigiboard.egg-info
 /devdata.db
+data
+log/*.log
+vigiboard/i18n/*/LC_MESSAGES/*.mo
+vigiboard/i18n/*/LC_MESSAGES/*.js
