@@ -107,7 +107,7 @@ class TestSearchFormSupItemGroup(TestController):
         # L'utilisateur est authentifié et fait partie du groupe
         # 'managers'. Il effectue une recherche sur un groupe de supitems, 
         # et on s'attend à ce que la requête retourne 5 résultats.
-        environ = {'REMOTE_USER': 'access'}
+        environ = {'REMOTE_USER': 'manager'}
         response = self.app.get(
             '/?supitemgroup=%d' % maingroup.idgroup,
             extra_environ=environ
