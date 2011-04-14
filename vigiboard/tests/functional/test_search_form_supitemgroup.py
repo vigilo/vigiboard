@@ -171,31 +171,9 @@ class TestSearchFormSupItemGroup(TestController):
         response = self.app.get('/', status=401)
 
         # L'utilisateur est authentifié avec des permissions réduites.
-        # Il effectue une recherche sur un groupe de supitems auquel
-        # il n'a pas accès, mais qui est le parent d'un groupe auquel
-        # il a accès. Il ne doit obtenir aucun résultat.
-        environ = {'REMOTE_USER': 'limited_access'}
-        response = self.app.get(
-            '/?supitemgroup=%d' % maingroup.idgroup,
-            extra_environ=environ
-        )
-
-        # Il doit y avoir 1 seule ligne dans la réponse.
-        # (la réponse contient le texte "Il n'y a aucun événément", traduit)
-        rows = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr')
-        print "There are %d rows in the result set" % len(rows)
-        assert_equal(len(rows), 1)
-
-        # Il doit y avoir 1 seule colonne dans la réponse.
-        cols = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr/td')
-        print "There are %d columns in the result set" % len(cols)
-        assert_equal(len(cols), 1)
-
-        # L'utilisateur est authentifié avec des permissions réduites.
-        # Il effectue une recherche sur un groupe de supitems auquel
-        # il n'a pas accès, mais qui est le fils du groupe parent d'un
-        # groupe auquel il a accès. Il ne doit donc, là non plus, obtenir
-        # aucun résultat.
+        # Il effectue une recherche sur un groupe de supitems auquel il
+        # n'a pas accès, mais qui est le fils du groupe parent d'un groupe
+        # auquel il a accès. Il ne doit donc obtenir aucun résultat.
         environ = {'REMOTE_USER': 'limited_access'}
         response = self.app.get(
             '/?supitemgroup=%d' % group2.idgroup,
