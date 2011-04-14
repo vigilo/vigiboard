@@ -33,6 +33,7 @@ from vigilo.models.tables.group import Group
 from vigilo.models.tables.grouphierarchy import GroupHierarchy
 from vigilo.models.tables.secondary_tables import SUPITEM_GROUP_TABLE
 from sqlalchemy.sql.expression import or_
+from sqlalchemy.orm import aliased
 
 from repoze.what.predicates import in_group
 from tg import request
@@ -117,6 +118,12 @@ class PluginGroups(VigiboardRequestPlugin):
 
         # Il s'agit d'un utilisateur normal.
         else:
-            subqueries[0] = subqueries[0].filter(
-                tables.UserSupItem.idsupitemgroup == search['supitemgroup']
+            GroupHierarchy_aliased = aliased(GroupHierarchy,
+                name='GroupHierarchy_aliased')
+            subqueries[0] = subqueries[0].join(
+                (GroupHierarchy_aliased, GroupHierarchy_aliased.idchild ==
+                    tables.UserSupItem.idsupitemgroup)
+            ).filter(
+                 GroupHierarchy_aliased.idparent == search['supitemgroup']
             )
+
