@@ -714,7 +714,8 @@ class RootController(VigiboardRootController):
                 (GroupHierarchy,
                     GroupHierarchy.idchild == SupItemGroup.idgroup),
             ).filter(GroupHierarchy.idparent == parent_id
-            ).filter(GroupHierarchy.idchild != parent_id)
+            ).filter(GroupHierarchy.hops == 1
+            ).order_by(SupItemGroup.name)
 
         # Si l'utilisateur n'appartient pas au groupe 'managers',
         # on filtre les résultats en fonction de ses permissions.
