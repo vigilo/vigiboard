@@ -511,14 +511,13 @@ class TestRootController(TestController):
         Lorsqu'on supprime tous les événements de la page, on doit
         implicitement afficher le contenu de la page d'avant.
         """
-        raise SkipTest("Not ready yet")
 
         # On crée autant d'événements qu'on peut en afficher par page + 1,
         # afin d'avoir 2 pages dans le bac à événements.
         items_per_page = int(config['vigiboard_items_per_page'])
         for i in xrange(items_per_page + 1):
             host = Host(
-                name = u'host%d' % i,
+                name = u'host%d' % (i + 1),
                 checkhostcmd = u'halt',
                 snmpcommunity = u'public',
                 hosttpl = u'/dev/null',
@@ -529,22 +528,20 @@ class TestRootController(TestController):
             DBSession.add(host)
             DBSession.flush()
             add_correvent_caused_by(host, datetime.now())
-#        transaction.commit()
+        transaction.commit()
 
         environ = {'REMOTE_USER': 'manager'}
 
         # On vérifie qu'on a 2 pages et que sur la 2ème page,
         # il n'y a qu'un seul événement.
         response = self.app.get('/?page=2', extra_environ=environ)
-
-        print [(e.idcorrevent, e.idcause) for e in DBSession.query(CorrEvent).all()]
-        raise ValueError, str(response.body).decode('ascii', 'ignore')
-
         current_page = response.lxml.xpath(
             '//span[@class="pager_curpage"]/text()')
         assert_equal(2, int(current_page[0]))
         rows = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr')
         assert_equal(len(rows), 1)
+        cols = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr/td')
+        assert_true(len(cols) > 1)
 
         # On force l'état de l'événement sur la 2ème page à 'OK'.
         # - Tout d'abord, on récupère l'identifiant de l'événement en question.
@@ -567,10 +564,18 @@ class TestRootController(TestController):
             '//div[@id="flash"]/div[@class="error"]'))
         assert_true(response.lxml.xpath(
             '//div[@id="flash"]/div[@class="ok"]'))
+        # - On vérifie qu'on se trouve à présent sur la 1ère page, et que
+        # l'on y dénombre autant d'évènements qu'on peut en afficher par page
+        current_page = response.lxml.xpath(
+            '//span[@class="pager_curpage"]/text()')
+        assert_equal(1, int(current_page[0]))
+        rows = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr')
+        assert_equal(len(rows), items_per_page)
+        cols = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr/td')
+        assert_true(len(cols) > 1)
 
-        # Une requête sur la 2ème page doit désormais afficher
-        # le contenu de la 1ère page, et le nombre d'événements
-        # doit être le même qu'au départ - 1.
+        # Une requête sur la 2ème page doit désormais
+        # afficher le contenu de la 1ère page.
         response = self.app.get('/?page=2', extra_environ=environ)
         current_page = response.lxml.xpath(
             '//span[@class="pager_curpage"]/text()')
