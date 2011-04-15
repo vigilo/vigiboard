@@ -51,15 +51,6 @@ class SearchForm(twf.TableForm):
     for plugin, instance in tg.config.get('columns_plugins', []):
         fields.extend(instance.get_search_fields())
 
-def form_url():
-    """
-    Permet de retarder la récupération de l'URL de l'application
-    jusqu'au moment de l'affichage du formulaire.
-    Ceci est nécessaire car on doit attendre que l'environnement
-    de la requête HTTP soit initialisé pour obtenir une URL valide.
-    """
-    return tg.url('/')
-
 create_search_form = SearchForm("search_form",
-    submit_text=l_('Search'), action=form_url,
+    submit_text=l_('Search'), action=tg.url('/'),
 )
