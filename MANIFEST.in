@@ -1,7 +1,15 @@
-recursive-include vigiboard/i18n *
-recursive-include vigiboard/public *
-include deployment/settings.ini
-include deployment/vigiboard.wsgi
-include deployment/vigiboard.conf
 include buildenv/Makefile.common
 include buildenv/buildout.*.cfg
+include buildout.cfg
+include Makefile
+include COPYING.txt
+
+graft doc
+graft pkg
+recursive-include vigiboard/i18n *.pot *.po
+
+graft deployment
+graft ez_setup
+graft vigiboard/public
+include *.ini
+include jsl.cfg
