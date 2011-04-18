@@ -697,10 +697,10 @@ class RootController(VigiboardRootController):
         """
 
         # Si l'identifiant du groupe parent n'est pas
-        # spécifié, on retourne la liste des groupes racines,
-        # fournie par la méthode get_root_hosts_groups.
+        # spécifié, on retourne la liste des groupes
+        # racines, fournie par la méthode get_root_groups.
         if parent_id is None:
-            return self.get_root_host_groups()
+            return self.get_root_groups()
 
         # TODO: Utiliser un schéma de validation
         parent_id = int(parent_id)
@@ -724,11 +724,19 @@ class RootController(VigiboardRootController):
             user = get_current_user()
             GroupHierarchy_aliased = aliased(GroupHierarchy,
                 name='GroupHierarchy_aliased')
-            supitem_groups.join(
+            supitem_groups = supitem_groups.join(
                 (GroupHierarchy_aliased,
-                    GroupHierarchy_aliased.idchild == SupItemGroup.idgroup),
+                    or_(
+                        GroupHierarchy_aliased.idchild == SupItemGroup.idgroup,
+                        GroupHierarchy_aliased.idparent == SupItemGroup.idgroup
+                    )),
                 (DataPermission,
-                    DataPermission.idgroup == GroupHierarchy_aliased.idparent),
+                    or_(
+                        DataPermission.idgroup == \
+                            GroupHierarchy_aliased.idparent,
+                        DataPermission.idgroup == \
+                            GroupHierarchy_aliased.idchild,
+                    )),
                 (USER_GROUP_TABLE, USER_GROUP_TABLE.c.idgroup == \
                     DataPermission.idusergroup),
             ).filter(USER_GROUP_TABLE.c.username == user.user_name)
@@ -742,7 +750,7 @@ class RootController(VigiboardRootController):
 
         return dict(groups = groups, leaves = [])
 
-    def get_root_host_groups(self):
+    def get_root_groups(self):
         """
         Retourne tous les groupes racines (c'est à dire n'ayant
         aucun parent) d'hôtes auquel l'utilisateur a accès.
@@ -775,9 +783,9 @@ class RootController(VigiboardRootController):
 
             root_groups = root_groups.join(
                 (GroupHierarchy,
-                    GroupHierarchy.idchild == SupItemGroup.idgroup),
+                    GroupHierarchy.idparent == SupItemGroup.idgroup),
                 (DataPermission,
-                    DataPermission.idgroup == GroupHierarchy.idparent),
+                    DataPermission.idgroup == GroupHierarchy.idchild),
                 (USER_GROUP_TABLE, USER_GROUP_TABLE.c.idgroup == \
                     DataPermission.idusergroup),
             ).filter(USER_GROUP_TABLE.c.username == user.user_name)
