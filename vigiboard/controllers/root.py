@@ -23,12 +23,14 @@
 from datetime import datetime
 from time import mktime
 
+from pkg_resources import resource_filename
+
 from tg.exceptions import HTTPNotFound
 from tg import expose, validate, require, flash, url, \
     tmpl_context, request, config, session, redirect
 from webhelpers import paginate
 from tw.forms import validators
-from pylons.i18n import ugettext as _, lazy_ugettext as l_
+from pylons.i18n import ugettext as _, lazy_ugettext as l_, get_lang
 from sqlalchemy import asc
 from sqlalchemy.sql import func
 from sqlalchemy.orm import aliased
@@ -206,6 +208,45 @@ class RootController(VigiboardRootController):
             search = search,
             fixed_search = fixed_search,
         )
+
+
+    @expose()
+    def i18n(self):
+        import gettext
+        import pylons
+        import os.path
+
+        # Repris de pylons.i18n.translation:_get_translator.
+        conf = pylons.config.current_conf()
+        try:
+            rootdir = conf['pylons.paths']['root']
+        except KeyError:
+            rootdir = conf['pylons.paths'].get('root_path')
+        localedir = os.path.join(rootdir, 'i18n')
+
+        lang = get_lang()
+
+        # Localise le fichier *.mo actuellement chargé
+        # et génère le chemin jusqu'au *.js correspondant.
+        filename = gettext.find(conf['pylons.package'], localedir,
+            languages=lang)
+        js = filename[:-3] + '.js'
+
+        themes_filename = gettext.find(
+            'vigilo-themes',
+            resource_filename('vigilo.themes.i18n', ''),
+            languages=lang)
+        themes_js = themes_filename[:-3] + '.js'
+
+        # Récupère et envoie le contenu du fichier de traduction *.js.
+        fhandle = open(js, 'r')
+        translations = fhandle.read()
+        fhandle.close()
+
+        fhandle = open(themes_js, 'r')
+        translations += fhandle.read()
+        fhandle.close()
+        return translations
 
 
     class MaskedEventsSchema(schema.Schema):

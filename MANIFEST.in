@@ -13,3 +13,4 @@ graft ez_setup
 graft vigiboard/public
 include *.ini
 include jsl.cfg
+include babeljs.py

@@ -20,6 +20,14 @@ tests_require = [
 
 sysconfdir = os.getenv("SYSCONFDIR", "/etc")
 
+cmdclass = {}
+try:
+    from babeljs import compile_catalog_plusjs
+except ImportError:
+    pass
+else:
+    cmdclass['compile_catalog'] = compile_catalog_plusjs
+
 setup(
     name='vigilo-vigiboard',
     version='2.0.0',
@@ -45,11 +53,15 @@ setup(
     package_data={
         'vigiboard': [
             'i18n/*/LC_MESSAGES/*.mo',
+            'i18n/*/LC_MESSAGES/*.js',
+            'templates/*/*',
+            'public/js/*.js',
         ],
     },
     message_extractors={
         'vigiboard': [
             ('**.py', 'python', None),
+            ('**/public/js/*.js', 'javascript', None),
         ],
     },
 
@@ -79,6 +91,7 @@ setup(
             'masked_events = vigiboard.controllers.plugins.masked_events:PluginMaskedEvents',
         ]
     },
+    cmdclass=cmdclass,
     data_files=[
         (os.path.join(sysconfdir, 'vigilo/vigiboard/'), [
             'deployment/vigiboard.conf',

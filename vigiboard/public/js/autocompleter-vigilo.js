@@ -1,3 +1,7 @@
+/**
+ * Autocompleter.Request.VigiloJSON
+ *
+ */
 Autocompleter.Request.VigiloJSON = new Class({
 
     Extends: Autocompleter.Request,
