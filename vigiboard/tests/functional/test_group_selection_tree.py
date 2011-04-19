@@ -33,7 +33,7 @@ class TestGroupSelectionTree(TestController):
 
         # On s'assure que la liste de groupes retournée est bien vide
         self.assertEqual(
-            json, {'leaves': [], 'groups': []}
+            json, {'items': [], 'groups': []}
         )
 
         # L'utilisateur est authentifié et fait partie du groupe 'managers'.
@@ -45,7 +45,7 @@ class TestGroupSelectionTree(TestController):
 
         # On s'assure que la liste de groupes retournée est bien vide
         self.assertEqual(
-            json, {'leaves': [], 'groups': []}
+            json, {'items': [], 'groups': []}
         )
 
     def test_get_group_when_not_allowed(self):
@@ -68,7 +68,7 @@ class TestGroupSelectionTree(TestController):
 
         # On s'assure que la liste de groupes retournée est bien vide
         self.assertEqual(
-            json, {'leaves': [], 'groups': []}
+            json, {'items': [], 'groups': []}
         )
 
     def test_get_group_when_allowed(self):
@@ -90,9 +90,9 @@ class TestGroupSelectionTree(TestController):
         # bien les groupes fils de ce groupe parent
         self.assertEqual(
             json, {
-                'leaves': [], 
+                'items': [], 
                 'groups': [
-                    {'id': maingroup.idgroup, 'name': maingroup.name}
+                    {'id': maingroup.idgroup, 'name': maingroup.name, 'type': 'group'}
                 ]
             }
         )
@@ -108,9 +108,9 @@ class TestGroupSelectionTree(TestController):
         # bien les groupes fils de ce groupe parent
         self.assertEqual(
             json, {
-                'leaves': [], 
+                'items': [], 
                 'groups': [
-                    {'id': maingroup.idgroup, 'name': maingroup.name}
+                    {'id': maingroup.idgroup, 'name': maingroup.name, 'type': 'group'}
                 ]
             }
         )
@@ -124,10 +124,10 @@ class TestGroupSelectionTree(TestController):
         # On s'assure que la liste retournée contient
         # bien les groupes fils de ce groupe parent.
         self.assertEqual(json, {
-                'leaves': [], 
+                'items': [], 
                 'groups': [
-                    {'id': group1.idgroup, 'name': group1.name},
-                    {'id': group2.idgroup, 'name': group2.name}
+                    {'id': group1.idgroup, 'name': group1.name, 'type': 'group'},
+                    {'id': group2.idgroup, 'name': group2.name, 'type': 'group'}
                 ]
             })
 
@@ -142,9 +142,9 @@ class TestGroupSelectionTree(TestController):
         # On s'assure que la liste retournée contient bien ce groupe fils.
         self.assertEqual(
             json, {
-                'leaves': [], 
+                'items': [], 
                 'groups': [
-                    {'id': group1.idgroup, 'name': group1.name}
+                    {'id': group1.idgroup, 'name': group1.name, 'type': 'group'}
                 ]
             }
         )
@@ -159,9 +159,9 @@ class TestGroupSelectionTree(TestController):
         # le groupe parent du groupe auquel il a accès.
         self.assertEqual(
             json, {
-                'leaves': [], 
+                'items': [], 
                 'groups': [
-                    {'id': maingroup.idgroup, 'name': maingroup.name}
+                    {'id': maingroup.idgroup, 'name': maingroup.name, 'type': 'group'}
                 ]
             }
         )
@@ -181,9 +181,9 @@ class TestGroupSelectionTree(TestController):
         # On s'assure que la liste retournée contient bien le groupe racine.
         self.assertEqual(
             json, {
-                'leaves': [], 
+                'items': [], 
                 'groups': [
-                    {'id': root.idgroup, 'name': root.name}
+                    {'id': root.idgroup, 'name': root.name, 'type': 'group'}
                 ]
             }
         )
@@ -198,9 +198,9 @@ class TestGroupSelectionTree(TestController):
         # groupe racine, auquel cet utilisateur a directement accès.
         self.assertEqual(
             json, {
-                'leaves': [], 
+                'items': [], 
                 'groups': [
-                    {'id': root.idgroup, 'name': root.name}
+                    {'id': root.idgroup, 'name': root.name, 'type': 'group'}
                 ]
             }
         )
@@ -215,9 +215,9 @@ class TestGroupSelectionTree(TestController):
         # groupe racine, auquel cet utilisateur a indirectement accès.
         self.assertEqual(
             json, {
-                'leaves': [], 
+                'items': [], 
                 'groups': [
-                    {'id': root.idgroup, 'name': root.name}
+                    {'id': root.idgroup, 'name': root.name, 'type': 'group'}
                 ]
             }
         )
@@ -253,7 +253,7 @@ class TestGroupSelectionTree(TestController):
         # On s'assure que la liste retournée est bien vide.
         self.assertEqual(
             json, {
-                'leaves': [], 
+                'items': [], 
                 'groups': []
             }
         )

@@ -43,15 +43,14 @@ window.addEvent('domready', function (){
     window.search_dialog.toggleCollapse();
     window.search_dialog.toggleCollapse();
 
-    var selector = new TreeGroup({
-        url: app_path + '/get_groups',
-        app_path: app_path,
-        title: _("Select a group")
+    var selector = new SelectGroupTree({
+        title: _("Select a group"),
+        labelId: "search_form_supitemgroup.ui",
+        idId: "search_form_supitemgroup.value"
     });
-    $('search_form_supitemgroup').addEvent('click', selector.selectGroup.bind(selector));
-    selector.addEvent('select', function (item) {
-        $('search_form_supitemgroup.ui').set('value', item.options.label);
-        $('search_form_supitemgroup.value').set('value', item.options.data);
+    selector.load();
+    $('search_form_supitemgroup').addEvent('click', function() {
+        selector.open();
     });
     $('search_form_supitemgroup.clear').addEvent('click', function () {
         $('search_form_supitemgroup.ui').set('value', '');

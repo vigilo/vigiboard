@@ -728,7 +728,7 @@ class RootController(VigiboardRootController):
 
     @require(access_restriction)
     @expose('json')
-    def get_groups(self, parent_id=None):
+    def get_groups(self, parent_id=None, onlytype="", offset=0, noCache=None):
         """
         Affiche un étage de l'arbre de
         sélection des hôtes et groupes d'hôtes.
@@ -745,6 +745,7 @@ class RootController(VigiboardRootController):
 
         # TODO: Utiliser un schéma de validation
         parent_id = int(parent_id)
+        offset = int(offset)
 
         # On récupère la liste des groupes de supitems dont
         # l'identifiant du parent est passé en paramètre.
@@ -782,14 +783,29 @@ class RootController(VigiboardRootController):
                     DataPermission.idusergroup),
             ).filter(USER_GROUP_TABLE.c.username == user.user_name)
 
-        groups = []
-        for group in supitem_groups.distinct().all():
-            groups.append({
+        limit = int(config.get("max_menu_entries", 20))
+        result = {"groups": [], "items": []}
+        num_children_left = supitem_groups.distinct().count() - offset
+        if offset:
+            result["continued_from"] = offset
+            result["continued_type"] = "group"
+        all_grs = supitem_groups.distinct().limit(limit).offset(offset).all()
+        for group in all_grs:
+            result["groups"].append({
                 'id'   : group.idgroup,
                 'name' : group.name,
+                'type' : "group",
+            })
+        if num_children_left > limit:
+            result["groups"].append({
+                'name': _("Next %(limit)s") % {"limit": limit},
+                'offset': offset + limit,
+                'parent_id': parent_id,
+                'type': 'continued',
+                'for_type': 'group',
             })
 
-        return dict(groups = groups, leaves = [])
+        return result
 
     def get_root_groups(self):
         """
@@ -836,9 +852,10 @@ class RootController(VigiboardRootController):
             groups.append({
                 'id'   : group.idgroup,
                 'name' : group.name,
+                'type' : "group",
             })
 
-        return dict(groups = groups, leaves=[])
+        return dict(groups=groups, items=[])
 
 def get_last_modification_timestamp(event_id_list,
                                     value_if_none=datetime.now()):
