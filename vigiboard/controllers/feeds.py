@@ -21,7 +21,7 @@ class FeedsController(BaseController):
     def atom(self, token, username):
         """
         """
-        response.headers['Content-Type'] = 'application/atom+xml'
+        response.headers['Content-Type'] = 'application/atom+xml; charset=utf-8'
         return {
             'feed': {
                 'title': 'VigiBoard',
