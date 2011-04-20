@@ -14,8 +14,8 @@ if (debug_mode) {
 
 
 window.search_dialog = null;
-window.dlg_open_handler = function () { this.isOpen = true; }
-window.dlg_close_handler = function () { this.isOpen = false; }
+window.dlg_open_handler = function () { this.isOpen = true; };
+window.dlg_close_handler = function () { this.isOpen = false; };
 
 window.addEvent('domready', function (){
     /**
@@ -85,7 +85,7 @@ var refresh_timeout = null;
 function change_refresh_rate(enabled) {
     var delay = refresh_delay;
     if (refresh_timeout) refresh_timeout = $clear(refresh_timeout);
-    if (parseInt(enabled) && delay) refresh_timeout = refresh_page.periodical(delay * 1000);
+    if (parseInt(enabled, 10) && delay) refresh_timeout = refresh_page.periodical(delay * 1000);
 }
 
 function set_refresh() {
@@ -133,7 +133,7 @@ function setActiveStyleSheet(theme_name) {
         link_obj.set('disabled', true);
         if (link_obj.get('title') == theme_name)
             link_obj.set('disabled', false);
-    })
+    });
 }
 
 function add_autocompleter(elem, varname, url) {
