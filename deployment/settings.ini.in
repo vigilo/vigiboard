@@ -88,7 +88,7 @@ lang=fr
 help_link=http://help.example.com/vigilo
 
 ; Délai de rafraîchissement automatique (en secondes).
-refresh_delay=30
+refresh_delay = 30
 
 ; Indique si le rafraîchissement automatique
 ; est activé ou non par défaut.
@@ -161,7 +161,7 @@ app_path.nagios = /nagios/
 ;
 
 ; Le nom du dossier dans lequel les fichiers de sessions sont conservés.
-cache_dir = /tmp/vigilo/vigiboard/data
+cache_dir = @LOCALSTATEDIR@/cache/vigilo/sessions
 
 ; Le nom du cookie de session qui sera créé sur le navigateur
 ; du client.
@@ -233,26 +233,26 @@ formatter = generic
 
 [handler_sql_log]
 class = handlers.TimedRotatingFileHandler
-args = ('/var/log/vigilo/vigiboard/sql.log','D', 30, 12)
-level = DEBUG
+args = ('@LOCALSTATEDIR@/log/vigilo/vigiboard/sql.log','D', 30, 12)
+level = NOTSET
 formatter = generic
 
 [handler_root_log]
 class = handlers.TimedRotatingFileHandler
-args = ('/var/log/vigilo/vigiboard/root.log', 'D', 30, 12)
-level = DEBUG
+args = ('@LOCALSTATEDIR@/log/vigilo/vigiboard/root.log', 'D', 30, 12)
+level = NOTSET
 formatter = generic
 
 [handler_vigiboard_log]
 class = handlers.TimedRotatingFileHandler
-args = ('/var/log/vigilo/vigiboard/vigiboard.log', 'D', 30, 12)
-level = DEBUG
+args = ('@LOCALSTATEDIR@/log/vigilo/vigiboard/vigiboard.log', 'D', 30, 12)
+level = NOTSET
 formatter = generic
 
 [handler_auth_log]
 class = handlers.TimedRotatingFileHandler
-args = ('/var/log/vigilo/vigiboard/auth.log', 'D', 30, 12)
-level = DEBUG
+args = ('@LOCALSTATEDIR@/log/vigilo/vigiboard/auth.log', 'D', 30, 12)
+level = NOTSET
 formatter = generic
 
 ; If you create additional formatters, add them as a key to [formatters]

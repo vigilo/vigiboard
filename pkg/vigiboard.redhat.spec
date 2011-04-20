@@ -37,7 +37,7 @@ This application is part of the Vigilo Project <http://vigilo-project.org>
 %prep
 %setup -q
 # A cause des permissions sur /var/log/httpd sur Red Hat
-sed -i -e '/<IfModule mod_wsgi\.c>/a WSGISocketPrefix run/wsgi' deployment/%{module}.conf
+sed -i -e '/<IfModule mod_wsgi\.c>/a WSGISocketPrefix run/wsgi' deployment/%{module}.conf.in
 
 %build
 
@@ -46,6 +46,7 @@ rm -rf $RPM_BUILD_ROOT
 make install_pkg \
 	DESTDIR=$RPM_BUILD_ROOT \
 	SYSCONFDIR=%{_sysconfdir} \
+	LOCALSTATEDIR=%{_localstatedir} \
 	PYTHON=%{__python}
 
 # %find_lang %{name} # ne fonctionne qu'avec les fichiers dans /usr/share/locale/
@@ -68,9 +69,10 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) %attr(640,root,apache) %{_sysconfdir}/vigilo/%{module}/*.ini
 %ghost %{_sysconfdir}/vigilo/%{module}/*.pyo
 %ghost %{_sysconfdir}/vigilo/%{module}/*.pyc
-%{_sysconfdir}/httpd/conf.d/%{module}.conf
+%config(noreplace) /etc/httpd/conf.d/%{module}.conf
 %dir %{_localstatedir}/log/vigilo/
 %attr(750,apache,apache) %{_localstatedir}/log/vigilo/%{module}
-%config(noreplace) %{_sysconfdir}/logrotate.d/%{module}
+%config(noreplace) /etc/logrotate.d/%{module}
 %attr(750,apache,apache) %{_localstatedir}/cache/vigilo/sessions
 %{python26_sitelib}/*
+

@@ -1,3 +1,4 @@
+data
 log/*.log
 vigiboard/i18n/*/LC_MESSAGES/*.mo
 vigiboard/i18n/*/LC_MESSAGES/*.js

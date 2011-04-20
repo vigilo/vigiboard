@@ -20,7 +20,6 @@ Requires:   vigilo-turbogears
 Requires:   python-tw.forms
 Requires:   apache-mod_wsgi
 ######### Dependance from python dependance tree ########
-Requires:   vigilo-vigiboard
 Requires:   vigilo-common
 Requires:   vigilo-models
 Requires:   vigilo-themes-default
@@ -97,6 +96,7 @@ rm -rf $RPM_BUILD_ROOT
 make install_pkg \
 	DESTDIR=$RPM_BUILD_ROOT \
 	SYSCONFDIR=%{_sysconfdir} \
+	LOCALSTATEDIR=%{_localstatedir} \
 	PYTHON=%{__python}
 
 %find_lang %{name}
@@ -117,9 +117,10 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) %{_sysconfdir}/vigilo/%{module}/*.py
 %config(noreplace) %{_sysconfdir}/vigilo/%{module}/*.wsgi
 %config(noreplace) %attr(640,root,apache) %{_sysconfdir}/vigilo/%{module}/*.ini
-%{_sysconfdir}/httpd/conf/webapps.d/%{module}.conf
+%config(noreplace) /etc/httpd/conf/webapps.d/%{module}.conf
 %dir %{_localstatedir}/log/vigilo/
 %attr(750,apache,apache) %{_localstatedir}/log/vigilo/%{module}
-%config(noreplace) %{_sysconfdir}/logrotate.d/%{module}
+%config(noreplace) /etc/logrotate.d/%{module}
 %attr(750,apache,apache) %{_localstatedir}/cache/vigilo/sessions
 %{python_sitelib}/*
+

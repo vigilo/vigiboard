@@ -1,20 +1,29 @@
 NAME := vigiboard
+
+SUBST_FILES := deployment/logrotate.conf deployment/settings.ini \
+               deployment/vigiboard.conf deployment/vigiboard.wsgi
+
 all: build
+build: $(SUBST_FILES)
 
 include buildenv/Makefile.common
 MODULE := $(NAME)
 CODEPATH := $(NAME)
 EPYDOC_PARSE := vigiboard\.(widgets|controllers)
 
+deployment/%: deployment/%.in
+	sed -e 's,@SYSCONFDIR@,$(SYSCONFDIR),g' \
+        -e 's,@LOCALSTATEDIR@,$(LOCALSTATEDIR),g' $^ > $@
+
 install: build install_python install_data
 install_pkg: build install_python_pkg install_data
 
-install_python: $(PYTHON)
+install_python: $(PYTHON) $(SUBST_FILES)
 	$(PYTHON) setup.py install --record=INSTALLED_FILES
-install_python_pkg: $(PYTHON)
+install_python_pkg: $(PYTHON) $(SUBST_FILES)
 	$(PYTHON) setup.py install --single-version-externally-managed --root=$(DESTDIR) --record=INSTALLED_FILES
 
-install_data: deployment/logrotate.conf
+install_data: $(SUBST_FILES)
 	# Permissions de la conf
 	chmod a+rX -R $(DESTDIR)$(SYSCONFDIR)/vigilo/$(NAME)
 	[ `id -u` -ne 0 ] || chgrp $(HTTPD_USER) $(DESTDIR)$(SYSCONFDIR)/vigilo/$(NAME)/*.ini
@@ -39,5 +48,6 @@ install_data: deployment/logrotate.conf
 lint: lint_pylint
 tests: tests_nose
 clean: clean_python
+	rm -f $(SUBST_FILES)
 
 .PHONY: install_pkg install_python install_python_pkg install_data
