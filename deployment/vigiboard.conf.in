@@ -6,7 +6,7 @@ LoadModule wsgi_module modules/mod_wsgi.so
 
 WSGIRestrictStdout off
 WSGIPassAuthorization on
-WSGIDaemonProcess vigiboard user=apache group=apache threads=2
+WSGIDaemonProcess vigiboard user=apache group=apache processes=2
 WSGIScriptAlias /vigilo/vigiboard "@SYSCONFDIR@/vigilo/vigiboard/vigiboard.wsgi"
 
 KeepAlive Off
