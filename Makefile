@@ -8,7 +8,6 @@ build: $(SUBST_FILES)
 
 include buildenv/Makefile.common
 MODULE := $(NAME)
-CODEPATH := $(NAME)
 EPYDOC_PARSE := vigiboard\.(widgets|controllers)
 
 deployment/%: deployment/%.in
