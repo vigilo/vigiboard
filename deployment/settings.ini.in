@@ -31,18 +31,18 @@ use = egg:vigilo-vigiboard
 ;
 
 ; URL d'accès à la base de données.
-sqlalchemy.url=postgres://vigilo:vigilo@127.0.0.1/vigilo
+sqlalchemy.url = postgres://vigilo:vigilo@127.0.0.1/vigilo
 
 ; Le préfixe des tables de Vigilo dans la base de données.
-db_basename=vigilo_
+db_basename = vigilo_
 
 ; Options de bas niveau de la couche ORM
 ; (pour déboguer les requêtes SQL).
 sqlalchemy.echo = false
 sqlalchemy.echo_pool = false
 sqlalchemy.pool_recycle = 3600
-sqlalchemy.pool_size=20
-sqlalchemy.max_overflow=100
+sqlalchemy.pool_size = 20
+sqlalchemy.max_overflow = 100
 
 ;
 ; 2 - Configuration des éléments de sécurité.
@@ -53,7 +53,7 @@ sqlalchemy.max_overflow=100
 ; ATTENTION : Si cette directive n'est pas renseignée
 ; ou si la méthode indiquée est introuvable, les mots
 ; de passe sont stockés en clair dans la base de données !!
-password_hashing_function=md5
+password_hashing_function = md5
 
 ; La clé secrète utilisée pour chiffrer/déchiffrer la session.
 ; Vous DEVEZ changer cette valeur avant la mise en production.
@@ -70,7 +70,7 @@ sa_auth.cookie_secret = vigilo
 
 ; Indique si un mécanisme d'authentification externe
 ; (ex : Kerberos) est en place ou non.
-external_auth=False
+external_auth = False
 
 ; Fichier de configuration définissant la politique de gestion
 ; de l'authentification.
@@ -81,18 +81,18 @@ auth.config = %(here)s/who.ini
 ;
 
 ; La langue par défaut de l'interface.
-lang=fr
+lang = fr
 
 ; Lien d'aide (redirigeant vers la documentation de Vigilo
 ; par exemple).
-help_link=http://help.example.com/vigilo
+help_link = http://help.example.com/vigilo
 
 ; Délai de rafraîchissement automatique (en secondes).
 refresh_delay = 30
 
 ; Indique si le rafraîchissement automatique
 ; est activé ou non par défaut.
-refresh_enabled=True
+refresh_enabled = True
 
 ; Nombre d'événements par page.
 vigiboard_items_per_page = 15
@@ -259,4 +259,4 @@ formatter = generic
 [formatter_generic]
 format = %(asctime)s,%(msecs)03d %(levelname)-5.5s [%(name)s] %(message)s
 datefmt = %H:%M:%S
-class=vigilo.common.logging.VigiloFormatter
+class = vigilo.common.logging.VigiloFormatter
