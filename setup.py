@@ -35,7 +35,7 @@ setup(
     version='2.0.0',
     author='Vigilo Team',
     author_email='contact@projet-vigilo.org',
-    zip_safe=False,
+    zip_safe=False, # pour pouvoir déplacer app_cfg.py
     license='http://www.gnu.org/licenses/gpl-2.0.html',
     description="Vigilo event board",
     long_description="Vigilo event board",
