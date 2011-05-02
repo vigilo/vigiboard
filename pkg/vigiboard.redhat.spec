@@ -23,7 +23,7 @@ BuildRequires:   python26-babel
 Requires:   python26-distribute
 Requires:   vigilo-turbogears
 Requires:   python26-tw-forms
-Requires:   mod_wsgi-python26
+Requires:   python26-mod_wsgi
 
 # Renommage
 Obsoletes: vigiboard < 1.0-1
