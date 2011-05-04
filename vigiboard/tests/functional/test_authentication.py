@@ -35,7 +35,7 @@ class TestAuthentication(TestController):
         form = resp.form
         # Submitting the login form:
         form['login'] = u'manager'
-        form['password'] = u'managepass'
+        form['password'] = u'iddad'
         post_login = form.submit(status=302)
         # Being redirected to the home page:
         assert post_login.location.startswith('/post_login')
@@ -47,7 +47,7 @@ class TestAuthentication(TestController):
     def test_logout(self):
         """Logouts must work correctly"""
         # Logging in voluntarily the quick way:
-        resp = self.app.get('/login_handler?login=manager&password=managepass',
+        resp = self.app.get('/login_handler?login=manager&password=iddad',
                             status=302)
         resp = resp.follow(status=302)
         assert 'authtkt' in resp.request.cookies, \
