@@ -60,6 +60,9 @@ from vigiboard.controllers.feeds import FeedsController
 from vigiboard.widgets.edit_event import edit_event_status_options, \
                                             EditEventForm
 from vigiboard.widgets.search_form import create_search_form
+import logging
+
+LOGGER = logging.getLogger(__name__)
 
 __all__ = ('RootController', 'get_last_modification_timestamp',
            'date_to_timestamp')
@@ -567,6 +570,15 @@ class RootController(VigiboardRootController):
                         timestamp=datetime.now(),
                     )
                 DBSession.add(history)
+                LOGGER.info(_('User "%(user)s" (%(address)s) changed the '
+                            'trouble ticket from "%(previous)s" to "%(new)s" '
+                            'on event #%(idevent)d') % {
+                                'user': request.identity['repoze.who.userid'],
+                                'address': request.remote_addr,
+                                'previous': event.trouble_ticket,
+                                'new': trouble_ticket,
+                                'idevent': event.idcause,
+                            })
                 event.trouble_ticket = trouble_ticket
 
             # Changement du statut d'acquittement.
@@ -594,7 +606,7 @@ class RootController(VigiboardRootController):
                         })
 
                     history = EventHistory(
-                            type_action="Forced change state",
+                            type_action=u"Forced change state",
                             idevent=event.idcause,
                             value=u'OK',
                             text="Forced state to 'OK'",
@@ -602,7 +614,14 @@ class RootController(VigiboardRootController):
                             timestamp=datetime.now(),
                         )
                     DBSession.add(history)
-
+                    LOGGER.info(_('User "%(user)s" (%(address)s) forcefully '
+                                'closed event #%(idevent)d') % {
+                                    'user': request. \
+                                            identity['repoze.who.userid'],
+                                    'address': request.remote_addr,
+                                    'idevent': event.idcause,
+                                })
+ 
                 history = EventHistory(
                         type_action=u"Acknowledgement change state",
                         idevent=event.idcause,
@@ -615,6 +634,15 @@ class RootController(VigiboardRootController):
                         timestamp=datetime.now(),
                     )
                 DBSession.add(history)
+                LOGGER.info(_('User "%(user)s" (%(address)s) changed the state '
+                            'from "%(previous)s" to "%(new)s" on event '
+                            '#%(idevent)d') % {
+                                'user': request.identity['repoze.who.userid'],
+                                'address': request.remote_addr,
+                                'previous': event.status,
+                                'new': changed_ack,
+                                'idevent': event.idcause,
+                            })
                 event.status = changed_ack
 
         DBSession.flush()
