@@ -27,7 +27,7 @@ var SelectGroupTree = new Class({
 
         this.tree = new GroupTree({
             parent: this.container,
-            url: app_path + 'get_groups',
+            url: app_path + '/get_groups',
             itemName: "item",
             groupsonly: true,
             onItemClick: this.itemSelected.bind(this),
