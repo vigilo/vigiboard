@@ -111,7 +111,13 @@ function refresh_page() {
     }
 
     vigiloLog.log("No active dialog on the page: refreshing...");
-    window.location.reload(true);
+
+    /* La page principale est toujours rechargée, mais si on désactive
+     * le cache, cela vaut pour TOUTES les ressources. Ici, on veut
+     * réutiliser au maximum le contenu du cache.
+     * Observations faites sous Fx 3.6.8.
+     */
+    window.location.reload(false);
 }
 
 function change_theme(theme_id, theme_name) {
