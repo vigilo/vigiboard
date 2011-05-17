@@ -739,7 +739,7 @@ class RootController(VigiboardRootController):
     @expose('json')
     def set_refresh(self, refresh):
         """Enregistre le temps de rafraichissement dans les préférences."""
-        session['refresh'] = refresh
+        session['refresh'] = bool(refresh)
         session.save()
         return dict()
 

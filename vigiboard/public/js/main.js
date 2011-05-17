@@ -89,7 +89,7 @@ function change_refresh_rate(enabled) {
 }
 
 function set_refresh() {
-    var enabled = $$('refresh').get('checked') ? 1 : 0;
+    var enabled = $('refresh').get('checked') ? 1 : 0;
     var req = new Request.JSON({
         link: 'cancel',
         url: app_path + '/set_refresh',
