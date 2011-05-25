@@ -86,11 +86,22 @@ class PluginDetails(VigiboardRequestPlugin):
             else:
                 service = None
 
-            eventdetails[unicode(edname)] = url(edlink[1]) % {
-                'idcorrevent': idcorrevent,
-                'host': urllib.quote(event.host),
-                'service': service,
-                'message': urllib.quote(event.message.encode('utf-8')),
+            try:
+                target = edlink[2]
+            except IndexError:
+                target = '_blank'
+            else:
+                if not target:
+                    target = '_blank'
+
+            eventdetails[unicode(edname)] = {
+                'url': url(edlink[1]) % {
+                    'idcorrevent': idcorrevent,
+                    'host': urllib.quote(event.host),
+                    'service': service,
+                    'message': urllib.quote(event.message.encode('utf-8')),
+                },
+                'target': target
             }
 
         return dict(
