@@ -91,7 +91,7 @@ base_config['vigiboard_links.eventdetails'] = (
         '/nagios/%(host)s/cgi-bin/status.cgi?host=%(host)s'
     ), (
         u'Détail de la métrologie',
-        'http://vigilo.example.com/vigigraph/rpc/fullHostPage?host=%(host)s'
+        'http://vigilo.example.com/vigilo/vigigraph/rpc/fullHostPage?host=%(host)s'
     ), (
         u'Détail de la sécurité',
         'http://security.example.com/?host=%(host)s'
