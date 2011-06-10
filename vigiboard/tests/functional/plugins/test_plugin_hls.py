@@ -205,3 +205,54 @@ class TestHLSPlugin(TestController):
         plugin_data = resp.lxml.xpath('//table[@class="vigitable"]'
             '/tbody/tr/td[@class="plugin_hls"]/a/text()')
         assert_equal(plugin_data[0].strip(), "2")
+
+    def test_same_hls_impacted_twice(self):
+        """
+        Pas de doublons dans les HLS impactés.
+        Ticket #732.
+        """
+
+        # On peuple la base de données avant le test.
+        DBSession.add(self.aggregate)
+        hls = HighLevelService(
+            servicename = u'HLS',
+            message = u'Bar',
+            warning_threshold = 60,
+            critical_threshold = 80,
+            weight = None,
+            priority = 2,
+        )
+        DBSession.add(hls)
+        DBSession.flush()
+        path1 = ImpactedPath(idsupitem = self.aggregate.events[0].idsupitem)
+        DBSession.add(path1)
+        path2 = ImpactedPath(idsupitem = self.aggregate.events[0].idsupitem)
+        DBSession.add(path2)
+        DBSession.flush()
+        DBSession.add(
+            ImpactedHLS(
+                path = path1,
+                hls = hls,
+                distance = 1,
+            )
+        )
+        DBSession.add(
+            ImpactedHLS(
+                path = path2,
+                hls = hls,
+                distance = 2,
+            )
+        )
+        DBSession.flush()
+        transaction.commit()
+        DBSession.add(self.aggregate)
+
+        # On accède à la page principale de VigiBoard
+        resp = self.app.post(
+            '/', extra_environ={'REMOTE_USER': 'access'})
+
+        # On s'assure que la colonne des HLS contient bien
+        # le nom de notre HLS de plus haut niveau impacté.
+        plugin_data = resp.lxml.xpath('//table[@class="vigitable"]'
+            '/tbody/tr/td[@class="plugin_hls"]/text()')
+        assert_equal(plugin_data[0].strip(), "HLS")
