@@ -83,6 +83,7 @@ class PluginHLS(VigiboardRequestPlugin):
         services = DBSession.query(
             HighLevelService.servicename,
             subquery2.c.idcorrevent
+        ).distinct(
         ).join(
             (imp_hls2, HighLevelService.idservice == imp_hls2.idhls),
             (subquery2, subquery2.c.idpath == imp_hls2.idpath),
