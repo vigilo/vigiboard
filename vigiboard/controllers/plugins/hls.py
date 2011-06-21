@@ -23,10 +23,13 @@ Un plugin pour VigiBoard qui ajoute une colonne avec les services de haut
 niveau (L{HighLevelService}) impactés par un événement.
 """
 
-from vigiboard.controllers.plugins import VigiboardRequestPlugin
+import tw.forms as twf
+from pylons.i18n import lazy_ugettext as l_
+
+from vigiboard.controllers.plugins import VigiboardRequestPlugin, INNER
 from vigilo.models.session import DBSession
-from vigilo.models.tables import HighLevelService, CorrEvent, Event, SupItem, \
-    ImpactedHLS, ImpactedPath
+from vigilo.models.functions import sql_escape_like
+from vigilo.models import tables
 from sqlalchemy.orm import aliased
 from sqlalchemy.sql import functions
 
@@ -35,6 +38,54 @@ class PluginHLS(VigiboardRequestPlugin):
     Plugin qui permet de voir les services de haut niveau impactés par
     les événements affichés sur la page principale de VigiBoard.
     """
+    def get_search_fields(self):
+        return [
+            twf.TextField(
+                'hls',
+                label_text=l_('High-Level Service'),
+                validator=twf.validators.String(if_missing=None),
+            )
+        ]
+
+    def handle_search_fields(self, query, search, state, subqueries):
+        if state != INNER or not search.get('hls'):
+            return
+        hls = sql_escape_like(search['hls'])
+
+        # Il s'agit d'un manager. On applique le filtre
+        # indépendamment aux 2 sous-requêtes.
+        if len(subqueries) == 2:
+            subqueries[0] = subqueries[0].join(
+                    (tables.ImpactedPath, tables.ImpactedPath.idsupitem == \
+                        tables.LowLevelService.idservice),
+                    (tables.ImpactedHLS, tables.ImpactedHLS.idpath == \
+                        tables.ImpactedPath.idpath),
+                    (tables.HighLevelService, \
+                        tables.HighLevelService.idservice == \
+                        tables.ImpactedHLS.idhls),
+                ).filter(tables.HighLevelService.servicename.ilike(hls))
+
+            subqueries[1] = subqueries[1].join(
+                    (tables.ImpactedPath, tables.ImpactedPath.idsupitem == \
+                        tables.Host.idhost),
+                    (tables.ImpactedHLS, tables.ImpactedHLS.idpath == \
+                        tables.ImpactedPath.idpath),
+                    (tables.HighLevelService,
+                        tables.HighLevelService.idservice == \
+                        tables.ImpactedHLS.idhls),
+                ).filter(tables.HighLevelService.servicename.ilike(hls))
+
+        # Il s'agit d'un utilisateur normal.
+        else:
+            subqueries[0] = subqueries[0].join(
+                    (tables.ImpactedPath, tables.ImpactedPath.idsupitem == \
+                        tables.UserSupItem.idsupitem),
+                    (tables.ImpactedHLS, tables.ImpactedHLS.idpath == \
+                        tables.ImpactedPath.idpath),
+                    (tables.HighLevelService,
+                        tables.HighLevelService.idservice == \
+                        tables.ImpactedHLS.idhls),
+                ).filter(tables.HighLevelService.servicename.ilike(hls))
 
     def get_bulk_data(self, events_ids):
         """
@@ -49,18 +100,20 @@ class PluginHLS(VigiboardRequestPlugin):
         @rtype:  C{dict}
         """
 
-        imp_hls1 = aliased(ImpactedHLS)
-        imp_hls2 = aliased(ImpactedHLS)
+        imp_hls1 = aliased(tables.ImpactedHLS)
+        imp_hls2 = aliased(tables.ImpactedHLS)
 
         # Sous-requête récupérant les identifiants des supitems
         # impactés par les évènements passés en paramètre.
         subquery = DBSession.query(
-                SupItem.idsupitem,
-                CorrEvent.idcorrevent
+                tables.SupItem.idsupitem,
+                tables.CorrEvent.idcorrevent
             ).join(
-                (Event, Event.idsupitem == SupItem.idsupitem),
-                (CorrEvent, CorrEvent.idcause == Event.idevent),
-            ).filter(CorrEvent.idcorrevent.in_(events_ids)
+                (tables.Event, tables.Event.idsupitem == \
+                    tables.SupItem.idsupitem),
+                (tables.CorrEvent, tables.CorrEvent.idcause == \
+                    tables.Event.idevent),
+            ).filter(tables.CorrEvent.idcorrevent.in_(events_ids)
             ).subquery()
 
         # Sous-requête récupérant les identifiants des SHN de plus
@@ -71,9 +124,9 @@ class PluginHLS(VigiboardRequestPlugin):
             imp_hls1.idpath,
             subquery.c.idcorrevent
         ).join(
-            (ImpactedPath, ImpactedPath.idpath == imp_hls1.idpath)
+            (tables.ImpactedPath, tables.ImpactedPath.idpath == imp_hls1.idpath)
         ).join(
-            (subquery, ImpactedPath.idsupitem == subquery.c.idsupitem)
+            (subquery, tables.ImpactedPath.idsupitem == subquery.c.idsupitem)
         ).group_by(imp_hls1.idpath, subquery.c.idcorrevent
         ).subquery()
 
@@ -81,15 +134,15 @@ class PluginHLS(VigiboardRequestPlugin):
         # impactés par chacun des évènements passés en paramètre.
         # Fait appel à la sous-requête précédente (subquery2).
         services = DBSession.query(
-            HighLevelService.servicename,
+            tables.HighLevelService.servicename,
             subquery2.c.idcorrevent
         ).distinct(
         ).join(
-            (imp_hls2, HighLevelService.idservice == imp_hls2.idhls),
+            (imp_hls2, tables.HighLevelService.idservice == imp_hls2.idhls),
             (subquery2, subquery2.c.idpath == imp_hls2.idpath),
         ).filter(imp_hls2.distance == subquery2.c.distance
         ).order_by(
-            HighLevelService.servicename.asc()
+            tables.HighLevelService.servicename.asc()
         ).all()
 
         # Construction d'un dictionnaire associant à chaque évènement
