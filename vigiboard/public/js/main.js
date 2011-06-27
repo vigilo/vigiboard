@@ -59,6 +59,7 @@ window.addEvent('domready', function (){
 
     add_autocompleter('search_form_host', 'host', app_path + '/autocomplete/host');
     add_autocompleter('search_form_service', 'service', app_path + '/autocomplete/service');
+    add_autocompleter('search_form_hls', 'service', app_path + '/autocomplete/hls');
 
     change_refresh_rate(refresh_status);
 
