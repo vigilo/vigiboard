@@ -18,6 +18,13 @@ window.dlg_open_handler = function () { this.isOpen = true; };
 window.dlg_close_handler = function () { this.isOpen = false; };
 
 window.addEvent('domready', function (){
+    // Permet de refermer les dialogues en appuyant sur 'Échap'.
+    document.addEvent('keydown', function(e) {
+        e = new Event(e);
+        if (e.key == 'esc' && Jx.Dialog.Stack.length)
+            Jx.Dialog.Stack[Jx.Dialog.Stack.length-1].close();
+    });
+
     /**
      * HACK: le closed: True est nécessaire pour éviter que
      * JxLib affiche le panel lors de la création du dialogue
