@@ -86,22 +86,26 @@ base_config.package = vigiboard
 #
 # Permet de satisfaire l'exigence VIGILO_EXIG_VIGILO_BAC_0130.
 base_config['vigiboard_links.eventdetails'] = (
-    (
-        u'Détail de l\'hôte dans Nagios',
-        '/nagios/%(host)s/cgi-bin/status.cgi?host=%(host)s'
-    ), (
-        u'Détail de la métrologie',
-        'http://vigilo.example.com/vigilo/vigigraph/rpc/fullHostPage?host=%(host)s'
-    ), (
-        u'Détail de la sécurité',
-        'http://security.example.com/?host=%(host)s'
-    ), (
-        'Inventaire',
-        'http://cmdb.example.com/?host=%(host)s'
-    ), (
-        'Documentation',
-        'http://doc.example.com/?q=%(message)s'
-    ),
+    {
+        'label': u'Détail de l\'hôte dans Nagios',
+        'uri': '/nagios/%(host)s/cgi-bin/status.cgi?host=%(host)s',
+    },
+    {
+        'label': u'Détail de la métrologie',
+        'uri': 'http://vigilo.example.com/vigilo/vigigraph/rpc/fullHostPage?host=%(host)s',
+    },
+    {
+        'label': u'Détail de la sécurité',
+        'uri': 'http://security.example.com/?host=%(host)s',
+    },
+    {
+        'label': 'Inventaire',
+        'uri': 'http://cmdb.example.com/?host=%(host)s',
+    },
+    {
+        'label': 'Documentation',
+        'uri': 'http://doc.example.com/?q=%(message)s',
+    },
 )
 
 # URL des tickets, possibilités:

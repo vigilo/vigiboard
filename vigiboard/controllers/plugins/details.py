@@ -78,30 +78,37 @@ class PluginDetails(VigiboardRequestPlugin):
         ).filter(CorrEvent.idcorrevent == idcorrevent
         ).first()
 
+        context = {
+            'idcorrevent': idcorrevent,
+            'host': event.host,
+            'service': event.service,
+            'message': event.message,
+        }
+
         eventdetails = {}
         for edname, edlink in enumerate(config['vigiboard_links.eventdetails']):
+            # Évite que les gardes ne se polluent entre elles.
+            local_ctx = context.copy()
 
-            if event.service:
-                service = urllib.quote(event.service)
-            else:
-                service = None
+            # Les liens peuvent être conditionnés à l'aide
+            # d'une expression ou d'un callable qui agira
+            # comme un prédicat de test.
+            if 'only_if' in edlink:
+                if callable(edlink['only_if']):
+                    display_link = edlink['only_if'](local_ctx)
+                else:
+                    display_link = edlink['only_if']
+                if not display_link:
+                    continue
 
-            try:
-                target = edlink[2]
-            except IndexError:
-                target = '_blank'
+            if callable(edlink['uri']):
+                uri = edlink['uri'](local_ctx)
             else:
-                if not target:
-                    target = '_blank'
+                uri = edlink['uri'] % local_ctx
 
             eventdetails[unicode(edname)] = {
-                'url': url(edlink[1]) % {
-                    'idcorrevent': idcorrevent,
-                    'host': urllib.quote(event.host),
-                    'service': service,
-                    'message': urllib.quote(event.message.encode('utf-8')),
-                },
-                'target': target
+                'url': uri,
+                'target': edlink.get('target', '_blank')
             }
 
         return dict(
