@@ -107,7 +107,7 @@ class PluginDetails(VigiboardRequestPlugin):
                 uri = edlink['uri'] % local_ctx
 
             eventdetails[unicode(edname)] = {
-                'url': uri,
+                'url': url(uri),
                 'target': edlink.get('target', '_blank')
             }
 
