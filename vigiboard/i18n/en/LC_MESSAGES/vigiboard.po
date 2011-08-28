@@ -6,10 +6,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: vigilo-vigiboard 2.0.1\n"
+"Project-Id-Version: vigilo-vigiboard 2.0.5\n"
 "Report-Msgid-Bugs-To: contact@projet-vigilo.org\n"
-"POT-Creation-Date: 2011-05-19 18:25+0200\n"
-"PO-Revision-Date: 2011-05-19 18:25+0200\n"
+"POT-Creation-Date: 2011-08-28 16:29+0200\n"
+"PO-Revision-Date: 2011-08-28 16:29+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: en <LL@li.org>\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
@@ -168,6 +168,10 @@ msgstr "Clear"
 msgid "Group"
 msgstr "Group"
 
+#: vigiboard/controllers/plugins/hls.py:45
+msgid "High-Level Service"
+msgstr "High-Level Service"
+
 #: vigiboard/controllers/plugins/hostname.py:38
 msgid "Host"
 msgstr "Host"
@@ -184,21 +188,42 @@ msgstr "Priority"
 msgid "Service"
 msgstr "Service"
 
+#: vigiboard/controllers/plugins/status.py:51
+msgid "All alerts"
+msgstr "All alerts"
+
+#: vigiboard/controllers/plugins/status.py:52
+msgid "New alerts"
+msgstr "New alerts"
+
 #: vigiboard/controllers/plugins/status.py:53
+msgid "Alerts marked as Acknowledged"
+msgstr "Alerts marked as Acknowledged"
+
+#: vigiboard/controllers/plugins/status.py:54
+msgid "Alerts marked as Closed"
+msgstr "Alerts marked as Closed"
+
+#: vigiboard/controllers/plugins/status.py:60
 #: vigiboard/widgets/edit_event.py:58
 msgid "Trouble Ticket"
 msgstr "Trouble Ticket"
 
-#: vigiboard/public/js/main.js:32
+#: vigiboard/controllers/plugins/status.py:65
+#: vigiboard/widgets/edit_event.py:61
+msgid "Acknowledgement Status"
+msgstr "Acknowledgement Status"
+
+#: vigiboard/public/js/main.js:39
 msgid "Search Event"
 msgstr "Search Event"
 
-#: vigiboard/public/js/main.js:47
+#: vigiboard/public/js/main.js:54
 msgid "Select a group"
 msgstr "Select a group"
 
-#: vigiboard/public/js/main.js:76 vigiboard/public/js/main.js:97
-#: vigiboard/public/js/main.js:128
+#: vigiboard/public/js/main.js:84 vigiboard/public/js/main.js:105
+#: vigiboard/public/js/main.js:136
 msgid "Unable to save preferences"
 msgstr "Unable to save preferences"
 
@@ -225,10 +250,6 @@ msgstr "Force to Closed"
 #: vigiboard/widgets/edit_event.py:59
 msgid "Warning: changing the ticket will affect all selected events."
 msgstr "Warning: changing the ticket will affect all selected events."
-
-#: vigiboard/widgets/edit_event.py:61
-msgid "Acknowledgement Status"
-msgstr "Acknowledgement Status"
 
 #: vigiboard/widgets/search_form.py:55
 msgid "Search"

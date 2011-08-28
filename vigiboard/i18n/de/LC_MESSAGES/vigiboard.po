@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: vigiboard 2.0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2010-11-19 10:22+0100\n"
-"PO-Revision-Date: 2011-05-19 18:25+0200\n"
+"PO-Revision-Date: 2011-08-28 16:29+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: de_DE <LL@li.org>\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
@@ -163,6 +163,10 @@ msgstr "Löschen"
 msgid "Group"
 msgstr "Gruppe"
 
+#: vigiboard/controllers/plugins/hls.py:45
+msgid "High-Level Service"
+msgstr ""
+
 #: vigiboard/controllers/plugins/hostname.py:38
 msgid "Host"
 msgstr "Host"
@@ -179,21 +183,42 @@ msgstr "Priorität"
 msgid "Service"
 msgstr "Service"
 
+#: vigiboard/controllers/plugins/status.py:51
+msgid "All alerts"
+msgstr ""
+
+#: vigiboard/controllers/plugins/status.py:52
+msgid "New alerts"
+msgstr ""
+
 #: vigiboard/controllers/plugins/status.py:53
+msgid "Alerts marked as Acknowledged"
+msgstr ""
+
+#: vigiboard/controllers/plugins/status.py:54
+msgid "Alerts marked as Closed"
+msgstr ""
+
+#: vigiboard/controllers/plugins/status.py:60
 #: vigiboard/widgets/edit_event.py:58
 msgid "Trouble Ticket"
 msgstr "Trouble Ticket"
 
-#: vigiboard/public/js/main.js:32
+#: vigiboard/controllers/plugins/status.py:65
+#: vigiboard/widgets/edit_event.py:61
+msgid "Acknowledgement Status"
+msgstr "Bestätigungsstatus"
+
+#: vigiboard/public/js/main.js:39
 msgid "Search Event"
 msgstr ""
 
-#: vigiboard/public/js/main.js:47
+#: vigiboard/public/js/main.js:54
 msgid "Select a group"
 msgstr ""
 
-#: vigiboard/public/js/main.js:76 vigiboard/public/js/main.js:97
-#: vigiboard/public/js/main.js:128
+#: vigiboard/public/js/main.js:84 vigiboard/public/js/main.js:105
+#: vigiboard/public/js/main.js:136
 msgid "Unable to save preferences"
 msgstr ""
 
@@ -222,10 +247,6 @@ msgid "Warning: changing the ticket will affect all selected events."
 msgstr ""
 "Warnung: die Änderung des Tickets wirkt sich auf alle ausgewählten "
 "Ereignisse aus."
-
-#: vigiboard/widgets/edit_event.py:61
-msgid "Acknowledgement Status"
-msgstr "Bestätigungsstatus"
 
 #: vigiboard/widgets/search_form.py:55
 msgid "Search"

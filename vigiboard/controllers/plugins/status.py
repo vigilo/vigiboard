@@ -47,12 +47,29 @@ class PluginStatus(VigiboardRequestPlugin):
         return 4
 
     def get_search_fields(self):
+        options = [
+            ('', l_('All alerts')),
+            ('None', l_('New alerts')),
+            ('Acknowledged', l_('Alerts marked as Acknowledged')),
+            ('AAClosed', l_('Alerts marked as Closed')),
+        ]
+
         return [
             twf.TextField(
                 'trouble_ticket',
                 label_text=l_('Trouble Ticket'),
                 validator=twf.validators.String(if_missing=None),
-            )
+            ),
+            twf.SingleSelectField(
+                'status',
+                label_text=l_('Acknowledgement Status'),
+                options=options,
+                validator=twf.validators.OneOf(
+                    dict(options).keys(),
+                    if_invalid=None,
+                    if_missing=None,
+                ),
+            ),
         ]
 
     def handle_search_fields(self, query, search, state, subqueries):
@@ -62,3 +79,7 @@ class PluginStatus(VigiboardRequestPlugin):
         if search.get('trouble_ticket'):
             tt = sql_escape_like(search['trouble_ticket'])
             query.add_filter(CorrEvent.trouble_ticket.ilike(tt))
+
+        if search.get('status'):
+            query.add_filter(CorrEvent.status == search['status'])
+

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: vigiboard 0.1\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2009-07-06 11:19+0200\n"
-"PO-Revision-Date: 2011-05-19 18:25+0200\n"
+"PO-Revision-Date: 2011-08-28 16:29+0200\n"
 "Last-Translator: Thomas ANDREJAK <thomas.andrejak@c-s.fr>\n"
 "Language-Team: fr_FR <LL@li.org>\n"
 "Plural-Forms: nplurals=2; plural=(n > 1)\n"
@@ -77,13 +77,15 @@ msgid ""
 "User \"%(user)s\" (%(address)s) changed the trouble ticket from "
 "\"%(previous)s\" to \"%(new)s\" on event #%(idevent)d"
 msgstr ""
-"L'utilisateur \"%(user)s\" (%(address)s) a changé le ticket d'incident "
-"de l'événement n°%(idevent)d de \"%(previous)s\" vers \"%(new)s\""
+"L'utilisateur \"%(user)s\" (%(address)s) a changé le ticket d'incident de"
+" l'événement n°%(idevent)d de \"%(previous)s\" vers \"%(new)s\""
 
 #: vigiboard/controllers/root.py:617
 #, python-format
 msgid "User \"%(user)s\" (%(address)s) forcefully closed event #%(idevent)d"
-msgstr "L'utilisateur \"%(user)s\" (%(address)s) a forcé la fermeture de l'événement #%(idevent)d"
+msgstr ""
+"L'utilisateur \"%(user)s\" (%(address)s) a forcé la fermeture de "
+"l'événement #%(idevent)d"
 
 #: vigiboard/controllers/root.py:637
 #, python-format
@@ -167,6 +169,10 @@ msgstr "Effacer"
 msgid "Group"
 msgstr "Groupe"
 
+#: vigiboard/controllers/plugins/hls.py:45
+msgid "High-Level Service"
+msgstr "Service de Haut Niveau"
+
 #: vigiboard/controllers/plugins/hostname.py:38
 msgid "Host"
 msgstr "Hôte"
@@ -183,21 +189,42 @@ msgstr "Priorité"
 msgid "Service"
 msgstr "Service"
 
+#: vigiboard/controllers/plugins/status.py:51
+msgid "All alerts"
+msgstr "Toutes les alertes"
+
+#: vigiboard/controllers/plugins/status.py:52
+msgid "New alerts"
+msgstr "Nouvelles alertes"
+
 #: vigiboard/controllers/plugins/status.py:53
+msgid "Alerts marked as Acknowledged"
+msgstr "Alertes « Prises en compte »"
+
+#: vigiboard/controllers/plugins/status.py:54
+msgid "Alerts marked as Closed"
+msgstr "Alertes « Fermées »"
+
+#: vigiboard/controllers/plugins/status.py:60
 #: vigiboard/widgets/edit_event.py:58
 msgid "Trouble Ticket"
 msgstr "Ticket d'incident"
 
-#: vigiboard/public/js/main.js:32
+#: vigiboard/controllers/plugins/status.py:65
+#: vigiboard/widgets/edit_event.py:61
+msgid "Acknowledgement Status"
+msgstr "Statut d'acquittement"
+
+#: vigiboard/public/js/main.js:39
 msgid "Search Event"
 msgstr "Rechercher l'événement"
 
-#: vigiboard/public/js/main.js:47
+#: vigiboard/public/js/main.js:54
 msgid "Select a group"
 msgstr "Choisir un groupe"
 
-#: vigiboard/public/js/main.js:76 vigiboard/public/js/main.js:97
-#: vigiboard/public/js/main.js:128
+#: vigiboard/public/js/main.js:84 vigiboard/public/js/main.js:105
+#: vigiboard/public/js/main.js:136
 msgid "Unable to save preferences"
 msgstr "Impossible de sauvegarder les préférences"
 
@@ -224,10 +251,6 @@ msgstr "Forcer à Fermé"
 #: vigiboard/widgets/edit_event.py:59
 msgid "Warning: changing the ticket will affect all selected events."
 msgstr "Attention : la modification du ticket affectera toute la sélection."
-
-#: vigiboard/widgets/edit_event.py:61
-msgid "Acknowledgement Status"
-msgstr "Statut d'acquittement"
 
 #: vigiboard/widgets/search_form.py:55
 msgid "Search"
