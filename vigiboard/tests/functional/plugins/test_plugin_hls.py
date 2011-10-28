@@ -87,7 +87,6 @@ def add_paths(path_number, path_length, idsupitem):
         'warning_threshold': 60,
         'critical_threshold': 80,
         'weight': None,
-        'priority': 2,
     }
 
     # Création des chemins de services de haut niveau impactés.
@@ -220,7 +219,6 @@ class TestHLSPlugin(TestController):
             warning_threshold = 60,
             critical_threshold = 80,
             weight = None,
-            priority = 2,
         )
         DBSession.add(hls)
         DBSession.flush()
