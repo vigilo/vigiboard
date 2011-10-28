@@ -228,19 +228,19 @@ msgstr "Keine Änderung"
 
 #: vigiboard/widgets/edit_event.py:35
 msgid "Change to None"
-msgstr "Zu Keine übergehen"
+msgstr "Unbehandelt"
 
 #: vigiboard/widgets/edit_event.py:36
 msgid "Change to Acknowledged"
-msgstr "Zu Bestätigt übergehen"
+msgstr "Bestätigen"
 
 #: vigiboard/widgets/edit_event.py:37
 msgid "Change to Closed"
-msgstr "Zu Geschlossen übergehen"
+msgstr "Schliessen"
 
 #: vigiboard/widgets/edit_event.py:38
 msgid "Force to Closed"
-msgstr "Geschlossen erzwingen"
+msgstr "Schliessen und Löschen"
 
 #: vigiboard/widgets/edit_event.py:59
 msgid "Warning: changing the ticket will affect all selected events."
@@ -251,4 +251,3 @@ msgstr ""
 #: vigiboard/widgets/search_form.py:55
 msgid "Search"
 msgstr "Suchen"
-
