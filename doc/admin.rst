@@ -230,21 +230,6 @@ Vigilo pour utiliser les mêmes clés, ou opter de préférence pour des clés
 différentes (là encore, pour éviter la propagation d'une compromission).
 
 
-Utilisation d'un mécanisme d'authentification externe
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Pour utiliser un mécanisme d'authentification externe (par exemple : Kerberos),
-définissez la clé ``external_auth`` à ``True`` sous la section ``[app:main]``.
-
-Dans ce mode, Vigilo ne tente pas d'authentifier l'utilisateur par rapport aux
-comptes contenus dans sa base de données, mais utilise uniquement le nom
-d'utilisateur transmis par la source d'authentification externe. Le nom
-d'utilisateur peut être transmis de plusieurs manières, par exemple sous la
-forme d'une variable d'environnement.
-
-**Attention :** n'utilisez ce mode de fonctionnement que si vous comprenez bien
-les risques associés. En particulier, le fait qu'aucun mot de passe ne sera
-demandé à l'utilisateur pour confirmer son identité.
-
 Emplacement de la configuration d'authentification/autorisation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 La directive ``auth.config`` de la section ``[app:main]`` permet d'indiquer

@@ -26,8 +26,7 @@ from vigiboard.config.environment import load_environment
 from pkg_resources import resource_filename
 from paste.cascade import Cascade
 from paste.urlparser import StaticURLParser
-from repoze.who.plugins.testutil import make_middleware_with_config \
-                                    as make_who_with_config
+from vigilo.turbogears.repoze_who import make_middleware_with_config
 from logging import getLogger
 
 __all__ = ['make_app']
@@ -58,7 +57,7 @@ def make_app(global_conf, full_stack=True, **app_conf):
     app = make_base_app(global_conf, full_stack=full_stack, **app_conf)
 
     # Ajout du middleware d'authentification.
-    app = make_who_with_config(
+    app = make_middleware_with_config(
         app, global_conf,
         app_conf.get('auth.config', 'who.ini'),
         None,

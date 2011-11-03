@@ -68,10 +68,6 @@ beaker.session.secret = vigilo
 ; "beaker.session.secret".
 sa_auth.cookie_secret = vigilo
 
-; Indique si un mécanisme d'authentification externe
-; (ex : Kerberos) est en place ou non.
-external_auth = False
-
 ; Fichier de configuration définissant la politique de gestion
 ; de l'authentification.
 auth.config = %(here)s/who.ini
