@@ -26,8 +26,6 @@ from vigiboard.config.environment import load_environment
 from pkg_resources import resource_filename
 from paste.cascade import Cascade
 from paste.urlparser import StaticURLParser
-from vigilo.turbogears.repoze_who import make_middleware_with_config
-from logging import getLogger
 
 __all__ = ['make_app']
 
@@ -55,18 +53,6 @@ def make_app(global_conf, full_stack=True, **app_conf):
         loaded.
     """
     app = make_base_app(global_conf, full_stack=full_stack, **app_conf)
-
-    # Ajout du middleware d'authentification.
-    app = make_middleware_with_config(
-        app, global_conf,
-        app_conf.get('auth.config', 'who.ini'),
-        None,
-        None,
-        app_conf.get('skip_authentication')
-    )
-    # On force l'utilisation d'un logger nommé "auth"
-    # pour la compatibilité avec TurboGears.
-    app.logger = getLogger('auth')
 
     # On définit 2 middlewares pour fichiers statiques qui cherchent
     # les fichiers dans le thème actuellement chargé.

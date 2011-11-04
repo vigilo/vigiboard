@@ -51,9 +51,8 @@ class TestGroupSelectionTree(TestController):
             json, {'items': [], 'groups': []}
         )
 
-    def test_get_group_when_not_allowed(self):
-        """Récupération de l'étage de l'arbre sans les droits"""
-
+    def test_get_group_anonymous(self):
+        """Récupération de l'étage de l'arbre en anonyme"""
         # Récupération du groupe utilisé lors de ce test.
         group2 = SupItemGroup.by_group_name(u'group2')
 
@@ -61,6 +60,12 @@ class TestGroupSelectionTree(TestController):
         # Il cherche à obtenir la liste des groupes fils d'un groupe donné.
         response = self.app.get('/get_groups?parent_id=%d' % group2.idgroup,
             status=401)
+
+    def test_get_group_when_not_allowed(self):
+        """Récupération de l'étage de l'arbre sans les droits"""
+
+        # Récupération du groupe utilisé lors de ce test.
+        group2 = SupItemGroup.by_group_name(u'group2')
 
         # L'utilisateur est authentifié avec des permissions
         # restreintes. Il cherche à obtenir la liste des groupes fils
@@ -93,7 +98,7 @@ class TestGroupSelectionTree(TestController):
         # bien les groupes fils de ce groupe parent
         self.assertEqual(
             json, {
-                'items': [], 
+                'items': [],
                 'groups': [
                     {'id': maingroup.idgroup, 'name': maingroup.name, 'type': 'group'}
                 ]
@@ -111,7 +116,7 @@ class TestGroupSelectionTree(TestController):
         # bien les groupes fils de ce groupe parent
         self.assertEqual(
             json, {
-                'items': [], 
+                'items': [],
                 'groups': [
                     {'id': maingroup.idgroup, 'name': maingroup.name, 'type': 'group'}
                 ]
@@ -127,7 +132,7 @@ class TestGroupSelectionTree(TestController):
         # On s'assure que la liste retournée contient
         # bien les groupes fils de ce groupe parent.
         self.assertEqual(json, {
-                'items': [], 
+                'items': [],
                 'groups': [
                     {'id': group1.idgroup, 'name': group1.name, 'type': 'group'},
                     {'id': group2.idgroup, 'name': group2.name, 'type': 'group'}
@@ -145,7 +150,7 @@ class TestGroupSelectionTree(TestController):
         # On s'assure que la liste retournée contient bien ce groupe fils.
         self.assertEqual(
             json, {
-                'items': [], 
+                'items': [],
                 'groups': [
                     {'id': group1.idgroup, 'name': group1.name, 'type': 'group'}
                 ]
@@ -162,7 +167,7 @@ class TestGroupSelectionTree(TestController):
         # le groupe parent du groupe auquel il a accès.
         self.assertEqual(
             json, {
-                'items': [], 
+                'items': [],
                 'groups': [
                     {'id': maingroup.idgroup, 'name': maingroup.name, 'type': 'group'}
                 ]
@@ -184,7 +189,7 @@ class TestGroupSelectionTree(TestController):
         # On s'assure que la liste retournée contient bien le groupe racine.
         self.assertEqual(
             json, {
-                'items': [], 
+                'items': [],
                 'groups': [
                     {'id': root.idgroup, 'name': root.name, 'type': 'group'}
                 ]
@@ -201,7 +206,7 @@ class TestGroupSelectionTree(TestController):
         # groupe racine, auquel cet utilisateur a directement accès.
         self.assertEqual(
             json, {
-                'items': [], 
+                'items': [],
                 'groups': [
                     {'id': root.idgroup, 'name': root.name, 'type': 'group'}
                 ]
@@ -218,22 +223,24 @@ class TestGroupSelectionTree(TestController):
         # groupe racine, auquel cet utilisateur a indirectement accès.
         self.assertEqual(
             json, {
-                'items': [], 
+                'items': [],
                 'groups': [
                     {'id': root.idgroup, 'name': root.name, 'type': 'group'}
                 ]
             }
         )
 
-    def test_get_root_group_when_not_allowed(self):
-        """Récupération des groupes racines de l'arbre sans les droits"""
-
-        # Récupération du groupe utilisé lors de ce test.
-        root = SupItemGroup.by_group_name(u'root')
-
+    def test_get_root_group_anonymous(self):
+        """Récupération des groupes racines de l'arbre en anonyme"""
         # L'utilisateur n'est pas authentifié, et cherche
         # à obtenir la liste des groupes racines de l'arbre.
         response = self.app.get('/get_groups', status=401)
+
+
+    def test_get_root_group_when_not_allowed(self):
+        """Récupération des groupes racines de l'arbre sans les droits"""
+        # Récupération du groupe utilisé lors de ce test.
+        root = SupItemGroup.by_group_name(u'root')
 
         # Création d'un nouvel utilisateur et d'un nouveau groupe
         usergroup = UserGroup(group_name=u'new_users')
@@ -246,6 +253,8 @@ class TestGroupSelectionTree(TestController):
         )
         user.usergroups.append(usergroup)
         DBSession.add(user)
+        DBSession.flush()
+        transaction.commit()
 
         # L'utilisateur est authentifié mais n'a aucun accès. Il
         # cherche à obtenir la liste des groupes racines de l'arbre.
@@ -256,8 +265,7 @@ class TestGroupSelectionTree(TestController):
         # On s'assure que la liste retournée est bien vide.
         self.assertEqual(
             json, {
-                'items': [], 
+                'items': [],
                 'groups': []
             }
         )
-
