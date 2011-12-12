@@ -27,9 +27,9 @@ class TestSearchFormSupItemGroup(TestController):
         """Teste la recherche par supitemgroup avec les bons droits d'accès."""
 
         # On récupère les 3 groupes de supitems utilisés lors de ces tests.
-        root = SupItemGroup.by_group_name('root')
-        maingroup = SupItemGroup.by_group_name('maingroup')
-        group1 = SupItemGroup.by_group_name('group1')
+        root = SupItemGroup.by_group_name(u'root')
+        maingroup = SupItemGroup.by_group_name(u'maingroup')
+        group1 = SupItemGroup.by_group_name(u'group1')
 
         # L'utilisateur est authentifié avec des permissions réduites.
         # Il effectue une recherche sur un groupe de supitems auquel
@@ -108,7 +108,7 @@ class TestSearchFormSupItemGroup(TestController):
         assert_true(len(cols) > 1)
 
         # L'utilisateur est authentifié et fait partie du groupe
-        # 'managers'. Il effectue une recherche sur un groupe de supitems, 
+        # 'managers'. Il effectue une recherche sur un groupe de supitems,
         # et on s'attend à ce que la requête retourne 5 résultats.
         environ = {'REMOTE_USER': 'manager'}
         response = self.app.get(
@@ -167,8 +167,8 @@ class TestSearchFormSupItemGroup(TestController):
         """Teste la recherche par supitemgroup SANS les droits d'accès."""
 
         # On récupère les 2 groupes de supitems utilisés lors de ces tests.
-        maingroup = SupItemGroup.by_group_name('maingroup')
-        group2 = SupItemGroup.by_group_name('group2')
+        maingroup = SupItemGroup.by_group_name(u'maingroup')
+        group2 = SupItemGroup.by_group_name(u'group2')
 
         # L'utilisateur n'est pas authentifié.
         response = self.app.get('/', status=401)
@@ -193,4 +193,3 @@ class TestSearchFormSupItemGroup(TestController):
         cols = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr/td')
         print "There are %d columns in the result set" % len(cols)
         assert_equal(len(cols), 1)
-
