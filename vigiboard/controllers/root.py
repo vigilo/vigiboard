@@ -614,6 +614,7 @@ class RootController(AuthController):
                             text="Forced state to 'OK'",
                             username=user.user_name,
                             timestamp=datetime.now(),
+                            state=StateName.statename_to_value(u'OK'),
                         )
                     DBSession.add(history)
                     LOGGER.info(_('User "%(user)s" (%(address)s) forcefully '
