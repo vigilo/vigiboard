@@ -74,7 +74,6 @@ def populate_DB():
 
     # Création de 3 hôtes (1 par groupe de supitems).
     host_template = {
-        'checkhostcmd': u'halt',
         'snmpcommunity': u'public',
         'hosttpl': u'/dev/null',
         'address': u'192.168.1.1',

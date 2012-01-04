@@ -63,7 +63,6 @@ def populate_DB(caused_by_service):
     # On crée un hôte de test, et on l'ajoute au groupe d'hôtes.
     managerhost = Host(
         name = u'managerhost',
-        checkhostcmd = u'halt',
         snmpcommunity = u'public',
         hosttpl = u'/dev/null',
         address = u'192.168.1.1',
@@ -130,7 +129,6 @@ def add_masked_event(idcorrevent):
 
     masked_host = Host(
         name = u'masked host #%d' % nb_hosts,
-        checkhostcmd = u'halt',
         snmpcommunity = u'public',
         hosttpl = u'/dev/null',
         address = u'192.168.1.%d' % nb_hosts,

@@ -38,7 +38,6 @@ def populate_DB():
     # On crée un hôte de test, et on l'ajoute au groupe d'hôtes.
     managerhost = Host(
         name = u'managerhost',
-        checkhostcmd = u'halt',
         snmpcommunity = u'public',
         hosttpl = u'/dev/null',
         address = u'192.168.1.1',

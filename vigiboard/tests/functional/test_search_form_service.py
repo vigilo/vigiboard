@@ -25,7 +25,6 @@ def insert_deps():
 
     host = Host(
         name=u'bar',
-        checkhostcmd=u'',
         description=u'',
         hosttpl=u'',
         address=u'127.0.0.1',

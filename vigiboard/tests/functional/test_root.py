@@ -44,7 +44,6 @@ def populate_DB():
     # On crée un 2 hôtes, et on les ajoute au groupe d'hôtes.
     host1 = Host(
         name = u'host1',
-        checkhostcmd = u'halt',
         snmpcommunity = u'public',
         hosttpl = u'/dev/null',
         address = u'192.168.1.1',
@@ -55,7 +54,6 @@ def populate_DB():
     supitemmanagers.supitems.append(host1)
     host2 = Host(
         name = u'host2',
-        checkhostcmd = u'halt',
         snmpcommunity = u'public',
         hosttpl = u'/dev/null',
         address = u'192.168.1.1',
@@ -521,7 +519,6 @@ class TestRootController(TestController):
         for i in xrange(items_per_page + 1):
             host = Host(
                 name = u'host%d' % (i + 1),
-                checkhostcmd = u'halt',
                 snmpcommunity = u'public',
                 hosttpl = u'/dev/null',
                 address = u'192.168.1.%d' % i,

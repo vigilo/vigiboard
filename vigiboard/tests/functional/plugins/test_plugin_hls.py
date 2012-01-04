@@ -35,7 +35,6 @@ def populate_DB():
     # On crée un hôte de test.
     host = Host(
         name = u'host',
-        checkhostcmd = u'halt',
         snmpcommunity = u'public',
         hosttpl = u'/dev/null',
         address = u'192.168.1.1',
