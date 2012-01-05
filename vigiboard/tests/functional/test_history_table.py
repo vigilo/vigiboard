@@ -95,7 +95,7 @@ def add_correvent_caused_by(supitem):
         idcause = event.idevent,
         timestamp_active = datetime.now(),
         priority = 1,
-        status = u"None")
+        ack = CorrEvent.ACK_NONE)
     aggregate.events.append(event)
     DBSession.add(aggregate)
     DBSession.flush()

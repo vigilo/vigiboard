@@ -150,7 +150,7 @@ def populate_DB():
     aggregate_template = {
         'timestamp_active': datetime.now(),
         'priority': 1,
-        'status': u'None',
+        'ack': CorrEvent.ACK_NONE,
     }
 
     aggregate1 = CorrEvent(
@@ -178,4 +178,3 @@ def populate_DB():
     DBSession.flush()
 
     transaction.commit()
-

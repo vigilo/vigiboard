@@ -88,7 +88,7 @@ def populate_DB():
     return ([host1, host2], [service1, service2])
 
 def add_correvent_caused_by(supitem, timestamp,
-        correvent_status=u"None", event_status=u"WARNING"):
+        correvent_status=CorrEvent.ACK_NONE, event_status=u"WARNING"):
     """
     Ajoute dans la base de données un évènement corrélé causé
     par un incident survenu sur l'item passé en paramètre.
@@ -110,7 +110,7 @@ def add_correvent_caused_by(supitem, timestamp,
         idcause = event.idevent,
         timestamp_active = timestamp,
         priority = 1,
-        status = correvent_status)
+        ack = correvent_status)
     aggregate.events.append(event)
     DBSession.add(aggregate)
     DBSession.flush()
@@ -370,11 +370,11 @@ class TestRootController(TestController):
         # On s'assure que le statut de l'évènement corrélé
         # a bien été mis à jour dans la base de données.
         correvents = DBSession.query(
-            CorrEvent.status
+            CorrEvent.ack
             ).filter(CorrEvent.idcorrevent.in_([correvent1_id, correvent2_id])
             ).all()
-        assert_equal(correvents[0].status, u'Acknowledged')
-        assert_equal(correvents[1].status, u'Acknowledged')
+        assert_equal(correvents[0].ack, CorrEvent.ACK_KNOWN)
+        assert_equal(correvents[1].ack, CorrEvent.ACK_KNOWN)
 
 
     def test_update_service_correvents_tickets(self):
@@ -444,11 +444,11 @@ class TestRootController(TestController):
         # On s'assure que le statut de l'évènement corrélé
         # a bien été mis à jour dans la base de données.
         correvents = DBSession.query(
-            CorrEvent.status
+            CorrEvent.ack
             ).filter(CorrEvent.idcorrevent.in_([correvent1_id, correvent2_id])
             ).all()
-        assert_equal(correvents[0].status, u'Acknowledged')
-        assert_equal(correvents[1].status, u'Acknowledged')
+        assert_equal(correvents[0].ack, CorrEvent.ACK_KNOWN)
+        assert_equal(correvents[1].ack, CorrEvent.ACK_KNOWN)
 
     def test_update_while_data_have_changed(self):
         """Màj d'un évènement corrélé modifié entre temps."""
@@ -502,10 +502,10 @@ class TestRootController(TestController):
         # On s'assure que le statut de l'évènement corrélé
         # n'a pas été modifié dans la base de données.
         status = DBSession.query(
-            CorrEvent.status
+            CorrEvent.ack
             ).filter(CorrEvent.idcorrevent == correvent1_id
             ).scalar()
-        assert_equal(status, u'None')
+        assert_equal(status, CorrEvent.ACK_NONE)
 
     def test_close_last_page(self):
         """

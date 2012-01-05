@@ -49,9 +49,11 @@ class PluginStatus(VigiboardRequestPlugin):
     def get_search_fields(self):
         options = [
             ('', l_('All alerts')),
-            ('None', l_('New alerts')),
-            ('Acknowledged', l_('Alerts marked as Acknowledged')),
-            ('AAClosed', l_('Alerts marked as Closed')),
+            # On doit passer un type basestring pour les options.
+            # Donc, on convertit les constantes (entiers) en type str.
+            (str(CorrEvent.ACK_NONE),   l_('New alerts')),
+            (str(CorrEvent.ACK_KNOWN),  l_('Alerts marked as Acknowledged')),
+            (str(CorrEvent.ACK_CLOSED), l_('Alerts marked as Closed')),
         ]
 
         return [
@@ -61,7 +63,7 @@ class PluginStatus(VigiboardRequestPlugin):
                 validator=twf.validators.String(if_missing=None),
             ),
             twf.SingleSelectField(
-                'status',
+                'ack',
                 label_text=l_('Acknowledgement Status'),
                 options=options,
                 validator=twf.validators.OneOf(
@@ -80,6 +82,9 @@ class PluginStatus(VigiboardRequestPlugin):
             tt = sql_escape_like(search['trouble_ticket'])
             query.add_filter(CorrEvent.trouble_ticket.ilike(tt))
 
-        if search.get('status'):
-            query.add_filter(CorrEvent.status == search['status'])
-
+        if search.get('ack'):
+            try:
+                query.add_filter(CorrEvent.ack == int(search['ack']))
+            except (ValueError, TypeError):
+                # On ignore silencieusement le critère de recherche erroné.
+                pass

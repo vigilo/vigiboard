@@ -52,7 +52,7 @@ def insert_deps():
         impact=42,
         priority=42,
         trouble_ticket=u'FOO BAR BAZ',
-        status=u'None',
+        ack=CorrEvent.ACK_NONE,
         occurrence=42,
         timestamp_active=timestamp,
         cause=event,

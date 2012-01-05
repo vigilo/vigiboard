@@ -45,12 +45,6 @@ class VigiboardRequest():
     le préformatage des événements et celui des historiques
     """
 
-    class_ack = {
-        'None': '',
-        'Acknowledged': '_Ack',
-        'AAClosed': '_Ack',
-    }
-
     def __init__(self, user, mask_closed_events=True, search=None):
         """
         Initialisation de l'objet qui effectue les requêtes de VigiBoard
@@ -85,7 +79,7 @@ class VigiboardRequest():
         self.groupby = [
             StateName.order,
             Event.timestamp,
-            CorrEvent.status,
+            CorrEvent.ack,
             CorrEvent.priority,
             StateName.statename,
         ]
@@ -101,7 +95,7 @@ class VigiboardRequest():
         # - VIGILO_EXIG_VIGILO_BAC_0050
         # - VIGILO_EXIG_VIGILO_BAC_0060
         self.orderby = [
-            desc(CorrEvent.status),                         # État acquittement
+            asc(CorrEvent.ack),                             # État acquittement
             asc(StateName.statename.in_([u'OK', u'UP'])),   # Vert / Pas vert
             priority_order,                                 # Priorité ITIL
         ]
@@ -192,10 +186,10 @@ class VigiboardRequest():
         if mask_closed_events:
             self.filter.append(
                 # On masque les événements avec l'état OK
-                # et traités (status == u'AAClosed').
+                # et traités (ack == CorrEvent.ACK_CLOSED).
                 not_(and_(
                     StateName.statename.in_([u'OK', u'UP']),
-                    CorrEvent.status == u'AAClosed'
+                    CorrEvent.ack == CorrEvent.ACK_CLOSED
                 ))
             )
 
