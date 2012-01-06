@@ -48,7 +48,6 @@ def insert_deps():
     DBSession.flush()
 
     correvent = CorrEvent(
-        impact=42,
         priority=42,
         trouble_ticket=u'FOO BAR BAZ',
         ack=CorrEvent.ACK_NONE,
