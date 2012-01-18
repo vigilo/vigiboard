@@ -12,6 +12,7 @@ from datetime import datetime
 import transaction
 
 from vigilo.models.session import DBSession
+from vigilo.models.demo import functions
 from vigilo.models.tables import Event, CorrEvent, DataPermission, \
                             Permission, StateName, Host, SupItemGroup, \
                             LowLevelService, User, UserGroup, Permission
@@ -22,18 +23,13 @@ def populate_DB():
 
     # Création des 4 groupes de supitems :
     # - 1 groupe racine 'root' ;
-    root = SupItemGroup(name=u'root', parent=None)
-    DBSession.add(root)
+    root = functions.add_supitemgroup(u'root')
     # - 1 groupe principal 'maingroup' ;
-    maingroup = SupItemGroup(name=u'maingroup', parent=root)
-    DBSession.add(maingroup)
+    maingroup = functions.add_supitemgroup(u'maingroup', root)
     # - 2 sous-groupes 'group1' et 'group2', faisant tous
     #   les deux parties du groupe principal 'maingroup'.
-    group1 = SupItemGroup(name=u'group1', parent=maingroup)
-    DBSession.add(group1)
-    group2 = SupItemGroup(name=u'group2', parent=maingroup)
-    DBSession.add(group2)
-    DBSession.flush()
+    group1 = functions.add_supitemgroup(u'group1', maingroup)
+    group2 = functions.add_supitemgroup(u'group2', maingroup)
 
     # Création de 2 groupes d'utilisateurs (contenant chacun un utilisateur) :
     vigiboard_perm = Permission.by_permission_name(u'vigiboard-access')
@@ -73,20 +69,9 @@ def populate_DB():
     DBSession.flush()
 
     # Création de 3 hôtes (1 par groupe de supitems).
-    host_template = {
-        'snmpcommunity': u'public',
-        'hosttpl': u'/dev/null',
-        'address': u'192.168.1.1',
-        'snmpport': 42,
-        'weight': 42,
-    }
-
-    maingroup_host = Host(name=u'maingroup_host', **host_template)
-    DBSession.add(maingroup_host)
-    group1_host = Host(name=u'group1_host', **host_template)
-    DBSession.add(group1_host)
-    group2_host = Host(name=u'group2_host', **host_template)
-    DBSession.add(group2_host)
+    maingroup_host = functions.add_host(u'maingroup_host')
+    group1_host = functions.add_host(u'group1_host')
+    group2_host = functions.add_host(u'group2_host')
 
     # Affectation des hôtes aux groupes.
     maingroup.supitems.append(maingroup_host)
@@ -100,80 +85,27 @@ def populate_DB():
         'weight': 42,
     }
 
-    group1_service = LowLevelService(
-        host = group1_host,
-        servicename = u'group1_service',
-        **service_template
-    )
-    DBSession.add(group1_service)
-
-    group2_service = LowLevelService(
-        host = group2_host,
-        servicename = u'group2_service',
-        **service_template
-    )
-    DBSession.add(group2_service)
-
-    maingroup_service = LowLevelService(
-        host = maingroup_host,
-        servicename = u'maingroup_service',
-        **service_template
-    )
-    DBSession.add(maingroup_service)
-    DBSession.flush()
+    group1_service = functions.add_lowlevelservice(
+        group1_host, u'group1_service')
+    group2_service = functions.add_lowlevelservice(
+        group2_host, u'group2_service')
+    maingroup_service = functions.add_lowlevelservice(
+        maingroup_host, u'maingroup_service')
 
     # Ajout de 6 événements (1 par supitem)
-    event_template = {
-        'message': u'foo',
-        'current_state': StateName.statename_to_value(u'WARNING'),
-        'timestamp': datetime.now(),
-    }
-
-    event1 = Event(supitem=maingroup_host, **event_template)
-    DBSession.add(event1)
-    event2 = Event(supitem=maingroup_service, **event_template)
-    DBSession.add(event2)
-    event3 = Event(supitem=group1_host, **event_template)
-    DBSession.add(event3)
-    event4 = Event(supitem=group1_service, **event_template)
-    DBSession.add(event4)
-    event5 = Event(supitem=group2_host, **event_template)
-    DBSession.add(event5)
-    event6 = Event(supitem=group2_service, **event_template)
-    DBSession.add(event6)
-    DBSession.flush()
+    event1 = functions.add_event(maingroup_host, u'WARNING', u'foo')
+    event2 = functions.add_event(maingroup_service, u'WARNING', u'foo')
+    event3 = functions.add_event(group1_host, u'WARNING', u'foo')
+    event4 = functions.add_event(group1_service, u'WARNING', u'foo')
+    event5 = functions.add_event(group2_host, u'WARNING', u'foo')
+    event6 = functions.add_event(group2_service, u'WARNING', u'foo')
 
     # Ajout de 5 événements corrélés (1 pour chaque évènement,
     # sauf celui touchant le 'maingroup_service' qui sera rattaché
     # à l'évènement corrélé causé par le 'maingroup_host').
-    aggregate_template = {
-        'timestamp_active': datetime.now(),
-        'priority': 1,
-        'ack': CorrEvent.ACK_NONE,
-    }
-
-    aggregate1 = CorrEvent(
-        idcause=event1.idevent, **aggregate_template)
-    aggregate3 = CorrEvent(
-        idcause=event3.idevent, **aggregate_template)
-    aggregate4 = CorrEvent(
-        idcause=event4.idevent, **aggregate_template)
-    aggregate5 = CorrEvent(
-        idcause=event5.idevent, **aggregate_template)
-    aggregate6 = CorrEvent(
-        idcause=event6.idevent, **aggregate_template)
-
-    aggregate1.events.append(event1)
-    aggregate1.events.append(event2)
-    aggregate3.events.append(event3)
-    aggregate4.events.append(event4)
-    aggregate5.events.append(event5)
-    aggregate6.events.append(event6)
-    DBSession.add(aggregate1)
-    DBSession.add(aggregate3)
-    DBSession.add(aggregate4)
-    DBSession.add(aggregate5)
-    DBSession.add(aggregate6)
-    DBSession.flush()
-
+    aggregate1 = functions.add_correvent([event1, event2])
+    aggregate3 = functions.add_correvent([event3])
+    aggregate4 = functions.add_correvent([event4])
+    aggregate5 = functions.add_correvent([event5])
+    aggregate6 = functions.add_correvent([event6])
     transaction.commit()

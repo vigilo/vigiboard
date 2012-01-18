@@ -12,6 +12,7 @@ import transaction
 
 from vigiboard.tests import TestController
 from vigilo.models.session import DBSession
+from vigilo.models.demo import functions
 from vigilo.models.tables import SupItemGroup, User, UserGroup, \
                             Permission, DataPermission, StateName, \
                             LowLevelService, Event, CorrEvent, Host
@@ -30,63 +31,22 @@ def insert_deps(return_service):
     """
     timestamp = datetime.now()
 
-    hostgroup = SupItemGroup(name=u'foo', parent=None)
-    DBSession.add(hostgroup)
-
-    host = Host(
-        name=u'bar',
-        description=u'',
-        hosttpl=u'',
-        address=u'127.0.0.1',
-        snmpport=42,
-        snmpcommunity=u'public',
-        snmpversion=u'3',
-        weight=42,
-    )
-    DBSession.add(host)
-    DBSession.flush()
-
+    hostgroup = functions.add_supitemgroup(u'foo')
+    host = functions.add_host(u'bar')
     hostgroup.supitems.append(host)
     DBSession.flush()
 
-    servicegroup = SupItemGroup(name=u'bar', parent=None)
-    DBSession.add(servicegroup)
-
-    service = LowLevelService(
-        host=host,
-        command=u'',
-        weight=42,
-        servicename=u'baz',
-    )
-    DBSession.add(service)
-    DBSession.flush()
-
+    servicegroup = functions.add_supitemgroup(u'bar')
+    service = functions.add_lowlevelservice(host, u'baz')
     servicegroup.supitems.append(service)
     DBSession.flush()
 
-    event = Event(
-        timestamp=timestamp,
-        current_state=StateName.statename_to_value(u'WARNING'),
-        message=u'Hello world',
-    )
     if return_service:
-        event.supitem = service
+        event = functions.add_event(service, u'WARNING', u'', timestamp)
     else:
-        event.supitem = host
-    DBSession.add(event)
-    DBSession.flush()
+        event = functions.add_event(host, u'WARNING', u'', timestamp)
 
-    correvent = CorrEvent(
-        priority=42,
-        trouble_ticket=None,
-        ack=CorrEvent.ACK_NONE,
-        occurrence=42,
-        timestamp_active=timestamp,
-        cause=event,
-    )
-    correvent.events.append(event)
-    DBSession.add(correvent)
-    DBSession.flush()
+    correvent = functions.add_correvent([event], timestamp=timestamp)
 
     usergroup = UserGroup.by_group_name(u'users_with_access')
     DBSession.add(DataPermission(
@@ -95,11 +55,10 @@ def insert_deps(return_service):
         access=u'r',
     ))
     DBSession.flush()
-
     transaction.commit()
+
     correvent = DBSession.query(CorrEvent).first()
     event = DBSession.query(Event).first()
-
     return (hostgroup, correvent.idcorrevent, event.idevent)
 
 class TestDetailsPlugin(TestController):

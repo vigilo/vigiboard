@@ -12,6 +12,7 @@ from datetime import datetime
 import transaction
 
 from vigilo.models.session import DBSession
+from vigilo.models.demo import functions
 from vigilo.models.tables import Event, EventHistory, CorrEvent, User, \
                             Permission, StateName, Host, UserGroup, \
                             LowLevelService, SupItemGroup, DataPermission
@@ -60,44 +61,21 @@ def populate_DB(caused_by_service):
     ))
     DBSession.flush()
 
-    # On crée un hôte de test, et on l'ajoute au groupe d'hôtes.
-    managerhost = Host(
-        name = u'managerhost',
-        snmpcommunity = u'public',
-        hosttpl = u'/dev/null',
-        address = u'192.168.1.1',
-        snmpport = 42,
-        weight = 42,
-    )
-    DBSession.add(managerhost)
+    # On crée un hôte de test et on l'ajoute au groupe d'hôtes.
+    managerhost = functions.add_host(u'managerhost')
     supitemmanagers.supitems.append(managerhost)
     DBSession.flush()
 
-    # On crée un services de bas niveau, et on l'ajoute au groupe de services.
-    managerservice = LowLevelService(
-        host = managerhost,
-        servicename = u'managerservice',
-        command = u'halt',
-        weight = 42,
-    )
-    DBSession.add(managerservice)
+    # On crée un services de bas niveau et on l'ajoute au groupe de services.
+    managerservice = functions.add_lowlevelservice(
+                        managerhost, u'managerservice')
     supitemmanagers.supitems.append(managerservice)
     DBSession.flush()
 
     if caused_by_service:
-        supitem = managerservice
+        event = functions.add_event(managerservice, u'WARNING', u'foo')
     else:
-        supitem = managerhost
-
-    # Ajout d'un événement
-    event = Event(
-        supitem = supitem,
-        message = u'foo',
-        current_state = StateName.statename_to_value(u"WARNING"),
-        timestamp = datetime.now(),
-    )
-    DBSession.add(event)
-    DBSession.flush()
+        event = functions.add_event(managerhost, u'WARNING', u'foo')
 
     # Ajout des historiques
     DBSession.add(EventHistory(
@@ -111,14 +89,7 @@ def populate_DB(caused_by_service):
     DBSession.flush()
 
     # Ajout d'un événement corrélé
-    aggregate = CorrEvent(
-        idcause = event.idevent,
-        timestamp_active = datetime.now(),
-        priority = 1,
-        ack = CorrEvent.ACK_NONE)
-    aggregate.events.append(event)
-    DBSession.add(aggregate)
-    DBSession.flush()
+    aggregate = functions.add_correvent([event])
     return aggregate.idcorrevent
 
 def add_masked_event(idcorrevent):
@@ -127,26 +98,12 @@ def add_masked_event(idcorrevent):
     hostmanagers = SupItemGroup.by_group_name(u'managersgroup')
     nb_hosts = DBSession.query(Host).count()
 
-    masked_host = Host(
-        name = u'masked host #%d' % nb_hosts,
-        snmpcommunity = u'public',
-        hosttpl = u'/dev/null',
-        address = u'192.168.1.%d' % nb_hosts,
-        snmpport = 42,
-        weight = 42,
-    )
-    DBSession.add(masked_host)
+    masked_host = functions.add_host(u'masked host #%d' % nb_hosts)
     hostmanagers.supitems.append(masked_host)
     DBSession.flush()
 
-    event = Event(
-        supitem = masked_host,
-        message = u'masked event #%d' % nb_hosts,
-        current_state = StateName.statename_to_value(u"CRITICAL"),
-        timestamp = datetime.now(),
-    )
-    DBSession.add(event)
-    DBSession.flush()
+    event = functions.add_event(masked_host, u'CRITICAL',
+                                u'masked event #%d' % nb_hosts)
 
     aggregate = DBSession.query(CorrEvent).filter(
         CorrEvent.idcorrevent == idcorrevent).one()

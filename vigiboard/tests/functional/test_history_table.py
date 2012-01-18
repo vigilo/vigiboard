@@ -13,6 +13,7 @@ from datetime import datetime
 import transaction
 
 from vigilo.models.session import DBSession
+from vigilo.models.demo import functions
 from vigilo.models.tables import Event, EventHistory, CorrEvent, \
                             Permission, StateName, Host, \
                             SupItemGroup, LowLevelService, \
@@ -36,26 +37,13 @@ def populate_DB():
     DBSession.flush()
 
     # On crée un hôte de test, et on l'ajoute au groupe d'hôtes.
-    managerhost = Host(
-        name = u'managerhost',
-        snmpcommunity = u'public',
-        hosttpl = u'/dev/null',
-        address = u'192.168.1.1',
-        snmpport = 42,
-        weight = 42,
-    )
-    DBSession.add(managerhost)
+    managerhost = functions.add_host(u'managerhost')
     supitemmanagers.supitems.append(managerhost)
     DBSession.flush()
 
     # On crée un services de bas niveau, et on l'ajoute au groupe de services.
-    managerservice = LowLevelService(
-        host = managerhost,
-        servicename = u'managerservice',
-        command = u'halt',
-        weight = 42,
-    )
-    DBSession.add(managerservice)
+    managerservice = functions.add_lowlevelservice(
+        managerhost, u'managerservice')
     supitemmanagers.supitems.append(managerservice)
     DBSession.flush()
 
@@ -68,17 +56,8 @@ def add_correvent_caused_by(supitem):
     Génère un historique pour les tests.
     """
 
-    # Ajout d'un événement
-    event = Event(
-        supitem = supitem,
-        message = u'foo',
-        current_state = StateName.statename_to_value(u"WARNING"),
-        timestamp = datetime.now(),
-    )
-    DBSession.add(event)
-    DBSession.flush()
-
-    # Ajout des historiques
+    # Ajout d'un événement et de ses entrées dans l'historique.
+    event = functions.add_event(supitem, u'WARNING', u'foo')
     DBSession.add(EventHistory(
         type_action=u'Nagios update state',
         idevent=event.idevent,
@@ -89,16 +68,7 @@ def add_correvent_caused_by(supitem):
         timestamp=datetime.now()))
     DBSession.flush()
 
-    # Ajout d'un événement corrélé
-    aggregate = CorrEvent(
-        idcause = event.idevent,
-        timestamp_active = datetime.now(),
-        priority = 1,
-        ack = CorrEvent.ACK_NONE)
-    aggregate.events.append(event)
-    DBSession.add(aggregate)
-    DBSession.flush()
-
+    aggregate = functions.add_correvent([event])
     return event.idevent
 
 

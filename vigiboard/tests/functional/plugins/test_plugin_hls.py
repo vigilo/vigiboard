@@ -9,6 +9,7 @@ import transaction
 from nose.tools import assert_equal
 
 from vigilo.models.session import DBSession
+from vigilo.models.demo import functions
 from vigilo.models.tables import Permission, DataPermission, StateName, \
                             SupItemGroup, Host, HighLevelService, \
                             Event, CorrEvent, ImpactedPath, ImpactedHLS, \
@@ -33,39 +34,15 @@ def populate_DB():
     DBSession.flush()
 
     # On crée un hôte de test.
-    host = Host(
-        name = u'host',
-        snmpcommunity = u'public',
-        hosttpl = u'/dev/null',
-        address = u'192.168.1.1',
-        snmpport = 42,
-        weight = 42,
-        )
-    DBSession.add(host)
+    host = functions.add_host(u'host')
 
     # On affecte cet hôte au groupe précédemment créé.
     hostmanagers.supitems.append(host)
     DBSession.flush()
 
-    # On ajoute un évènement causé par cet hôte.
-    event1 = Event(
-        supitem = host,
-        message = u'foo',
-        current_state = StateName.statename_to_value(u'WARNING'),
-        timestamp = datetime.now(),
-    )
-    DBSession.add(event1)
-    DBSession.flush()
-
-    # On ajoute un évènement corrélé causé par cet évènement 'brut'.
-    aggregate = CorrEvent(
-        idcause = event1.idevent,
-        timestamp_active = datetime.now(),
-        priority = 1,
-        ack = CorrEvent.ACK_NONE)
-    aggregate.events.append(event1)
-    DBSession.add(aggregate)
-    DBSession.flush()
+    # On ajoute un évènement brut et un événement corrélé causé par cet hôte.
+    event1 = functions.add_event(host, u'WARNING', u'foo')
+    aggregate = functions.add_correvent([event1])
 
     transaction.commit()
     return aggregate
@@ -80,14 +57,6 @@ def add_paths(path_number, path_length, idsupitem):
     haut niveau sont créés dans l'opération.
     """
 
-    # Création de services de haut niveau dans la BDD.
-    hls_template = {
-        'message': u'Bar',
-        'warning_threshold': 60,
-        'critical_threshold': 80,
-        'weight': None,
-    }
-
     # Création des chemins de services de haut niveau impactés.
     for j in range(path_number):
 
@@ -98,18 +67,17 @@ def add_paths(path_number, path_length, idsupitem):
 
         # Pour chaque étage du chemin,
         for i in range(path_length):
-            # on ajoute un service de haut niveau dans la BDD,
-            hls = HighLevelService(
-                servicename = u'HLS' + str(j + 1) + str(i + 1),
-                **hls_template)
-            DBSession.add(hls)
-            # et on ajoute un étage au chemin contenant ce service.
+            # on ajoute un service de haut niveau dans la BDD...
+            hls = functions.add_highlevelservice(
+                u'HLS' + str(j + 1) + str(i + 1), None)
+
+            # ...et on ajoute un étage au chemin contenant ce service.
             DBSession.add(
                 ImpactedHLS(
                     path = path,
                     hls = hls,
                     distance = i + 1,
-                    ))
+                ))
 
     DBSession.flush()
     transaction.commit()
@@ -212,15 +180,7 @@ class TestHLSPlugin(TestController):
 
         # On peuple la base de données avant le test.
         DBSession.add(self.aggregate)
-        hls = HighLevelService(
-            servicename = u'HLS',
-            message = u'Bar',
-            warning_threshold = 60,
-            critical_threshold = 80,
-            weight = None,
-        )
-        DBSession.add(hls)
-        DBSession.flush()
+        hls = functions.add_highlevelservice(u'HLS', None, u'Bar')
         path1 = ImpactedPath(idsupitem = self.aggregate.events[0].idsupitem)
         DBSession.add(path1)
         path2 = ImpactedPath(idsupitem = self.aggregate.events[0].idsupitem)

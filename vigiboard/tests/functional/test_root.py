@@ -20,6 +20,7 @@ from time import mktime
 import transaction
 
 from vigilo.models.session import DBSession
+from vigilo.models.demo import functions
 from vigilo.models.tables import Event, EventHistory, CorrEvent, User, \
                             Permission, StateName, Host, UserGroup, \
                             SupItemGroup, LowLevelService, DataPermission
@@ -29,9 +30,7 @@ from tg import config
 def populate_DB():
     """ Peuple la base de données. """
     # On ajoute un groupe d'hôtes et un groupe de services.
-    supitemmanagers = SupItemGroup(name = u'managersgroup', parent=None)
-    DBSession.add(supitemmanagers)
-    DBSession.flush()
+    supitemmanagers = functions.add_supitemgroup(u'managersgroup')
 
     usergroup = UserGroup.by_group_name(u'users_with_access')
     DBSession.add(DataPermission(
@@ -42,44 +41,16 @@ def populate_DB():
     DBSession.flush()
 
     # On crée un 2 hôtes, et on les ajoute au groupe d'hôtes.
-    host1 = Host(
-        name = u'host1',
-        snmpcommunity = u'public',
-        hosttpl = u'/dev/null',
-        address = u'192.168.1.1',
-        snmpport = 42,
-        weight = 42,
-    )
-    DBSession.add(host1)
+    host1 = functions.add_host(u'host1')
+    host2 = functions.add_host(u'host2')
     supitemmanagers.supitems.append(host1)
-    host2 = Host(
-        name = u'host2',
-        snmpcommunity = u'public',
-        hosttpl = u'/dev/null',
-        address = u'192.168.1.1',
-        snmpport = 42,
-        weight = 42,
-    )
-    DBSession.add(host2)
     supitemmanagers.supitems.append(host2)
     DBSession.flush()
 
     # On crée 2 services de bas niveau, et on les ajoute au groupe de services.
-    service1 = LowLevelService(
-        host = host1,
-        servicename = u'service1',
-        command = u'halt',
-        weight = 42,
-    )
-    DBSession.add(service1)
+    service1 = functions.add_lowlevelservice(host1, u'service1')
+    service2 = functions.add_lowlevelservice(host2, u'service2')
     supitemmanagers.supitems.append(service1)
-    service2 = LowLevelService(
-        host = host2,
-        servicename = u'service2',
-        command = u'halt',
-        weight = 42,
-    )
-    DBSession.add(service2)
     supitemmanagers.supitems.append(service2)
     DBSession.flush()
 
@@ -93,26 +64,9 @@ def add_correvent_caused_by(supitem, timestamp,
     Génère un historique pour les tests.
     """
 
-    # Ajout d'un événement
-    event = Event(
-        supitem = supitem,
-        message = u'foo',
-        current_state = StateName.statename_to_value(event_status),
-        timestamp = datetime.now(),
-    )
-    DBSession.add(event)
-    DBSession.flush()
-
-    # Ajout d'un événement corrélé
-    aggregate = CorrEvent(
-        idcause = event.idevent,
-        timestamp_active = timestamp,
-        priority = 1,
-        ack = correvent_status)
-    aggregate.events.append(event)
-    DBSession.add(aggregate)
-    DBSession.flush()
-
+    # Ajout d'un événement brut et d'un événement corrélé.
+    event = functions.add_event(supitem, event_status, u'foo')
+    aggregate = functions.add_correvent([event], status=correvent_status)
     return aggregate.idcorrevent
 
 
