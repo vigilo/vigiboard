@@ -674,8 +674,8 @@ class RootController(AuthController):
                         ),
                         idevent=event.idcause,
                         value=unicode(history_label),
-                        text="Changed acknowledgement status "
-                            "from '%s' to '%s'" % (
+                        text=u"Changed acknowledgement status "
+                            u"from '%s' to '%s'" % (
                             ack_mapping[event.ack],
                             ack_label,
                         ),
