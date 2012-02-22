@@ -16,29 +16,9 @@ logiciels suivants est requise :
 * mod_wsgi (>= 2.3), sur la machine où VigiBoard est installé
 * PostgreSQL (>= 8.3), éventuellement sur une machine distante
 
-Reportez-vous aux manuels de ces différents logiciels pour savoir comment
-procéder à leur installation sur votre machine.
 
-VigiBoard requiert également la présence de plusieurs dépendances Python. Ces
-dépendances seront automatiquement installées en même temps que le paquet de
-VigiBoard.
-
-Installation du paquet RPM
---------------------------
-L'installation du connecteur se fait en installant simplement le paquet RPM
-``vigilo-vigiboard``. La procédure exacte d'installation dépend du
-gestionnaire de paquets utilisé. Les instructions suivantes décrivent la
-procédure pour les gestionnaires de paquets RPM les plus fréquemment
-rencontrés.
-
-Installation à l'aide de urpmi::
-
-    urpmi vigilo-vigiboard
-
-Installation à l'aide de yum::
-
-    yum install vigilo-vigiboard
-
+.. Installation du RPM
+.. include:: ../buildenv/doc/package.rst
 
 
 Démarrage et arrêt
