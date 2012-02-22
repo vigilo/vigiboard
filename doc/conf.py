@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 
+name = u'vigiboard'
+
 project = u'VigiBoard'
 
 pdf_documents = [
-        ('admin', "admin-vigiboard", "VigiBoard : Guide d'administration", u'Vigilo'),
+        ('admin', "admin-%s" % name, "%s : Guide d'administration" % project, u'Vigilo'),
 ]
 
 latex_documents = [
-        ('admin', 'admin-vigiboard.tex', u"VigiBoard : Guide d'administration",
+        ('admin', 'admin-%s.tex' % name, u"%s : Guide d'administration" % project,
          'AA100004-2/ADM00005', 'vigilo'),
 ]
 
