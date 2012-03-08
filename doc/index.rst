@@ -10,12 +10,13 @@ Documentation disponible :
    :maxdepth: 2
 
    admin
+   util
 
 
 .. *****************
 .. Indexes et tables
 .. *****************
-.. 
+..
 .. * :ref:`genindex`
 .. * :ref:`modindex`
 .. * :ref:`search`
