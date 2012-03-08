@@ -601,37 +601,7 @@ fonction de votre installation.
 Annexes
 =======
 
-Glossaire - Terminologie
-------------------------
-
-.. glossary::
-   API
-       *Application Programming Interface*. Interface logicielle de programmation,
-       permettant à un développeur d'enrichir la liste des fonctionnalités
-       proposées par un logiciel.
-
-   CGI
-       *Common Gateway Interface*. Interface standard de communication entre un
-       serveur Web et un programme capable de générer une réponse HTTP valide. Il
-       s'agit par exemple de l'interface retenue par Nagios pour la génération de
-       ses pages Web.
-
-   SGBD(R)
-       Serveur de Gestion de Bases de Données (Relationnelles). Logiciel
-       permettant d'héberger une base de données sur la machine.
-
-   SQL
-       *Structured Query Language*. Langage de requêtes structuré pour
-       l'interrogation d'une base de données relationnelle.
-
-   URL
-       *Uniform Resource Locator*. Chaîne de caractères permettant d'identifier
-       une ressource sur Internet. Exemple : ``http://www.projet-vigilo.org/``.
-
-   WSGI
-       *Web Server Gateway Interface*. Une interface pour la communication entre
-       une application et un serveur Web, similaire à CGI. Il s'agit de
-       l'interface utilisée par Vigilo.
+.. include:: ../../turbogears/doc/glossaire.rst
 
 
 .. vim: set tw=79 :
