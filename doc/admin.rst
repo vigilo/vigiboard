@@ -254,7 +254,7 @@ Si cette option est renseignée, une icône en forme de bouée de sauvetage
 |imghelp| apparaît dans l'interface graphique qui permet à l'utilisateur
 d'accéder à l'URL indiquée.
 
-.. |imghelp| image:: help.png
+.. |imghelp| image:: img/help.png
 
 Délai de rafraîchissement automatique
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -290,7 +290,7 @@ choix lorsque celui-ci clique sur le logo de Vigilo |imghome| dans l'interface
 graphique de VigiBoard. Ceci se fait en modifiant l'URL donnée par l'option
 ``logo_link``.
 
-.. |imghome| image:: home.png
+.. |imghome| image:: img/home.png
 
 Ordre de tri de la priorité des événements
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -423,16 +423,16 @@ français, et de droite à gauche pour un utilisateur hébreu).
 
 Exemple de configuration possible::
 
-    base_config['vigiboard_plugins'] = ( 
-    'details', 
-    'date', 
-    'priority', 
-    'occurrences', 
-    'hostname', 
-    'servicename', 
-    'output', 
-    'hls', 
-    'status', 
+    base_config['vigiboard_plugins'] = (
+    'details',
+    'date',
+    'priority',
+    'occurrences',
+    'hostname',
+    'servicename',
+    'output',
+    'hls',
+    'status',
     )
 
 Configuration des liens externes
@@ -463,29 +463,29 @@ variables de substitution suivantes sont disponibles :
 
 Exemple de configuration possible::
 
-    base_config['vigiboard_links.eventdetails'] = ( 
-        ( 
-            u'Détail de l\'hôte dans Nagios', 
-            '/nagios/%(host)s/cgi-bin/status.cgi?host=%(host)s' 
-        ), ( 
-            u'Détail de la métrologie', 
-            'http://vigilo.example.com/vigigraph/rpc/fullHostPage?host=%(host)s' 
-        ), ( 
-            u'Détail de la sécurité', 
-            'http://security.example.com/?host=%(host)s' 
-        ), ( 
-            'Inventaire', 
-            'http://cmdb.example.com/?host=%(host)s' 
-        ), ( 
-            'Documentation', 
-            'http://doc.example.com/?q=%(message)s' 
-        ), 
-    ) 
+    base_config['vigiboard_links.eventdetails'] = (
+        (
+            u'Détail de l\'hôte dans Nagios',
+            '/nagios/%(host)s/cgi-bin/status.cgi?host=%(host)s'
+        ), (
+            u'Détail de la métrologie',
+            'http://vigilo.example.com/vigigraph/rpc/fullHostPage?host=%(host)s'
+        ), (
+            u'Détail de la sécurité',
+            'http://security.example.com/?host=%(host)s'
+        ), (
+            'Inventaire',
+            'http://cmdb.example.com/?host=%(host)s'
+        ), (
+            'Documentation',
+            'http://doc.example.com/?q=%(message)s'
+        ),
+    )
 
 Cet exemple correspond à la liste de liens suivante :
-  
-.. figure:: liens.png
-   
+
+.. figure:: img/liens.png
+
    Liens externes d'un événement
 
 
@@ -532,28 +532,28 @@ généralement dans ``/etc/httpd/conf.d/vigiboard.conf``).
 En général, il n'est pas nécessaire de modifier le contenu de ce fichier. Ce
 chapitre vise toutefois à fournir quelques informations sur le fonctionnement
 de ce fichier, afin de permettre d'éventuelles personnalisations de ce
-comportement. 
+comportement.
 
 Ce fichier tente tout d'abord de charger le module ``mod_wsgi`` (directive
 LoadModule) puis ajoute les directives de configuration nécessaire à Apache
 pour faire fonctionner VigiBoard, reprises partiellement ci-dessous::
 
-    WSGIRestrictStdout off 
-    WSGIPassAuthorization on 
-    WSGIDaemonProcess vigiboard user=apache group=apache threads=2 
-    WSGIScriptAlias /vigilo/vigiboard "/etc/vigilo/vigiboard/vigiboard.wsgi" 
+    WSGIRestrictStdout off
+    WSGIPassAuthorization on
+    WSGIDaemonProcess vigiboard user=apache group=apache threads=2
+    WSGIScriptAlias /vigilo/vigiboard "/etc/vigilo/vigiboard/vigiboard.wsgi"
 
-    KeepAlive Off 
+    KeepAlive Off
 
-    <Directory "/etc/vigilo/vigiboard/"> 
-    <Files "vigiboard.wsgi"> 
-    WSGIProcessGroup vigiboard 
-    WSGIApplicationGroup %{GLOBAL} 
+    <Directory "/etc/vigilo/vigiboard/">
+    <Files "vigiboard.wsgi">
+    WSGIProcessGroup vigiboard
+    WSGIApplicationGroup %{GLOBAL}
 
-    Order deny,allow 
-    Allow from all 
-    </Files> 
-    </Directory> 
+    Order deny,allow
+    Allow from all
+    </Files>
+    </Directory>
 
 L'option ``WSGIRestrictStdout`` est positionnée à ``off`` afin d'éviter
 qu'Apache ne tue le processus de l'application lorsque des données sont
@@ -609,25 +609,25 @@ Glossaire - Terminologie
        *Application Programming Interface*. Interface logicielle de programmation,
        permettant à un développeur d'enrichir la liste des fonctionnalités
        proposées par un logiciel.
-   
+
    CGI
        *Common Gateway Interface*. Interface standard de communication entre un
        serveur Web et un programme capable de générer une réponse HTTP valide. Il
        s'agit par exemple de l'interface retenue par Nagios pour la génération de
        ses pages Web.
-   
+
    SGBD(R)
        Serveur de Gestion de Bases de Données (Relationnelles). Logiciel
        permettant d'héberger une base de données sur la machine.
-   
+
    SQL
        *Structured Query Language*. Langage de requêtes structuré pour
        l'interrogation d'une base de données relationnelle.
-   
+
    URL
        *Uniform Resource Locator*. Chaîne de caractères permettant d'identifier
        une ressource sur Internet. Exemple : ``http://www.projet-vigilo.org/``.
-   
+
    WSGI
        *Web Server Gateway Interface*. Une interface pour la communication entre
        une application et un serveur Web, similaire à CGI. Il s'agit de
