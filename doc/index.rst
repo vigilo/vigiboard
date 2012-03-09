@@ -10,6 +10,7 @@ Documentation disponible :
    :maxdepth: 2
 
    admin
+   dev
    util
 
 
