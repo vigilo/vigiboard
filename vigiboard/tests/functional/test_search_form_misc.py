@@ -5,7 +5,6 @@
 """
 Teste le formulaire de recherche avec divers champs.
 """
-from pylons.i18n import ugettext as _
 from nose.tools import assert_true, assert_equal
 from datetime import datetime
 import transaction

@@ -13,9 +13,8 @@ import transaction
 from vigiboard.tests import TestController
 from vigilo.models.session import DBSession
 from vigilo.models.demo import functions
-from vigilo.models.tables import SupItemGroup, User, UserGroup, \
-                            Permission, DataPermission, StateName, \
-                            LowLevelService, Event, CorrEvent, Host
+from vigilo.models.tables import User, UserGroup, Event, CorrEvent, \
+                            Permission, DataPermission
 
 def insert_deps(return_service):
     """
@@ -59,7 +58,7 @@ def insert_deps(return_service):
 
     correvent = DBSession.query(CorrEvent).first()
     event = DBSession.query(Event).first()
-    return (hostgroup, correvent.idcorrevent, event.idevent)
+    return (correvent.idcorrevent, event.idevent)
 
 class TestDetailsPlugin(TestController):
     """Teste le dialogue pour l'accès aux historiques."""
@@ -95,7 +94,7 @@ class TestDetailsPlugin(TestController):
 
     def test_details_plugin_LLS_alert_when_allowed(self):
         """Dialogue des détails avec un LLS et les bons droits."""
-        hostgroup, idcorrevent, idcause = insert_deps(True)
+        idcorrevent, idcause = insert_deps(True)
 
         response = self.app.post('/plugin_json', {
                 'idcorrevent': idcorrevent,
@@ -120,7 +119,7 @@ class TestDetailsPlugin(TestController):
 
     def test_details_plugin_LLS_alert_when_manager(self):
         """Dialogue des détails avec un LLS en tant que manager."""
-        hostgroup, idcorrevent, idcause = insert_deps(True)
+        idcorrevent, idcause = insert_deps(True)
 
         response = self.app.post('/plugin_json', {
                 'idcorrevent': idcorrevent,
@@ -145,7 +144,7 @@ class TestDetailsPlugin(TestController):
 
     def test_details_plugin_host_alert_when_allowed(self):
         """Dialogue des détails avec un hôte et les bons droits."""
-        hostgroup, idcorrevent, idcause = insert_deps(False)
+        idcorrevent, idcause = insert_deps(False)
 
         response = self.app.post('/plugin_json', {
                 'idcorrevent': idcorrevent,
@@ -170,7 +169,7 @@ class TestDetailsPlugin(TestController):
 
     def test_details_plugin_host_alert_when_manager(self):
         """Dialogue des détails avec un hôte en tant que manager."""
-        hostgroup, idcorrevent, idcause = insert_deps(False)
+        idcorrevent, idcause = insert_deps(False)
 
         response = self.app.post('/plugin_json', {
                 'idcorrevent': idcorrevent,
@@ -195,7 +194,7 @@ class TestDetailsPlugin(TestController):
 
     def test_details_plugin_LLS_when_forbidden(self):
         """Dialogue des détails avec un LLS et des droits insuffisants."""
-        idcorrevent = insert_deps(True)[1]
+        idcorrevent = insert_deps(True)[0]
 
         # Le contrôleur renvoie une erreur 404 (HTTPNotFound)
         # lorsque l'utilisateur n'a pas les permissions nécessaires sur
@@ -208,7 +207,7 @@ class TestDetailsPlugin(TestController):
 
     def test_details_plugin_host_when_forbidden(self):
         """Dialogue des détails avec un hôte et des droits insuffisants."""
-        idcorrevent = insert_deps(False)[1]
+        idcorrevent = insert_deps(False)[0]
 
         # Le contrôleur renvoie une erreur 404 (HTTPNotFound)
         # lorsque l'utilisateur n'a pas les permissions nécessaires sur
@@ -221,7 +220,7 @@ class TestDetailsPlugin(TestController):
 
     def test_details_plugin_LLS_anonymous(self):
         """Dialogue des détails avec un LLS et en anonyme."""
-        idcorrevent = insert_deps(True)[1]
+        idcorrevent = insert_deps(True)[0]
 
         # Le contrôleur renvoie une erreur 401 (HTTPUnauthorized)
         # lorsque l'utilisateur n'est pas authentifié.
@@ -232,7 +231,7 @@ class TestDetailsPlugin(TestController):
 
     def test_details_plugin_host_anonymous(self):
         """Dialogue des détails avec un hôte et en anonyme."""
-        idcorrevent = insert_deps(False)[1]
+        idcorrevent = insert_deps(False)[0]
 
         # Le contrôleur renvoie une erreur 401 (HTTPUnauthorized)
         # lorsque l'utilisateur n'est pas authentifié.

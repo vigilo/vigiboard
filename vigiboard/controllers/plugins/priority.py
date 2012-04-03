@@ -24,13 +24,11 @@ ITIL de l'événement corrélé.
 """
 import tw.forms as twf
 from pylons.i18n import lazy_ugettext as l_
-from formencode import schema, validators
 
 from vigilo.models.tables import CorrEvent
 from vigiboard.controllers.plugins import VigiboardRequestPlugin, ITEMS
 
 from tw.forms.fields import ContainerMixin, FormField
-from tw.core.base import WidgetsList
 
 class HorizontalBox(ContainerMixin, FormField):
     """

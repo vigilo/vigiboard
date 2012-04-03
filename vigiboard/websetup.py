@@ -19,6 +19,9 @@
 
 """Setup the vigiboard application"""
 
+# pylint: disable-msg=W0613
+# W0613: Unused arguments: on doit respecter l'API
+
 __all__ = ['setup_app', 'populate_db']
 
 def setup_app(command, conf, variables):

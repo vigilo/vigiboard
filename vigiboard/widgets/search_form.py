@@ -21,7 +21,6 @@
 """Le formulaire de recherche/filtrage."""
 
 from pylons.i18n import lazy_ugettext as l_
-from tw.api import WidgetsList
 import tw.forms as twf
 import tg
 

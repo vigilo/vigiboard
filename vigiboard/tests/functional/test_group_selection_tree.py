@@ -5,17 +5,17 @@
 """
 Teste l'arbre de sélection des groupes du formulaire de recherche
 """
-from nose.tools import assert_true, assert_equal
-from datetime import datetime
+
+from __future__ import absolute_import
+
 import transaction
 
 from vigiboard.tests import TestController
 from vigilo.models.session import DBSession
-from vigilo.models.tables import SupItemGroup, Host, Permission, StateName, \
-                                    Event, CorrEvent, User, UserGroup, \
-                                    DataPermission
+from vigilo.models.tables import SupItemGroup, Permission, User, UserGroup
 
-from utils import populate_DB
+from .utils import populate_DB
+
 
 class TestGroupSelectionTree(TestController):
     """Teste l'arbre de sélection des groupes du formulaire de recherche."""
@@ -58,7 +58,7 @@ class TestGroupSelectionTree(TestController):
 
         # L'utilisateur n'est pas authentifié.
         # Il cherche à obtenir la liste des groupes fils d'un groupe donné.
-        response = self.app.get('/get_groups?parent_id=%d' % group2.idgroup,
+        self.app.get('/get_groups?parent_id=%d' % group2.idgroup,
             status=401)
 
     def test_get_group_when_not_allowed(self):
@@ -234,13 +234,13 @@ class TestGroupSelectionTree(TestController):
         """Récupération des groupes racines de l'arbre en anonyme"""
         # L'utilisateur n'est pas authentifié, et cherche
         # à obtenir la liste des groupes racines de l'arbre.
-        response = self.app.get('/get_groups', status=401)
+        self.app.get('/get_groups', status=401)
 
 
     def test_get_root_group_when_not_allowed(self):
         """Récupération des groupes racines de l'arbre sans les droits"""
         # Récupération du groupe utilisé lors de ce test.
-        root = SupItemGroup.by_group_name(u'root')
+        SupItemGroup.by_group_name(u'root')
 
         # Création d'un nouvel utilisateur et d'un nouveau groupe
         usergroup = UserGroup(group_name=u'new_users')

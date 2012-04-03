@@ -7,17 +7,14 @@
 Test du tableau d'événements de Vigiboard
 """
 
-from nose.tools import assert_true, assert_equal
-from datetime import datetime
-import transaction
+from __future__ import absolute_import
 
-from vigilo.models.session import DBSession
-from vigilo.models.tables import Event, CorrEvent, DataPermission, \
-                            Permission, StateName, Host, SupItemGroup, \
-                            LowLevelService, User, UserGroup, Permission
+from nose.tools import assert_true, assert_equal
+
 from vigiboard.tests import TestController
 
-from utils import populate_DB
+from .utils import populate_DB
+
 
 class TestEventTable(TestController):
     """

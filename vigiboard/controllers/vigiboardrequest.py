@@ -28,14 +28,12 @@ from paste.deploy.converters import asbool
 from repoze.what.predicates import in_group
 
 from sqlalchemy import not_, and_, asc, desc
-from sqlalchemy.sql.expression import or_, null as expr_null, union_all
+from sqlalchemy.sql.expression import null as expr_null, union_all
 from sqlalchemy.orm import contains_eager
 
 from vigilo.models.session import DBSession
 from vigilo.models.tables import Event, CorrEvent, EventHistory, \
     Host, LowLevelService, StateName, UserSupItem
-from vigilo.models.tables.grouphierarchy import GroupHierarchy
-from vigilo.models.tables.secondary_tables import SUPITEM_GROUP_TABLE
 from vigiboard.widgets.edit_event import EditEventForm
 from vigiboard.controllers.plugins import VigiboardRequestPlugin, INNER, ITEMS
 
@@ -142,7 +140,7 @@ class VigiboardRequest():
                 # On tire ici partie du fait que les listes sont passées
                 # par référence dans les fonctions.
                 subqueries = [lls_query, host_query]
-                for plugin, instance in config.get('columns_plugins', []):
+                for _plugin, instance in config.get('columns_plugins', []):
                     instance.handle_search_fields(
                         self, search, INNER, subqueries)
                 lls_query = subqueries[0]
@@ -170,7 +168,7 @@ class VigiboardRequest():
                 # On tire ici partie du fait que les listes sont passées
                 # par référence dans les fonctions.
                 subqueries = [items]
-                for plugin, instance in config.get('columns_plugins', []):
+                for _plugin, instance in config.get('columns_plugins', []):
                     instance.handle_search_fields(
                         self, search, INNER, subqueries)
                 items = subqueries[0]
@@ -180,7 +178,7 @@ class VigiboardRequest():
 
         if search is not None:
             # 2nde passe pour les filtres : self.items est désormais défini.
-            for plugin, instance in config.get('columns_plugins', []):
+            for _plugin, instance in config.get('columns_plugins', []):
                 instance.handle_search_fields(self, search, ITEMS, subqueries)
 
         if mask_closed_events:

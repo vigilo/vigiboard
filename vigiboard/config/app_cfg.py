@@ -35,7 +35,9 @@ convert them into boolean, for example, you should use the
 from vigilo.turbogears import VigiloAppConfig
 
 import vigiboard
-from vigiboard.lib import app_globals, helpers
+from vigiboard.lib import app_globals, helpers # pylint: disable-msg=W0611
+# W0611: Unused import: imports nécessaires pour le fonctionnement
+
 
 import logging
 LOGGER = logging.getLogger(__name__)
@@ -65,7 +67,8 @@ class VigiboardConfig(VigiloAppConfig):
                 plugin_class = ep.load(require=True)
                 if issubclass(plugin_class, VigiboardRequestPlugin):
                     plugins.append((unicode(ep.name), plugin_class()))
-            except:
+            except Exception: # pylint: disable-msg=W0703
+                # W0703: Catch "Exception"
                 LOGGER.exception(u'Unable to import plugin %s', plugin_name)
 
         config['columns_plugins'] = plugins

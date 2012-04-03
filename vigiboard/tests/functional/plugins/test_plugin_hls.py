@@ -4,16 +4,13 @@
 
 """ Test du plugin listant les services de haut niveau impactés. """
 
-from datetime import datetime
 import transaction
 from nose.tools import assert_equal
 
 from vigilo.models.session import DBSession
 from vigilo.models.demo import functions
-from vigilo.models.tables import Permission, DataPermission, StateName, \
-                            SupItemGroup, Host, HighLevelService, \
-                            Event, CorrEvent, ImpactedPath, ImpactedHLS, \
-                            User, UserGroup
+from vigilo.models.tables import Permission, DataPermission, SupItemGroup, \
+                            ImpactedPath, ImpactedHLS, User, UserGroup
 from vigiboard.tests import TestController
 
 def populate_DB():

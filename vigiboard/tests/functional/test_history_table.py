@@ -14,11 +14,8 @@ import transaction
 
 from vigilo.models.session import DBSession
 from vigilo.models.demo import functions
-from vigilo.models.tables import Event, EventHistory, CorrEvent, \
-                            Permission, StateName, Host, \
-                            SupItemGroup, LowLevelService, \
-                            Permission, DataPermission, User, \
-                            UserGroup
+from vigilo.models.tables import EventHistory, Permission, UserGroup, \
+                            SupItemGroup, Permission, DataPermission, User
 from vigiboard.tests import TestController
 
 def populate_DB():
@@ -68,7 +65,7 @@ def add_correvent_caused_by(supitem):
         timestamp=datetime.now()))
     DBSession.flush()
 
-    aggregate = functions.add_correvent([event])
+    functions.add_correvent([event])
     return event.idevent
 
 
@@ -111,7 +108,7 @@ class TestHistoryTable(TestController):
 
         # On peuple la BDD avec un hôte, un service de bas niveau,
         # et un groupe d'hôtes et de services associés à ces items.
-        (managerhost, managerservice) = populate_DB()
+        (managerhost, _managerservice) = populate_DB()
 
         # On ajoute un évènement corrélé causé par l'hôte
         idevent = add_correvent_caused_by(managerhost)
@@ -162,7 +159,7 @@ class TestHistoryTable(TestController):
 
         # On peuple la BDD avec un hôte, un service de bas niveau,
         # et un groupe d'hôtes et de services associés à ces items.
-        (managerhost, managerservice) = populate_DB()
+        (_managerhost, managerservice) = populate_DB()
 
         # On ajoute un évènement corrélé causé par le service
         idevent = add_correvent_caused_by(managerservice)

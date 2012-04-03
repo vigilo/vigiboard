@@ -32,12 +32,9 @@ from vigilo.models import tables
 from vigilo.models.tables.group import Group
 from vigilo.models.tables.grouphierarchy import GroupHierarchy
 from vigilo.models.tables.secondary_tables import SUPITEM_GROUP_TABLE
-from sqlalchemy.sql.expression import or_
 from sqlalchemy.orm import aliased
-
-from repoze.what.predicates import in_group
-from tg import request
 from sqlalchemy import or_
+
 
 class GroupSelector(twf.InputField):
     params = ["choose_text", "text_value", "clear_text"]

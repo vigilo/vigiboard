@@ -24,7 +24,6 @@ entrées d'historiques liées à l'événement, ainsi que les liens vers les
 applications externes.
 """
 
-import urllib
 from tg import config, url
 from sqlalchemy.sql.expression import null as expr_null, union_all
 

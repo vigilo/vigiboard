@@ -13,9 +13,9 @@ import transaction
 
 from vigilo.models.session import DBSession
 from vigilo.models.demo import functions
-from vigilo.models.tables import Event, EventHistory, CorrEvent, User, \
-                            Permission, StateName, Host, UserGroup, \
-                            LowLevelService, SupItemGroup, DataPermission
+from vigilo.models.tables import EventHistory, CorrEvent, User, \
+                            Permission, Host, UserGroup, \
+                            SupItemGroup, DataPermission
 from vigiboard.tests import TestController
 
 def populate_accounts():
@@ -135,7 +135,7 @@ class TestRawEventsTableAnonymousLLS(TestController):
         # L'utilisateur n'est pas authentifié.
         # On s'attend à ce qu'une erreur 401 soit renvoyée,
         # demandant à l'utilisateur de s'authentifier.
-        response = self.app.get(
+        self.app.get(
             '/masked_events/%d' % idcorrevent,
             status = 401)
 

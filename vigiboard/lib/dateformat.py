@@ -8,7 +8,7 @@ Validateur et convertisseur de dates selon un format.
 from formencode.api import FancyValidator, Invalid
 from datetime import datetime
 
-from pylons.i18n import ugettext as _, lazy_ugettext as l_
+from pylons.i18n import ugettext as _
 
 class DateFormatConverter(FancyValidator):
     """
@@ -32,7 +32,7 @@ class DateFormatConverter(FancyValidator):
             # TRANSLATORS: http://www.dynarch.com/static/jscalendar-1.0/doc/html/reference.html#node_sec_5.3.5
             # TRANSLATORS: http://docs.python.org/release/2.5/lib/module-time.html
             date = datetime.strptime(str_date, _('%Y-%m-%d %I:%M:%S %p').encode('utf8'))
-        except ValueError, e:
+        except ValueError:
             raise Invalid(self.message('invalid', state), value, state)
         return date
 

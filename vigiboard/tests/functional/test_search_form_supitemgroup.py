@@ -5,17 +5,15 @@
 """
 Teste le formulaire de recherche avec un groupe d'hôtes.
 """
+
+from __future__ import absolute_import
+
 from nose.tools import assert_true, assert_equal
-from datetime import datetime
-import transaction
 
 from vigiboard.tests import TestController
-from vigilo.models.session import DBSession
-from vigilo.models.tables import SupItemGroup, Host, Permission, StateName, \
-                                    Event, CorrEvent, User, UserGroup, \
-                                    DataPermission
+from vigilo.models.tables import SupItemGroup
 
-from utils import populate_DB
+from .utils import populate_DB
 
 class TestSearchFormSupItemGroup(TestController):
     """Teste la récupération d'événements selon le supitemgroup."""
@@ -166,8 +164,7 @@ class TestSearchFormSupItemGroup(TestController):
     def test_search_supitemgroup_when_disallowed(self):
         """Teste la recherche par supitemgroup SANS les droits d'accès."""
 
-        # On récupère les 2 groupes de supitems utilisés lors de ces tests.
-        maingroup = SupItemGroup.by_group_name(u'maingroup')
+        # On récupère le groupe de supitems utilisé lors de ce test.
         group2 = SupItemGroup.by_group_name(u'group2')
 
         # L'utilisateur n'est pas authentifié.

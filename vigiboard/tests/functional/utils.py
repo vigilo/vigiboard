@@ -7,16 +7,13 @@
 Fonctions utilitaires réutilisables dans les différents tests.
 """
 
-from nose.tools import assert_true, assert_equal
-from datetime import datetime
 import transaction
 
 from vigilo.models.session import DBSession
 from vigilo.models.demo import functions
-from vigilo.models.tables import Event, CorrEvent, DataPermission, \
-                            Permission, StateName, Host, SupItemGroup, \
-                            LowLevelService, User, UserGroup, Permission
-from vigiboard.tests import TestController
+from vigilo.models.tables import DataPermission, Permission, \
+                            User, UserGroup
+
 
 def populate_DB():
     """ Peuple la base de données. """
@@ -80,11 +77,6 @@ def populate_DB():
     DBSession.flush()
 
     # Création de 3 services de bas niveau (1 par hôte).
-    service_template = {
-        'command': u'halt',
-        'weight': 42,
-    }
-
     group1_service = functions.add_lowlevelservice(
         group1_host, u'group1_service')
     group2_service = functions.add_lowlevelservice(
@@ -103,9 +95,9 @@ def populate_DB():
     # Ajout de 5 événements corrélés (1 pour chaque évènement,
     # sauf celui touchant le 'maingroup_service' qui sera rattaché
     # à l'évènement corrélé causé par le 'maingroup_host').
-    aggregate1 = functions.add_correvent([event1, event2])
-    aggregate3 = functions.add_correvent([event3])
-    aggregate4 = functions.add_correvent([event4])
-    aggregate5 = functions.add_correvent([event5])
-    aggregate6 = functions.add_correvent([event6])
+    functions.add_correvent([event1, event2])
+    functions.add_correvent([event3])
+    functions.add_correvent([event4])
+    functions.add_correvent([event5])
+    functions.add_correvent([event6])
     transaction.commit()

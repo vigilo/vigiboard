@@ -12,10 +12,8 @@ import transaction
 from vigiboard.tests import TestController
 from vigilo.models.session import DBSession
 from vigilo.models.demo import functions
-from vigilo.models.tables import SupItemGroup, Host, Permission, \
-                                    StateName, LowLevelService, \
-                                    Event, CorrEvent, User, UserGroup, \
-                                    DataPermission
+from vigilo.models.tables import Permission, User, UserGroup, DataPermission
+
 
 def insert_deps():
     """Insère les dépendances nécessaires aux tests."""
@@ -32,8 +30,9 @@ def insert_deps():
     DBSession.flush()
 
     event = functions.add_event(service, u'WARNING', u'Hello world', timestamp)
-    correvent = functions.add_correvent([event], timestamp=timestamp)
+    functions.add_correvent([event], timestamp=timestamp)
     return (hostgroup, servicegroup)
+
 
 class TestSearchFormService(TestController):
     """Teste la récupération d'événements selon le groupe de services."""

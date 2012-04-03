@@ -68,7 +68,11 @@ LOGGER = logging.getLogger(__name__)
 __all__ = ('RootController', 'get_last_modification_timestamp',
            'date_to_timestamp')
 
-# pylint: disable-msg=R0201
+# pylint: disable-msg=R0201,W0613,W0622
+# R0201: Method could be a function
+# W0613: Unused arguments: les arguments sont la query-string
+# W0622: Redefining built-in 'id': élément de la query-string
+
 class RootController(AuthController):
     """
     Le controller général de vigiboard
@@ -515,7 +519,7 @@ class RootController(AuthController):
 
         # On récupère la liste de tous les identifiants des événements
         # à mettre à jour.
-        ids = map(int, id.strip(',').split(','))
+        ids = [ int(i) for i in id.strip(',').split(',') ]
 
         user = get_current_user()
         events = VigiboardRequest(user)

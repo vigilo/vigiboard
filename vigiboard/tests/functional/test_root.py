@@ -14,16 +14,14 @@ Please read http://pythonpaste.org/webtest/ for more information.
 
 """
 from nose.tools import assert_true, assert_false, assert_equal
-from nose import SkipTest
 from datetime import datetime
 from time import mktime
 import transaction
 
 from vigilo.models.session import DBSession
 from vigilo.models.demo import functions
-from vigilo.models.tables import Event, EventHistory, CorrEvent, User, \
-                            Permission, StateName, Host, UserGroup, \
-                            SupItemGroup, LowLevelService, DataPermission
+from vigilo.models.tables import EventHistory, CorrEvent, User, \
+                            Permission, Host, UserGroup, DataPermission
 from vigiboard.tests import TestController
 from tg import config
 
@@ -115,7 +113,7 @@ class TestRootController(TestController):
 
         # On peuple la BDD avec 2 hôtes, 2 services de bas niveau,
         # et un groupe d'hôtes et de services associés à ces items.
-        (hosts, services) = populate_DB()
+        (hosts, _services) = populate_DB()
 
         # On ajoute 2 évènements corrélés causés par ces hôtes
         timestamp = datetime.now()
@@ -188,7 +186,7 @@ class TestRootController(TestController):
 
         # On peuple la BDD avec 2 hôtes, 2 services de bas niveau,
         # et un groupe d'hôtes et de services associés à ces items.
-        (hosts, services) = populate_DB()
+        (_hosts, services) = populate_DB()
 
         # On ajoute 2 évènements corrélés causés par ces hôtes
         timestamp = datetime.now()
@@ -261,7 +259,7 @@ class TestRootController(TestController):
 
         # On peuple la BDD avec 2 hôtes, 2 services de bas niveau,
         # et un groupe d'hôtes et de services associés à ces items.
-        (hosts, services) = populate_DB()
+        (hosts, _services) = populate_DB()
 
         # On ajoute 2 évènements corrélés causés par ces hôtes
         timestamp = datetime.now()
@@ -334,7 +332,7 @@ class TestRootController(TestController):
 
         # On peuple la BDD avec 2 hôtes, 2 services de bas niveau,
         # et un groupe d'hôtes et de services associés à ces items.
-        (hosts, services) = populate_DB()
+        (_hosts, services) = populate_DB()
 
         # On ajoute 2 évènements corrélés causés par ces hôtes
         timestamp = datetime.now()
@@ -407,12 +405,12 @@ class TestRootController(TestController):
 
         # On peuple la BDD avec 2 hôtes, 2 services de bas niveau,
         # et un groupe d'hôtes et de services associés à ces items.
-        (hosts, services) = populate_DB()
+        (_hosts, services) = populate_DB()
 
         # On ajoute 2 évènements corrélés causés par ces hôtes
         timestamp = datetime.now()
         correvent1_id = add_correvent_caused_by(services[0], timestamp)
-        correvent2_id = add_correvent_caused_by(services[1], timestamp)
+        add_correvent_caused_by(services[1], timestamp)
 
         # Date de modification du premier évènement corrélé
         later_date = datetime.now()

@@ -5,10 +5,8 @@
 """Sample controller module"""
 
 import logging
-from tg import expose, redirect, config, request, response
-from pylons.i18n import ugettext as _
+from tg import expose, response
 from datetime import datetime
-from repoze.what.predicates import Any, has_permission, in_group
 from tg.controllers import CUSTOM_CONTENT_TYPE
 
 from vigilo.turbogears.controllers import BaseController

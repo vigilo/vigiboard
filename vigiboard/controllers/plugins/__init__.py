@@ -54,9 +54,9 @@ class VigiboardRequestPlugin(object):
 
         Cette méthode DEVRAIT être surchargée dans les classes dérivées.
 
-        @param event_ids: Liste des identifiants des C{CorrEvent} affichés
+        @param events_ids: Liste des identifiants des C{CorrEvent} affichés
             sur la page.
-        @type events_id:  C{List} of C{int}
+        @type  events_ids:  C{List} of C{int}
         @return: Dictionnaire associant à chaque identifiant
             d'évènement les données à afficher par le plugin.
         @rtype:  C{dict}
@@ -94,5 +94,5 @@ class VigiboardRequestPlugin(object):
     def get_search_fields(self):
         return []
 
-    def handle_search_fields(self, query, search, state, subqueries=None):
+    def handle_search_fields(self, query, search, state, subqueries):
         pass
