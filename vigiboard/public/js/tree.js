@@ -1,6 +1,6 @@
 /**
  * VigiBoard, composant de Vigilo.
- * Copyright (C) 2009-2011 CS-SI
+ * Copyright (C) 2009-2012 CS-SI
  * Licence : GNU GPL v2 ou superieure
  *
  */

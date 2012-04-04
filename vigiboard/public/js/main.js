@@ -1,7 +1,7 @@
 /*
  * Vigiboard
  *
- * Copyright (C) 2009-2011 CS-SI
+ * Copyright (C) 2009-2012 CS-SI
  */
 
 var vigiloLog = new Log;
