@@ -97,9 +97,10 @@ défaut de VigiBoard::
 
     postgres://vigilo:vigilo@localhost/vigilo
 
-**ATTENTION** : à l'heure actuelle, seul PostgreSQL a fait l'objet de tests
-intensifs. D'autres SGBD peuvent également fonctionner, mais aucun support ne
-sera fourni pour ces SGBD.
+..  warning::
+    À l'heure actuelle, seul PostgreSQL a fait l'objet de tests intensifs.
+    D'autres SGBD peuvent également fonctionner, mais aucun support ne
+    sera fourni pour ces SGBD.
 
 Choix d'un préfixe pour les tables
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -165,14 +166,16 @@ suivantes sont notamment disponibles : md5, sha1, sha224, sha256, sha384 et
 sha512. D'autres fonctions peuvent être disponibles en fonction de votre
 installation de Python.
 
-**Attention :** en cas d'absence d'une valeur pour cette option ou si la
-fonction de hachage indiquée n'existe pas, les mots de passe sont stockés en
-clair. Vérifiez donc la valeur indiquée.
+..  warning::
+    En cas d'absence d'une valeur pour cette option ou si la fonction
+    de hachage indiquée n'existe pas, les mots de passe sont stockés
+    en clair. Vérifiez donc la valeur indiquée.
 
-**Attention :** cette option ne doit être modifiée qu'au moment de
-l'installation. Si vous modifiez la méthode utilisée ultérieurement, les
-comptes précédemment enregistrés ne seront plus utilisables. En particulier, le
-compte d'administration créé par défaut.
+..  warning::
+    Cette option ne doit être modifiée qu'au moment de l'installation.
+    Si vous modifiez la méthode utilisée ultérieurement, les comptes
+    précédemment enregistrés ne seront plus utilisables.
+    En particulier, le compte d'administration créé par défaut.
 
 Clé de chiffrement / déchiffrement des sessions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -241,8 +244,9 @@ de la langue à utiliser, sur deux caractères et en minuscules (format ISO
 3166-1 ``alpha 2``). Exemples de codes valides : fr, en, de, ...
 
 La liste complète des codes possibles est disponible sur
-http://fr.wikipedia.org/wiki/ISO_3166-1. La langue retenue doit être disponible
-parmi les traductions fournies avec VigiBoard.
+http://fr.wikipedia.org/wiki/ISO_3166-1.
+La langue retenue doit être disponible parmi les traductions fournies
+avec VigiBoard.
 
 Emplacement de la documentation en ligne
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -263,10 +267,12 @@ intervalle régulier afin de donner une vue à jour de l'état du parc aux
 veilleurs. L'option ``refresh_delay`` permet de choisir le délai, en secondes,
 entre deux rafraîchissements automatiques de la page.
 
-NOTE : Les veilleurs ont la possibilité de désactiver le rafraîchissement
-automatique durant leur session. Dans tous les cas, si une boîte de dialogue de
-VigiBoard est affichée à l'écran, le rafraîchissement automatique est mis en
-pause afin de ne pas perturber les opérations en cours.
+..  note::
+    Les veilleurs ont la possibilité de désactiver le rafraîchissement
+    automatique durant leur session. Dans tous les cas, si une boîte
+    de dialogue de VigiBoard est affichée à l'écran, le rafraîchissement
+    automatique est mis en pause afin de ne pas perturber les opérations
+    en cours.
 
 État initial du rafraîchissement automatique
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -274,9 +280,10 @@ Vous avez la possibilité d'activer par défaut le rafraîchissement automatique
 du bac à événements pour les veilleurs, en positionnant l'option
 ``refresh_enabled`` à ``True``.
 
-NOTE : Les veilleurs ont la possibilité de désactiver le rafraîchissement
-automatique durant leur session. Leur choix (rafraîchissement automatique actif
-ou non) est conservé en session durant un certain temps.
+..  note::
+    Les veilleurs ont la possibilité de désactiver le rafraîchissement
+    automatique durant leur session. Leur choix (rafraîchissement automatique
+    actif ou non) est conservé en session durant un certain temps.
 
 Configuration du nombre d'événements affichés par page
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -336,9 +343,11 @@ l'authentification auprès d'un serveur mandataire intermédiaire. Elles sont au
 nombre de trois :
 
 - ``app_proxy_auth_method`` indique la méthode d'authentification à utiliser et
-  peut valoir ``basic`` ou ``digest`` ,
+  peut valoir ``basic`` ou ``digest``
+
 - ``app_proxy_auth_username`` indique le nom d'utilisateur à utiliser pour se
-  connecter au serveur mandataire intermédiaire ,
+  connecter au serveur mandataire intermédiaire
+
 - ``app_proxy_auth_password`` indique le mot de passe associé à ce nom
   d'utilisateur.
 
@@ -353,8 +362,8 @@ il s'agit de ``/nagios/`` (emplacement par défaut lors d'une nouvelle
 installation de l'interface graphique CGI de Nagios).
 
 L'option ``app_scheme.nagios`` indique le protocole à utiliser pour communiquer
-avec le serveur Web distant. Les protocoles supportés sont ``http`` et
-``https``.
+avec le serveur Web distant. Pour le moment, seuls les protocoles ``http`` et
+``https`` sont supportés.
 
 L'option ``app_port.nagios`` permet d'indiquer le port à utiliser pour se
 connecter, dans le cas où il ne s'agit pas du port standard. Par défaut, le
@@ -421,18 +430,20 @@ contient un tuple des noms des colonnes à afficher (dans leur ordre
 d'affichage, de gauche à droite sur un navigateur configuré pour un utilisateur
 français, et de droite à gauche pour un utilisateur hébreu).
 
-Exemple de configuration possible::
+Exemple de configuration possible :
+
+..  sourcecode:: python
 
     base_config['vigiboard_plugins'] = (
-    'details',
-    'date',
-    'priority',
-    'occurrences',
-    'hostname',
-    'servicename',
-    'output',
-    'hls',
-    'status',
+        'details',
+        'date',
+        'priority',
+        'occurrences',
+        'hostname',
+        'servicename',
+        'output',
+        'hls',
+        'status',
     )
 
 Configuration des liens externes
@@ -442,7 +453,7 @@ liens externes configurés, c'est-à-dire les liens qui seront affichés dans le
 dialogue de détail d'un événement (figure ).
 
 La configuration des liens externes est donnée sous la forme d'un tuple de
-tuples, de la forme::
+tuples, de la forme ::
 
     (libellé du lien, URL cible)
 
@@ -461,7 +472,9 @@ variables de substitution suivantes sont disponibles :
 - ``%(message)s`` est remplacé par le message de supervision remonté par
   Nagios.
 
-Exemple de configuration possible::
+Exemple de configuration possible :
+
+..  sourcecode:: python
 
     base_config['vigiboard_links.eventdetails'] = (
         (
@@ -507,9 +520,12 @@ suivantes sont disponibles :
 - ``%(tt)s`` est remplacé par la référence du ticket d'incident, telle que
   saisie par un utilisateur.
 
-Exemple de configuration possible::
+Exemple de configuration possible :
 
-    base_config['vigiboard_links.tt'] = 'http://bugs.example.com/?ticket_id=%(tt)s'
+    ..  sourcecode:: python
+
+        base_config['vigiboard_links.tt'] = \
+            'http://bugs.example.com/?ticket_id=%(tt)s'
 
 
 .. _confmodwsgi:
@@ -574,7 +590,10 @@ nom d'utilisateur et un groupe prédéfini (afin de réduire les privilèges
 nécessaires), ainsi que le nombre de processus légers à utiliser pour traiter
 les requêtes (ici, 2).
 
-L'option ``WSGIScriptAlias`` indique l'emplacement à partir duquel VigiBoard sera accessible (ici, ``http://example.com/vigilo/vigiboard`` si le serveur Apache est configuré pour le domaine ``example.com``) et l'emplacement du script WSGI nécessaire au lancement de l'application (voir le chapitre suivant).
+L'option ``WSGIScriptAlias`` indique l'emplacement à partir duquel VigiBoard
+sera accessible (ici, ``http://example.com/vigilo/vigiboard`` si le serveur
+Apache est configuré pour le domaine ``example.com``) et l'emplacement du script
+WSGI nécessaire au lancement de l'application (voir le chapitre suivant).
 
 L'option ``KeepAlive`` positionnée à ``off`` est nécessaire afin de contourner
 un problème dans le module ``mod_wsgi`` d'Apache.
