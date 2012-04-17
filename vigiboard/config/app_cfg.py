@@ -73,7 +73,7 @@ class VigiboardConfig(VigiloAppConfig):
 
         config['columns_plugins'] = plugins
 
-base_config = VigiboardConfig('vigiboard')
+base_config = VigiboardConfig('VigiBoard')
 base_config.package = vigiboard
 
 ##################################
