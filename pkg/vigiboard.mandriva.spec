@@ -123,4 +123,3 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) /etc/logrotate.d/%{name}
 %attr(750,apache,apache) %{_localstatedir}/cache/vigilo/sessions
 %{python_sitelib}/*
-
