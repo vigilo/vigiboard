@@ -47,9 +47,6 @@ make install_pkg \
     LOCALSTATEDIR=%{_localstatedir} \
     PYTHON=%{__python}
 
-# Pour marquer en %ghost
-touch $RPM_BUILD_ROOT%{python26_sitelib}/%{module}/config/app_cfg.pyc
-
 # %find_lang %{name} # ne fonctionne qu'avec les fichiers dans /usr/share/locale/
 
 
@@ -76,4 +73,3 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) /etc/logrotate.d/%{name}
 %attr(750,apache,apache) %{_localstatedir}/cache/vigilo/sessions
 %{python26_sitelib}/*
-%ghost %{python26_sitelib}/%{module}/config/app_cfg.pyc
