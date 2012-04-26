@@ -4,6 +4,8 @@
 
 name = u'vigiboard'
 
+name = u'vigiboard'
+
 project = u'VigiBoard'
 
 pdf_documents = [
