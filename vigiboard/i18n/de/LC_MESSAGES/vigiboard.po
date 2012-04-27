@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: vigiboard 2.0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2010-11-19 10:22+0100\n"
-"PO-Revision-Date: 2012-01-06 11:27+0100\n"
+"PO-Revision-Date: 2012-04-27 10:57+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: de_DE <LL@li.org>\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
@@ -117,36 +117,36 @@ msgid ""
 "\"%(previous)s\" to \"%(new)s\" on event #%(idevent)d"
 msgstr ""
 
-#: vigiboard/controllers/root.py:650
+#: vigiboard/controllers/root.py:651
 #, python-format
 msgid "User \"%(user)s\" (%(address)s) forcefully closed event #%(idevent)d"
 msgstr ""
 
-#: vigiboard/controllers/root.py:666
+#: vigiboard/controllers/root.py:667
 msgid "Forced"
 msgstr ""
 
-#: vigiboard/controllers/root.py:684
+#: vigiboard/controllers/root.py:686
 #, python-format
 msgid ""
 "User \"%(user)s\" (%(address)s) changed the state from \"%(previous)s\" "
 "to \"%(new)s\" on event #%(idevent)d"
 msgstr ""
 
-#: vigiboard/controllers/root.py:696
+#: vigiboard/controllers/root.py:698
 msgid "Updated successfully"
 msgstr "Erfolgreich aktualisiert"
 
-#: vigiboard/controllers/root.py:721
+#: vigiboard/controllers/root.py:723
 #, fuzzy, python-format
 msgid "No such plugin '%s'"
 msgstr "Plug-In \"%s\" nicht vorhanden"
 
-#: vigiboard/controllers/root.py:764
+#: vigiboard/controllers/root.py:766
 msgid "No such incident or insufficient permissions"
 msgstr "Ereignis nicht vorhanden oder unzureichende Berechtigungen"
 
-#: vigiboard/controllers/root.py:876
+#: vigiboard/controllers/root.py:878
 #, python-format
 msgid "Next %(limit)s"
 msgstr ""

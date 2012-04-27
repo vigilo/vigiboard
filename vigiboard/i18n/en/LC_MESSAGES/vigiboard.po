@@ -6,10 +6,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: vigilo-vigiboard 2.0.11\n"
+"Project-Id-Version: vigilo-vigiboard 2.0.16\n"
 "Report-Msgid-Bugs-To: contact@projet-vigilo.org\n"
-"POT-Creation-Date: 2012-01-06 11:27+0100\n"
-"PO-Revision-Date: 2012-01-06 11:27+0100\n"
+"POT-Creation-Date: 2012-04-27 10:57+0200\n"
+"PO-Revision-Date: 2012-04-27 10:57+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: en <LL@li.org>\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
@@ -117,16 +117,16 @@ msgstr ""
 "User \"%(user)s\" (%(address)s) changed the trouble ticket from "
 "\"%(previous)s\" to \"%(new)s\" on event #%(idevent)d"
 
-#: vigiboard/controllers/root.py:650
+#: vigiboard/controllers/root.py:651
 #, python-format
 msgid "User \"%(user)s\" (%(address)s) forcefully closed event #%(idevent)d"
 msgstr "User \"%(user)s\" (%(address)s) forcefully closed event #%(idevent)d"
 
-#: vigiboard/controllers/root.py:666
+#: vigiboard/controllers/root.py:667
 msgid "Forced"
 msgstr "Forced"
 
-#: vigiboard/controllers/root.py:684
+#: vigiboard/controllers/root.py:686
 #, python-format
 msgid ""
 "User \"%(user)s\" (%(address)s) changed the state from \"%(previous)s\" "
@@ -135,20 +135,20 @@ msgstr ""
 "User \"%(user)s\" (%(address)s) changed the state from \"%(previous)s\" "
 "to \"%(new)s\" on event #%(idevent)d"
 
-#: vigiboard/controllers/root.py:696
+#: vigiboard/controllers/root.py:698
 msgid "Updated successfully"
 msgstr "Updated successfully"
 
-#: vigiboard/controllers/root.py:721
+#: vigiboard/controllers/root.py:723
 #, python-format
 msgid "No such plugin '%s'"
 msgstr "No such plugin '%s'"
 
-#: vigiboard/controllers/root.py:764
+#: vigiboard/controllers/root.py:766
 msgid "No such incident or insufficient permissions"
 msgstr "No such incident or insufficient permissions"
 
-#: vigiboard/controllers/root.py:876
+#: vigiboard/controllers/root.py:878
 #, python-format
 msgid "Next %(limit)s"
 msgstr "Next %(limit)s"

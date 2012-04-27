@@ -110,6 +110,30 @@ vigiboard_priority_order = asc
 ; (état d'acquittement et priorité ITIL).
 state_first = True
 
+; Adresse des autres interfaces de Vigilo.
+; Il peut s'agir de chemins absolus sur le même serveur (ex: /../vigimap/)
+; ou d'URL complètes (http://other-server.example.com/vigilo/vigimap/).
+; Si les liens sont donnés sous forme absolue, ils sont en fait interprétés
+; comme des liens relatifs par rapport à VigiBoard.
+interfaces.vigimap = /../vigimap/
+
+; Cible pour l'ouverture des liens vers les autres interfaces.
+; Les valeurs possibles sont:
+; "_self"   : ouvre la nouvelle page dans le cadre courant.
+; "_top"    : ouvre la nouvelle page à la place de la page courante.
+; "_blank"  : ouvre la nouvelle page dans une nouvelle fenêtre
+;             ou dans un nouvel onglet.
+; "_parent" : ouvre la nouvelle page dans le cadre parent.
+; <autre>   : ouvre la nouvelle page dans le cadre nommé <autre>.
+; La valeur par défaut est "_blank".
+;links_target = _blank
+
+; Indique le nombre maximum de cartes qui peuvent être affichées
+; dans le module de détail de l'événement corrélé.
+; La valeur -1 supprime toute limite, tandis que la valeur 0
+; supprime l'affichage des liens vers les cartes.
+max_maps = -1
+
 ;
 ; 4 - Configuration du proxy Nagios.
 ;
