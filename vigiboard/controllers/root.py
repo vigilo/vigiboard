@@ -104,8 +104,8 @@ class RootController(AuthController):
         kwargs['errors'] = tmpl_context.form_errors
         return dict(kwargs)
 
-    class DefaultSchema(schema.Schema):
-        """Schéma de validation de la méthode default."""
+    class IndexSchema(schema.Schema):
+        """Schéma de validation de la méthode index."""
         # Si on ne passe pas le paramètre "page" ou qu'on passe une valeur
         # invalide ou pas de valeur du tout, alors on affiche la 1ère page.
         page = validators.Int(min=1, if_missing=1, if_invalid=1, not_empty=True)
@@ -118,11 +118,11 @@ class RootController(AuthController):
         chained_validators = [create_search_form.validator]
 
     @validate(
-        validators=DefaultSchema(),
+        validators=IndexSchema(),
         error_handler = process_form_errors)
     @expose('events_table.html')
     @require(access_restriction)
-    def default(self, page, **search):
+    def index(self, page, **search):
         """
         Page d'accueil de Vigiboard. Elle affiche, suivant la page demandée
         (page 1 par defaut), la liste des événements, rangés par ordre de prise
