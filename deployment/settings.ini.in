@@ -31,7 +31,7 @@ use = egg:vigilo-vigiboard
 ;
 
 ; URL d'accès à la base de données.
-sqlalchemy.url = postgres://vigilo:vigilo@127.0.0.1/vigilo
+sqlalchemy.url = postgresql://vigilo:vigilo@127.0.0.1/vigilo
 
 ; Le préfixe des tables de Vigilo dans la base de données.
 db_basename = vigilo_
