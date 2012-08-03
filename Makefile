@@ -8,7 +8,7 @@ build: $(SUBST_FILES)
 
 include buildenv/Makefile.common.python
 MODULE := $(NAME)
-EPYDOC_PARSE := vigiboard\.(widgets|controllers)
+EPYDOC_PARSE := vigiboard\.(widgets|controllers|tests)
 JSFILES = vigiboard/public/js
 
 deployment/%: deployment/%.in

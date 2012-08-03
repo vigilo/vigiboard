@@ -114,7 +114,8 @@ class TestDetailsPlugin(TestController):
             "peak_state": "WARNING",
             "current_state": "WARNING",
             "host": "bar",
-            "initial_state": "WARNING"
+            "initial_state": "WARNING",
+            "maps": {},
         })
 
     def test_details_plugin_LLS_alert_when_manager(self):
@@ -139,7 +140,8 @@ class TestDetailsPlugin(TestController):
             "peak_state": "WARNING",
             "current_state": "WARNING",
             "host": "bar",
-            "initial_state": "WARNING"
+            "initial_state": "WARNING",
+            "maps": {},
         })
 
     def test_details_plugin_host_alert_when_allowed(self):
@@ -164,7 +166,8 @@ class TestDetailsPlugin(TestController):
             "peak_state": "WARNING",
             "current_state": "WARNING",
             "host": "bar",
-            "initial_state": "WARNING"
+            "initial_state": "WARNING",
+            "maps": {},
         })
 
     def test_details_plugin_host_alert_when_manager(self):
@@ -189,7 +192,8 @@ class TestDetailsPlugin(TestController):
             "peak_state": "WARNING",
             "current_state": "WARNING",
             "host": "bar",
-            "initial_state": "WARNING"
+            "initial_state": "WARNING",
+            "maps": {},
         })
 
     def test_details_plugin_LLS_when_forbidden(self):

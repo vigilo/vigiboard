@@ -24,12 +24,17 @@ entrées d'historiques liées à l'événement, ainsi que les liens vers les
 applications externes.
 """
 
-from tg import config, url
+import urllib
+from tg import config, url, request
 from sqlalchemy.sql.expression import null as expr_null, union_all
 
+from repoze.what.predicates import has_permission, in_group
+from vigilo.turbogears.helpers import get_current_user
+
 from vigilo.models.session import DBSession
-from vigilo.models.tables import Event, \
-    CorrEvent, Host, LowLevelService, StateName
+from vigilo.models.tables import Event, CorrEvent, Host, LowLevelService, \
+    StateName, Map, MapNode, MapNodeHost, MapGroup
+from vigilo.models.tables.secondary_tables import MAP_GROUP_TABLE
 
 from vigiboard.controllers.plugins import VigiboardRequestPlugin
 
@@ -51,11 +56,13 @@ class PluginDetails(VigiboardRequestPlugin):
         # Obtention de données sur l'événement et sur son historique
         host_query = DBSession.query(
             Host.idhost.label("idsupitem"),
+            Host.idhost.label("idhost"),
             Host.name.label("host"),
             expr_null().label("service"),
         )
         lls_query = DBSession.query(
             LowLevelService.idservice.label("idsupitem"),
+            Host.idhost.label("idhost"),
             Host.name.label("host"),
             LowLevelService.servicename.label("service"),
         ).join(
@@ -65,6 +72,7 @@ class PluginDetails(VigiboardRequestPlugin):
         event = DBSession.query(
             CorrEvent.idcorrevent,
             CorrEvent.idcause,
+            supitems.c.idhost,
             supitems.c.host,
             supitems.c.service,
             Event.message,
@@ -77,11 +85,43 @@ class PluginDetails(VigiboardRequestPlugin):
         ).filter(CorrEvent.idcorrevent == idcorrevent
         ).first()
 
+        # On détermine les cartes auxquelles cet utilisateur a accès.
+        user_maps = {}
+        max_maps = int(config['max_maps'])
+        is_manager = in_group('managers').is_met(request.environ)
+        if max_maps != 0 and (is_manager or
+            has_permission('vigimap-access').is_met(request.environ)):
+            items = DBSession.query(
+                    Map.idmap,
+                    Map.title,
+                ).distinct(
+                ).join(
+                    (MAP_GROUP_TABLE, MAP_GROUP_TABLE.c.idmap == Map.idmap),
+                    (MapGroup, MapGroup.idgroup == MAP_GROUP_TABLE.c.idgroup),
+                    (MapNodeHost, MapNodeHost.idmap == Map.idmap),
+                ).order_by(Map.title.asc()
+                ).filter(MapNodeHost.idhost == event.idhost)
+
+            if not is_manager:
+                mapgroups = get_current_user().mapgroups(only_direct=True)
+                # pylint: disable-msg=E1103
+                items = items.filter(MapGroup.idgroup.in_(mapgroups))
+
+            # La valeur -1 supprime la limite.
+            if max_maps > 0:
+                # On limite au nombre maximum de cartes demandés + 1.
+                # Un message sera affiché s'il y a effectivement plus
+                # de cartes que la limite configurée.
+                items = items.limit(max_maps + 1)
+
+            user_maps = dict([(m.idmap, m.title) for m in items.all()])
+
         context = {
             'idcorrevent': idcorrevent,
             'host': event.host,
             'service': event.service,
             'message': event.message,
+            'maps': user_maps,
         }
 
         eventdetails = {}
@@ -121,5 +161,6 @@ class PluginDetails(VigiboardRequestPlugin):
                 host = event.host,
                 service = event.service,
                 eventdetails = eventdetails,
+                maps = user_maps,
                 idcause = event.idcause,
             )

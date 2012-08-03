@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: vigiboard 0.1\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2009-07-06 11:19+0200\n"
-"PO-Revision-Date: 2012-01-06 11:27+0100\n"
+"PO-Revision-Date: 2012-04-27 10:57+0200\n"
 "Last-Translator: Thomas ANDREJAK <thomas.andrejak@c-s.fr>\n"
 "Language-Team: fr_FR <LL@li.org>\n"
 "Plural-Forms: nplurals=2; plural=(n > 1)\n"
@@ -116,18 +116,18 @@ msgstr ""
 "L'utilisateur \"%(user)s\" (%(address)s) a changé le ticket d'incident de"
 " l'événement n°%(idevent)d de \"%(previous)s\" vers \"%(new)s\""
 
-#: vigiboard/controllers/root.py:650
+#: vigiboard/controllers/root.py:651
 #, python-format
 msgid "User \"%(user)s\" (%(address)s) forcefully closed event #%(idevent)d"
 msgstr ""
 "L'utilisateur \"%(user)s\" (%(address)s) a forcé la fermeture de "
 "l'événement #%(idevent)d"
 
-#: vigiboard/controllers/root.py:666
+#: vigiboard/controllers/root.py:667
 msgid "Forced"
 msgstr "Forcé"
 
-#: vigiboard/controllers/root.py:684
+#: vigiboard/controllers/root.py:686
 #, python-format
 msgid ""
 "User \"%(user)s\" (%(address)s) changed the state from \"%(previous)s\" "
@@ -136,20 +136,20 @@ msgstr ""
 "L'utilisateur \"%(user)s\" (%(address)s) a changé l'état de l'événement "
 "n°%(idevent)d de \"%(previous)s\" vers \"%(new)s\""
 
-#: vigiboard/controllers/root.py:696
+#: vigiboard/controllers/root.py:698
 msgid "Updated successfully"
 msgstr "Mise à jour réussie"
 
-#: vigiboard/controllers/root.py:721
+#: vigiboard/controllers/root.py:723
 #, python-format
 msgid "No such plugin '%s'"
 msgstr "Module introuvable \"%s\""
 
-#: vigiboard/controllers/root.py:764
+#: vigiboard/controllers/root.py:766
 msgid "No such incident or insufficient permissions"
 msgstr "Aucun incident correspondant ou permissions insuffisantes"
 
-#: vigiboard/controllers/root.py:876
+#: vigiboard/controllers/root.py:878
 #, python-format
 msgid "Next %(limit)s"
 msgstr "%(limit)s suivants"
