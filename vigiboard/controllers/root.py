@@ -578,24 +578,12 @@ class RootController(AuthController):
             CorrEvent.ACK_CLOSED: l_('Acknowledged and closed'),
         }
 
-        # Toutes les valeurs de ce dictionnaire ne sont pas utilisées
-        # par cette méthode, néanmoins il permet de marquer les différentes
-        # valeurs possibles pour le champ "type_action" comme étant à traduire.
-        valid_types = {
-            u'Ticket change': l_('Ticket change'),
-            u'Forced change state': l_('Forced change state'),
-            u'Acknowledgement change state': l_('Acknowledgement change state'),
-            u'Ticket change notification': l_('Ticket change notification'),
-            u'New occurrence': l_('New occurrence'),
-            u'Nagios update state': l_('Nagios update state'),
-        }
-
         # Modification des événements et création d'un historique
         # chaque fois que cela est nécessaire.
         for event in events.req:
             if trouble_ticket and trouble_ticket != event.trouble_ticket:
                 history = EventHistory(
-                        type_action=unicode(valid_types["Ticket change"]),
+                        type_action=u"Ticket change",
                         idevent=event.idcause,
                         value=unicode(trouble_ticket),
                         text="Changed trouble ticket from '%(from)s' "
@@ -643,8 +631,7 @@ class RootController(AuthController):
                         })
 
                     history = EventHistory(
-                            type_action=
-                                unicode(valid_types[u"Forced change state"]),
+                            type_action=u"Forced change state",
                             idevent=event.idcause,
                             value=u'OK',
                             text="Forced state to 'OK'",
@@ -669,14 +656,12 @@ class RootController(AuthController):
                 # Si le changement a été forcé,
                 # on veut le mettre en évidence.
                 if ack == u'Forced':
-                    history_label = l_('Forced')
+                    history_label = u'Forced'
                 else:
                     history_label = ack_label
 
                 history = EventHistory(
-                        type_action=unicode(
-                            valid_types[u"Acknowledgement change state"]
-                        ),
+                        type_action=u"Acknowledgement change state",
                         idevent=event.idcause,
                         value=unicode(history_label),
                         text=u"Changed acknowledgement status "

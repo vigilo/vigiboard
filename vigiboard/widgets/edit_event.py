@@ -38,6 +38,21 @@ edit_event_status_options = [
     ['Forced', l_('Force to Closed')],
 ]
 
+# Énumère les valeurs possibles pour le champ "type_action"
+# dans la base de données et les marque comme nécessitant une traduction.
+valid_action_types = {
+    u'Ticket change': l_('Ticket change'),
+    u'Forced change state': l_('Forced change state'),
+    u'Acknowledgement change state': l_('Acknowledgement change state'),
+    u'Ticket change notification': l_('Ticket change notification'),
+    u'New occurrence': l_('New occurrence'),
+    u'Nagios update state': l_('Nagios update state'),
+}
+
+# Gère le cas où un événement est clos de force.
+l_('Forced')
+
+
 class EditEventForm(TableForm):
     """
     Formulaire d'édition d'événement
