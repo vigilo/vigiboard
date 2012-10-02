@@ -4,7 +4,7 @@
  * Copyright (C) 2009-2012 CS-SI
  */
 
-var vigiloLog = new Log;
+var vigiloLog = new Log();
 // Activation ou désactivation du log en fonction de valeur de la variable debug.
 if (debug_mode) {
     vigiloLog.enableLog();
@@ -160,4 +160,3 @@ function add_autocompleter(elem, varname, url) {
         overflow: true
     });
 }
-
