@@ -1,7 +1,10 @@
 NAME := vigiboard
 
-SUBST_FILES := deployment/logrotate.conf deployment/settings.ini \
-               deployment/vigiboard.conf deployment/vigiboard.wsgi
+SUBST_FILES := \
+	deployment/logrotate.conf \
+	deployment/settings.ini   \
+	deployment/vigiboard.conf \
+	deployment/vigiboard.wsgi
 
 all: build
 build: $(SUBST_FILES)
@@ -13,7 +16,8 @@ JSFILES = vigiboard/public/js
 
 deployment/%: deployment/%.in
 	sed -e 's,@SYSCONFDIR@,$(SYSCONFDIR),g' \
-        -e 's,@LOCALSTATEDIR@,$(LOCALSTATEDIR),g' $^ > $@
+	    -e 's,@HTTPD_USER@,$(HTTPD_USER),g' \
+	    -e 's,@LOCALSTATEDIR@,$(LOCALSTATEDIR),g' $^ > $@
 
 install: build install_python install_data
 install_pkg: build install_python_pkg install_data
