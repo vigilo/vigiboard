@@ -1,0 +1,10 @@
+Document: vigilo-vigiboard-manual
+Title: Vigilo VigiBoard manual
+Author: Vigilo Team
+Abstract: The vigilo-vigiboard paquage provides
+ a web UI that displays monitoring alerts in real time.
+Section: Text
+
+Format: HTML
+Index: /usr/share/doc/vigilo-vigiboard-doc/html/index.html
+Files: /usr/share/doc/vigilo-vigiboard-doc/html/*
