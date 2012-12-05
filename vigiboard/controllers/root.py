@@ -49,6 +49,7 @@ from vigilo.models.tables.secondary_tables import EVENTSAGGREGATE_TABLE, \
         USER_GROUP_TABLE, SUPITEM_GROUP_TABLE
 
 from vigilo.turbogears.controllers.auth import AuthController
+from vigilo.turbogears.controllers.custom import CustomController
 from vigilo.turbogears.controllers.error import ErrorController
 from vigilo.turbogears.controllers.autocomplete import AutoCompleteController
 from vigilo.turbogears.controllers.proxy import ProxyController
@@ -83,6 +84,7 @@ class RootController(AuthController):
         not_anonymous(l_('You need to be authenticated')))
     api = ApiRootController("/api")
     feeds = FeedsController()
+    custom = CustomController()
 
     # Prédicat pour la restriction de l'accès aux interfaces.
     # L'utilisateur doit avoir la permission "vigiboard-access"
