@@ -30,6 +30,7 @@ class TestEventTable(TestController):
         """
         # L'utilisateur n'est pas authentifié.
         response = self.app.get('/', status=401)
+        response = self.app.get('/index.csv', status=401)
 
         # L'utilisateur est authentifié avec des permissions réduites.
         environ = {'REMOTE_USER': 'limited_access'}
@@ -45,6 +46,14 @@ class TestEventTable(TestController):
         print "There are %d columns in the result set" % len(cols)
         assert_true(len(cols) > 1)
 
+        # Mêmes vérifications pour le CSV.
+        response = self.app.get('/index.csv', extra_environ=environ)
+        # 1 ligne d'en-tête + 2 lignes de données
+        lines = response.body.strip().splitlines()
+        assert_equal(3, len(lines))
+        assert_true(len(lines[0].split(';')) > 1)
+
+
         # L'utilisateur est authentifié avec des permissions plus étendues.
         environ = {'REMOTE_USER': 'access'}
         response = self.app.get('/', extra_environ=environ)
@@ -59,6 +68,14 @@ class TestEventTable(TestController):
         print "There are %d columns in the result set" % len(cols)
         assert_true(len(cols) > 1)
 
+        # Mêmes vérifications pour le CSV.
+        response = self.app.get('/index.csv', extra_environ=environ)
+        # 1 ligne d'en-tête + 5 lignes de données
+        lines = response.body.strip().splitlines()
+        assert_equal(6, len(lines))
+        assert_true(len(lines[0].split(';')) > 1)
+
+
         # L'utilisateur fait partie du groupe 'managers'
         environ = {'REMOTE_USER': 'manager'}
         response = self.app.get('/', extra_environ=environ)
@@ -72,6 +89,13 @@ class TestEventTable(TestController):
         cols = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr/td')
         print "There are %d columns in the result set" % len(cols)
         assert_true(len(cols) > 1)
+
+        # Mêmes vérifications pour le CSV.
+        response = self.app.get('/index.csv', extra_environ=environ)
+        # 1 ligne d'en-tête + 5 lignes de données
+        lines = response.body.strip().splitlines()
+        assert_equal(6, len(lines))
+        assert_true(len(lines[0].split(';')) > 1)
 
     def test_correvents_table_for_LLS(self):
         """

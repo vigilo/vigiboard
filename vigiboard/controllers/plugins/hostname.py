@@ -47,3 +47,8 @@ class PluginHostname(VigiboardRequestPlugin):
         if search.get('host'):
             host = sql_escape_like(search['host'])
             query.add_filter(query.items.c.hostname.ilike(host))
+
+    def get_data(self, event):
+        return {
+            'hostname': event.hostname,
+        }

@@ -154,4 +154,3 @@ class PluginHLS(VigiboardRequestPlugin):
             hls[service.idcorrevent].append(service.servicename)
 
         return hls
-

@@ -164,3 +164,14 @@ class PluginDetails(VigiboardRequestPlugin):
                 maps = user_maps,
                 idcause = event.idcause,
             )
+
+    def get_data(self, event):
+        state = StateName.value_to_statename(event[0].cause.current_state)
+        peak_state = StateName.value_to_statename(event[0].cause.peak_state)
+        init_state = StateName.value_to_statename(event[0].cause.initial_state)
+        return {
+            'state': state,
+            'peak_state': peak_state,
+            'initial_state': init_state,
+            'id': event[0].idcorrevent,
+        }

@@ -26,10 +26,12 @@ Un plugin pour VigiBoard qui ajoute 3 colonnes au tableau des événements :
     -   la dernière colonne permet de (dé)sélectionner l'événement pour
         effectuer un traitement par lot.
 """
+import urllib
+import tg
 import tw.forms as twf
 from pylons.i18n import lazy_ugettext as l_
 
-from vigilo.models.tables import CorrEvent
+from vigilo.models.tables import CorrEvent, StateName
 from vigilo.models.functions import sql_escape_like
 from vigiboard.controllers.plugins import VigiboardRequestPlugin, ITEMS
 
@@ -88,3 +90,29 @@ class PluginStatus(VigiboardRequestPlugin):
             except (ValueError, TypeError):
                 # On ignore silencieusement le critère de recherche erroné.
                 pass
+
+    def get_data(self, event):
+        cause = event[0].cause
+        ack = event[0].ack
+        state = StateName.value_to_statename(cause.current_state)
+
+        trouble_ticket_id = None
+        trouble_ticket_link = None
+        if event[0].trouble_ticket:
+            trouble_ticket_id = event[0].trouble_ticket
+            trouble_ticket_link = tg.config['vigiboard_links.tt'] % {
+                'id': event[0].idcorrevent,
+                'host': event[1] and urllib.quote(event[1], '') or event[1],
+                'service': event[2] and urllib.quote(event[2], '') or event[2],
+                'tt': trouble_ticket_id and \
+                        urllib.quote(trouble_ticket_id, '') or \
+                        trouble_ticket_id,
+            }
+
+        return {
+            'trouble_ticket_link': trouble_ticket_link,
+            'trouble_ticket_id': trouble_ticket_id,
+            'state': state,
+            'id': event[0].idcorrevent,
+            'ack': ack,
+        }

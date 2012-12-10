@@ -22,11 +22,14 @@
 Un plugin pour VigiBoard qui ajoute une colonne avec la date à laquelle
 est survenu un événement et la durée depuis laquelle l'événement est actif.
 """
+from datetime import datetime, timedelta
 import tw.forms as twf
 from pylons.i18n import ugettext as _, lazy_ugettext as l_
 from tg.i18n import get_lang
 import tg
+from babel import Locale
 
+from vigilo.turbogears.helpers import get_locales
 from vigilo.models import tables
 
 from vigiboard.controllers.plugins import VigiboardRequestPlugin, ITEMS
@@ -87,3 +90,18 @@ class PluginDate(VigiboardRequestPlugin):
         if search.get('to_date'):
             query.add_filter(tables.CorrEvent.timestamp_active <=
                 search['to_date'])
+
+    def get_data(self, event):
+        state = tables.StateName.value_to_statename(
+                    event[0].cause.current_state)
+        # La résolution maximale de Nagios est la seconde.
+        # On supprime les microsecondes qui ne nous apportent
+        # aucune information et fausse l'affichage dans l'export CSV
+        # en créant un nouvel objet timedelta dérivé du premier.
+        duration = datetime.now() - event[0].timestamp_active
+        duration = timedelta(days=duration.days, seconds=duration.seconds)
+        return {
+            'state': state,
+            'date': event[0].cause.timestamp,
+            'duration': duration,
+        }

@@ -54,3 +54,8 @@ class PluginMaskedEvents(VigiboardRequestPlugin):
             # Il faut retirer la cause du décompte.
             res[count.idcorrevent] = count.masked - 1
         return res
+
+    def get_data(self, event):
+        return {
+            'id': event[0].idcorrevent,
+        }

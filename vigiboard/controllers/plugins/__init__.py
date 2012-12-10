@@ -33,19 +33,6 @@ class VigiboardRequestPlugin(object):
     Classe que les plugins de VigiBoard doivent étendre.
     """
 
-    def __init__ (self, table = None, join = None, outerjoin = None,
-            filters = None, groupby = None, orderby = None, name = '',
-            style = None, object_name = ""):
-        self.table = table
-        self.join = join
-        self.outerjoin = outerjoin
-        self.filter = filters
-        self.orderby = orderby
-        self.name = name
-        self.groupby = groupby
-        self.style = style
-        self.object_name = object_name
-
     def get_bulk_data(self, events_ids):
         """
         Cette méthode est appelée par le L{RootController} : elle
@@ -90,6 +77,9 @@ class VigiboardRequestPlugin(object):
         @rtype: C{int}
         """
         return 1
+
+    def get_data(self, event):
+        return {}
 
     def get_search_fields(self):
         return []

@@ -47,3 +47,8 @@ class PluginOutput(VigiboardRequestPlugin):
         if search.get('output'):
             output = sql_escape_like(search['output'])
             query.add_filter(Event.message.ilike(output))
+
+    def get_data(self, event):
+        return {
+            'output': event[0].cause.message,
+        }

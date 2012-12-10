@@ -75,6 +75,9 @@ class VigiboardConfig(VigiloAppConfig):
 
 base_config = VigiboardConfig('VigiBoard')
 base_config.package = vigiboard
+base_config.mimetype_lookup = {
+    '.csv': 'text/csv',
+}
 
 ##################################
 # Settings specific to Vigiboard #
@@ -133,4 +136,21 @@ base_config['vigiboard_plugins'] = (
     'hls',
     'status',
 #    'test',
+)
+
+base_config['csv_columns'] = (
+    'id',
+    'state',
+    'initial_state',
+    'peak_state',
+    'date',
+    'duration',
+    'priority',
+    'occurrences',
+    'hostname',
+    'servicename',
+    'output',
+    'ack',
+    'trouble_ticket_id',
+    'trouble_ticket_link',
 )

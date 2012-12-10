@@ -27,7 +27,7 @@ from pkg_resources import resource_filename
 
 from tg.exceptions import HTTPNotFound
 from tg import expose, validate, require, flash, url, \
-    tmpl_context, request, config, session, redirect
+    tmpl_context, request, response, config, session, redirect
 from webhelpers import paginate
 from tw.forms import validators
 from pylons.i18n import ugettext as _, lazy_ugettext as l_, get_lang
@@ -59,6 +59,7 @@ from vigilo.turbogears.helpers import get_current_user
 from vigiboard.controllers.vigiboardrequest import VigiboardRequest
 from vigiboard.controllers.feeds import FeedsController
 
+from vigiboard.lib import export_csv
 from vigiboard.widgets.edit_event import edit_event_status_options, \
                                             EditEventForm
 from vigiboard.widgets.search_form import create_search_form
@@ -127,6 +128,7 @@ class RootController(AuthController):
         validators=IndexSchema(),
         error_handler = process_form_errors)
     @expose('events_table.html')
+    @expose('csv', content_type='text/csv')
     @require(access_restriction)
     def index(self, page, **search):
         """
@@ -201,6 +203,8 @@ class RootController(AuthController):
             plugin_data = plugins[plugin].get_bulk_data(ids_correvents)
             if plugin_data:
                 plugins_data[plugin] = plugin_data
+            else:
+                plugins_data[plugin] = {}
 
         # Ajout des formulaires et préparation
         # des données pour ces formulaires.
@@ -209,6 +213,16 @@ class RootController(AuthController):
 
         tmpl_context.edit_event_form = EditEventForm("edit_event_form",
             submit_text=_('Apply'), action=url('/update'))
+
+        if request.response_type == 'text/csv':
+            # Sans les 2 en-têtes suivants qui désactivent la mise en cache,
+            # Internet Explorer refuse de télécharger le fichier CSV (cf. #961).
+            response.headers['Pragma'] = 'public'           # Nécessaire pour IE.
+            response.headers['Cache-Control'] = 'max-age=0' # Nécessaire pour IE.
+
+            response.headers['Content-Disposition'] = \
+                            'attachment;filename="alerts.csv"'
+            return export_csv.export(page, plugins_data)
 
         return dict(
             hostname = None,
@@ -465,10 +479,14 @@ class RootController(AuthController):
         tmpl_context.edit_event_form = EditEventForm("edit_event_form",
             submit_text=_('Apply'), action=url('/update'))
 
+        plugins_data = {}
+        for plugin in dict(config['columns_plugins']):
+            plugins_data[plugin] = {}
+
         return dict(
             hostname = host,
             servicename = service,
-            plugins_data = {},
+            plugins_data = plugins_data,
             page = page,
             event_edit_status_options = edit_event_status_options,
             search_form = create_search_form,
@@ -721,7 +739,6 @@ class RootController(AuthController):
         # l'utilisateur (s'il n'appartient pas au groupe 'managers')
         is_manager = in_group('managers').is_met(request.environ)
         if not is_manager:
-
             user = get_current_user()
 
             events = events.join(

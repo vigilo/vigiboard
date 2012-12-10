@@ -50,3 +50,8 @@ class PluginServicename(VigiboardRequestPlugin):
         if search.get('service'):
             service = sql_escape_like(search['service'])
             query.add_filter(query.items.c.servicename.ilike(service))
+
+    def get_data(self, event):
+        return {
+            'servicename': event.servicename,
+        }

@@ -22,6 +22,7 @@
 Un plugin pour VigiBoard qui ajoute une colonne avec le nombre
 d'occurrences d'un événement corrélé donné.
 """
+from vigilo.models.tables import StateName
 from vigiboard.controllers.plugins import VigiboardRequestPlugin
 
 class PluginOccurrences(VigiboardRequestPlugin):
@@ -31,4 +32,9 @@ class PluginOccurrences(VigiboardRequestPlugin):
     corrélateur chaque fois qu'un événement brut survient sur la cause
     de l'événement corrélé.
     """
-    pass
+    def get_data(self, event):
+        state = StateName.value_to_statename(event[0].cause.current_state)
+        return {
+            'state': state,
+            'occurrences': event[0].occurrence,
+        }

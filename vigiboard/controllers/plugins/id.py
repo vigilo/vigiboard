@@ -28,4 +28,7 @@ from vigiboard.controllers.plugins import VigiboardRequestPlugin
 
 class PluginId(VigiboardRequestPlugin):
     """Plugin de debug qui affiche l'identifiant de l'événement corrélé."""
-    pass
+    def get_data(self, event):
+        return {
+            'id': event[0].idcorrevent,
+        }

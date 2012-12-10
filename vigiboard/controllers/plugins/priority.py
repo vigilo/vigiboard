@@ -25,7 +25,7 @@ ITIL de l'événement corrélé.
 import tw.forms as twf
 from pylons.i18n import lazy_ugettext as l_
 
-from vigilo.models.tables import CorrEvent
+from vigilo.models.tables import CorrEvent, StateName
 from vigiboard.controllers.plugins import VigiboardRequestPlugin, ITEMS
 
 from tw.forms.fields import ContainerMixin, FormField
@@ -130,3 +130,10 @@ class PluginPriority(VigiboardRequestPlugin):
             query.add_filter(CorrEvent.priority < value)
         elif op == 'lte':
             query.add_filter(CorrEvent.priority <= value)
+
+    def get_data(self, event):
+        state = StateName.value_to_statename(event[0].cause.current_state)
+        return {
+            'state': state,
+            'priority': event[0].priority,
+        }
