@@ -27,6 +27,7 @@ applications externes.
 import urllib
 from tg import config, url, request
 from sqlalchemy.sql.expression import null as expr_null, union_all
+from sqlalchemy import func
 
 from repoze.what.predicates import has_permission, in_group
 from vigilo.turbogears.helpers import get_current_user
@@ -86,7 +87,7 @@ class PluginDetails(VigiboardRequestPlugin):
         ).first()
 
         # On détermine les cartes auxquelles cet utilisateur a accès.
-        user_maps = {}
+        user_maps = []
         max_maps = int(config['max_maps'])
         is_manager = in_group('managers').is_met(request.environ)
         if max_maps != 0 and (is_manager or
@@ -99,7 +100,7 @@ class PluginDetails(VigiboardRequestPlugin):
                     (MAP_GROUP_TABLE, MAP_GROUP_TABLE.c.idmap == Map.idmap),
                     (MapGroup, MapGroup.idgroup == MAP_GROUP_TABLE.c.idgroup),
                     (MapNodeHost, MapNodeHost.idmap == Map.idmap),
-                ).order_by(Map.title.asc()
+                ).order_by(func.lower(Map.title).asc()
                 ).filter(MapNodeHost.idhost == event.idhost)
 
             if not is_manager:
@@ -114,7 +115,7 @@ class PluginDetails(VigiboardRequestPlugin):
                 # de cartes que la limite configurée.
                 items = items.limit(max_maps + 1)
 
-            user_maps = dict([(m.idmap, m.title) for m in items.all()])
+            user_maps = [(m.idmap, m.title) for m in items.all()]
 
         context = {
             'idcorrevent': idcorrevent,

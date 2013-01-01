@@ -115,7 +115,7 @@ class TestDetailsPlugin(TestController):
             "current_state": "WARNING",
             "host": "bar",
             "initial_state": "WARNING",
-            "maps": {},
+            "maps": [],
         })
 
     def test_details_plugin_LLS_alert_when_manager(self):
@@ -141,7 +141,7 @@ class TestDetailsPlugin(TestController):
             "current_state": "WARNING",
             "host": "bar",
             "initial_state": "WARNING",
-            "maps": {},
+            "maps": [],
         })
 
     def test_details_plugin_host_alert_when_allowed(self):
@@ -167,7 +167,7 @@ class TestDetailsPlugin(TestController):
             "current_state": "WARNING",
             "host": "bar",
             "initial_state": "WARNING",
-            "maps": {},
+            "maps": [],
         })
 
     def test_details_plugin_host_alert_when_manager(self):
@@ -193,7 +193,7 @@ class TestDetailsPlugin(TestController):
             "current_state": "WARNING",
             "host": "bar",
             "initial_state": "WARNING",
-            "maps": {},
+            "maps": [],
         })
 
     def test_details_plugin_LLS_when_forbidden(self):

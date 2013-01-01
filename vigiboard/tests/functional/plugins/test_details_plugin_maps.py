@@ -23,13 +23,13 @@ class TestDetailsPluginMapsHostLimited(TestController):
     # Seules les 2 premières cartes doivent figurer.
     # La 1ère correspond à la limite, la 2 seconde permet
     # de détecter qu'il y avait plus de cartes que la limite.
-    manager = {'1': 'M1', '2': 'M2'}
+    manager = [[1, 'M1'], [2, 'M2']]
     # L'utilisateur avec droits étendus voit
     # la même chose que le manager (2 cartes).
-    unrestricted = manager.copy()
+    unrestricted = manager[:]
     # L'utilisateur avec droits restreints ne voit
     # qu'une seule carte : "M2".
-    restricted = {'2': 'M2'}
+    restricted = [[2, 'M2']]
     supitem_class = Host
 
     def shortDescription(self, *args, **kwargs):
@@ -146,7 +146,7 @@ class TestDetailsPluginMapsHostLimited(TestController):
             }, extra_environ={'REMOTE_USER': 'no_rights'})
         # L'utilisateur n'a pas accès à VigiMap, donc il ne doit pas voir
         # les cartes, même s'il a accès à VigiBoard par ailleurs.
-        self.assertEquals(response.json['maps'], {})
+        self.assertEquals(response.json['maps'], [])
 
     def test_maps_links_restricted(self):
         """Cartes dans dialogue détails avec droits restreints."""
@@ -180,9 +180,9 @@ class TestDetailsPluginMapsHostDisabled(TestDetailsPluginMapsHostLimited):
     # La réponse ne doit contenir aucune carte,
     # quel que soit l'utilisateur qui interroge
     # VigiBoard (la fonctionnalité est désactivée).
-    manager = {}
-    unrestricted = {}
-    restricted = {}
+    manager = []
+    unrestricted = []
+    restricted = []
 
     def shortDescription(self, *args, **kwargs):
         """Description courte du test en cours d'exécution."""
@@ -199,12 +199,12 @@ class TestDetailsPluginMapsHostUnlimited(TestDetailsPluginMapsHostLimited):
     # Le manager voit tout et en particulier les 3 cartes sur lesquelles
     # l'hôte apparaît. M1 ne doit apparaître qu'une seule fois
     # même si l'hôte est présent 2 fois sur la carte.
-    manager = {'1': 'M1', '3': 'M3', '2': 'M2'}
+    manager = [[1, 'M1'], [2, 'M2'], [3, 'M3']]
     # L'utilisateur avec droits étendus voit
     # la même chose que le manager (3 cartes).
-    unrestricted = manager.copy()
+    unrestricted = manager[:]
     # L'utilisateur avec droits restreints ne voit pas 'M2'.
-    restricted = {'2': 'M2'}
+    restricted = [[2, 'M2']]
 
     def shortDescription(self, *args, **kwargs):
         """Description courte du test en cours d'exécution."""
