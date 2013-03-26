@@ -83,7 +83,7 @@ class RootController(AuthController):
     autocomplete = AutoCompleteController()
     nagios = ProxyController('nagios', '/nagios/',
         not_anonymous(l_('You need to be authenticated')))
-    api = ApiRootController("/api")
+    api = ApiRootController()
     feeds = FeedsController()
     custom = CustomController()
 
