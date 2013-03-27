@@ -95,6 +95,7 @@ class PluginDetails(VigiboardRequestPlugin):
             items = DBSession.query(
                     Map.idmap,
                     Map.title,
+                    func.lower(Map.title),
                 ).distinct(
                 ).join(
                     (MAP_GROUP_TABLE, MAP_GROUP_TABLE.c.idmap == Map.idmap),
