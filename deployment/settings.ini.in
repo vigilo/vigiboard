@@ -76,6 +76,12 @@ auth.config = %(here)s/who.ini
 ; 3 - Configuration de l'interface.
 ;
 
+; Module additionnel utilisé pour la gestion des tickets.
+; Par défaut, aucun module additionnel n'est utilisé.
+; Se référrer à la documentation du module additionnel pour plus d'information
+; concernant les autres options de configuration utilisables par ce dernier.
+;tickets.plugin = identifiant_du_module
+
 ; La langue par défaut de l'interface.
 lang = fr
 

@@ -23,7 +23,7 @@
 from datetime import datetime
 from time import mktime
 
-from pkg_resources import resource_filename
+from pkg_resources import resource_filename, working_set
 
 from tg.exceptions import HTTPNotFound
 from tg import expose, validate, require, flash, url, \
@@ -79,6 +79,8 @@ class RootController(AuthController):
     """
     Le controller général de vigiboard
     """
+    _tickets = None
+
     error = ErrorController()
     autocomplete = AutoCompleteController()
     nagios = ProxyController('nagios', '/nagios/',
@@ -110,6 +112,19 @@ class RootController(AuthController):
     def handle_validation_errors_json(self, *args, **kwargs):
         kwargs['errors'] = tmpl_context.form_errors
         return dict(kwargs)
+
+    def __init__(self, *args, **kwargs):
+        """Initialisation du contrôleur."""
+        super(RootController, self).__init__(*args, **kwargs)
+        # Si un module de gestion des tickets a été indiqué dans
+        # le fichier de configuration, on tente de le charger.
+        if config.get('tickets.plugin'):
+            plugins = working_set.iter_entry_points('vigiboard.tickets', config['tickets.plugin'])
+            if plugins:
+                # La classe indiquée par la première valeur de l'itérateur
+                # correspond au plugin que l'on veut instancier.
+                pluginCls = plugins.next().load()
+                self._tickets = pluginCls()
 
     class IndexSchema(schema.Schema):
         """Schéma de validation de la méthode index."""
@@ -544,14 +559,19 @@ class RootController(AuthController):
 
         user = get_current_user()
         events = VigiboardRequest(user)
-        events.add_table(CorrEvent)
+        events.add_table(
+            CorrEvent,
+            Event,
+            events.items.c.hostname,
+            events.items.c.servicename,
+        )
         events.add_join((Event, CorrEvent.idcause == Event.idevent))
         events.add_join((events.items,
             Event.idsupitem == events.items.c.idsupitem))
         events.add_filter(CorrEvent.idcorrevent.in_(ids))
 
         events.generate_request()
-        idevents = [cause.idcause for cause in events.req]
+        idevents = [event[0].idcause for event in events.req]
 
         # Si des changements sont survenus depuis que la
         # page est affichée, on en informe l'utilisateur.
@@ -580,6 +600,11 @@ class RootController(AuthController):
                 flash(reason, 'error')
                 raise redirect(request.environ.get('HTTP_REFERER', '/'))
 
+        # Si un module de gestion de ticket est utilisé,
+        # il a la possibilité de changer à la volée le libellé du ticket.
+        if self._tickets:
+            trouble_ticket = self._tickets.createTicket(events.req, trouble_ticket)
+
         # Définit 2 mappings dont les ensembles sont disjoincts
         # pour basculer entre la représentation en base de données
         # et la représentation "humaine" du bac à événements.
@@ -600,7 +625,8 @@ class RootController(AuthController):
 
         # Modification des événements et création d'un historique
         # chaque fois que cela est nécessaire.
-        for event in events.req:
+        for data in events.req:
+            event = data[0]
             if trouble_ticket and trouble_ticket != event.trouble_ticket:
                 history = EventHistory(
                         type_action=u"Ticket change",
