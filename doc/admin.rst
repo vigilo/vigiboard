@@ -325,6 +325,14 @@ d'abord par l'état (``True``), ou d'abord par l'horodatage (``False``).
 
 .. _confproxy:
 
+Configuration de l'auto-supervision
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+VigiBoard affiche un message d'alerte à l'utilisateur dès lors qu'un des
+collecteurs Vigilo n'a pas donné signe de vie depuis plus d'une certaine durée.
+Cette durée-seuil, exprimée en secondes, est configurable à l'aide de l'option
+« freshness_threshold » .
+Une valeur négative ou nulle désactive complètement cette fonctionnalité.
+
 Configuration du serveur mandataire
 -----------------------------------
 VigiBoard permet d'accéder à la page d'état Nagios d'un hôte ou d'un service,

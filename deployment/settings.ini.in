@@ -182,6 +182,13 @@ csv_escape_char = \
 ; La valeur par défaut est "all".
 csv_quoting = all
 
+; Durée-seuil (exprimée en secondes) au-delà de laquelle un collecteur
+; Vigilo sera considéré comme étant en panne s'il n'a pas envoyé de
+; signe de vie. Une alerte sera alors affichée aux utilisateurs.
+; Utiliser une valeur négative ou nulle pour désactiver cette fonctionnalité.
+; Par défaut : 60 secondes
+freshness_threshold = 60
+
 ;
 ; 4 - Configuration du proxy Nagios.
 ;

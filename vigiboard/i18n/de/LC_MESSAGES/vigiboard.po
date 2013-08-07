@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: vigiboard 2.0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2010-11-19 10:22+0100\n"
-"PO-Revision-Date: 2012-04-27 10:57+0200\n"
+"PO-Revision-Date: 2013-08-08 08:25+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: de_DE <LL@li.org>\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
@@ -17,45 +17,51 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 0.9.4\n"
 
-#: vigiboard/controllers/root.py:79 vigiboard/controllers/root.py:87
-#: vigiboard/controllers/root.py:487
+#: vigiboard/controllers/root.py:88 vigiboard/controllers/root.py:97
+#: vigiboard/controllers/root.py:568
 msgid "You need to be authenticated"
 msgstr "Sie müssen sich authentifizieren"
 
-#: vigiboard/controllers/root.py:90
+#: vigiboard/controllers/root.py:100
 msgid "You don't have access to VigiBoard"
 msgstr "Sie haben keinen Zugang zu VigiBoard"
 
-#: vigiboard/controllers/root.py:204 vigiboard/controllers/root.py:459
-#: vigiboard/controllers/vigiboardrequest.py:452
+#: vigiboard/controllers/root.py:172 vigiboard/controllers/root.py:328
+#: vigiboard/controllers/root.py:423 vigiboard/controllers/root.py:497
+#, python-format
+msgid "Vigilo has detected a breakdown on the following collector(s) : %s"
+msgstr ""
+
+#: vigiboard/controllers/root.py:241 vigiboard/controllers/root.py:536
+#: vigiboard/controllers/vigiboardrequest.py:450
 msgid "Apply"
 msgstr "Anwenden"
 
-#: vigiboard/controllers/root.py:322
+#: vigiboard/controllers/root.py:379
 msgid "No masked event or access denied"
 msgstr "Kein maskiertes Ereignis oder Zugriff verweigert"
 
-#: vigiboard/controllers/root.py:376
+#: vigiboard/controllers/root.py:443
 msgid "No such event or access denied"
 msgstr "Ereignis nicht vorhanden oder Zugriff verweigert"
 
-#: vigiboard/controllers/root.py:426
+#: vigiboard/controllers/root.py:503
 msgid "No such host/service"
 msgstr "Host/Service nicht vorhanden"
 
-#: vigiboard/controllers/root.py:449
+#: vigiboard/controllers/root.py:526
 msgid "No access to this host/service or no event yet"
 msgstr "Kein Zugang zu diesem Host/Service oder Ereignis noch nicht vorhanden"
 
-#: vigiboard/controllers/root.py:490
+#: vigiboard/controllers/root.py:571
 msgid "You don't have write access to VigiBoard"
 msgstr "Sie haben keinen Schreibzugriff auf VigiBoard"
 
-#: vigiboard/controllers/root.py:513
+#: vigiboard/controllers/root.py:594
 msgid "No event has been selected"
 msgstr "Es wurde kein Ereignis ausgewählt"
 
-#: vigiboard/controllers/root.py:536
+#: vigiboard/controllers/root.py:622
 msgid ""
 "Changes have occurred since the page was last displayed, your changes "
 "HAVE NOT been saved."
@@ -63,90 +69,60 @@ msgstr ""
 "Die seit der letzten Anzeige der Seite von Ihnen vorgenommenen Änderungen"
 " WURDEN NICHT gespeichert."
 
-#: vigiboard/controllers/root.py:542
+#: vigiboard/controllers/root.py:628
 msgid "No access to this event"
 msgstr "Kein Zugang zu diesem Ereignis "
 
-#: vigiboard/controllers/root.py:549
+#: vigiboard/controllers/root.py:635
 msgid "You don't have administrative access to VigiBoard"
 msgstr "Sie haben keine administrativen Zugriff auf VigiBoard"
 
-#: vigiboard/controllers/root.py:571
+#: vigiboard/controllers/root.py:662
 msgid "None"
 msgstr ""
 
-#: vigiboard/controllers/root.py:572
+#: vigiboard/controllers/root.py:663
 #, fuzzy
 msgid "Acknowledged"
 msgstr "Bestätigen"
 
-#: vigiboard/controllers/root.py:573
+#: vigiboard/controllers/root.py:664
 msgid "Acknowledged and closed"
 msgstr ""
 
-#: vigiboard/controllers/root.py:580
-#, fuzzy
-msgid "Ticket change"
-msgstr "Keine Änderung"
-
-#: vigiboard/controllers/root.py:581
-msgid "Forced change state"
-msgstr ""
-
-#: vigiboard/controllers/root.py:582
-#, fuzzy
-msgid "Acknowledgement change state"
-msgstr "Bestätigungsstatus"
-
-#: vigiboard/controllers/root.py:583
-msgid "Ticket change notification"
-msgstr ""
-
-#: vigiboard/controllers/root.py:584
-msgid "New occurrence"
-msgstr ""
-
-#: vigiboard/controllers/root.py:585
-msgid "Nagios update state"
-msgstr ""
-
-#: vigiboard/controllers/root.py:605
+#: vigiboard/controllers/root.py:685
 #, python-format
 msgid ""
 "User \"%(user)s\" (%(address)s) changed the trouble ticket from "
 "\"%(previous)s\" to \"%(new)s\" on event #%(idevent)d"
 msgstr ""
 
-#: vigiboard/controllers/root.py:651
+#: vigiboard/controllers/root.py:730
 #, python-format
 msgid "User \"%(user)s\" (%(address)s) forcefully closed event #%(idevent)d"
 msgstr ""
 
-#: vigiboard/controllers/root.py:667
-msgid "Forced"
-msgstr ""
-
-#: vigiboard/controllers/root.py:686
+#: vigiboard/controllers/root.py:763
 #, python-format
 msgid ""
 "User \"%(user)s\" (%(address)s) changed the state from \"%(previous)s\" "
 "to \"%(new)s\" on event #%(idevent)d"
 msgstr ""
 
-#: vigiboard/controllers/root.py:698
+#: vigiboard/controllers/root.py:775
 msgid "Updated successfully"
 msgstr "Erfolgreich aktualisiert"
 
-#: vigiboard/controllers/root.py:723
+#: vigiboard/controllers/root.py:800
 #, fuzzy, python-format
 msgid "No such plugin '%s'"
 msgstr "Plug-In \"%s\" nicht vorhanden"
 
-#: vigiboard/controllers/root.py:766
+#: vigiboard/controllers/root.py:842
 msgid "No such incident or insufficient permissions"
 msgstr "Ereignis nicht vorhanden oder unzureichende Berechtigungen"
 
-#: vigiboard/controllers/root.py:878
+#: vigiboard/controllers/root.py:954
 #, python-format
 msgid "Next %(limit)s"
 msgstr ""
@@ -155,31 +131,31 @@ msgstr ""
 #. TRANSLATORS:
 #. http://www.dynarch.com/static/jscalendar-1.0/doc/html/reference.html#node_sec_5.3.5
 #. TRANSLATORS: http://docs.python.org/release/2.5/lib/module-time.html
-#: vigiboard/controllers/plugins/date.py:54 vigiboard/lib/dateformat.py:34
+#: vigiboard/controllers/plugins/date.py:57 vigiboard/lib/dateformat.py:34
 #: vigiboard/lib/dateformat.py:46
 #, python-format
 msgid "%Y-%m-%d %I:%M:%S %p"
 msgstr "%Y-%m-%d %I:%M:%S %p"
 
-#: vigiboard/controllers/plugins/date.py:62
+#: vigiboard/controllers/plugins/date.py:65
 msgid "From"
 msgstr "Von"
 
-#: vigiboard/controllers/plugins/date.py:63
-#: vigiboard/controllers/plugins/date.py:72
-#: vigiboard/controllers/plugins/groups.py:44
+#: vigiboard/controllers/plugins/date.py:66
+#: vigiboard/controllers/plugins/date.py:75
+#: vigiboard/controllers/plugins/groups.py:41
 msgid "Choose"
 msgstr "Auswählen"
 
-#: vigiboard/controllers/plugins/date.py:71
+#: vigiboard/controllers/plugins/date.py:74
 msgid "To"
 msgstr "Bis"
 
-#: vigiboard/controllers/plugins/groups.py:45
+#: vigiboard/controllers/plugins/groups.py:42
 msgid "Clear"
 msgstr "Löschen"
 
-#: vigiboard/controllers/plugins/groups.py:81
+#: vigiboard/controllers/plugins/groups.py:78
 msgid "Group"
 msgstr "Gruppe"
 
@@ -195,7 +171,7 @@ msgstr "Host"
 msgid "Output"
 msgstr "Ausgabe"
 
-#: vigiboard/controllers/plugins/priority.py:90
+#: vigiboard/controllers/plugins/priority.py:88
 msgid "Priority"
 msgstr "Priorität"
 
@@ -203,29 +179,29 @@ msgstr "Priorität"
 msgid "Service"
 msgstr "Service"
 
-#: vigiboard/controllers/plugins/status.py:51
+#: vigiboard/controllers/plugins/status.py:53
 msgid "All alerts"
 msgstr ""
 
-#: vigiboard/controllers/plugins/status.py:54
+#: vigiboard/controllers/plugins/status.py:56
 msgid "New alerts"
 msgstr ""
 
-#: vigiboard/controllers/plugins/status.py:55
+#: vigiboard/controllers/plugins/status.py:57
 msgid "Alerts marked as Acknowledged"
 msgstr ""
 
-#: vigiboard/controllers/plugins/status.py:56
+#: vigiboard/controllers/plugins/status.py:58
 msgid "Alerts marked as Closed"
 msgstr ""
 
-#: vigiboard/controllers/plugins/status.py:62
-#: vigiboard/widgets/edit_event.py:58
+#: vigiboard/controllers/plugins/status.py:64
+#: vigiboard/widgets/edit_event.py:73
 msgid "Trouble Ticket"
 msgstr "Trouble Ticket"
 
-#: vigiboard/controllers/plugins/status.py:67
-#: vigiboard/widgets/edit_event.py:61
+#: vigiboard/controllers/plugins/status.py:69
+#: vigiboard/widgets/edit_event.py:76
 msgid "Acknowledgement Status"
 msgstr "Bestätigungsstatus"
 
@@ -262,13 +238,43 @@ msgstr "Schliessen"
 msgid "Force to Closed"
 msgstr "Schliessen und Löschen"
 
-#: vigiboard/widgets/edit_event.py:59
+#: vigiboard/widgets/edit_event.py:44
+#, fuzzy
+msgid "Ticket change"
+msgstr "Keine Änderung"
+
+#: vigiboard/widgets/edit_event.py:45
+msgid "Forced change state"
+msgstr ""
+
+#: vigiboard/widgets/edit_event.py:46
+#, fuzzy
+msgid "Acknowledgement change state"
+msgstr "Bestätigungsstatus"
+
+#: vigiboard/widgets/edit_event.py:47
+msgid "Ticket change notification"
+msgstr ""
+
+#: vigiboard/widgets/edit_event.py:48
+msgid "New occurrence"
+msgstr ""
+
+#: vigiboard/widgets/edit_event.py:49
+msgid "Nagios update state"
+msgstr ""
+
+#: vigiboard/widgets/edit_event.py:53
+msgid "Forced"
+msgstr ""
+
+#: vigiboard/widgets/edit_event.py:74
 msgid "Warning: changing the ticket will affect all selected events."
 msgstr ""
 "Warnung: die Änderung des Tickets wirkt sich auf alle ausgewählten "
 "Ereignisse aus."
 
-#: vigiboard/widgets/search_form.py:55
+#: vigiboard/widgets/search_form.py:54
 msgid "Search"
 msgstr "Suchen"
 

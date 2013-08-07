@@ -49,6 +49,7 @@ from vigilo.models.tables.secondary_tables import EVENTSAGGREGATE_TABLE, \
         USER_GROUP_TABLE, SUPITEM_GROUP_TABLE
 
 from vigilo.turbogears.controllers.auth import AuthController
+from vigilo.turbogears.controllers.selfmonitoring import SelfMonitoringController
 from vigilo.turbogears.controllers.custom import CustomController
 from vigilo.turbogears.controllers.error import ErrorController
 from vigilo.turbogears.controllers.autocomplete import AutoCompleteController
@@ -75,7 +76,7 @@ __all__ = ('RootController', 'get_last_modification_timestamp',
 # W0613: Unused arguments: les arguments sont la query-string
 # W0622: Redefining built-in 'id': élément de la query-string
 
-class RootController(AuthController):
+class RootController(AuthController, SelfMonitoringController):
     """
     Le controller général de vigiboard
     """
@@ -162,6 +163,10 @@ class RootController(AuthController):
             - VIGILO_EXIG_VIGILO_BAC_0070,
             - VIGILO_EXIG_VIGILO_BAC_0100,
         """
+
+        # Auto-supervision
+        self.get_failures()
+
         user = get_current_user()
         aggregates = VigiboardRequest(user, search=search)
 
@@ -308,6 +313,10 @@ class RootController(AuthController):
         @param idcorrevent: identifiant de l'événement corrélé souhaité.
         @type idcorrevent: C{int}
         """
+
+        # Auto-supervision
+        self.get_failures()
+
         user = get_current_user()
 
         # Récupère la liste des événements masqués de l'événement
@@ -393,6 +402,10 @@ class RootController(AuthController):
         Cette méthode permet de satisfaire l'exigence
         VIGILO_EXIG_VIGILO_BAC_0080.
         """
+
+        # Auto-supervision
+        self.get_failures()
+
         user = get_current_user()
         events = VigiboardRequest(user, False)
         events.add_table(
@@ -457,6 +470,10 @@ class RootController(AuthController):
         Cette méthode permet de satisfaire l'exigence
         VIGILO_EXIG_VIGILO_BAC_0080.
         """
+
+        # Auto-supervision
+        self.get_failures()
+
         idsupitem = SupItem.get_supitem(host, service)
         if not idsupitem:
             flash(_('No such host/service'), 'error')
