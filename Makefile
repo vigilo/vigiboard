@@ -50,7 +50,6 @@ install_data: $(SUBST_FILES)
 	[ `id -u` -ne 0 ] || chown $(HTTPD_USER): $(DESTDIR)$(LOCALSTATEDIR)/cache/vigilo/sessions
 
 
-
 lint: lint_pylint
 tests: tests_nose
 doc: apidoc
