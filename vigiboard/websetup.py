@@ -24,6 +24,15 @@
 
 __all__ = ['setup_app', 'populate_db']
 
+def dummy(msg):
+    """
+    Cette fonction n'est jamais exécutée.
+    Elle permet simplement de forcer la traduction de
+    chaînes provenant de vigilo-turbogears
+    """
+    _('Vigilo has detected a breakdown on the following '
+      'collector(s): %(list)s')
+
 def setup_app(command, conf, variables):
     """Place any commands to setup vigiboard here"""
     from vigilo.turbogears import populate_db as tg_pop_db
