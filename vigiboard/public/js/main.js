@@ -44,7 +44,7 @@ window.addEvent('domready', function (){
         onOpen: window.dlg_open_handler,
         onClose: window.dlg_close_handler,
         width: 400,
-        height: 325,
+        height: 395,
         closed: true
     });
     window.search_dialog.toggleCollapse();
