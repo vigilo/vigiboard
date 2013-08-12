@@ -1,2 +1,0 @@
-/etc/vigilo/vigiboard/vigiboard.conf            /etc/apache2/sites-available/vigilo-vigiboard.conf
-/usr/share/pyshared/vigiboard/config/app_cfg.py /etc/vigilo/vigiboard/app_cfg.py
