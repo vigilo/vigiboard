@@ -205,7 +205,7 @@ freshness_threshold = -1
 
 ; Configuration du proxy Nagios.
 ; a) Emplacement de l'installation de Nagios sur le serveur distant.
-app_path.nagios = /nagios/
+app_path.nagios = /@NAGIOS_BIN@/
 ; b) Schéma ("protocole") à utiliser pour se connecter
 ;    à l'application. En général : http ou https.
 ;    Par défaut : http

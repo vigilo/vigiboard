@@ -17,6 +17,7 @@ JSFILES = vigiboard/public/js
 deployment/%: deployment/%.in
 	sed -e 's,@SYSCONFDIR@,$(SYSCONFDIR),g' \
 	    -e 's,@HTTPD_USER@,$(HTTPD_USER),g' \
+	    -e 's,@NAGIOS_BIN@,$(NAGIOS_BIN),g' \
 	    -e 's,@LOCALSTATEDIR@,$(LOCALSTATEDIR),g' $^ > $@
 
 install: build install_python install_data
