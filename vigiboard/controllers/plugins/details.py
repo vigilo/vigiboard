@@ -124,6 +124,9 @@ class PluginDetails(VigiboardRequestPlugin):
             'service': event.service,
             'message': event.message,
             'maps': user_maps,
+            'current_state': StateName.value_to_statename(event.current_state),
+            'initial_state': StateName.value_to_statename(event.initial_state),
+            'peak_state': StateName.value_to_statename(event.peak_state),
         }
 
         eventdetails = {}
