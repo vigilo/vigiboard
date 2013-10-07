@@ -144,7 +144,7 @@ class RootController(AuthController, SelfMonitoringController):
         validators=IndexSchema(),
         error_handler = process_form_errors)
     @expose('events_table.html')
-    @expose('csv', content_type='text/csv')
+    @expose('events_table.html', content_type='text/csv')
     @require(access_restriction)
     def index(self, page, **search):
         """
