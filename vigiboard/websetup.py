@@ -24,7 +24,7 @@
 
 __all__ = ['setup_app', 'populate_db']
 
-def dummy(msg):
+def _(msg):
     """
     Cette fonction n'est jamais exécutée.
     Elle permet simplement de forcer la traduction de
