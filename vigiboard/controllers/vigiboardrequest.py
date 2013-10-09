@@ -43,12 +43,25 @@ class VigiboardRequest():
     le préformatage des événements et celui des historiques
     """
 
-    def __init__(self, user, mask_closed_events=True, search=None):
+    def __init__(self, user, mask_closed_events=True, search=None, sort=None, order=None):
         """
         Initialisation de l'objet qui effectue les requêtes de VigiBoard
         sur la base de données.
         Cet objet est responsable de la vérification des droits de
         l'utilisateur sur les données manipulées.
+
+        @param user: Nom de l'utilisateur cherchant à afficher les événements.
+        @type  user: C{str}
+        @param mask_closed_events: Booléen indiquant si l'on souhaite masquer les
+            événements fermés ou non.
+        @type  mask_closed_events: C{boolean}
+        @param search: Dictionnaire contenant les critères de recherche.
+        @type  search: C{dict}
+        @param sort: Colonne de tri; vide en l'absence de tri.
+        @type  sort: C{unicode}
+        @param order: Ordre du tri ("asc" ou "desc"); vide en l'absence de tri.
+        @type  order: C{unicode}
+
         """
 
         # Permet s'appliquer des filtres de recherche aux sous-requêtes.
@@ -82,32 +95,6 @@ class VigiboardRequest():
             StateName.statename,
         ]
 
-        # Permet de définir le sens de tri pour la priorité.
-        if config['vigiboard_priority_order'] == 'asc':
-            priority_order = asc(CorrEvent.priority)
-        else:
-            priority_order = desc(CorrEvent.priority)
-
-        # Tris (ORDER BY)
-        # Permet de répondre aux exigences suivantes :
-        # - VIGILO_EXIG_VIGILO_BAC_0050
-        # - VIGILO_EXIG_VIGILO_BAC_0060
-        self.orderby = [
-            asc(CorrEvent.ack),                             # État acquittement
-            asc(StateName.statename.in_([u'OK', u'UP'])),   # Vert / Pas vert
-            priority_order,                                 # Priorité ITIL
-        ]
-
-        if asbool(config.get('state_first', True)):
-            self.orderby.extend([
-                desc(StateName.order),                      # Etat courant
-                desc(Event.timestamp),                      # Timestamp
-            ])
-        else:
-            self.orderby.extend([
-                desc(Event.timestamp),                      # Timestamp
-                desc(StateName.order),                      # Etat courant
-            ])
 
         self.req = DBSession
         self.plugin = []
@@ -175,6 +162,43 @@ class VigiboardRequest():
 
             # Permet d'avoir le même format que pour l'autre requête.
             self.items = items.subquery()
+
+        # Tris (ORDER BY)
+        # Permet de répondre aux exigences suivantes :
+        # - VIGILO_EXIG_VIGILO_BAC_0050
+        # - VIGILO_EXIG_VIGILO_BAC_0060
+        self.orderby = []
+        if sort:
+            for _plugin, instance in config.get('columns_plugins', []):
+                criterion = instance.get_sort_criterion(self, sort)
+                if criterion is not None:
+                    if order == 'asc':
+                        self.orderby.append(asc(criterion))
+                    else:
+                        self.orderby.append(desc(criterion))
+
+        # Permet de définir le sens de tri pour la priorité.
+        if config['vigiboard_priority_order'] == 'asc':
+            priority_order = asc(CorrEvent.priority)
+        else:
+            priority_order = desc(CorrEvent.priority)
+
+        self.orderby.extend([
+            asc(CorrEvent.ack),                             # État acquittement
+            asc(StateName.statename.in_([u'OK', u'UP'])),   # Vert / Pas vert
+            priority_order,                                 # Priorité ITIL
+        ])
+
+        if asbool(config.get('state_first', True)):
+            self.orderby.extend([
+                desc(StateName.order),                      # Etat courant
+                desc(Event.timestamp),                      # Timestamp
+            ])
+        else:
+            self.orderby.extend([
+                desc(Event.timestamp),                      # Timestamp
+                desc(StateName.order),                      # Etat courant
+            ])
 
         if search is not None:
             # 2nde passe pour les filtres : self.items est désormais défini.

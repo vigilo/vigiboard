@@ -116,3 +116,11 @@ class PluginStatus(VigiboardRequestPlugin):
             'id': event[0].idcorrevent,
             'ack': ack,
         }
+
+    def get_sort_criterion(self, query, column):
+        criteria = {
+            'ticket': CorrEvent.trouble_ticket,
+            'ack': CorrEvent.ack,
+        }
+        return criteria.get(column)
+

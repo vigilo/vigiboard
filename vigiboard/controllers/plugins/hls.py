@@ -100,6 +100,9 @@ class PluginHLS(VigiboardRequestPlugin):
         @rtype:  C{dict}
         """
 
+        if not events_ids:
+            return {}
+
         imp_hls1 = aliased(tables.ImpactedHLS)
         imp_hls2 = aliased(tables.ImpactedHLS)
 

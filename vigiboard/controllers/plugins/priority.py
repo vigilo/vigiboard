@@ -137,3 +137,9 @@ class PluginPriority(VigiboardRequestPlugin):
             'state': state,
             'priority': event[0].priority,
         }
+
+    def get_sort_criterion(self, query, column):
+        if column == 'priority':
+            return CorrEvent.priority
+        return None
+

@@ -45,7 +45,9 @@ class SearchForm(twf.TableForm):
     style = 'display: none'
 
     fields = [
-        twf.HiddenField('page')
+        twf.HiddenField('page'),
+        twf.HiddenField('sort'),
+        twf.HiddenField('order')
     ]
     for plugin, instance in tg.config.get('columns_plugins', []):
         fields.extend(instance.get_search_fields())

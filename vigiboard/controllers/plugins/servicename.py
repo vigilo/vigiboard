@@ -55,3 +55,9 @@ class PluginServicename(VigiboardRequestPlugin):
         return {
             'servicename': event.servicename,
         }
+
+    def get_sort_criterion(self, query, column):
+        if column == 'servicename':
+            return query.items.c.servicename
+        return None
+

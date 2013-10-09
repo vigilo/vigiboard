@@ -52,3 +52,9 @@ class PluginOutput(VigiboardRequestPlugin):
         return {
             'output': event[0].cause.message,
         }
+
+    def get_sort_criterion(self, query, column):
+        if column == 'output':
+            return Event.message
+        return None
+

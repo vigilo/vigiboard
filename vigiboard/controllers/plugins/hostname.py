@@ -52,3 +52,9 @@ class PluginHostname(VigiboardRequestPlugin):
         return {
             'hostname': event.hostname,
         }
+
+    def get_sort_criterion(self, query, column):
+        if column == 'hostname':
+            return query.items.c.hostname
+        return None
+

@@ -84,5 +84,22 @@ class VigiboardRequestPlugin(object):
     def get_search_fields(self):
         return []
 
+    def get_sort_criterion(self, query, column):
+        """
+        Cette méthode renvoie le critère à utiliser par SQLAlchemy pour trier
+        la requête alimentant le tableau des événements.
+
+        Cette méthode DEVRAIT être surchargée dans les classes dérivées
+        si le plugin en question implémente un tri.
+
+        @param query: La requête VigiBoard servant à alimenter le tableau des
+            événements.
+        @type  query: L{VigiboardRequest}
+        @param column: La colonne sur laquelle l'utilisateur souhaite opérer le
+            tri.
+        @type column: C{str}
+        """
+        pass
+
     def handle_search_fields(self, query, search, state, subqueries):
         pass

@@ -105,3 +105,9 @@ class PluginDate(VigiboardRequestPlugin):
             'date': event[0].cause.timestamp,
             'duration': duration,
         }
+
+    def get_sort_criterion(self, query, column):
+        if column == 'date':
+            return tables.Event.timestamp
+        return None
+

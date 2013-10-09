@@ -131,7 +131,16 @@ class RootController(AuthController, SelfMonitoringController):
         """Schéma de validation de la méthode index."""
         # Si on ne passe pas le paramètre "page" ou qu'on passe une valeur
         # invalide ou pas de valeur du tout, alors on affiche la 1ère page.
-        page = validators.Int(min=1, if_missing=1, if_invalid=1, not_empty=True)
+        page = validators.Int(
+            min=1,
+            if_missing=1,
+            if_invalid=1,
+            not_empty=True
+        )
+
+        # Paramètres de tri
+        sort = validators.String(if_missing=None)
+        order = validators.OneOf(['asc', 'desc'], if_missing='asc')
 
         # Nécessaire pour que les critères de recherche soient conservés.
         allow_extra_fields = True
@@ -146,7 +155,7 @@ class RootController(AuthController, SelfMonitoringController):
     @expose('events_table.html')
     @expose('events_table.html', content_type='text/csv')
     @require(access_restriction)
-    def index(self, page, **search):
+    def index(self, page, sort=None, order=None, **search):
         """
         Page d'accueil de Vigiboard. Elle affiche, suivant la page demandée
         (page 1 par defaut), la liste des événements, rangés par ordre de prise
@@ -155,6 +164,10 @@ class RootController(AuthController, SelfMonitoringController):
 
         @param page: Numéro de la page souhaitée, commence à 1
         @type page: C{int}
+        @param sort: Colonne de tri
+        @type sort: C{str} or C{None}
+        @param order: Ordre du tri (asc ou desc)
+        @type order: C{str} or C{None}
         @param search: Dictionnaire contenant les critères de recherche.
         @type search: C{dict}
 
@@ -168,7 +181,7 @@ class RootController(AuthController, SelfMonitoringController):
         self.get_failures()
 
         user = get_current_user()
-        aggregates = VigiboardRequest(user, search=search)
+        aggregates = VigiboardRequest(user, search=search, sort=sort, order=order)
 
         aggregates.add_table(
             CorrEvent,
@@ -249,6 +262,8 @@ class RootController(AuthController, SelfMonitoringController):
             servicename = None,
             plugins_data = plugins_data,
             page = page,
+            sort = sort,
+            order = order,
             event_edit_status_options = edit_event_status_options,
             search_form = create_search_form,
             search = search,
@@ -310,8 +325,10 @@ class RootController(AuthController, SelfMonitoringController):
         Affichage de la liste des événements bruts masqués d'un événement
         corrélé (événements agrégés dans l'événement corrélé).
 
+        @param page: numéro de la page à afficher.
+        @type  page: C{int}
         @param idcorrevent: identifiant de l'événement corrélé souhaité.
-        @type idcorrevent: C{int}
+        @type  idcorrevent: C{int}
         """
 
         # Auto-supervision
@@ -448,7 +465,15 @@ class RootController(AuthController, SelfMonitoringController):
 
     class ItemSchema(schema.Schema):
         """Schéma de validation de la méthode item."""
+        # Si on ne passe pas le paramètre "page" ou qu'on passe une valeur
+        # invalide ou pas de valeur du tout, alors on affiche la 1ère page.
         page = validators.Int(min=1, if_missing=1, if_invalid=1)
+
+        # Paramètres de tri
+        sort = validators.String(if_missing=None)
+        order = validators.OneOf(['asc', 'desc'], if_missing='asc')
+
+        # L'hôte / service dont on doit afficher les évènements
         host = validators.String(not_empty=True)
         service = validators.String(if_missing=None)
 
@@ -457,15 +482,22 @@ class RootController(AuthController, SelfMonitoringController):
         error_handler = process_form_errors)
     @expose('events_table.html')
     @require(access_restriction)
-    def item(self, page, host, service):
+    def item(self, page, host, service, sort=None, order=None):
         """
         Affichage de l'historique de l'ensemble des événements corrélés
         jamais ouverts sur l'hôte / service demandé.
         Pour accéder à cette page, l'utilisateur doit être authentifié.
 
         @param page: Numéro de la page à afficher.
+        @type: C{int}
         @param host: Nom de l'hôte souhaité.
+        @type: C{str}
         @param service: Nom du service souhaité
+        @type: C{str}
+        @param sort: Colonne de tri
+        @type: C{str} or C{None}
+        @param order: Ordre du tri (asc ou desc)
+        @type: C{str} or C{None}
 
         Cette méthode permet de satisfaire l'exigence
         VIGILO_EXIG_VIGILO_BAC_0080.
@@ -480,7 +512,7 @@ class RootController(AuthController, SelfMonitoringController):
             redirect('/')
 
         user = get_current_user()
-        aggregates = VigiboardRequest(user, False)
+        aggregates = VigiboardRequest(user, False, sort=sort, order=order)
         aggregates.add_table(
             CorrEvent,
             aggregates.items.c.hostname,
@@ -520,6 +552,8 @@ class RootController(AuthController, SelfMonitoringController):
             servicename = service,
             plugins_data = plugins_data,
             page = page,
+            sort = sort,
+            order = order,
             event_edit_status_options = edit_event_status_options,
             search_form = create_search_form,
             search = {},
@@ -993,10 +1027,14 @@ def get_last_modification_timestamp(event_id_list,
     opérée sur l'un des événements dont l'identifiant
     fait partie de la liste passée en paramètre.
     """
-    last_modification_timestamp = DBSession.query(
+    if not event_id_list:
+        last_modification_timestamp = None
+    else:
+        last_modification_timestamp = DBSession.query(
                                 func.max(EventHistory.timestamp),
                          ).filter(EventHistory.idevent.in_(event_id_list)
                          ).scalar()
+
     if not last_modification_timestamp:
         if not value_if_none:
             return None
