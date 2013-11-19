@@ -35,9 +35,10 @@ class PluginDate(VigiboardRequestPlugin):
     """Plugin pour l'ajout d'une colonne Date."""
     def get_search_fields(self):
         return [
+            twf.Label('date', text=l_('Last occurrence')),
             twf.CalendarDateTimePicker(
                 'from_date',
-                label_text=l_('From'),
+                label_text=l_('Between'),
                 button_text=l_("Choose"),
                 not_empty=False,
                 validator=dateformat.DateFormatConverter(if_missing=None),
@@ -46,7 +47,7 @@ class PluginDate(VigiboardRequestPlugin):
             ),
             twf.CalendarDateTimePicker(
                 'to_date',
-                label_text=l_('To'),
+                label_text=l_('And'),
                 button_text=l_("Choose"),
                 not_empty=False,
                 validator=dateformat.DateFormatConverter(if_missing=None),
