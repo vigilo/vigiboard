@@ -25,36 +25,11 @@ est survenu un événement et la durée depuis laquelle l'événement est actif.
 from datetime import datetime, timedelta
 import tw.forms as twf
 from pylons.i18n import ugettext as _, lazy_ugettext as l_
-from tg.i18n import get_lang
-import tg
-from babel import Locale
 
-from vigilo.turbogears.helpers import get_locales
 from vigilo.models import tables
 
 from vigiboard.controllers.plugins import VigiboardRequestPlugin, ITEMS
-from vigiboard.lib.dateformat import DateFormatConverter
-
-def get_calendar_lang():
-    # TODO: Utiliser le champ "language" du modèle pour cet utilisateur ?
-    # On récupère la langue du navigateur de l'utilisateur
-    lang = get_lang()
-    if not lang:
-        lang = tg.config['lang']
-    else:
-        lang = lang[0]
-
-    # TODO: Il faudrait gérer les cas où tout nous intéresse dans "lang".
-    # Si l'identifiant de langage est composé (ex: "fr_FR"),
-    # on ne récupère que la 1ère partie.
-    lang = lang.replace('_', '-')
-    lang = lang.split('-')[0]
-    return lang
-
-def get_date_format():
-    # @HACK: nécessaire car l_() retourne un object LazyString
-    # qui n'est pas sérialisable en JSON.
-    return _('%Y-%m-%d %I:%M:%S %p').encode('utf-8')
+from vigiboard.lib import dateformat
 
 class PluginDate(VigiboardRequestPlugin):
     """Plugin pour l'ajout d'une colonne Date."""
@@ -65,18 +40,18 @@ class PluginDate(VigiboardRequestPlugin):
                 label_text=l_('From'),
                 button_text=l_("Choose"),
                 not_empty=False,
-                validator=DateFormatConverter(if_missing=None),
-                date_format=get_date_format,
-                calendar_lang=get_calendar_lang,
+                validator=dateformat.DateFormatConverter(if_missing=None),
+                date_format=dateformat.get_date_format,
+                calendar_lang=dateformat.get_calendar_lang,
             ),
             twf.CalendarDateTimePicker(
                 'to_date',
                 label_text=l_('To'),
                 button_text=l_("Choose"),
                 not_empty=False,
-                validator=DateFormatConverter(if_missing=None),
-                date_format=get_date_format,
-                calendar_lang=get_calendar_lang,
+                validator=dateformat.DateFormatConverter(if_missing=None),
+                date_format=dateformat.get_date_format,
+                calendar_lang=dateformat.get_calendar_lang,
             ),
         ]
 

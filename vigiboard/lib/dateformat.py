@@ -10,6 +10,30 @@ from datetime import datetime
 
 from pylons.i18n import ugettext as _
 
+def get_calendar_lang():
+    from tg.i18n import get_lang
+    import tg
+
+    # TODO: Utiliser le champ "language" du modèle pour cet utilisateur ?
+    # On récupère la langue du navigateur de l'utilisateur
+    lang = get_lang()
+    if not lang:
+        lang = tg.config['lang']
+    else:
+        lang = lang[0]
+
+    # TODO: Il faudrait gérer les cas où tout nous intéresse dans "lang".
+    # Si l'identifiant de langage est composé (ex: "fr_FR"),
+    # on ne récupère que la 1ère partie.
+    lang = lang.replace('_', '-')
+    lang = lang.split('-')[0]
+    return lang
+
+def get_date_format():
+    # @HACK: nécessaire car l_() retourne un object LazyString
+    # qui n'est pas sérialisable en JSON.
+    return _('%Y-%m-%d %I:%M:%S %p').encode('utf-8')
+
 class DateFormatConverter(FancyValidator):
     """
     Valide une date selon un format identique à ceux

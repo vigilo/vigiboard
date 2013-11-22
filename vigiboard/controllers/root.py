@@ -60,7 +60,7 @@ from vigilo.turbogears.helpers import get_current_user
 from vigiboard.controllers.vigiboardrequest import VigiboardRequest
 from vigiboard.controllers.feeds import FeedsController
 
-from vigiboard.lib import export_csv
+from vigiboard.lib import export_csv, dateformat
 from vigiboard.widgets.edit_event import edit_event_status_options, \
                                             EditEventForm
 from vigiboard.widgets.search_form import create_search_form
@@ -214,8 +214,10 @@ class RootController(AuthController, SelfMonitoringController):
             if isinstance(dct[key], dict):
                 for subkey in dct[key]:
                     serialize_dict(dct[key], subkey)
-                    dct[key+'.'+subkey] = dct[key][subkey]
+                    dct['%s.%s' % (key, subkey)] = dct[key][subkey]
                 del dct[key]
+            elif isinstance(dct[key], datetime):
+                dct[key] = dct[key].strftime(dateformat.get_date_format())
         fixed_search = search.copy()
         for column in fixed_search.copy():
             serialize_dict(fixed_search, column)
