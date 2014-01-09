@@ -89,7 +89,7 @@ class PluginDetails(VigiboardRequestPlugin):
         # On détermine les cartes auxquelles cet utilisateur a accès.
         user_maps = []
         max_maps = int(config['max_maps'])
-        is_manager = in_group('managers').is_met(request.environ)
+        is_manager = config.is_manager.is_met(request.environ)
         if max_maps != 0 and (is_manager or
             has_permission('vigimap-access').is_met(request.environ)):
             items = DBSession.query(

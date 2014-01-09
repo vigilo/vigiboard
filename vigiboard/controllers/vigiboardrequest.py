@@ -25,7 +25,6 @@ from time import mktime
 from tg import config, tmpl_context, request, url
 from pylons.i18n import ugettext as _
 from paste.deploy.converters import asbool
-from repoze.what.predicates import in_group
 
 from sqlalchemy import not_, and_, asc, desc
 from sqlalchemy.sql.expression import null as expr_null, union_all
@@ -95,17 +94,13 @@ class VigiboardRequest():
             StateName.statename,
         ]
 
-
         self.req = DBSession
         self.plugin = []
         self.events = []
 
-
-        is_manager = in_group('managers').is_met(request.environ)
-
-        # Si l'utilisateur fait partie du groupe 'managers',
-        # il a accès à tous les hôtes/services sans restriction.
-        if is_manager:
+        # Si l'utilisateur est privilégié, il a accès
+        # à tous les hôtes/services sans restriction.
+        if config.is_manager.is_met(request.environ):
             # Sélection de tous les services de la BDD.
             lls_query = DBSession.query(
                 LowLevelService.idservice.label("idsupitem"),

@@ -35,9 +35,8 @@ from sqlalchemy import asc
 from sqlalchemy.sql import func
 from sqlalchemy.orm import aliased
 from sqlalchemy.sql.expression import or_
-from repoze.what.predicates import Any, All, in_group, \
-                                    has_permission, not_anonymous, \
-                                    NotAuthorizedError
+from repoze.what.predicates import Any, All, NotAuthorizedError, \
+                                    has_permission, not_anonymous
 from formencode import schema
 
 from vigilo.models.session import DBSession
@@ -95,7 +94,7 @@ class RootController(AuthController, SelfMonitoringController):
     # ou appartenir au groupe "managers" pour accéder à VigiBoard.
     access_restriction = All(
         not_anonymous(msg=l_("You need to be authenticated")),
-        Any(in_group('managers'),
+        Any(config.is_manager,
             has_permission('vigiboard-access'),
             msg=l_("You don't have access to VigiBoard"))
     )
@@ -578,7 +577,7 @@ class RootController(AuthController, SelfMonitoringController):
     @require(
         All(
             not_anonymous(msg=l_("You need to be authenticated")),
-            Any(in_group('managers'),
+            Any(config.is_manager,
                 has_permission('vigiboard-update'),
                 msg=l_("You don't have write access to VigiBoard"))
         ))
@@ -642,7 +641,7 @@ class RootController(AuthController, SelfMonitoringController):
 
         if ack == u'Forced':
             condition = Any(
-                in_group('managers'),
+                config.is_manager,
                 has_permission('vigiboard-admin'),
                 msg=l_("You don't have administrative access "
                         "to VigiBoard"))
@@ -816,8 +815,7 @@ class RootController(AuthController, SelfMonitoringController):
 
         # Filtrage des évènements en fonction des permissions de
         # l'utilisateur (s'il n'appartient pas au groupe 'managers')
-        is_manager = in_group('managers').is_met(request.environ)
-        if not is_manager:
+        if not config.is_manager.is_met(request.environ):
             user = get_current_user()
 
             events = events.join(
@@ -926,8 +924,7 @@ class RootController(AuthController, SelfMonitoringController):
 
         # Si l'utilisateur n'appartient pas au groupe 'managers',
         # on filtre les résultats en fonction de ses permissions.
-        is_manager = in_group('managers').is_met(request.environ)
-        if not is_manager:
+        if not config.is_manager.is_met(request.environ):
             user = get_current_user()
             GroupHierarchy_aliased = aliased(GroupHierarchy,
                 name='GroupHierarchy_aliased')
@@ -1000,9 +997,7 @@ class RootController(AuthController, SelfMonitoringController):
         # On filtre ces groupes racines afin de ne
         # retourner que ceux auquels l'utilisateur a accès
         user = get_current_user()
-        is_manager = in_group('managers').is_met(request.environ)
-        if not is_manager:
-
+        if not config.is_manager.is_met(request.environ):
             root_groups = root_groups.join(
                 (GroupHierarchy,
                     GroupHierarchy.idparent == SupItemGroup.idgroup),

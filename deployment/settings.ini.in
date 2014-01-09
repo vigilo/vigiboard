@@ -72,6 +72,11 @@ sa_auth.cookie_secret = vigilo
 ; de l'authentification.
 auth.config = %(here)s/who.ini
 
+; Liste des noms des groupes d'utilisateurs privilégiés,
+; séparés par des virgules.
+; Par défaut : "managers"
+admin_groups = managers
+
 ;
 ; 3 - Configuration de l'interface.
 ;
