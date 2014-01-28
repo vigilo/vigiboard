@@ -48,7 +48,7 @@ def insert_deps():
 
     correvent = CorrEvent(
         priority=42,
-        trouble_ticket=u'FOO BAR BAZ',
+        trouble_ticket=u'FOO BAR BAZ éçà',
         ack=CorrEvent.ACK_NONE,
         occurrence=42,
         timestamp_active=timestamp,

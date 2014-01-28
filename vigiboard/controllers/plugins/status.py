@@ -102,10 +102,10 @@ class PluginStatus(VigiboardRequestPlugin):
             trouble_ticket_id = event[0].trouble_ticket
             trouble_ticket_link = tg.config['vigiboard_links.tt'] % {
                 'id': event[0].idcorrevent,
-                'host': event[1] and urllib.quote(event[1], '') or event[1],
-                'service': event[2] and urllib.quote(event[2], '') or event[2],
+                'host': event[1] and urllib.quote(event[1].encode('utf8'), '') or event[1],
+                'service': event[2] and urllib.quote(event[2].encode('utf8'), '') or event[2],
                 'tt': trouble_ticket_id and \
-                        urllib.quote(trouble_ticket_id, '') or \
+                        urllib.quote(trouble_ticket_id.encode('utf8'), '') or \
                         trouble_ticket_id,
             }
 
