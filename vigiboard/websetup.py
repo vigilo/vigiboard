@@ -54,6 +54,9 @@ def populate_db(bind):
 
         'vigiboard-admin':
             'Allows users to forcefully close open events',
+
+        'vigiboard-silence':
+            'Allows users to view and edit silence rules',
     }
 
     for (permission_name, description) in permissions.iteritems():

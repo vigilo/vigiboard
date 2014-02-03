@@ -334,6 +334,41 @@ par ordre anti-chronologique.
 
 
 
+Inhibition des alertes
+------------------------------------
+Cette fonctionnalité permet d'empêcher l'apparition de nouvelles alertes dans
+VigiBoard pour un hôte ou un service donné. La page listant les règles
+d'inhibition (aussi appelées règles de mise en silence) actives est accessible
+en cliquant sur l'icône ci-dessous située en haut à droite de l'interface :
+
+.. figure:: img/silence_rules.png
+
+Les règles sont triées par défaut par ordre décroissant de dernière mise à jour,
+comme on peut le voir sur la capture ci-dessous :
+
+.. Capture à ajouter
+
+Depuis cette page, il est alors possible d'éditer ou de supprimer une règle
+existante en cliquant sur l'une des deux icônes située en début de ligne :
+
+.. figure:: img/silence_update_delete.png
+
+L'utilisateur est également en mesure d'ajouter une nouvelle règle en cliquant
+sur le bouton prévu à cet effet situé juste au-dessus du tableau :
+
+.. figure:: img/silence_add.png
+
+..  note::
+    Les alertes déjà traitées (c'est à dire soit déjà ignorées, soit déjà
+    affichées dans VigiBoard) ne sont pas impactées par les modifications faites
+    sur les règles (ie. aucun traitement n'est réalisé a posteriori pour générer
+    des alertes ou pour détruire des alertes déjà présentes).
+    De même, ce filtrage n'impacte que la production d'alertes, il ne concerne
+    pas l'état des hôtes/services (donc l'élément peut être ``CRITICAL`` dans
+    VigiMap mais ne pas avoir d'alarme correspondante dans VigiBoard).
+
+
+
 Annexes
 =======
 

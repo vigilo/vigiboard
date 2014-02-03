@@ -58,6 +58,7 @@ from vigilo.turbogears.helpers import get_current_user
 
 from vigiboard.controllers.vigiboardrequest import VigiboardRequest
 from vigiboard.controllers.feeds import FeedsController
+from vigiboard.controllers.silence import SilenceController
 
 from vigiboard.lib import export_csv, dateformat
 from vigiboard.widgets.edit_event import edit_event_status_options, \
@@ -87,6 +88,7 @@ class RootController(AuthController, SelfMonitoringController):
         not_anonymous(l_('You need to be authenticated')))
     api = ApiRootController()
     feeds = FeedsController()
+    silence = SilenceController()
     custom = CustomController()
 
     # Prédicat pour la restriction de l'accès aux interfaces.
