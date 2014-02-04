@@ -1,7 +1,7 @@
 /*
  * Vigiboard
  *
- * Copyright (C) 2009-2013 CS-SI
+ * Copyright (C) 2009-2014 CS-SI
  */
 
 // Appelé au chargement de la page
