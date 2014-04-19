@@ -225,7 +225,7 @@ class RootController(AuthController, SelfMonitoringController):
 
         # Pagination des résultats
         aggregates.generate_request()
-        items_per_page = int(config['vigiboard_items_per_page'])
+        items_per_page = int(session.get('items_per_page', config['vigiboard_items_per_page']))
         page = paginate.Page(aggregates.req, page=page,
             items_per_page=items_per_page)
 
@@ -378,7 +378,7 @@ class RootController(AuthController, SelfMonitoringController):
 
         # Pagination des résultats
         events.generate_request()
-        items_per_page = int(config['vigiboard_items_per_page'])
+        items_per_page = int(session.get('items_per_page', config['vigiboard_items_per_page']))
         page = paginate.Page(events.req, page=page,
             items_per_page=items_per_page)
 
@@ -450,7 +450,7 @@ class RootController(AuthController, SelfMonitoringController):
         history = events.format_history()
 
         # Pagination des résultats
-        items_per_page = int(config['vigiboard_items_per_page'])
+        items_per_page = int(session.get('items_per_page', config['vigiboard_items_per_page']))
         page = paginate.Page(history, page=page, items_per_page=items_per_page)
         event = events.req[0]
 
@@ -528,7 +528,7 @@ class RootController(AuthController, SelfMonitoringController):
 
         # Pagination des résultats
         aggregates.generate_request()
-        items_per_page = int(config['vigiboard_items_per_page'])
+        items_per_page = int(session.get('items_per_page', config['vigiboard_items_per_page']))
         page = paginate.Page(aggregates.req, page=page,
             items_per_page=items_per_page)
 
@@ -888,6 +888,15 @@ class RootController(AuthController, SelfMonitoringController):
         # les packages de thèmes (ex: vigilo-themes-default).
         # La vérification de la valeur est faite dans les templates.
         session['theme'] = theme
+        session.save()
+        return dict()
+
+    @validate(validators={"items": validators.Int()},
+            error_handler = handle_validation_errors_json)
+    @expose('json')
+    def set_items_per_page(self, items):
+        """Enregistre le nombre d'alertes par page dans les préférences."""
+        session['items_per_page'] = items
         session.save()
         return dict()
 

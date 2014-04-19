@@ -6,10 +6,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: vigilo-vigiboard 3.3\n"
+"Project-Id-Version: vigilo-vigiboard 3.4\n"
 "Report-Msgid-Bugs-To: contact@projet-vigilo.org\n"
-"POT-Creation-Date: 2014-02-03 10:52+0100\n"
-"PO-Revision-Date: 2014-02-03 10:52+0100\n"
+"POT-Creation-Date: 2014-06-06 17:16+0200\n"
+"PO-Revision-Date: 2014-06-06 17:16+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: en <LL@li.org>\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
@@ -23,45 +23,45 @@ msgstr ""
 msgid "Vigilo has detected a breakdown on the following collector(s): %(list)s"
 msgstr "Vigilo has detected a breakdown on the following collector(s): %(list)s"
 
-#: vigiboard/controllers/root.py:89 vigiboard/controllers/root.py:99
-#: vigiboard/controllers/root.py:582 vigiboard/controllers/silence.py:70
+#: vigiboard/controllers/root.py:88 vigiboard/controllers/root.py:98
+#: vigiboard/controllers/root.py:581 vigiboard/controllers/silence.py:70
 msgid "You need to be authenticated"
 msgstr "You need to be authenticated"
 
-#: vigiboard/controllers/root.py:102
+#: vigiboard/controllers/root.py:101
 msgid "You don't have access to VigiBoard"
 msgstr "You don't have access to VigiBoard"
 
-#: vigiboard/controllers/root.py:252 vigiboard/controllers/root.py:548
-#: vigiboard/controllers/vigiboardrequest.py:474
+#: vigiboard/controllers/root.py:251 vigiboard/controllers/root.py:547
+#: vigiboard/controllers/vigiboardrequest.py:469
 msgid "Apply"
 msgstr "Apply"
 
-#: vigiboard/controllers/root.py:388
+#: vigiboard/controllers/root.py:387
 msgid "No masked event or access denied"
 msgstr "No masked event or access denied"
 
-#: vigiboard/controllers/root.py:446
+#: vigiboard/controllers/root.py:445
 msgid "No such event or access denied"
 msgstr "No such event or access denied"
 
-#: vigiboard/controllers/root.py:515
+#: vigiboard/controllers/root.py:514
 msgid "No such host/service"
 msgstr "No such host/service"
 
-#: vigiboard/controllers/root.py:538
+#: vigiboard/controllers/root.py:537
 msgid "No access to this host/service or no event yet"
 msgstr "No access to this host/service or no event yet"
 
-#: vigiboard/controllers/root.py:585
+#: vigiboard/controllers/root.py:584
 msgid "You don't have write access to VigiBoard"
 msgstr "You don't have write access to VigiBoard"
 
-#: vigiboard/controllers/root.py:608
+#: vigiboard/controllers/root.py:607
 msgid "No event has been selected"
 msgstr "No event has been selected"
 
-#: vigiboard/controllers/root.py:636
+#: vigiboard/controllers/root.py:635
 msgid ""
 "Changes have occurred since the page was last displayed, your changes "
 "HAVE NOT been saved."
@@ -69,27 +69,27 @@ msgstr ""
 "Changes have occurred since the page was last displayed, your changes "
 "HAVE NOT been saved."
 
-#: vigiboard/controllers/root.py:642
+#: vigiboard/controllers/root.py:641
 msgid "No access to this event"
 msgstr "No access to this event"
 
-#: vigiboard/controllers/root.py:649
+#: vigiboard/controllers/root.py:648
 msgid "You don't have administrative access to VigiBoard"
 msgstr "You don't have administrative access to VigiBoard"
 
-#: vigiboard/controllers/root.py:676
+#: vigiboard/controllers/root.py:675
 msgid "None"
 msgstr "None"
 
-#: vigiboard/controllers/root.py:677
+#: vigiboard/controllers/root.py:676
 msgid "Acknowledged"
 msgstr "Acknowledged"
 
-#: vigiboard/controllers/root.py:678
+#: vigiboard/controllers/root.py:677
 msgid "Acknowledged and closed"
 msgstr "Acknowledged and closed"
 
-#: vigiboard/controllers/root.py:699
+#: vigiboard/controllers/root.py:698
 #, python-format
 msgid ""
 "User \"%(user)s\" (%(address)s) changed the trouble ticket from "
@@ -98,12 +98,12 @@ msgstr ""
 "User \"%(user)s\" (%(address)s) changed the trouble ticket from "
 "\"%(previous)s\" to \"%(new)s\" on event #%(idevent)d"
 
-#: vigiboard/controllers/root.py:744
+#: vigiboard/controllers/root.py:743
 #, python-format
 msgid "User \"%(user)s\" (%(address)s) forcefully closed event #%(idevent)d"
 msgstr "User \"%(user)s\" (%(address)s) forcefully closed event #%(idevent)d"
 
-#: vigiboard/controllers/root.py:777
+#: vigiboard/controllers/root.py:776
 #, python-format
 msgid ""
 "User \"%(user)s\" (%(address)s) changed the state from \"%(previous)s\" "
@@ -112,20 +112,20 @@ msgstr ""
 "User \"%(user)s\" (%(address)s) changed the state from \"%(previous)s\" "
 "to \"%(new)s\" on event #%(idevent)d"
 
-#: vigiboard/controllers/root.py:789
+#: vigiboard/controllers/root.py:788
 msgid "Updated successfully"
 msgstr "Updated successfully"
 
-#: vigiboard/controllers/root.py:814
+#: vigiboard/controllers/root.py:813
 #, python-format
 msgid "No such plugin '%s'"
 msgstr "No such plugin '%s'"
 
-#: vigiboard/controllers/root.py:856
+#: vigiboard/controllers/root.py:854
 msgid "No such incident or insufficient permissions"
 msgstr "No such incident or insufficient permissions"
 
-#: vigiboard/controllers/root.py:968
+#: vigiboard/controllers/root.py:974
 #, python-format
 msgid "Next %(limit)s"
 msgstr "Next %(limit)s"
@@ -387,7 +387,7 @@ msgid "Select a group"
 msgstr "Select a group"
 
 #: vigiboard/public/js/main.js:84 vigiboard/public/js/main.js:105
-#: vigiboard/public/js/main.js:136
+#: vigiboard/public/js/main.js:136 vigiboard/public/js/main.js:169
 msgid "Unable to save preferences"
 msgstr "Unable to save preferences"
 

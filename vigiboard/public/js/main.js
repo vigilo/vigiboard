@@ -136,7 +136,7 @@ function change_theme(theme_id, theme_name) {
             alert(_('Unable to save preferences'));
         }
     });
-    req.post({'theme': theme_id});
+    req.post({theme: theme_id});
     setActiveStyleSheet(theme_name);
 
     vigiloLog.log("Theme set to '" + theme_name + "'.");
@@ -159,4 +159,18 @@ function add_autocompleter(elem, varname, url) {
         postVar: varname,
         overflow: true
     });
+}
+
+function set_items_per_page(ipp) {
+    var req = new Request.JSON({
+        link: 'cancel',
+        url: app_path + '/set_items_per_page',
+        onFailure: function () {
+            alert(_('Unable to save preferences'));
+        },
+        onSuccess: function () {
+            refresh_page();
+        }
+    });
+    req.post({items: ipp});
 }
