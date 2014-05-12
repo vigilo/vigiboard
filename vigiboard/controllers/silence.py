@@ -133,9 +133,9 @@ class SilenceController(BaseController):
         # On interroge la base pour avoir la liste des règles de mise en silence
         # correspondant à ces supitems.
         states = DBSession.query(
+                StateName.statename,
                 SILENCE_STATE_TABLE.c.idsilence,
-                StateName.statename
-            ).join((StateName,
+            ).join((SILENCE_STATE_TABLE,
                 StateName.idstatename == SILENCE_STATE_TABLE.c.idstate)
             ).order_by(StateName.statename
             ).subquery()
