@@ -68,7 +68,7 @@ function add_autocompleter(elem, varname, url, postData, forceSelect) {
 function adapt_states_field() {
     // Si le champ 'service' est vide, on cache les états spécifiques aux
     // services et on affiche les états d'hôtes
-    if ($('service').get('value') == '') {
+    if ($('service').get('value') === '') {
         $('service_states').hide();
         $('host_states').show();
     // Si le champ 'service' n'est pas vide, on affiche les états spécifiques
@@ -83,7 +83,7 @@ function adapt_states_field() {
 // Fonction appelée suite à la validation du formulaire
 function submit_form() {
     // Traitement des règles portant sur les hôtes
-    if ($('service').get('value') == '') {
+    if ($('service').get('value') === '') {
         $('states').set('value', $$('#host_states input').get('value')[0]);
         $('host_states').destroy();
         $('service_states').destroy();
