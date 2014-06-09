@@ -31,7 +31,6 @@ def insert_deps():
         snmpport=42,
         snmpcommunity=u'public',
         snmpversion=u'3',
-        weight=42,
     )
     DBSession.add(host)
     DBSession.flush()

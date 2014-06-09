@@ -475,7 +475,6 @@ class TestRootController(TestController):
                 hosttpl = u'/dev/null',
                 address = u'192.168.1.%d' % i,
                 snmpport = 42,
-                weight = 42,
             )
             DBSession.add(host)
             DBSession.flush()
