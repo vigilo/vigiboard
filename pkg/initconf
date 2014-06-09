@@ -1,0 +1,17 @@
+# Les alertes de plus de ACK jours seront automatiquement acquittées.
+# Utiliser la valeur -1 pour désactiver l'acquittement automatique.
+ACK=-1
+
+# Options pour contrôler l'acquittement automatique.
+# Consulter `vigiboard-close --help` pour plus d'information.
+ACK_OPTIONS="-uk"
+
+# Les alertes de plus de PURGE jours seront automatiquement purgées.
+# Utiliser la valeur -1 pour désactiver la purge automatique.
+# ATTENTION: la purge des alertes entraîne leur effacement définitif
+#            de la base de données Vigilo.
+PURGE=-1
+
+# Options pour contrôler la purge automatique.
+# Consulter `vigiboard-purge --help` pour plus d'information.
+PURGE_OPTIONS=""

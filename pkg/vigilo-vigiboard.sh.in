@@ -1,0 +1,18 @@
+#!/bin/sh
+
+ACK=-1
+ACK_OPTIONS="-uk"
+PURGE=-1
+PURGE_OPTIONS=""
+
+if [ -f '@INITCONFDIR@/vigilo-vigiboard' ]; then
+    . '@INITCONFDIR@/vigilo-vigiboard'
+fi
+
+if [ "$ACK" -gt -1 ]; then
+    @BINDIR@/vigiboard-close $ACK_OPTIONS -d $ACK
+fi
+
+if [ "$PURGE" -gt -1 ]; then
+    @BINDIR@/vigiboard-purge $PURGE_OPTIONS -d $PURGE
+fi

@@ -101,5 +101,9 @@ setup(
             'deployment/settings.ini',
             'deployment/who.ini',
         ]),
+        (
+            os.path.join(sysconfdir, 'cron.daily'),
+            [os.path.join('pkg', 'vigilo-vigiboard.sh')]
+        ),
     ],
 )

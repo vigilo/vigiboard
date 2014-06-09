@@ -4,7 +4,8 @@ SUBST_FILES := \
 	deployment/logrotate.conf \
 	deployment/settings.ini   \
 	deployment/vigiboard.conf \
-	deployment/vigiboard.wsgi
+	deployment/vigiboard.wsgi \
+	pkg/vigilo-vigiboard.sh
 
 all: build
 build: $(SUBST_FILES)
@@ -20,6 +21,10 @@ deployment/%: deployment/%.in
 	    -e 's,@NAGIOS_BIN@,$(NAGIOS_BIN),g' \
 	    -e 's,@LOCALSTATEDIR@,$(LOCALSTATEDIR),g' $^ > $@
 
+pkg/vigilo-vigiboard.sh: pkg/vigilo-vigiboard.sh.in
+	sed -e 's,@INITCONFDIR@,$(INITCONFDIR),g' \
+		-e 's,@BINDIR@,$(BINDIR),g' $^ > $@
+
 install: build install_python install_data
 install_pkg: build install_python_pkg install_data
 
@@ -30,6 +35,9 @@ install_python_pkg: $(PYTHON) $(SUBST_FILES)
 		$(SETUP_PY_OPTS) --root=$(DESTDIR) --record=INSTALLED_FILES
 
 install_data: $(SUBST_FILES)
+	# Configuration de la tâche cron.
+	install -p -m 644 -D pkg/initconf $(DESTDIR)$(INITCONFDIR)/$(PKGNAME)
+	echo $(INITCONFDIR)/$(PKGNAME) >> INSTALLED_FILES
 	# Permissions de la conf
 	chmod a+rX -R $(DESTDIR)$(SYSCONFDIR)/vigilo/$(NAME)
 	[ `id -u` -ne 0 ] || chgrp $(HTTPD_USER) $(DESTDIR)$(SYSCONFDIR)/vigilo/$(NAME)/*.ini
