@@ -26,6 +26,7 @@ from time import mktime
 from pkg_resources import resource_filename, working_set
 
 from tg.exceptions import HTTPNotFound
+from tg.controllers import CUSTOM_CONTENT_TYPE
 from tg import expose, validate, require, flash, url, \
     tmpl_context, request, response, config, session, redirect
 from webhelpers import paginate
@@ -153,8 +154,7 @@ class RootController(AuthController, SelfMonitoringController):
     @validate(
         validators=IndexSchema(),
         error_handler = process_form_errors)
-    @expose('events_table.html')
-    @expose('events_table.html', content_type='text/csv')
+    @expose('events_table.html', content_type=CUSTOM_CONTENT_TYPE)
     @require(access_restriction)
     def index(self, page, sort=None, order=None, **search):
         """
@@ -256,6 +256,7 @@ class RootController(AuthController, SelfMonitoringController):
             response.headers['Pragma'] = 'public'           # Nécessaire pour IE.
             response.headers['Cache-Control'] = 'max-age=0' # Nécessaire pour IE.
 
+            response.headers["Content-Type"] = "text/csv"
             response.headers['Content-Disposition'] = \
                             'attachment;filename="alerts.csv"'
             return export_csv.export(page, plugins_data)
