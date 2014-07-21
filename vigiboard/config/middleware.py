@@ -54,6 +54,9 @@ def make_app(global_conf, full_stack=True, **app_conf):
     """
     app = make_base_app(global_conf, full_stack=full_stack, **app_conf)
 
+    # Personalisation des fichiers statiques via /etc/vigilo/vigiboard/public/.
+    custom_static = StaticURLParser('/etc/vigilo/vigiboard/public/')
+
     # On définit 2 middlewares pour fichiers statiques qui cherchent
     # les fichiers dans le thème actuellement chargé.
     # Le premier va les chercher dans le dossier des fichiers spécifiques
@@ -64,5 +67,5 @@ def make_app(global_conf, full_stack=True, **app_conf):
         'vigilo.themes.public', 'common'))
     local_static = StaticURLParser(resource_filename(
         'vigiboard', 'public'))
-    app = Cascade([app_static, common_static, local_static, app])
+    app = Cascade([custom_static, app_static, common_static, local_static, app])
     return app
