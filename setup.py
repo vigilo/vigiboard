@@ -88,6 +88,7 @@ setup(
             'servicename = vigiboard.controllers.plugins.servicename:PluginServicename',
             'output = vigiboard.controllers.plugins.output:PluginOutput',
             'hls = vigiboard.controllers.plugins.hls:PluginHLS',
+            'state = vigiboard.controllers.plugins.state:PluginState',
             'status = vigiboard.controllers.plugins.status:PluginStatus',
             'groups = vigiboard.controllers.plugins.groups:PluginGroups',
             'masked_events = vigiboard.controllers.plugins.masked_events:PluginMaskedEvents',
