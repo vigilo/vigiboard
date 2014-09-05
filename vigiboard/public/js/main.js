@@ -38,7 +38,7 @@ window.addEvent('domready', function (){
         id: "SearchDialog",
         label: _('Search Event'),
         modal: false,
-        resize: false,
+        resize: true,
         move: true,
         content: "search_form",
         onOpen: window.dlg_open_handler,
