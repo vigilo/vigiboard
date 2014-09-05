@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: vigiboard 0.1\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2009-07-06 11:19+0200\n"
-"PO-Revision-Date: 2014-08-18 15:44+0200\n"
+"PO-Revision-Date: 2014-09-05 13:41+0200\n"
 "Last-Translator: Thomas ANDREJAK <thomas.andrejak@c-s.fr>\n"
 "Language-Team: fr_FR <LL@li.org>\n"
 "Plural-Forms: nplurals=2; plural=(n > 1)\n"
@@ -397,7 +397,7 @@ msgstr "%d/%m/%Y %H:%M:%S"
 
 #: vigiboard/public/js/main.js:39
 msgid "Search Event"
-msgstr "Rechercher l'événement"
+msgstr "Rechercher un événement"
 
 #: vigiboard/public/js/main.js:54
 msgid "Select a group"
