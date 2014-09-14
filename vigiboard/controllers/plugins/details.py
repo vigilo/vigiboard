@@ -26,6 +26,8 @@ applications externes.
 
 import urllib
 from tg import config, url, request
+from pylons.i18n import lazy_ugettext as l_
+import tw.forms as twf
 from sqlalchemy.sql.expression import null as expr_null, union_all
 from sqlalchemy import func
 
@@ -37,7 +39,8 @@ from vigilo.models.tables import Event, CorrEvent, Host, LowLevelService, \
     StateName, Map, MapNode, MapNodeHost, MapGroup
 from vigilo.models.tables.secondary_tables import MAP_GROUP_TABLE
 
-from vigiboard.controllers.plugins import VigiboardRequestPlugin
+from vigiboard.controllers.plugins import VigiboardRequestPlugin, ITEMS
+
 
 class PluginDetails(VigiboardRequestPlugin):
     """
@@ -180,3 +183,38 @@ class PluginDetails(VigiboardRequestPlugin):
             'initial_state': init_state,
             'id': event[0].idcorrevent,
         }
+
+    def get_search_fields(self):
+        states = DBSession.query(StateName.idstatename, StateName.statename
+                    ).order_by(StateName.order.asc()).all()
+        options = [('', u'')] + \
+                    [( str(s.idstatename), s.statename ) for s in states]
+        return [
+            twf.SingleSelectField(
+                'state',
+                label_text=l_('Current state'),
+                options=options,
+                validator=twf.validators.OneOf(
+                    dict(options).keys(),
+                    if_invalid=None,
+                    if_missing=None,
+                ),
+            ),
+        ]
+
+    def handle_search_fields(self, query, search, state, subqueries):
+        if state != ITEMS:
+            return
+
+        if search.get('state'):
+            try:
+                query.add_filter(Event.current_state == int(search['state']))
+            except (ValueError, TypeError):
+                # On ignore silencieusement le critère de recherche erroné.
+                pass
+
+    def get_sort_criterion(self, query, column):
+        if column == 'state':
+            return Event.current_state
+        return None
+
