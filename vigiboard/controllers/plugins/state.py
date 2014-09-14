@@ -71,5 +71,7 @@ class PluginState(VigiboardRequestPlugin):
         return {'state': state}
 
     def get_sort_criterion(self, query, column):
-        return Event.current_state
+        if column == 'state':
+            return Event.current_state
+        return None
 
