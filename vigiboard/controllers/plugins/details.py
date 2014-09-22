@@ -214,7 +214,7 @@ class PluginDetails(VigiboardRequestPlugin):
                 pass
 
     def get_sort_criterion(self, query, column):
-        if column == 'state':
-            return Event.current_state
+        if column == 'details':
+            return StateName.order
         return None
 
