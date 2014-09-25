@@ -195,6 +195,16 @@ csv_quoting = all
 ; Par défaut : -1 (Désactivé)
 freshness_threshold = -1
 
+; Durée maximale en secondes de conservation en cache
+; des fichiers statiques (CSS, JavaScript, images, etc.).
+; La valeur 0 permet de désactiver complètement la mise en cache.
+; Notes :
+; * Cette valeur fournit une indication sur la gestion du cache
+;   aux navigateurs, mais ils sont libres de l'ignorer.
+; * Si vous utilisez des fichiers statiques personnalisés,
+;   une valeur trop élevée ralentira leur prise en compte.
+;cache_max_age = 0
+
 ;
 ; 4 - Configuration du proxy Nagios.
 ;

@@ -54,18 +54,28 @@ def make_app(global_conf, full_stack=True, **app_conf):
     """
     app = make_base_app(global_conf, full_stack=full_stack, **app_conf)
 
+    max_age = app_conf.get("cache_max_age")
+    try:
+        max_age = int(max_age)
+    except (ValueError, TypeError):
+        max_age = None
+
     # Personalisation des fichiers statiques via /etc/vigilo/vigiboard/public/.
-    custom_static = StaticURLParser('/etc/vigilo/vigiboard/public/')
+    custom_static = StaticURLParser('/etc/vigilo/vigiboard/public/',
+                                    cache_max_age=max_age)
 
     # On définit 2 middlewares pour fichiers statiques qui cherchent
     # les fichiers dans le thème actuellement chargé.
     # Le premier va les chercher dans le dossier des fichiers spécifiques
     # à l'application, le second cherche dans les fichiers communs.
-    app_static = StaticURLParser(resource_filename(
-        'vigilo.themes.public', 'vigiboard'))
-    common_static = StaticURLParser(resource_filename(
-        'vigilo.themes.public', 'common'))
-    local_static = StaticURLParser(resource_filename(
-        'vigiboard', 'public'))
+    app_static = StaticURLParser(
+        resource_filename('vigilo.themes.public', 'vigiboard'),
+        cache_max_age=max_age)
+    common_static = StaticURLParser(
+        resource_filename('vigilo.themes.public', 'common'),
+        cache_max_age=max_age)
+    local_static = StaticURLParser(
+        resource_filename('vigiboard', 'public'),
+        cache_max_age=max_age)
     app = Cascade([custom_static, app_static, common_static, local_static, app])
     return app
