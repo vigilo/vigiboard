@@ -20,11 +20,12 @@
 
 """Gestion de la requête, des plugins et de l'affichage du Vigiboard"""
 
+import logging
 from time import mktime
 
 from tg import config, tmpl_context, request, url
 from pylons.i18n import ugettext as _
-from paste.deploy.converters import asbool
+from paste.deploy.converters import aslist
 
 from sqlalchemy import not_, and_, asc, desc
 from sqlalchemy.sql.expression import null as expr_null, union_all
@@ -35,6 +36,8 @@ from vigilo.models.tables import Event, CorrEvent, EventHistory, \
     Host, LowLevelService, StateName, UserSupItem
 from vigiboard.widgets.edit_event import EditEventForm
 from vigiboard.controllers.plugins import VigiboardRequestPlugin, INNER, ITEMS
+
+LOGGER = logging.getLogger(__name__)
 
 class VigiboardRequest():
     """
@@ -163,8 +166,9 @@ class VigiboardRequest():
         # - VIGILO_EXIG_VIGILO_BAC_0050
         # - VIGILO_EXIG_VIGILO_BAC_0060
         self.orderby = []
+        plugins = config.get('columns_plugins', [])
         if sort:
-            for _plugin, instance in config.get('columns_plugins', []):
+            for _plugin, instance in plugins:
                 criterion = instance.get_sort_criterion(self, sort)
                 if criterion is not None:
                     if order == 'asc':
@@ -172,32 +176,28 @@ class VigiboardRequest():
                     else:
                         self.orderby.append(desc(criterion))
 
-        # Permet de définir le sens de tri pour la priorité.
-        if config['vigiboard_priority_order'] == 'asc':
-            priority_order = asc(CorrEvent.priority)
-        else:
-            priority_order = desc(CorrEvent.priority)
-
-        self.orderby.extend([
-            asc(CorrEvent.ack),                             # État acquittement
-            asc(StateName.statename.in_([u'OK', u'UP'])),   # Vert / Pas vert
-            priority_order,                                 # Priorité ITIL
-        ])
-
-        if asbool(config.get('state_first', True)):
-            self.orderby.extend([
-                desc(StateName.order),                      # Etat courant
-                desc(Event.timestamp),                      # Timestamp
-            ])
-        else:
-            self.orderby.extend([
-                desc(Event.timestamp),                      # Timestamp
-                desc(StateName.order),                      # Etat courant
-            ])
+        default_sort = aslist(config.get('default_sort', ''))
+        for sort_column in default_sort:
+            criterion = None
+            sort_field, _dummy, sort_order = sort_column.partition(':')
+            for _plugin, instance in plugins:
+                criterion = instance.get_sort_criterion(self, sort_field)
+                if criterion is not None:
+                    if sort_order == 'desc':
+                        self.orderby.append(desc(criterion))
+                    elif sort_order in ('asc', None):
+                        self.orderby.append(asc(criterion))
+                    else:
+                        self.orderby.append(asc(criterion))
+                        LOGGER.warn('Invalid sort order: "%s", sorting in '
+                                    'ascending order instead', sort_order)
+                    break
+            if criterion is None:
+                LOGGER.info('No such plugin: "%s"', sort_field)
 
         if search is not None:
             # 2nde passe pour les filtres : self.items est désormais défini.
-            for _plugin, instance in config.get('columns_plugins', []):
+            for _plugin, instance in plugins:
                 instance.handle_search_fields(self, search, ITEMS, subqueries)
 
         if mask_closed_events:

@@ -214,7 +214,9 @@ class PluginDetails(VigiboardRequestPlugin):
                 pass
 
     def get_sort_criterion(self, query, column):
-        if column == 'details':
-            return StateName.order
-        return None
+        columns = {
+            'details': StateName.order,
+            'problem': StateName.statename.in_([u'OK', u'UP']),
+        }
+        return columns.get(column)
 
