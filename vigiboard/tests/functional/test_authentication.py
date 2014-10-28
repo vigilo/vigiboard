@@ -55,7 +55,8 @@ class TestAuthentication(TestController):
         assert 'authtkt' in resp.request.cookies, \
                'Session cookie was not defined: %s' % resp.request.cookies
         # Logging out:
-        resp = self.app.get('/logout_handler', status=302)
+        resp = self.app.get('/logout_handler', status=302,
+                            extra_environ={'REMOTE_ADDR': '127.0.0.1'})
         assert resp.location.startswith('/post_logout') or \
             resp.location.startswith('http://localhost/post_logout'), \
             "Result: %s" % resp.location
