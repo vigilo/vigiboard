@@ -13,6 +13,10 @@ WSGIScriptAlias /vigilo/vigiboard "@SYSCONFDIR@/vigilo/vigiboard/vigiboard.wsgi"
 KeepAlive Off
 
 <Directory "@SYSCONFDIR@/vigilo/vigiboard/">
+    <IfModule mod_headers.c>
+        Header set X-UA-Compatible "IE=edge"
+    </IfModule>
+
     <Files "vigiboard.wsgi">
         WSGIProcessGroup vigiboard
         WSGIApplicationGroup %{GLOBAL}
