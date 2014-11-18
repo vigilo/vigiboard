@@ -288,8 +288,8 @@ msgstr "Erreur : la règle de silence #%s n'existe pas."
 #, python-format
 msgid "An exception has been raised while deleting the silence rules: %s"
 msgstr ""
-"Une exception a été levée lors de la suppression des règles de \"\n"
-"\"silence : %s"
+"Une exception a été levée lors de la suppression des règles de "
+"silence : %s"
 
 #: vigiboard/controllers/silence.py:624
 #, python-format
