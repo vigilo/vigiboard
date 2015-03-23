@@ -44,6 +44,7 @@ class SearchForm(twf.TableForm):
     method = 'GET'
     style = 'display: none'
 
+    # Paramètres liés à la pagination et au tri.
     fields = [
         twf.HiddenField('page'),
         twf.HiddenField('sort'),
