@@ -293,9 +293,9 @@ valeur de la clé ``vigiboard_items_per_page`` sous la section ``[app:main]``.
 Configuration du lien d'accueil
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Vous avez la possibilité de rediriger l'utilisateur vers une page de votre
-choix lorsque celui-ci clique sur le logo de Vigilo |imghome| dans l'interface
-graphique de VigiBoard. Ceci se fait en modifiant l'URL donnée par l'option
-``logo_link``.
+choix lorsque celui-ci clique sur le logo en forme de maison |imghome|
+dans l'interface graphique de VigiBoard.
+Ceci se fait en modifiant l'URL associée à l'option ``home_link``.
 
 .. |imghome| image:: img/home.png
 

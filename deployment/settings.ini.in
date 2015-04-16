@@ -137,8 +137,12 @@ refresh_enabled = True
 ; Nombre d'événements par page.
 vigiboard_items_per_page = 15
 
-; URL vers laquelle le logo de Vigilo redirige.
-logo_link = /
+; URL vers laquelle l'icône "Maison" redirige.
+; Les URLs partielles sont relatives à l'application
+; (ex : "/" redirige vers la page principale de l'application).
+; Utiliser une URL absolue pour pointer vers une autre application
+; (ex : "http://example.com/").
+home_link = /
 
 ; Définition des différentes tailles possibles pour la police
 ; de caractères. Les tailles indiquées ici doivent utiliser
