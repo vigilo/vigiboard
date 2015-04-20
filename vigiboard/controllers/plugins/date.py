@@ -31,6 +31,34 @@ from vigilo.models import tables
 from vigiboard.controllers.plugins import VigiboardRequestPlugin, ITEMS
 from vigiboard.lib import dateformat
 
+
+class ExampleDateFormat(object):
+    """
+    Une classe permettant d'obtenir un exemple de date
+    correspondant au format de la locale de l'utilisateur.
+    """
+    def __str__(self):
+        """
+        Retourne l'heure courante au format attendu,
+        encodée en UTF-8.
+
+        @return: Heure courante au format attendu (en UTF-8).
+        @rtype: C{str}
+        """
+        return unicode(self).encode('utf-8')
+
+    def __unicode__(self):
+        """
+        Retourne l'heure courante au format attendu.
+
+        @return: Heure courante au format attendu.
+        @rtype: C{unicode}
+        """
+        format = dateformat.get_date_format()
+        date = datetime.strftime(datetime.now(), format).decode('utf-8')
+        return _('Eg. %(date)s') % {'date': date}
+
+
 class PluginDate(VigiboardRequestPlugin):
     """Plugin pour l'ajout d'une colonne Date."""
     def get_search_fields(self):
@@ -44,6 +72,12 @@ class PluginDate(VigiboardRequestPlugin):
                 validator=dateformat.DateFormatConverter(if_missing=None),
                 date_format=dateformat.get_date_format,
                 calendar_lang=dateformat.get_calendar_lang,
+                attrs={
+                    # Affiche un exemple de date au survol
+                    # et en tant qu'indication (placeholder).
+                    'title': ExampleDateFormat(),
+                    'placeholder': ExampleDateFormat()
+                },
             ),
             twf.CalendarDateTimePicker(
                 'to_date',
@@ -53,6 +87,12 @@ class PluginDate(VigiboardRequestPlugin):
                 validator=dateformat.DateFormatConverter(if_missing=None),
                 date_format=dateformat.get_date_format,
                 calendar_lang=dateformat.get_calendar_lang,
+                attrs={
+                    # Affiche un exemple de date au survol
+                    # et en tant qu'indication (placeholder).
+                    'title': ExampleDateFormat(),
+                    'placeholder': ExampleDateFormat()
+                },
             ),
         ]
 

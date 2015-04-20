@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: vigiboard 0.1\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2009-07-06 11:19+0200\n"
-"PO-Revision-Date: 2014-09-05 13:41+0200\n"
+"PO-Revision-Date: 2015-04-21 11:49+0200\n"
 "Last-Translator: Thomas ANDREJAK <thomas.andrejak@c-s.fr>\n"
 "Language-Team: fr_FR <LL@li.org>\n"
 "Plural-Forms: nplurals=2; plural=(n > 1)\n"
@@ -288,8 +288,8 @@ msgstr "Erreur : la règle de silence #%s n'existe pas."
 #, python-format
 msgid "An exception has been raised while deleting the silence rules: %s"
 msgstr ""
-"Une exception a été levée lors de la suppression des règles de "
-"silence : %s"
+"Une exception a été levée lors de la suppression des règles de silence : "
+"%s"
 
 #: vigiboard/controllers/silence.py:624
 #, python-format
@@ -317,23 +317,33 @@ msgstr "Les règles de silence suivantes ont été supprimées avec succès: %s.
 msgid "Silence rule #%s has been successfully deleted."
 msgstr "La règle de silence #%s a été supprimée avec succès."
 
-#: vigiboard/controllers/plugins/date.py:38
+#: vigiboard/controllers/plugins/date.py:59
+#, python-format
+msgid "Eg. %(date)s"
+msgstr "P.ex. %(date)s"
+
+#: vigiboard/controllers/plugins/date.py:66
 msgid "Last occurrence"
 msgstr "Dernière occurrence"
 
-#: vigiboard/controllers/plugins/date.py:41
+#: vigiboard/controllers/plugins/date.py:69
 msgid "Between"
 msgstr "Entre"
 
-#: vigiboard/controllers/plugins/date.py:42
-#: vigiboard/controllers/plugins/date.py:51
+#: vigiboard/controllers/plugins/date.py:70
+#: vigiboard/controllers/plugins/date.py:85
 #: vigiboard/controllers/plugins/groups.py:41
 msgid "Choose"
 msgstr "Choisir"
 
-#: vigiboard/controllers/plugins/date.py:50
+#: vigiboard/controllers/plugins/date.py:84
 msgid "And"
 msgstr "Et"
+
+#: vigiboard/controllers/plugins/details.py:195
+#: vigiboard/controllers/plugins/state.py:47
+msgid "Current state"
+msgstr "État courant"
 
 #: vigiboard/controllers/plugins/groups.py:42
 msgid "Clear"
@@ -354,10 +364,6 @@ msgstr "Sortie d'erreur"
 #: vigiboard/controllers/plugins/priority.py:88
 msgid "Priority"
 msgstr "Priorité"
-
-#: vigiboard/controllers/plugins/state.py:47
-msgid "Current state"
-msgstr "État courant"
 
 #: vigiboard/controllers/plugins/status.py:53
 msgid "All alerts"
@@ -389,11 +395,19 @@ msgstr "Statut d'acquittement"
 #. TRANSLATORS:
 #. http://www.dynarch.com/static/jscalendar-1.0/doc/html/reference.html#node_sec_5.3.5
 #. TRANSLATORS: http://docs.python.org/release/2.5/lib/module-time.html
-#: vigiboard/lib/dateformat.py:35 vigiboard/lib/dateformat.py:58
-#: vigiboard/lib/dateformat.py:70
+#: vigiboard/lib/dateformat.py:38
 #, python-format
 msgid "%Y-%m-%d %I:%M:%S %p"
 msgstr "%d/%m/%Y %H:%M:%S"
+
+#. TRANSLATORS: Format de date Python/JavaScript.
+#. TRANSLATORS:
+#. http://www.dynarch.com/static/jscalendar-1.0/doc/html/reference.html#node_sec_5.3.5
+#. TRANSLATORS: http://docs.python.org/release/2.5/lib/module-time.html
+#: vigiboard/lib/dateformat.py:67
+#, python-format
+msgid "%Y-%m-%d"
+msgstr "%d/%m/%Y"
 
 #: vigiboard/public/js/main.js:39
 msgid "Search Event"

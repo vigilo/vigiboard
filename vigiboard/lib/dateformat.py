@@ -32,6 +32,9 @@ def get_calendar_lang():
 def get_date_format():
     # @HACK: nécessaire car l_() retourne un object LazyString
     # qui n'est pas sérialisable en JSON.
+    # TRANSLATORS: Format de date et heure Python/JavaScript.
+    # TRANSLATORS: http://www.dynarch.com/static/jscalendar-1.0/doc/html/reference.html#node_sec_5.3.5
+    # TRANSLATORS: http://docs.python.org/release/2.5/lib/module-time.html
     return _('%Y-%m-%d %I:%M:%S %p').encode('utf-8')
 
 class DateFormatConverter(FancyValidator):
@@ -52,12 +55,18 @@ class DateFormatConverter(FancyValidator):
             str_date = str_date.encode('utf-8')
 
         try:
-            # TRANSLATORS: Format de date et heure Python/JavaScript.
-            # TRANSLATORS: http://www.dynarch.com/static/jscalendar-1.0/doc/html/reference.html#node_sec_5.3.5
-            # TRANSLATORS: http://docs.python.org/release/2.5/lib/module-time.html
-            date = datetime.strptime(str_date, _('%Y-%m-%d %I:%M:%S %p').encode('utf8'))
+            # On tente d'interpréter la saisie de l'utilisateur
+            # selon un format date + heure.
+            date = datetime.strptime(str_date, get_date_format())
         except ValueError:
-            raise Invalid(self.message('invalid', state), value, state)
+            try:
+                # 2è essai : on essaye d'interpréter uniquement une date.
+                # TRANSLATORS: Format de date Python/JavaScript.
+                # TRANSLATORS: http://www.dynarch.com/static/jscalendar-1.0/doc/html/reference.html#node_sec_5.3.5
+                # TRANSLATORS: http://docs.python.org/release/2.5/lib/module-time.html
+                date = datetime.strptime(str_date, _('%Y-%m-%d').encode('utf8'))
+            except ValueError:
+                raise Invalid(self.message('invalid', state), value, state)
         return date
 
     def _from_python(self, value, state):
@@ -65,7 +74,4 @@ class DateFormatConverter(FancyValidator):
             raise Invalid(self.message('invalid', state), value, state)
 
         # Même format que pour _to_python.
-        return datetime.strftime(
-                    value,
-                    _('%Y-%m-%d %I:%M:%S %p').encode('utf8')
-                ).decode('utf-8')
+        return datetime.strftime(value, get_date_format()).decode('utf-8')

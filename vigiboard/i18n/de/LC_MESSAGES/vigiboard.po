@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: vigiboard 2.0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2010-11-19 10:22+0100\n"
-"PO-Revision-Date: 2014-09-05 13:41+0200\n"
+"PO-Revision-Date: 2015-04-21 11:49+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: de_DE <LL@li.org>\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
@@ -288,22 +288,32 @@ msgstr ""
 msgid "Silence rule #%s has been successfully deleted."
 msgstr ""
 
-#: vigiboard/controllers/plugins/date.py:38
+#: vigiboard/controllers/plugins/date.py:59
+#, python-format
+msgid "Eg. %(date)s"
+msgstr ""
+
+#: vigiboard/controllers/plugins/date.py:66
 msgid "Last occurrence"
 msgstr ""
 
-#: vigiboard/controllers/plugins/date.py:41
+#: vigiboard/controllers/plugins/date.py:69
 msgid "Between"
 msgstr ""
 
-#: vigiboard/controllers/plugins/date.py:42
-#: vigiboard/controllers/plugins/date.py:51
+#: vigiboard/controllers/plugins/date.py:70
+#: vigiboard/controllers/plugins/date.py:85
 #: vigiboard/controllers/plugins/groups.py:41
 msgid "Choose"
 msgstr "Auswählen"
 
-#: vigiboard/controllers/plugins/date.py:50
+#: vigiboard/controllers/plugins/date.py:84
 msgid "And"
+msgstr ""
+
+#: vigiboard/controllers/plugins/details.py:195
+#: vigiboard/controllers/plugins/state.py:47
+msgid "Current state"
 msgstr ""
 
 #: vigiboard/controllers/plugins/groups.py:42
@@ -325,10 +335,6 @@ msgstr "Ausgabe"
 #: vigiboard/controllers/plugins/priority.py:88
 msgid "Priority"
 msgstr "Priorität"
-
-#: vigiboard/controllers/plugins/state.py:47
-msgid "Current state"
-msgstr ""
 
 #: vigiboard/controllers/plugins/status.py:53
 msgid "All alerts"
@@ -360,11 +366,19 @@ msgstr "Bestätigungsstatus"
 #. TRANSLATORS:
 #. http://www.dynarch.com/static/jscalendar-1.0/doc/html/reference.html#node_sec_5.3.5
 #. TRANSLATORS: http://docs.python.org/release/2.5/lib/module-time.html
-#: vigiboard/lib/dateformat.py:35 vigiboard/lib/dateformat.py:58
-#: vigiboard/lib/dateformat.py:70
+#: vigiboard/lib/dateformat.py:38
 #, python-format
 msgid "%Y-%m-%d %I:%M:%S %p"
-msgstr "%Y-%m-%d %I:%M:%S %p"
+msgstr "%d.%m.%Y %H:%M:%S"
+
+#. TRANSLATORS: Format de date Python/JavaScript.
+#. TRANSLATORS:
+#. http://www.dynarch.com/static/jscalendar-1.0/doc/html/reference.html#node_sec_5.3.5
+#. TRANSLATORS: http://docs.python.org/release/2.5/lib/module-time.html
+#: vigiboard/lib/dateformat.py:67
+#, python-format
+msgid "%Y-%m-%d"
+msgstr "%d.%m.%Y"
 
 #: vigiboard/public/js/main.js:39
 msgid "Search Event"
