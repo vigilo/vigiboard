@@ -7,6 +7,7 @@ Teste le formulaire de recherche avec divers champs.
 """
 from nose.tools import assert_true, assert_equal
 from datetime import datetime
+from datetime import timedelta
 import transaction
 
 from vigiboard.tests import TestController
@@ -17,7 +18,7 @@ from vigilo.models.tables import SupItemGroup, Host, Permission, \
 
 def insert_deps():
     """Insère les dépendances nécessaires aux tests."""
-    timestamp = datetime.now()
+    timestamp = datetime.now() + timedelta(seconds=-10)
 
     host = Host(
         name=u'bar',
@@ -68,7 +69,6 @@ def insert_deps():
     DBSession.flush()
     return timestamp
 
-
 class TestSearchFormMisc(TestController):
     """Teste la récupération d'événements selon le nom d'hôte."""
     def setUp(self):
@@ -85,6 +85,18 @@ class TestSearchFormMisc(TestController):
         DBSession.add(user)
         DBSession.add(usergroup)
         DBSession.flush()
+
+    def get_number_of_rows(self, from_date, to_date):
+        """Détermine le nombre de lignes parmi les résultats d'une recherche sur le formulaire."""
+        response = self.app.get(
+            '/?from_date=%(from_date)s&to_date=%(to_date)s' % {
+                'from_date': from_date,
+                'to_date': to_date,
+            },
+            extra_environ={'REMOTE_USER': 'user'})
+        rows = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr')
+        print "There are %d rows in the result set" % len(rows)
+        return len(rows)
 
     def test_search_by_output(self):
         """Teste la recherche sur le message issu de Nagios."""
@@ -134,7 +146,7 @@ class TestSearchFormMisc(TestController):
 
         # Préparation des dates/heures.
         from_date = timestamp.strftime("%Y-%m-%d %I:%M:%S %p")
-        to_date = datetime.max.strftime("%Y-%m-%d %I:%M:%S %p")
+        to_date = datetime.now().strftime("%Y-%m-%d %I:%M:%S %p")
 
         # Permet également de vérifier que la recherche
         # par date est inclusive.
@@ -154,3 +166,51 @@ class TestSearchFormMisc(TestController):
         cols = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr/td')
         print "There are %d columns in the result set" % len(cols)
         assert_true(len(cols) > 1)
+
+    def test_future_begin_date(self):
+        """Contrôle des dates. Vérifie que date de début < date courante."""
+        timestamp = insert_deps()
+        transaction.commit()
+
+        # Préparation des dates/heures.
+        from_date = datetime.now() + timedelta(seconds=60)
+        from_date = from_date.strftime("%Y-%m-%d %I:%M:%S %p")
+        to_date = datetime.now().strftime("%Y-%m-%d %I:%M:%S %p")
+
+        # Démarrage du test
+        rows = self.get_number_of_rows(from_date, to_date)
+
+        # Aucun résultat.
+        assert_equal(rows, 0)
+
+    def test_future_end_date(self):
+        """Contrôle des dates. Vérifie que date de fin < date courante."""
+        timestamp = insert_deps()
+        transaction.commit()
+
+        # Préparation des dates/heures.
+        from_date = timestamp.strftime("%Y-%m-%d %I:%M:%S %p")
+        to_date = datetime.now() + timedelta(seconds=60)
+        to_date = to_date.strftime("%Y-%m-%d %I:%M:%S %p")
+
+        # Démarrage du test
+        rows = self.get_number_of_rows(from_date, to_date)
+
+        # Aucun résultat.
+        assert_equal(rows, 0)
+
+    def test_dates_inconsistency(self):
+        """Contrôle des dates. Vérifie date de début <= date de fin."""
+        timestamp = insert_deps()
+        transaction.commit()
+
+        # Préparation des dates/heures.
+        from_date = timestamp + timedelta(seconds=5)
+        from_date = from_date.strftime("%Y-%m-%d %I:%M:%S %p")
+        to_date = timestamp.strftime("%Y-%m-%d %I:%M:%S %p")
+
+        # Démarrage du test
+        rows = self.get_number_of_rows(from_date, to_date)
+
+        # Aucun résultat.
+        assert_equal(rows, 0)
