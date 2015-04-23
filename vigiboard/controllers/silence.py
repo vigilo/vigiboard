@@ -51,6 +51,8 @@ from vigilo.models.tables.secondary_tables import SILENCE_STATE_TABLE
 
 from vigilo.models.utils import group_concat
 
+from vigiboard.lib import error_handler
+
 import logging
 
 LOGGER = logging.getLogger(__name__)
@@ -72,20 +74,6 @@ class SilenceController(BaseController):
             has_permission('vigiboard-silence'),
             msg=l_("Insufficient privileges for this action"))
     )
-
-    def handle_error_message(self, message, redirection_url='./'):
-        """
-        Affiche le message dans l'IHM, l'enregistre dans les logs
-        et renvoie le navigateur vers l'URL de redirection.
-
-        @param message: message d'erreur à afficher
-        @type  message: C{str}
-        @param redirection_url: (optionnel) URL de redirection
-        @type  redirection_url: C{str}
-        """
-        LOGGER.error(message)
-        flash(message, 'error')
-        redirect(redirection_url)
 
     def process_form_errors(self, *argv, **kwargv):
         """
@@ -175,7 +163,7 @@ class SilenceController(BaseController):
         else:
             msg = _("Another rule already exists for host '%s'.") % (
                 silence.supitem.name)
-        self.handle_error_message(msg)
+        error_handler.handle_error_message(msg)
 
     class IndexSchema(schema.Schema):
         """Schéma de validation de la méthode index."""
@@ -312,17 +300,17 @@ class SilenceController(BaseController):
         except InvalidRequestError, e:
             msg = _('An exception has been raised while ' \
                     'querying the database: %s') % str(e)
-            self.handle_error_message(msg)
+            error_handler.handle_error_message(msg)
         if not silence:
             msg = _("Silence rule #%s does not exist.") % id
-            self.handle_error_message(msg)
+            error_handler.handle_error_message(msg)
 
         # On s'assure que l'utilisateur dispose bien des permissions sur le
         # supitem considéré
         user = get_current_user()
         if not silence.supitem.is_allowed_for(user):
             msg = _("Silence rule #%s does not exist.") % id
-            self.handle_error_message(msg)
+            error_handler.handle_error_message(msg)
 
         if hasattr(silence.supitem, 'servicename'):
             hostname = silence.supitem.host.name
@@ -393,7 +381,7 @@ class SilenceController(BaseController):
         # TODO: Faire ce traitement dans le schéma de validation
         if not states:
             msg = _('No state specified for the silence rule.')
-            self.handle_error_message(msg)
+            error_handler.handle_error_message(msg)
         states = list(states)
 
         # On récupère le nom et l'IP de l'utilisateur.
@@ -411,15 +399,15 @@ class SilenceController(BaseController):
             except InvalidRequestError, e:
                 msg = _('An exception has been raised while ' \
                         'querying the database: %s') % str(e)
-                self.handle_error_message(msg)
+                error_handler.handle_error_message(msg)
         if not idsupitem or not supitem.is_allowed_for(user):
             if not service:
                 msg = _("Host '%s' does not exist.") % host
-                self.handle_error_message(msg)
+                error_handler.handle_error_message(msg)
             else:
                 msg = _("Service '%s' does not exist for host '%s'."
                     ) % (service, host)
-                self.handle_error_message(msg)
+                error_handler.handle_error_message(msg)
 
         # On distingue mise à jour et création :
 
@@ -433,10 +421,10 @@ class SilenceController(BaseController):
             except InvalidRequestError, e:
                 msg = _('An exception has been raised while ' \
                         'querying the database: %s') % str(e)
-                self.handle_error_message(msg)
+                error_handler.handle_error_message(msg)
             if not silence:
                 msg = _("Silence rule #%s does not exist.") % idsilence
-                self.handle_error_message(msg)
+                error_handler.handle_error_message(msg)
 
             # - Si le supitem a été modifié, on vérifie qu'aucune
             #   autre règle n'existe pour le nouveau supitem
@@ -471,7 +459,7 @@ class SilenceController(BaseController):
         except (IntegrityError, InvalidRequestError), e:
             msg = _('An exception has been raised while ' \
                     'updating the database: %s') % str(e)
-            self.handle_error_message(msg)
+            error_handler.handle_error_message(msg)
 
         # On notifie l'opération dans les logs, on affiche un message de
         # succès, et on redirige le navigateur vers la liste des règles de
@@ -572,7 +560,7 @@ class SilenceController(BaseController):
         # TODO: Faire ce traitement dans le schéma de validation
         if not id:
             msg = _('No silence rule id specified.')
-            self.handle_error_message(msg)
+            error_handler.handle_error_message(msg)
         id = list(id)
 
         # On recherche les règles dans la BDD.
@@ -582,7 +570,7 @@ class SilenceController(BaseController):
         except InvalidRequestError, e:
             msg = _('An exception has been raised while ' \
                     'querying the database: %s') % str(e)
-            self.handle_error_message(msg)
+            error_handler.handle_error_message(msg)
 
         # On s'assure que toutes les règles ont bien été trouvées dans la
         # base, faute de quoi on lève une erreur et on arrête le traitement
@@ -595,7 +583,7 @@ class SilenceController(BaseController):
             else:
                 msg = _('Error: silence rule #%s does not exist.'
                     ) % ", ".join(str(i) for i in missing_ids)
-            self.handle_error_message(msg)
+            error_handler.handle_error_message(msg)
 
         # On s'assure que l'utilisateur dispose bien des permissions nécessaires
         # pour supprimer chacune des règles
@@ -603,7 +591,7 @@ class SilenceController(BaseController):
         for s in silences:
             if not s.supitem.is_allowed_for(user):
                 msg = _("Silence rule #%s does not exist.") % s.idsilence
-                self.handle_error_message(msg)
+                error_handler.handle_error_message(msg)
 
         # On supprime les règles dans la BDD.
         try:
@@ -613,7 +601,7 @@ class SilenceController(BaseController):
         except InvalidRequestError, e:
             msg = _('An exception has been raised while ' \
                     'deleting the silence rules: %s') % str(e)
-            self.handle_error_message(msg)
+            error_handler.handle_error_message(msg)
 
         # On notifie l'opération dans les logs
         user_name = user.user_name

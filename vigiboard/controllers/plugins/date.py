@@ -29,7 +29,7 @@ from pylons.i18n import ugettext as _, lazy_ugettext as l_
 from vigilo.models import tables
 
 from vigiboard.controllers.plugins import VigiboardRequestPlugin, ITEMS
-from vigiboard.lib import dateformat
+from vigiboard.lib import dateformat, error_handler
 
 
 class ExampleDateFormat(object):
@@ -103,9 +103,25 @@ class PluginDate(VigiboardRequestPlugin):
         if search.get('from_date'):
             query.add_filter(tables.CorrEvent.timestamp_active >=
                 search['from_date'])
+
+            # Ajout de contrôles sur la date de début
+            if search['from_date'] >= datetime.now():
+                error_handler.handle_error_message(
+                    _('Start date cannot be greater than current date'))
+
+            if search.get('to_date') and \
+               search['from_date'] > search['to_date']:
+                error_handler.handle_error_message(
+                    _('Start date cannot be greater than end date'))
+
         if search.get('to_date'):
             query.add_filter(tables.CorrEvent.timestamp_active <=
                 search['to_date'])
+
+            # Ajout de contrôles sur la date de fin
+            if search['to_date'] >= datetime.now():
+                error_handler.handle_error_message(
+                    _('End date cannot be greater than current date'))
 
     def get_data(self, event):
         state = tables.StateName.value_to_statename(

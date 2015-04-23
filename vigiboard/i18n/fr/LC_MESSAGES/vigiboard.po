@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: vigiboard 0.1\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2009-07-06 11:19+0200\n"
-"PO-Revision-Date: 2015-04-21 11:49+0200\n"
+"PO-Revision-Date: 2015-04-23 18:04+0200\n"
 "Last-Translator: Thomas ANDREJAK <thomas.andrejak@c-s.fr>\n"
 "Language-Team: fr_FR <LL@li.org>\n"
 "Plural-Forms: nplurals=2; plural=(n > 1)\n"
@@ -23,7 +23,7 @@ msgid "Vigilo has detected a breakdown on the following collector(s): %(list)s"
 msgstr "Vigilo a détecté une panne sur le(s) collecteur(s) suivant(s) : %(list)s"
 
 #: vigiboard/controllers/root.py:89 vigiboard/controllers/root.py:99
-#: vigiboard/controllers/root.py:582 vigiboard/controllers/silence.py:70
+#: vigiboard/controllers/root.py:582 vigiboard/controllers/silence.py:72
 msgid "You need to be authenticated"
 msgstr "Vous devez vous authentifier"
 
@@ -131,82 +131,82 @@ msgstr "Aucun incident correspondant ou permissions insuffisantes"
 msgid "Next %(limit)s"
 msgstr "%(limit)s suivants"
 
-#: vigiboard/controllers/silence.py:73
+#: vigiboard/controllers/silence.py:75
 msgid "Insufficient privileges for this action"
 msgstr "Droits insuffisants pour cette action"
 
-#: vigiboard/controllers/silence.py:172
+#: vigiboard/controllers/silence.py:160
 #, python-format
 msgid "Another rule already exists for service '%s' on host '%s'."
 msgstr "Une autre règle existe déjà pour le service '%s' sur l'hôte '%s'."
 
-#: vigiboard/controllers/silence.py:176
+#: vigiboard/controllers/silence.py:164
 #, python-format
 msgid "Another rule already exists for host '%s'."
 msgstr "Une autre règle existe déjà pour l'hôte '%s'."
 
-#: vigiboard/controllers/silence.py:258
+#: vigiboard/controllers/silence.py:246
 #: vigiboard/controllers/plugins/hostname.py:38
 msgid "Host"
 msgstr "Hôte"
 
-#: vigiboard/controllers/silence.py:259
+#: vigiboard/controllers/silence.py:247
 #: vigiboard/controllers/plugins/servicename.py:41
 msgid "Service"
 msgstr "Service"
 
-#: vigiboard/controllers/silence.py:260
+#: vigiboard/controllers/silence.py:248
 msgid "States"
 msgstr "États"
 
-#: vigiboard/controllers/silence.py:261
+#: vigiboard/controllers/silence.py:249
 msgid "Last modification"
 msgstr "Dernière modification"
 
-#: vigiboard/controllers/silence.py:262
+#: vigiboard/controllers/silence.py:250
 msgid "Author"
 msgstr "Auteur"
 
-#: vigiboard/controllers/silence.py:263
+#: vigiboard/controllers/silence.py:251
 msgid "Comment"
 msgstr "Commentaire"
 
-#: vigiboard/controllers/silence.py:313 vigiboard/controllers/silence.py:412
-#: vigiboard/controllers/silence.py:434 vigiboard/controllers/silence.py:583
+#: vigiboard/controllers/silence.py:301 vigiboard/controllers/silence.py:400
+#: vigiboard/controllers/silence.py:422 vigiboard/controllers/silence.py:571
 #, python-format
 msgid "An exception has been raised while querying the database: %s"
 msgstr ""
 "Une exception a été levée lors de l'interrogation de la base de données :"
 " %s"
 
-#: vigiboard/controllers/silence.py:317 vigiboard/controllers/silence.py:324
-#: vigiboard/controllers/silence.py:438 vigiboard/controllers/silence.py:605
+#: vigiboard/controllers/silence.py:305 vigiboard/controllers/silence.py:312
+#: vigiboard/controllers/silence.py:426 vigiboard/controllers/silence.py:593
 #, python-format
 msgid "Silence rule #%s does not exist."
 msgstr "La règle de silence #%s n'existe pas."
 
-#: vigiboard/controllers/silence.py:395
+#: vigiboard/controllers/silence.py:383
 msgid "No state specified for the silence rule."
 msgstr "Aucun état n'a été spécifié pour la règle de silence."
 
-#: vigiboard/controllers/silence.py:417
+#: vigiboard/controllers/silence.py:405
 #, python-format
 msgid "Host '%s' does not exist."
 msgstr "L'hôte '%s' n'existe pas."
 
-#: vigiboard/controllers/silence.py:420
+#: vigiboard/controllers/silence.py:408
 #, python-format
 msgid "Service '%s' does not exist for host '%s'."
 msgstr "Le service '%s' n'existe pas pour l'hôte '%s'."
 
-#: vigiboard/controllers/silence.py:472
+#: vigiboard/controllers/silence.py:460
 #, python-format
 msgid "An exception has been raised while updating the database: %s"
 msgstr ""
 "Une exception a été levée lors de la mise à jour de la base de données : "
 "%s"
 
-#: vigiboard/controllers/silence.py:482
+#: vigiboard/controllers/silence.py:470
 #, python-format
 msgid ""
 "User %(user)s (IP: %(ip)s) updated silence rule #%(id)s for service "
@@ -215,7 +215,7 @@ msgstr ""
 "L'utilisateur %(user)s (IP : %(ip)s) a mis à jour la règle de silence "
 "#%(id)s pour le service %(service)s sur l'hôte %(host)s."
 
-#: vigiboard/controllers/silence.py:492
+#: vigiboard/controllers/silence.py:480
 #, python-format
 msgid ""
 "Silence rule #%(id)s (host: %(host)s, service: %(service)s) has been "
@@ -224,19 +224,19 @@ msgstr ""
 "La règle de silence #%(id)s (hôte : %(host)s, service : %(service)s) a "
 "été mise à jour avec succès."
 
-#: vigiboard/controllers/silence.py:501
+#: vigiboard/controllers/silence.py:489
 #, python-format
 msgid "User %(user)s (IP: %(ip)s) updated silence rule #%(id)s for host %(host)s."
 msgstr ""
 "L'utilisateur %(user)s (IP: %(ip)s) a mis à jour la règle de silence "
 "#%(id)s pour l'hôte %(host)s."
 
-#: vigiboard/controllers/silence.py:509
+#: vigiboard/controllers/silence.py:497
 #, python-format
 msgid "Silence rule #%(id)s (host: %(host)s) has been successfully updated."
 msgstr "La règle #%(id)s (hôte : %(host)s) a été mise à jour avec succès."
 
-#: vigiboard/controllers/silence.py:518
+#: vigiboard/controllers/silence.py:506
 #, python-format
 msgid ""
 "User %(user)s (IP: %(ip)s) added a silence rule (#%(id)s) for service "
@@ -245,7 +245,7 @@ msgstr ""
 "L'utilisateur %(user)s (IP: %(ip)s) a ajouté une règle de silence "
 "(#%(id)s) pour le service %(service)s sur l'hôte %(host)s."
 
-#: vigiboard/controllers/silence.py:528
+#: vigiboard/controllers/silence.py:516
 #, python-format
 msgid ""
 "A new silence rule (#%(id)s) has been added for service \"%(service)s\" "
@@ -254,7 +254,7 @@ msgstr ""
 "Une nouvelle règle de silence (#%(id)s) a été ajoutée pour le service "
 "\"%(service)s\" sur l'hôte \"%(host)s\"."
 
-#: vigiboard/controllers/silence.py:536
+#: vigiboard/controllers/silence.py:524
 #, python-format
 msgid ""
 "User %(user)s (IP: %(ip)s) added a silence rule (#%(id)s) for host "
@@ -263,35 +263,35 @@ msgstr ""
 "L'utilisateur %(user)s (IP: %(ip)s) a ajouté une règle de silence "
 "(#%(id)s) pour l'hôte %(host)s."
 
-#: vigiboard/controllers/silence.py:544
+#: vigiboard/controllers/silence.py:532
 #, python-format
 msgid "A new silence rule (#%(id)s) has been added for the host \"%(host)s\"."
 msgstr ""
 "Une nouvelle règle de silence (#%(id)s) a été ajoutée pour l'hôte "
 "\"%(host)s\"."
 
-#: vigiboard/controllers/silence.py:574
+#: vigiboard/controllers/silence.py:562
 msgid "No silence rule id specified."
 msgstr "Aucun identifiant de règle de silence spécifié."
 
-#: vigiboard/controllers/silence.py:593
+#: vigiboard/controllers/silence.py:581
 #, python-format
 msgid "Error: the following silence rules do not exist: %s."
 msgstr "Erreur : les règles de silence suivantes n'existent pas : %s."
 
-#: vigiboard/controllers/silence.py:596
+#: vigiboard/controllers/silence.py:584
 #, python-format
 msgid "Error: silence rule #%s does not exist."
 msgstr "Erreur : la règle de silence #%s n'existe pas."
 
-#: vigiboard/controllers/silence.py:614
+#: vigiboard/controllers/silence.py:602
 #, python-format
 msgid "An exception has been raised while deleting the silence rules: %s"
 msgstr ""
 "Une exception a été levée lors de la suppression des règles de silence : "
 "%s"
 
-#: vigiboard/controllers/silence.py:624
+#: vigiboard/controllers/silence.py:612
 #, python-format
 msgid ""
 "User %(user)s (IP: %(ip)s) deleted silence rule #%(id)s for service "
@@ -300,19 +300,19 @@ msgstr ""
 "L'utilisateur %(user)s (IP: %(ip)s) a supprimé la règle de silence "
 "#%(id)s pour le service %(service)s sur l'hôte %(host)s"
 
-#: vigiboard/controllers/silence.py:636
+#: vigiboard/controllers/silence.py:624
 #, python-format
 msgid "User %(user)s (IP: %(ip)s) deleted silence rule #%(id)s for host %(host)s"
 msgstr ""
 "L'utilisateur %(user)s (IP: %(ip)s) a supprimé la règle de silence "
 "#%(id)s pour l'hôte %(host)s"
 
-#: vigiboard/controllers/silence.py:647
+#: vigiboard/controllers/silence.py:635
 #, python-format
 msgid "The following silence rules have been successfully deleted: %s."
 msgstr "Les règles de silence suivantes ont été supprimées avec succès: %s."
 
-#: vigiboard/controllers/silence.py:650
+#: vigiboard/controllers/silence.py:638
 #, python-format
 msgid "Silence rule #%s has been successfully deleted."
 msgstr "La règle de silence #%s a été supprimée avec succès."
@@ -339,6 +339,18 @@ msgstr "Choisir"
 #: vigiboard/controllers/plugins/date.py:84
 msgid "And"
 msgstr "Et"
+
+#: vigiboard/controllers/plugins/date.py:109
+msgid "Start date cannot be greater than current date"
+msgstr "La date de début ne peut être supérieure à la date courante"
+
+#: vigiboard/controllers/plugins/date.py:112
+msgid "Start date cannot be greater than end date"
+msgstr "La date de début ne peut être supérieure à la date de fin"
+
+#: vigiboard/controllers/plugins/date.py:120
+msgid "End date cannot be greater than current date"
+msgstr "La date de fin ne peut être supérieure à la date courante"
 
 #: vigiboard/controllers/plugins/details.py:195
 #: vigiboard/controllers/plugins/state.py:47
