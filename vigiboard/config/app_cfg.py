@@ -137,7 +137,6 @@ base_config['vigiboard_plugins'] = (
     'hls',
     'status',
 #    'test',
-    'map',
 )
 
 base_config['csv_columns'] = (

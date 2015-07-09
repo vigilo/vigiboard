@@ -187,27 +187,17 @@ class PluginDetails(VigiboardRequestPlugin):
     def get_search_fields(self):
         states = DBSession.query(StateName.idstatename, StateName.statename
                     ).order_by(StateName.order.asc()).all()
-        # Liste des valeurs acceptées pour la validation.
-        valid = []
-        # Liste des options présentes dans le champ de sélection.
-        options = []
-        for s in states:
-            valid.extend([str(s.idstatename), s.statename])
-            options.append( (
-                str(s.idstatename),
-                s.statename,
-                {'title': l_(s.statename)}
-            ) )
-
+        options = [('', u'')] + \
+                    [( str(s.idstatename), s.statename ) for s in states]
         return [
-            twf.MultipleSelectField(
+            twf.SingleSelectField(
                 'state',
                 label_text=l_('Current state'),
                 options=options,
                 validator=twf.validators.OneOf(
-                    valid,
-                    if_invalid=[],
-                    if_missing=[],
+                    dict(options).keys(),
+                    if_invalid=None,
+                    if_missing=None,
                 ),
             ),
         ]
@@ -216,19 +206,12 @@ class PluginDetails(VigiboardRequestPlugin):
         if state != ITEMS:
             return
 
-        states = []
-        for value in search.get('state'):
+        if search.get('state'):
             try:
-                states.append(int(value))
+                query.add_filter(Event.current_state == int(search['state']))
             except (ValueError, TypeError):
-                try:
-                    states.append(StateName.statename_to_value(value))
-                except:
-                    # On ignore silencieusement un critère de recherche erroné.
-                    pass
-
-        if states:
-            query.add_filter(Event.current_state.in_(states))
+                # On ignore silencieusement le critère de recherche erroné.
+                pass
 
     def get_sort_criterion(self, query, column):
         if column == 'details':

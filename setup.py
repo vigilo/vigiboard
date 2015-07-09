@@ -92,7 +92,6 @@ setup(
             'status = vigiboard.controllers.plugins.status:PluginStatus',
             'groups = vigiboard.controllers.plugins.groups:PluginGroups',
             'masked_events = vigiboard.controllers.plugins.masked_events:PluginMaskedEvents',
-            'map = vigiboard.controllers.plugins.map:PluginMap',
         ]
     },
     cmdclass=cmdclass,
