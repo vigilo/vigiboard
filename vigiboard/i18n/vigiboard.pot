@@ -7,9 +7,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: vigilo-vigiboard 3.5\n"
+"Project-Id-Version: vigilo-vigiboard 3.6.0\n"
 "Report-Msgid-Bugs-To: contact@projet-vigilo.org\n"
-"POT-Creation-Date: 2015-04-23 18:04+0200\n"
+"POT-Creation-Date: 2015-08-31 14:19+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -307,19 +307,19 @@ msgstr ""
 msgid "And"
 msgstr ""
 
-#: vigiboard/controllers/plugins/date.py:109
+#: vigiboard/controllers/plugins/date.py:110
 msgid "Start date cannot be greater than current date"
 msgstr ""
 
-#: vigiboard/controllers/plugins/date.py:112
+#: vigiboard/controllers/plugins/date.py:115
 msgid "Start date cannot be greater than end date"
 msgstr ""
 
-#: vigiboard/controllers/plugins/date.py:120
+#: vigiboard/controllers/plugins/date.py:124
 msgid "End date cannot be greater than current date"
 msgstr ""
 
-#: vigiboard/controllers/plugins/details.py:195
+#: vigiboard/controllers/plugins/details.py:205
 #: vigiboard/controllers/plugins/state.py:47
 msgid "Current state"
 msgstr ""
@@ -386,17 +386,21 @@ msgstr ""
 msgid "%Y-%m-%d"
 msgstr ""
 
-#: vigiboard/public/js/main.js:39
+#: vigiboard/public/js/main.js:40
 msgid "Search Event"
 msgstr ""
 
-#: vigiboard/public/js/main.js:54
+#: vigiboard/public/js/main.js:55
 msgid "Select a group"
 msgstr ""
 
-#: vigiboard/public/js/main.js:84 vigiboard/public/js/main.js:105
-#: vigiboard/public/js/main.js:136 vigiboard/public/js/main.js:169
+#: vigiboard/public/js/main.js:85 vigiboard/public/js/main.js:106
+#: vigiboard/public/js/main.js:153 vigiboard/public/js/main.js:186
 msgid "Unable to save preferences"
+msgstr ""
+
+#: vigiboard/public/js/main.js:141
+msgid "Could not refresh data, reloading the page"
 msgstr ""
 
 #: vigiboard/public/js/silence.js:63
@@ -467,7 +471,7 @@ msgstr ""
 msgid "Warning: changing the ticket will affect all selected events."
 msgstr ""
 
-#: vigiboard/widgets/search_form.py:56
+#: vigiboard/widgets/search_form.py:57
 msgid "Search"
 msgstr ""
 

@@ -37,12 +37,12 @@ class TestEventTable(TestController):
         response = self.app.get('/', extra_environ=environ)
 
         # Il doit y avoir 2 lignes de résultats.
-        rows = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr')
+        rows = self.get_rows(response)
         print "There are %d rows in the result set" % len(rows)
         assert_equal(len(rows), 2)
 
         # Il doit y avoir plusieurs colonnes dans la ligne de résultats.
-        cols = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr/td')
+        cols = self.get_cells(response)
         print "There are %d columns in the result set" % len(cols)
         assert_true(len(cols) > 1)
 
@@ -59,12 +59,12 @@ class TestEventTable(TestController):
         response = self.app.get('/', extra_environ=environ)
 
         # Il doit y avoir 5 lignes de résultats.
-        rows = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr')
+        rows = self.get_rows(response)
         print "There are %d rows in the result set" % len(rows)
         assert_equal(len(rows), 5)
 
         # Il doit y avoir plusieurs colonnes dans la ligne de résultats.
-        cols = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr/td')
+        cols = self.get_cells(response)
         print "There are %d columns in the result set" % len(cols)
         assert_true(len(cols) > 1)
 
@@ -81,12 +81,12 @@ class TestEventTable(TestController):
         response = self.app.get('/', extra_environ=environ)
 
         # Il doit y avoir 5 lignes de résultats.
-        rows = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr')
+        rows = self.get_rows(response)
         print "There are %d rows in the result set" % len(rows)
         assert_equal(len(rows), 5)
 
         # Il doit y avoir plusieurs colonnes dans la ligne de résultats.
-        cols = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr/td')
+        cols = self.get_cells(response)
         print "There are %d columns in the result set" % len(cols)
         assert_true(len(cols) > 1)
 
@@ -122,7 +122,7 @@ class TestEventTable(TestController):
         response = self.app.get(url, extra_environ=environ, status=200)
 
         # Il doit y avoir 1 ligne de résultats.
-        rows = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr')
+        rows = self.get_rows(response)
         print "There are %d rows in the result set" % len(rows)
         assert_equal(len(rows), 1)
 
@@ -133,7 +133,7 @@ class TestEventTable(TestController):
         response = self.app.get(url, extra_environ=environ, status=200)
 
         # Il doit y avoir 1 ligne de résultats.
-        rows = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr')
+        rows = self.get_rows(response)
         print "There are %d rows in the result set" % len(rows)
         assert_equal(len(rows), 1)
 
@@ -162,7 +162,7 @@ class TestEventTable(TestController):
         response = self.app.get(url, extra_environ=environ, status=200)
 
         # Il doit y avoir 1 ligne de résultats.
-        rows = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr')
+        rows = self.get_rows(response)
         print "There are %d rows in the result set" % len(rows)
         assert_equal(len(rows), 1)
 
@@ -173,6 +173,6 @@ class TestEventTable(TestController):
         response = self.app.get(url, extra_environ=environ, status=200)
 
         # Il doit y avoir 1 ligne de résultats.
-        rows = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr')
+        rows = self.get_rows(response)
         print "There are %d rows in the result set" % len(rows)
         assert_equal(len(rows), 1)

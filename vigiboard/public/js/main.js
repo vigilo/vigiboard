@@ -5,7 +5,8 @@
  */
 
 var vigiloLog = new Log();
-// Activation ou désactivation du log en fonction de valeur de la variable debug.
+// Activation ou désactivation du log en fonction
+// de la valeur de la variable debug.
 if (debug_mode) {
     vigiloLog.enableLog();
 } else {
@@ -125,7 +126,23 @@ function refresh_page() {
      * réutiliser au maximum le contenu du cache.
      * Observations faites sous Fx 3.6.8.
      */
-    window.location.reload(false);
+    var req = new Request.HTML({
+        method: "get",
+        noCache: false,
+        link: 'cancel',
+        url: (new URI()),
+        evalScripts: false,
+        filter: 'table.vigitable',
+        onSuccess: function (tree) {
+            $$('table.vigitable')[0].empty().adopt(tree);
+        },
+        onException: function () {
+            // En cas d'erreur, on recharge toute la page.
+            alert(_('Could not refresh data, reloading the page'));
+            window.location.reload(false);
+        }
+    });
+    req.send();
 }
 
 function change_theme(theme_id, theme_name) {

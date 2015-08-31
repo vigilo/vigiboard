@@ -39,12 +39,12 @@ class TestSearchFormSupItemGroup(TestController):
         )
 
         # Il doit y avoir 2 lignes dans la réponse.
-        rows = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr')
+        rows = self.get_rows(response)
         print "There are %d rows in the result set" % len(rows)
         assert_equal(len(rows), 2)
 
         # Il doit y avoir plusieurs colonnes dans la réponse.
-        cols = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr/td')
+        cols = self.get_cells(response)
         print "There are %d columns in the result set" % len(cols)
         assert_true(len(cols) > 1)
 
@@ -58,12 +58,12 @@ class TestSearchFormSupItemGroup(TestController):
         )
 
         # Il doit y avoir 2 lignes dans la réponse.
-        rows = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr')
+        rows = self.get_rows(response)
         print "There are %d rows in the result set" % len(rows)
         assert_equal(len(rows), 2)
 
         # Il doit y avoir plusieurs colonnes dans la réponse.
-        cols = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr/td')
+        cols = self.get_cells(response)
         print "There are %d columns in the result set" % len(cols)
         assert_true(len(cols) > 1)
 
@@ -76,12 +76,12 @@ class TestSearchFormSupItemGroup(TestController):
         )
 
         # Il doit y avoir 2 lignes dans la réponse.
-        rows = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr')
+        rows = self.get_rows(response)
         print "There are %d rows in the result set" % len(rows)
         assert_equal(len(rows), 2)
 
         # Il doit y avoir plusieurs colonnes dans la réponse.
-        cols = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr/td')
+        cols = self.get_cells(response)
         print "There are %d columns in the result set" % len(cols)
         assert_true(len(cols) > 1)
 
@@ -96,12 +96,12 @@ class TestSearchFormSupItemGroup(TestController):
         )
 
         # Il doit y avoir 5 lignes dans la réponse.
-        rows = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr')
+        rows = self.get_rows(response)
         print "There are %d rows in the result set" % len(rows)
         assert_equal(len(rows), 5)
 
         # Il doit y avoir plusieurs colonnes dans la réponse.
-        cols = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr/td')
+        cols = self.get_cells(response)
         print "There are %d columns in the result set" % len(cols)
         assert_true(len(cols) > 1)
 
@@ -115,12 +115,12 @@ class TestSearchFormSupItemGroup(TestController):
         )
 
         # Il doit y avoir 5 lignes dans la réponse.
-        rows = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr')
+        rows = self.get_rows(response)
         print "There are %d rows in the result set" % len(rows)
         assert_equal(len(rows), 5)
 
         # Il doit y avoir plusieurs colonnes dans la réponse.
-        cols = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr/td')
+        cols = self.get_cells(response)
         print "There are %d columns in the result set" % len(cols)
         assert_true(len(cols) > 1)
 
@@ -134,13 +134,13 @@ class TestSearchFormSupItemGroup(TestController):
             extra_environ={'REMOTE_USER': 'access'})
 
         # Il doit y avoir 1 seule ligne de résultats.
-        rows = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr')
+        rows = self.get_rows(response)
         print "There are %d rows in the result set" % len(rows)
         assert_equal(len(rows), 1)
 
         # Il doit y avoir 1 seule colonne dans la ligne de résultats.
         # (la colonne contient le texte "Il n'y a aucun événément", traduit)
-        cols = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr/td')
+        cols = self.get_cells(response)
         print "There are %d columns in the result set" % len(cols)
         assert_equal(len(cols), 1)
 
@@ -151,13 +151,13 @@ class TestSearchFormSupItemGroup(TestController):
             extra_environ={'REMOTE_USER': 'manager'})
 
         # Il doit y avoir 1 seule ligne de résultats.
-        rows = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr')
+        rows = self.get_rows(response)
         print "There are %d rows in the result set" % len(rows)
 
         # Il doit y avoir 1 seule colonne dans la ligne de résultats.
         # (la colonne contient le texte "Il n'y a aucun événément", traduit)
         assert_equal(len(rows), 1)
-        cols = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr/td')
+        cols = self.get_cells(response)
         print "There are %d columns in the result set" % len(cols)
         assert_equal(len(cols), 1)
 
@@ -182,11 +182,11 @@ class TestSearchFormSupItemGroup(TestController):
 
         # Il doit y avoir 1 seule ligne dans la réponse.
         # (la réponse contient le texte "Il n'y a aucun événément", traduit)
-        rows = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr')
+        rows = self.get_rows(response)
         print "There are %d rows in the result set" % len(rows)
         assert_equal(len(rows), 1)
 
         # Il doit y avoir 1 seule colonne dans la réponse.
-        cols = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr/td')
+        cols = self.get_cells(response)
         print "There are %d columns in the result set" % len(cols)
         assert_equal(len(cols), 1)

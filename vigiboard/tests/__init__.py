@@ -65,3 +65,13 @@ class TestController(unittest.TestCase):
         # Cleaning up the database:
         teardown_db()
         del self.app
+
+    def get_rows(self, response):
+        return response.lxml.xpath(
+            '//table[contains(concat(" ", @class, " "), " vigitable ")]'
+            '/tbody/tr')
+
+    def get_cells(self, response):
+        return response.lxml.xpath(
+            '//table[contains(concat(" ", @class, " "), " vigitable ")]'
+            '/tbody/tr/td')

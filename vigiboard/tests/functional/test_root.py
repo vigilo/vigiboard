@@ -489,14 +489,14 @@ class TestRootController(TestController):
         current_page = response.lxml.xpath(
             '//span[@class="pager_curpage"]/text()')
         assert_equal(2, int(current_page[0]))
-        rows = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr')
-        assert_equal(len(rows), 1)
-        cols = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr/td')
-        assert_true(len(cols) > 1)
+        assert_equal(len(self.get_rows(response)), 1)
+        assert_true(len(self.get_cells(response)) > 1)
 
         # On force l'état de l'événement sur la 2ème page à 'OK'.
         # - Tout d'abord, on récupère l'identifiant de l'événement en question.
-        idcorrevent = response.lxml.xpath('string(//table[@class="vigitable"]/tbody/tr/td[@class="plugin_details"]/a/@href)')
+        idcorrevent = response.lxml.xpath(
+            'string(//table[contains(concat(" ", @class, " "), " vigitable ")]'
+            '/tbody/tr/td[@class="plugin_details"]/a/@href)')
         idcorrevent = int(idcorrevent.lstrip('#'))
         # - Puis, on met à jour son état (en le forçant à OK).
         # On s'attend à ce que le statut de la requête soit 302,
@@ -520,10 +520,8 @@ class TestRootController(TestController):
         current_page = response.lxml.xpath(
             '//span[@class="pager_curpage"]/text()')
         assert_equal(1, int(current_page[0]))
-        rows = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr')
-        assert_equal(len(rows), items_per_page)
-        cols = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr/td')
-        assert_true(len(cols) > 1)
+        assert_equal(len(self.get_rows(response)), items_per_page)
+        assert_true(len(self.get_cells(response)) > 1)
 
         # Une requête sur la 2ème page doit désormais
         # afficher le contenu de la 1ère page.
@@ -531,5 +529,4 @@ class TestRootController(TestController):
         current_page = response.lxml.xpath(
             '//span[@class="pager_curpage"]/text()')
         assert_equal(1, int(current_page[0]))
-        rows = response.lxml.xpath('//table[@class="vigitable"]/tbody/tr')
-        assert_equal(len(rows), items_per_page)
+        assert_equal(len(self.get_rows(response)), items_per_page)

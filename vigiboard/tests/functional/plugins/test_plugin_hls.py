@@ -121,7 +121,8 @@ class TestHLSPlugin(TestController):
 
         # On s'assure que la colonne des HLS
         # impactés est vide pour notre évènement.
-        plugin_data = resp.lxml.xpath('//table[@class="vigitable"]'
+        plugin_data = resp.lxml.xpath(
+            '//table[contains(concat(" ", @class, " "), " vigitable ")]'
             '/tbody/tr/td[@class="plugin_hls"]/text()')
         assert_equal(plugin_data[0].strip(), "")
 
@@ -143,7 +144,8 @@ class TestHLSPlugin(TestController):
 
         # On s'assure que la colonne des HLS impactés contient
         # bien le nom de notre HLS de plus haut niveau impacté.
-        plugin_data = resp.lxml.xpath('//table[@class="vigitable"]'
+        plugin_data = resp.lxml.xpath(
+            '//table[contains(concat(" ", @class, " "), " vigitable ")]'
             '/tbody/tr/td[@class="plugin_hls"]/text()')
         assert_equal(plugin_data[0].strip(), "HLS12")
 
@@ -165,7 +167,8 @@ class TestHLSPlugin(TestController):
 
         # On s'assure que la colonne des HLS contient bien
         # le nombre de HLS de plus haut niveau impactés,
-        plugin_data = resp.lxml.xpath('//table[@class="vigitable"]'
+        plugin_data = resp.lxml.xpath(
+            '//table[contains(concat(" ", @class, " "), " vigitable ")]'
             '/tbody/tr/td[@class="plugin_hls"]/a/text()')
         assert_equal(plugin_data[0].strip(), "2")
 
@@ -207,6 +210,7 @@ class TestHLSPlugin(TestController):
 
         # On s'assure que la colonne des HLS contient bien
         # le nom de notre HLS de plus haut niveau impacté.
-        plugin_data = resp.lxml.xpath('//table[@class="vigitable"]'
+        plugin_data = resp.lxml.xpath(
+            '//table[contains(concat(" ", @class, " "), " vigitable ")]'
             '/tbody/tr/td[@class="plugin_hls"]/text()')
         assert_equal(plugin_data[0].strip(), "HLS")

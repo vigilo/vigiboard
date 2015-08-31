@@ -67,12 +67,12 @@ class TestSorting(TestController):
         # - la 2nde concerne 'service1' sur 'host2'.
         # Il doit y avoir plusieurs colonnes dans la ligne de résultats.
         hostnames = response.lxml.xpath(
-            '//table[@class="vigitable"]/tbody/tr/' \
-            'td[@class="plugin_hostname"]/text()')
+            '//table[contains(concat(" ", @class, " "), " vigitable ")]'
+            '/tbody/tr/td[@class="plugin_hostname"]/text()')
         assert_equal(hostnames, ['host1', 'host2'])
         servicenames = response.lxml.xpath(
-            '//table[@class="vigitable"]/tbody/tr/' \
-            'td[@class="plugin_servicename"]/text()')
+            '//table[contains(concat(" ", @class, " "), " vigitable ")]'
+            '/tbody/tr/td[@class="plugin_servicename"]/text()')
         assert_equal(servicenames, ['service2', 'service1'])
 
     def test_descending_order(self):
@@ -89,12 +89,12 @@ class TestSorting(TestController):
         # - la 2nde concerne 'service1' sur 'host2'.
         # Il doit y avoir plusieurs colonnes dans la ligne de résultats.
         hostnames = response.lxml.xpath(
-            '//table[@class="vigitable"]/tbody/tr/' \
-            'td[@class="plugin_hostname"]/text()')
+            '//table[contains(concat(" ", @class, " "), " vigitable ")]'
+            '/tbody/tr/td[@class="plugin_hostname"]/text()')
         assert_equal(hostnames, ['host1', 'host2'])
         servicenames = response.lxml.xpath(
-            '//table[@class="vigitable"]/tbody/tr/' \
-            'td[@class="plugin_servicename"]/text()')
+            '//table[contains(concat(" ", @class, " "), " vigitable ")]'
+            '/tbody/tr/td[@class="plugin_servicename"]/text()')
         assert_equal(servicenames, ['service2', 'service1'])
 
     def test_pagination(self):
@@ -122,12 +122,12 @@ class TestSorting(TestController):
         # Il ne doit y avoir qu'une seule ligne de
         # résultats concernant "service2" sur "host1"
         hostnames = response.lxml.xpath(
-            '//table[@class="vigitable"]/tbody/tr/' \
-            'td[@class="plugin_hostname"]/text()')
+            '//table[contains(concat(" ", @class, " "), " vigitable ")]'
+            '/tbody/tr/td[@class="plugin_hostname"]/text()')
         assert_equal(hostnames, ['host1'])
         servicenames = response.lxml.xpath(
-            '//table[@class="vigitable"]/tbody/tr/' \
-            'td[@class="plugin_servicename"]/text()')
+            '//table[contains(concat(" ", @class, " "), " vigitable ")]'
+            '/tbody/tr/td[@class="plugin_servicename"]/text()')
         assert_equal(servicenames, ['service2'])
 
 
