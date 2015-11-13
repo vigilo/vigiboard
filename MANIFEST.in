@@ -13,3 +13,4 @@ graft vigiboard/public
 include *.ini
 include jsl.cfg
 include babeljs.py
+include app_cfg.py
