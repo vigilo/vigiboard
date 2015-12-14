@@ -134,7 +134,7 @@ function refresh_page() {
         evalScripts: false,
         filter: 'table.vigitable',
         onSuccess: function (tree) {
-            $$('table.vigitable')[0].empty().adopt(tree);
+            tree.replaces($$('table.vigitable')[0]);
         },
         onException: function () {
             // En cas d'erreur, on recharge toute la page.
