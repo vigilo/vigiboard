@@ -74,6 +74,8 @@ window.addEvent('domready', function (){
     $$('.date_field_button').addEvent('click', function () {
         $$(".calendar").setStyles({"zIndex": window.search_dialog.domObj.getStyle('zIndex').toInt()});
     });
+
+    document.fireEvent('board-update');
 });
 
 function change_fontsize(size) {
@@ -135,6 +137,7 @@ function refresh_page() {
         filter: 'table.vigitable',
         onSuccess: function (tree) {
             tree.replaces($$('table.vigitable')[0]);
+            document.fireEvent('board-update');
         },
         onException: function () {
             // En cas d'erreur, on recharge toute la page.
