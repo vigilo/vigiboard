@@ -260,7 +260,7 @@ class RootController(AuthController, SelfMonitoringController):
         )
 
 
-    @expose()
+    @expose(content_type=CUSTOM_CONTENT_TYPE)
     def i18n(self):
         import gettext
         import pylons
@@ -296,6 +296,8 @@ class RootController(AuthController, SelfMonitoringController):
         fhandle = open(themes_js, 'r')
         translations += fhandle.read()
         fhandle.close()
+
+        response.headers['Content-Type'] = 'text/javascript; charset=utf-8'
         return translations
 
 
