@@ -176,11 +176,22 @@ class TestSearchFormMisc(TestController):
         from_date = from_date.strftime("%Y-%m-%d %I:%M:%S %p")
         to_date = datetime.now().strftime("%Y-%m-%d %I:%M:%S %p")
 
-        # Démarrage du test
-        rows = self.get_number_of_rows(from_date, to_date)
+        # La recherche en utilisant une date de début supérieure
+        # à la date actuelle doit générer une erreur/redirection.
+        environ = {'REMOTE_USER': 'user'}
+        resp = self.app.get(
+            '/?from_date=%(from_date)s&to_date=%(to_date)s' % {
+                'from_date': from_date,
+                'to_date': to_date,
+            },
+            extra_environ=environ,
+            status=302)
 
-        # Aucun résultat.
-        assert_equal(rows, 0)
+        # Après redirection, le message d'erreur apparait dans la page.
+        resp = resp.follow(extra_environ=environ)
+        error = '<div id="flash"><div class="error">%s</div></div>' % \
+            'Start date cannot be greater than current date'
+        assert_true(error in resp.body)
 
     def test_future_end_date(self):
         """Contrôle des dates. Vérifie que date de fin < date courante."""
@@ -192,11 +203,22 @@ class TestSearchFormMisc(TestController):
         to_date = datetime.now() + timedelta(seconds=60)
         to_date = to_date.strftime("%Y-%m-%d %I:%M:%S %p")
 
-        # Démarrage du test
-        rows = self.get_number_of_rows(from_date, to_date)
+        # La recherche en utilisant une date de fin supérieure
+        # à la date courante doit générer une erreur/redirection.
+        environ = {'REMOTE_USER': 'user'}
+        resp = self.app.get(
+            '/?from_date=%(from_date)s&to_date=%(to_date)s' % {
+                'from_date': from_date,
+                'to_date': to_date,
+            },
+            extra_environ=environ,
+            status=302)
 
-        # Aucun résultat.
-        assert_equal(rows, 0)
+        # Après redirection, le message d'erreur apparait dans la page.
+        resp = resp.follow(extra_environ=environ)
+        error = '<div id="flash"><div class="error">%s</div></div>' % \
+            'End date cannot be greater than current date'
+        assert_true(error in resp.body)
 
     def test_dates_inconsistency(self):
         """Contrôle des dates. Vérifie date de début <= date de fin."""
@@ -208,8 +230,20 @@ class TestSearchFormMisc(TestController):
         from_date = from_date.strftime("%Y-%m-%d %I:%M:%S %p")
         to_date = timestamp.strftime("%Y-%m-%d %I:%M:%S %p")
 
-        # Démarrage du test
-        rows = self.get_number_of_rows(from_date, to_date)
+        # La recherche en utilisant une date de début supérieure
+        # à la date de fin doit générer une erreur/redirection.
+        environ = {'REMOTE_USER': 'user'}
+        resp = self.app.get(
+            '/?from_date=%(from_date)s&to_date=%(to_date)s' % {
+                'from_date': from_date,
+                'to_date': to_date,
+            },
+            extra_environ=environ,
+            status=302)
 
-        # Aucun résultat.
-        assert_equal(rows, 0)
+        # Après redirection, le message d'erreur apparait dans la page.
+        resp = resp.follow(extra_environ=environ)
+        error = '<div id="flash"><div class="error">%s</div></div>' % \
+            'Start date cannot be greater than end date'
+        assert_true(error in resp.body)
+

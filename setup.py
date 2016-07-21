@@ -43,7 +43,6 @@ setup(
     url='http://www.projet-vigilo.org/',
     install_requires=[
         "vigilo-turbogears",
-        "tw.forms",
     ],
 
     packages=find_packages(exclude=['ez_setup']),
@@ -71,9 +70,6 @@ setup(
     entry_points={
         'paste.app_factory': [
             'main = vigiboard.config.middleware:make_app',
-        ],
-        'paste.app_install': [
-            'main = pylons.util:PylonsInstaller',
         ],
         'vigilo.models': [
             'populate_db = vigiboard.websetup:populate_db',

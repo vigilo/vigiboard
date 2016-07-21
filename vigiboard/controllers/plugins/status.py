@@ -14,7 +14,7 @@ Un plugin pour VigiBoard qui ajoute 3 colonnes au tableau des événements :
 import urllib
 import tg
 import tw.forms as twf
-from pylons.i18n import lazy_ugettext as l_
+from tg.i18n import lazy_ugettext as l_
 
 from vigilo.models.tables import CorrEvent, StateName
 from vigilo.models.functions import sql_escape_like
@@ -47,7 +47,7 @@ class PluginStatus(VigiboardRequestPlugin):
             twf.TextField(
                 'trouble_ticket',
                 label_text=l_('Trouble Ticket'),
-                validator=twf.validators.String(if_missing=None),
+                validator=twf.validators.UnicodeString(if_missing=None),
             ),
             twf.SingleSelectField(
                 'ack',

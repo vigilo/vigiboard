@@ -9,7 +9,7 @@ Un plugin pour VigiBoard qui ajoute une colonne avec l'état de l'alerte.
 import urllib
 import tg
 import tw.forms as twf
-from pylons.i18n import lazy_ugettext as l_
+from tg.i18n import lazy_ugettext as l_
 
 from vigilo.models.tables import CorrEvent, Event, StateName
 from vigilo.models.session import DBSession

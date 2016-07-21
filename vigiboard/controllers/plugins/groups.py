@@ -9,7 +9,7 @@ d'éléments supervisés auxquels appartient l'objet associé
 à l'événement corrélé.
 """
 import tw.forms as twf
-from pylons.i18n import lazy_ugettext as l_
+from tg.i18n import lazy_ugettext as l_
 
 from vigiboard.controllers.plugins import VigiboardRequestPlugin, INNER
 from vigilo.models.session import DBSession

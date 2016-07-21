@@ -12,7 +12,7 @@ import transaction
 from vigiboard.tests import TestController
 from vigilo.models.session import DBSession
 from vigilo.models.demo import functions
-from vigilo.models.tables import Permission, CorrEvent, Host, LowLevelService
+from vigilo.models import tables
 
 class TestDetailsPluginMapsHostLimited(TestController):
     """
@@ -21,7 +21,7 @@ class TestDetailsPluginMapsHostLimited(TestController):
     """
     application_under_test = 'limited_maps'
     # Seules les 2 premières cartes doivent figurer.
-    # La 1ère correspond à la limite, la 2 seconde permet
+    # La 1ère correspond à la limite, la seconde permet
     # de détecter qu'il y avait plus de cartes que la limite.
     manager = [[1, 'M1'], [2, 'M2']]
     # L'utilisateur avec droits étendus voit
@@ -30,7 +30,7 @@ class TestDetailsPluginMapsHostLimited(TestController):
     # L'utilisateur avec droits restreints ne voit
     # qu'une seule carte : "M2".
     restricted = [[2, 'M2']]
-    supitem_class = Host
+    supitem_class = tables.Host
 
     def shortDescription(self, *args, **kwargs):
         """Description courte du test en cours d'exécution."""
@@ -43,7 +43,7 @@ class TestDetailsPluginMapsHostLimited(TestController):
         # On fait manuellement ce que l'initialisation de VigiMap ferait
         # (car on est dans les tests de VigiBoard, pas ceux de VigiMap).
         root = functions.add_mapgroup(u'Root')
-        DBSession.add(Permission(permission_name=u'vigimap-access'))
+        DBSession.add(tables.Permission(permission_name=u'vigimap-access'))
 
         print "Creation hote, service et cartes"
         host = functions.add_host(u'localhost éçà')
@@ -106,14 +106,14 @@ class TestDetailsPluginMapsHostLimited(TestController):
         print "Insertion evenement correle"
         timestamp = datetime.now()
         supitem = DBSession.query(self.supitem_class).one()
-        if isinstance(supitem, Host):
+        if isinstance(supitem, tables.Host):
             event = functions.add_event(supitem, u'DOWN', u'', timestamp)
         else: # Sinon, il s'agit d'un LowLevelService.
             event = functions.add_event(supitem, u'CRITICAL', u'', timestamp)
         functions.add_correvent([event], timestamp=timestamp)
         DBSession.flush()
         transaction.commit()
-        correvent = DBSession.query(CorrEvent.idcorrevent).one()
+        correvent = DBSession.query(tables.CorrEvent.idcorrevent).one()
         return correvent.idcorrevent
 
     def test_maps_links_anonymous(self):
@@ -217,7 +217,7 @@ class TestDetailsPluginMapsServiceLimited(
     Idem que la classe mère mais teste un événement corrélé
     portant sur un service de l'hôte plutôt que sur l'hôte lui-même.
     """
-    supitem_class = LowLevelService
+    supitem_class = tables.LowLevelService
 
     def shortDescription(self, *args, **kwargs):
         """Description courte du test en cours d'exécution."""
@@ -232,7 +232,7 @@ class TestDetailsPluginMapsServiceDisable(
     Idem que la classe mère mais teste un événement corrélé
     portant sur un service de l'hôte plutôt que sur l'hôte lui-même.
     """
-    supitem_class = LowLevelService
+    supitem_class = tables.LowLevelService
 
     def shortDescription(self, *args, **kwargs):
         """Description courte du test en cours d'exécution."""
@@ -247,7 +247,7 @@ class TestDetailsPluginMapsServiceUnlimited(
     Idem que la classe mère mais teste un événement corrélé
     portant sur un service de l'hôte plutôt que sur l'hôte lui-même.
     """
-    supitem_class = LowLevelService
+    supitem_class = tables.LowLevelService
 
     def shortDescription(self, *args, **kwargs):
         """Description courte du test en cours d'exécution."""

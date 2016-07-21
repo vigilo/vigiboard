@@ -8,10 +8,9 @@ Validateur et convertisseur de dates selon un format.
 from formencode.api import FancyValidator, Invalid
 from datetime import datetime
 
-from pylons.i18n import ugettext as _
+from tg.i18n import ugettext as _, get_lang
 
 def get_calendar_lang():
-    from tg.i18n import get_lang
     import tg
 
     # TODO: Utiliser le champ "language" du modèle pour cet utilisateur ?

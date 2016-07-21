@@ -9,7 +9,7 @@ import logging
 from time import mktime
 
 from tg import config, tmpl_context, request, url
-from pylons.i18n import ugettext as _
+from tg.i18n import ugettext as _
 from paste.deploy.converters import aslist
 
 from sqlalchemy import not_, and_, asc, desc

@@ -8,7 +8,7 @@ Un plugin pour VigiBoard qui ajoute une colonne avec le nom de l'hôte
 sur lequel porte l'événement corrélé.
 """
 import tw.forms as twf
-from pylons.i18n import lazy_ugettext as l_
+from tg.i18n import lazy_ugettext as l_
 from sqlalchemy.sql.expression import union_all
 from sqlalchemy.orm import aliased
 

@@ -9,7 +9,7 @@ est survenu un événement et la durée depuis laquelle l'événement est actif.
 """
 from datetime import datetime, timedelta
 import tw.forms as twf
-from pylons.i18n import ugettext as _, lazy_ugettext as l_
+from tg.i18n import ugettext as _, lazy_ugettext as l_
 
 from vigilo.models import tables
 

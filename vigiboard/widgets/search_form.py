@@ -5,7 +5,7 @@
 
 """Le formulaire de recherche/filtrage."""
 
-from pylons.i18n import lazy_ugettext as l_
+from tg.i18n import lazy_ugettext as l_
 import tw.forms as twf
 import tg
 

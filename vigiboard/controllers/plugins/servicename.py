@@ -8,7 +8,7 @@ Un plugin pour VigiBoard qui ajoute une colonne avec le nom du service
 à l'origine de l'événement corrélé.
 """
 import tw.forms as twf
-from pylons.i18n import lazy_ugettext as l_
+from tg.i18n import lazy_ugettext as l_
 
 from vigilo.models.functions import sql_escape_like
 from vigiboard.controllers.plugins import VigiboardRequestPlugin, ITEMS
@@ -24,7 +24,7 @@ class PluginServicename(VigiboardRequestPlugin):
             twf.TextField(
                 'service',
                 label_text=l_('Service'),
-                validator=twf.validators.String(if_missing=None),
+                validator=twf.validators.UnicodeString(if_missing=None),
             )
         ]
 

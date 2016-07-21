@@ -5,25 +5,25 @@
 
 """VigiBoard Controller"""
 
+import gettext
+import os.path
 from datetime import datetime
 from time import mktime
 
 from pkg_resources import resource_filename, working_set
 
 from tg.exceptions import HTTPNotFound
-from tg.controllers import CUSTOM_CONTENT_TYPE
 from tg import expose, validate, require, flash, url, \
     tmpl_context, request, response, config, session, redirect
-from webhelpers import paginate
-from tw.forms import validators
-from pylons.i18n import ugettext as _, lazy_ugettext as l_, get_lang
+from tg.support import paginate
+from formencode import validators, schema
+from tg.i18n import ugettext as _, lazy_ugettext as l_, get_lang
 from sqlalchemy import asc
 from sqlalchemy.sql import func
 from sqlalchemy.orm import aliased
 from sqlalchemy.sql.expression import or_
-from repoze.what.predicates import Any, All, NotAuthorizedError, \
-                                    has_permission, not_anonymous
-from formencode import schema
+from tg.predicates import Any, All, NotAuthorizedError, \
+                            has_permission, not_anonymous
 
 from vigilo.models.session import DBSession
 from vigilo.models.tables import Event, EventHistory, CorrEvent, Host, \
@@ -67,6 +67,7 @@ class RootController(AuthController, SelfMonitoringController):
     Le controller général de vigiboard
     """
     _tickets = None
+    _use_index_fallback = True
 
     error = ErrorController()
     autocomplete = AutoCompleteController()
@@ -126,22 +127,21 @@ class RootController(AuthController, SelfMonitoringController):
         )
 
         # Paramètres de tri
-        sort = validators.String(if_missing=None)
+        sort = validators.UnicodeString(if_missing='')
         order = validators.OneOf(['asc', 'desc'], if_missing='asc')
 
-        # Nécessaire pour que les critères de recherche soient conservés.
-        allow_extra_fields = True
-
-        # 2ème validation, cette fois avec les champs
-        # du formulaire de recherche.
+        # Le fait de chaîner la validation avec le formulaire de recherche
+        # permet de convertir les critères de recherche vers leur type.
         chained_validators = [create_search_form.validator]
+
+        allow_extra_fields = True
 
     @validate(
         validators=IndexSchema(),
         error_handler = process_form_errors)
-    @expose('events_table.html', content_type=CUSTOM_CONTENT_TYPE)
+    @expose('events_table.html')
     @require(access_restriction)
-    def index(self, page, sort=None, order=None, **search):
+    def index(self, page=None, sort=None, order=None, **search):
         """
         Page d'accueil de Vigiboard. Elle affiche, suivant la page demandée
         (page 1 par defaut), la liste des événements, rangés par ordre de prise
@@ -180,15 +180,6 @@ class RootController(AuthController, SelfMonitoringController):
         aggregates.add_join((aggregates.items,
             Event.idsupitem == aggregates.items.c.idsupitem))
         aggregates.add_order_by(asc(aggregates.items.c.hostname))
-
-        # Certains arguments sont réservés dans routes.util.url_for().
-        # On effectue les substitutions adéquates.
-        # Par exemple: "host" devient "host_".
-        reserved = ('host', 'anchor', 'protocol', 'qualified')
-        for column in search.copy():
-            if column in reserved:
-                search[column + '_'] = search[column]
-                del search[column]
 
         # On ne garde que les champs effectivement renseignés.
         for column in search.copy():
@@ -260,25 +251,20 @@ class RootController(AuthController, SelfMonitoringController):
         )
 
 
-    @expose(content_type=CUSTOM_CONTENT_TYPE)
+    @expose()
     def i18n(self):
-        import gettext
-        import pylons
-        import os.path
-
-        # Repris de pylons.i18n.translation:_get_translator.
-        conf = pylons.config.current_conf()
+        # Repris de tg.i18n:_get_translator.
+        conf = config.current_conf()
         try:
-            rootdir = conf['pylons.paths']['root']
+            localedir = conf['localedir']
         except KeyError:
-            rootdir = conf['pylons.paths'].get('root_path')
-        localedir = os.path.join(rootdir, 'i18n')
+            localedir = os.path.join(conf['paths']['root'], 'i18n')
 
         lang = get_lang()
 
         # Localise le fichier *.mo actuellement chargé
         # et génère le chemin jusqu'au *.js correspondant.
-        filename = gettext.find(conf['pylons.package'], localedir,
+        filename = gettext.find(conf['package'].__name__, localedir,
             languages=lang)
         js = filename[:-3] + '.js'
 
@@ -311,7 +297,7 @@ class RootController(AuthController, SelfMonitoringController):
         error_handler = process_form_errors)
     @expose('raw_events_table.html')
     @require(access_restriction)
-    def masked_events(self, idcorrevent, page):
+    def masked_events(self, idcorrevent, page=1):
         """
         Affichage de la liste des événements bruts masqués d'un événement
         corrélé (événements agrégés dans l'événement corrélé).
@@ -397,7 +383,7 @@ class RootController(AuthController, SelfMonitoringController):
         error_handler = process_form_errors)
     @expose('history_table.html')
     @require(access_restriction)
-    def event(self, idevent, page):
+    def event(self, idevent, page=1):
         """
         Affichage de l'historique d'un événement brut.
         Pour accéder à cette page, l'utilisateur doit être authentifié.
@@ -473,7 +459,7 @@ class RootController(AuthController, SelfMonitoringController):
         error_handler = process_form_errors)
     @expose('events_table.html')
     @require(access_restriction)
-    def item(self, page, host, service, sort=None, order=None):
+    def item(self, page=1, host=None, service=None, sort=None, order=None):
         """
         Affichage de l'historique de l'ensemble des événements corrélés
         jamais ouverts sur l'hôte / service demandé.

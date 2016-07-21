@@ -11,12 +11,12 @@ applications externes.
 
 import urllib
 from tg import config, url, request
-from pylons.i18n import lazy_ugettext as l_
+from tg.i18n import lazy_ugettext as l_
 import tw.forms as twf
 from sqlalchemy.sql.expression import null as expr_null, union_all
 from sqlalchemy import func
 
-from repoze.what.predicates import has_permission, in_group
+from tg.predicates import has_permission, in_group
 from vigilo.turbogears.helpers import get_current_user
 
 from vigilo.models.session import DBSession
@@ -83,11 +83,9 @@ class PluginDetails(VigiboardRequestPlugin):
             items = DBSession.query(
                     Map.idmap,
                     Map.title,
-                    func.lower(Map.title),
                 ).distinct(
                 ).join(
                     (MAP_GROUP_TABLE, MAP_GROUP_TABLE.c.idmap == Map.idmap),
-                    (MapGroup, MapGroup.idgroup == MAP_GROUP_TABLE.c.idgroup),
                     (MapNodeHost, MapNodeHost.idmap == Map.idmap),
                 ).order_by(func.lower(Map.title).asc()
                 ).filter(MapNodeHost.idhost == event.idhost)
@@ -95,7 +93,7 @@ class PluginDetails(VigiboardRequestPlugin):
             if not is_manager:
                 mapgroups = get_current_user().mapgroups(only_direct=True)
                 # pylint: disable-msg=E1103
-                items = items.filter(MapGroup.idgroup.in_(mapgroups))
+                items = items.filter(MAP_GROUP_TABLE.c.idgroup.in_(mapgroups))
 
             # La valeur -1 supprime la limite.
             if max_maps > 0:
@@ -202,14 +200,14 @@ class PluginDetails(VigiboardRequestPlugin):
             return
 
         states = []
-        for value in search.get('state'):
+        for value in search.get('state', []):
             try:
                 states.append(int(value))
             except (ValueError, TypeError):
                 try:
                     states.append(StateName.statename_to_value(value))
                 except:
-                    # On ignore silencieusement un critère de recherche erroné.
+                    # On ignore silencieusement un critère de recherche erroné
                     pass
 
         if states:

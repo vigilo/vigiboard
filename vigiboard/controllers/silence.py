@@ -10,30 +10,22 @@ from datetime import datetime
 
 from tg import expose, validate, require, flash, tmpl_context, \
     request, config, redirect
-from pylons.i18n import lazy_ugettext as l_, ugettext as _
-#from tg.i18n import get_lang
-
-#from tw.forms import CalendarDateTimePicker
-from webhelpers import paginate
-from tw.forms import validators
-
-from vigilo.turbogears.helpers import get_current_user
-from repoze.what.predicates import Any, All, in_group, \
+from tg.i18n import lazy_ugettext as l_, ugettext as _
+from tg.support import paginate
+from tg.predicates import Any, All, in_group, \
                                     has_permission, not_anonymous
-from formencode import schema
+from formencode import validators, schema
 from formencode.compound import All as All_
 from formencode.foreach import ForEach
-
 from sqlalchemy.exc import InvalidRequestError, IntegrityError
 from sqlalchemy.sql.expression import asc, desc
 
+from vigilo.turbogears.helpers import get_current_user
 from vigilo.turbogears.controllers import BaseController
 from vigilo.models.session import DBSession
-
 from vigilo.models.tables import SupItem, Host, LowLevelService, \
                             HighLevelService, StateName, Silence, UserSupItem
 from vigilo.models.tables.secondary_tables import SILENCE_STATE_TABLE
-
 from vigilo.models.utils import group_concat
 
 from vigiboard.lib import error_handler

@@ -20,7 +20,7 @@ convert them into boolean, for example, you should use the
 from vigilo.turbogears import VigiloAppConfig
 
 import vigiboard
-from vigiboard.lib import app_globals, helpers # pylint: disable-msg=W0611
+from vigiboard.lib import app_globals # pylint: disable-msg=W0611
 # W0611: Unused import: imports nécessaires pour le fonctionnement
 
 

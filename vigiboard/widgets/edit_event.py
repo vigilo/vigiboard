@@ -5,7 +5,7 @@
 
 """Le formulaire d'édition d'un événement."""
 
-from pylons.i18n import lazy_ugettext as l_
+from tg.i18n import lazy_ugettext as l_
 from tw.api import WidgetsList
 from tw.forms import TableForm, SingleSelectField, TextField, \
                         HiddenField, Label

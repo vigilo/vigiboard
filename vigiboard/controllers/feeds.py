@@ -7,7 +7,6 @@
 import logging
 from tg import expose, response
 from datetime import datetime
-from tg.controllers import CUSTOM_CONTENT_TYPE
 
 from vigilo.turbogears.controllers import BaseController
 
@@ -18,7 +17,7 @@ __all__ = ['FeedsController']
 class FeedsController(BaseController):
     # pylint: disable-msg=R0201,W0613
 
-    @expose('atom.xml', content_type=CUSTOM_CONTENT_TYPE)
+    @expose('atom.xml')
     def atom(self, token, username):
         """
         """

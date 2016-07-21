@@ -101,7 +101,7 @@ class TestEventTable(TestController):
         """
         Tableau des événements corrélés pour un service de bas niveau.
         """
-        url = '/item/1/%s/%s' % ('group2_host', 'group2_service')
+        url = '/item/1/group2_host/group2_service'
 
         # L'utilisateur n'est pas authentifié.
         response = self.app.get(url, status=401)
@@ -141,7 +141,7 @@ class TestEventTable(TestController):
         """
         Tableau des événements corrélés pour un hôte.
         """
-        url = '/item/1/%s/' % ('group2_host', )
+        url = '/item/1/group2_host/'
 
         # L'utilisateur n'est pas authentifié.
         response = self.app.get(url, status=401)
