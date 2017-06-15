@@ -102,20 +102,6 @@ défaut de VigiBoard::
     D'autres SGBD peuvent également fonctionner, mais aucun support ne
     sera fourni pour ces SGBD.
 
-Choix d'un préfixe pour les tables
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Vous pouvez choisir un préfixe qui sera appliqué aux noms des tables de la base
-de données en indiquant ce préfixe dans la clé ``db_basename`` sous la section
-``[app:main]``. Par défaut, la configuration suppose que les tables de Vigilo
-porteront le préfixe ``vigilo_``.
-
-Si vous optez pour l'utilisation d'un préfixe, veillez à ce que celui-ci ne
-contiennent que des caractères alpha-numériques (a-zA-Z0-9) ou le caractère
-``_``.
-
-Si vous décidez de ne pas utiliser de préfixe, veillez à ce que la base de
-données configurée ne doit utilisée que par Vigilo, au risque d'un conflit avec
-une éventuelle application tierce.
 
 Optimisation de la couche d'abstraction
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
