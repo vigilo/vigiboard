@@ -18,6 +18,7 @@ tests_require = [
     'BeautifulSoup',
     'lxml',
     'coverage',
+    'gearbox',
 ]
 
 sysconfdir = os.getenv("SYSCONFDIR", "/etc")
