@@ -467,8 +467,7 @@ class TestSilencePagination(TestController):
 
         # On affiche la seconde page de la table des règles de mise en silence
         environ = {'REMOTE_USER': 'manager'}
-        # response = self.app.get('/silence?page=2', extra_environ=environ)
-        response = self.app.get('/silence?page=2', extra_environ={'REMOTE_USER': 'manager'})
+        response = self.app.get('/silence?page=2', extra_environ=environ)
 
         # Il ne doit y avoir qu'une seule ligne de
         # résultats concernant "service2" sur "host1"
