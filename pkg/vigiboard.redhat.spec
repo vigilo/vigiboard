@@ -17,12 +17,6 @@ BuildRequires:   python-babel
 Requires:   python-distribute
 Requires:   vigilo-turbogears
 Requires:   python-tw-forms
-Requires:   mod_wsgi
-
-# Renommage
-Obsoletes: vigiboard < 1.0-1
-Provides:  vigiboard = %{version}-%{release}
-
 
 %description
 @DESCRIPTION@
