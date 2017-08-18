@@ -35,12 +35,12 @@ setup(
     name='vigilo-vigiboard',
     version='4.1.0rc1',
     author='Vigilo Team',
-    author_email='contact@projet-vigilo.org',
+    author_email='contact.vigilo@c-s.fr',
     zip_safe=False, # pour pouvoir déplacer app_cfg.py
     license='http://www.gnu.org/licenses/gpl-2.0.html',
     description="Vigilo event board",
     long_description="Vigilo event board",
-    url='http://www.projet-vigilo.org/',
+    url='http://www.vigilo-nms.com/',
     install_requires=[
         "vigilo-turbogears",
     ],

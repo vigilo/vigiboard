@@ -20,7 +20,7 @@ Requires:   python-tw-forms
 
 %description
 @DESCRIPTION@
-This application is part of the Vigilo Project <http://vigilo-project.org>
+This application is part of the Vigilo Project <http://vigilo-nms.com>
 
 %prep
 %setup -q
