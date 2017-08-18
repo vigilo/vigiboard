@@ -5,6 +5,7 @@
 """
 Teste le formulaire de recherche avec divers champs.
 """
+from __future__ import print_function
 from nose.tools import assert_true, assert_equal
 from datetime import datetime
 from datetime import timedelta
@@ -94,7 +95,7 @@ class TestSearchFormMisc(TestController):
             },
             extra_environ={'REMOTE_USER': 'user'})
         rows = self.get_rows(response)
-        print "There are %d rows in the result set" % len(rows)
+        print("There are %d rows in the result set" % len(rows))
         return len(rows)
 
     def test_search_by_output(self):
@@ -109,12 +110,12 @@ class TestSearchFormMisc(TestController):
 
         # Il doit y avoir 1 seule ligne de résultats.
         rows = self.get_rows(response)
-        print "There are %d rows in the result set" % len(rows)
+        print("There are %d rows in the result set" % len(rows))
         assert_equal(len(rows), 1)
 
         # Il doit y avoir plusieurs colonnes dans la ligne de résultats.
         cols = self.get_cells(response)
-        print "There are %d columns in the result set" % len(cols)
+        print("There are %d columns in the result set" % len(cols))
         assert_true(len(cols) > 1)
 
     def test_search_by_trouble_ticket(self):
@@ -130,12 +131,12 @@ class TestSearchFormMisc(TestController):
 
         # Il doit y avoir 1 seule ligne de résultats.
         rows = self.get_rows(response)
-        print "There are %d rows in the result set" % len(rows)
+        print("There are %d rows in the result set" % len(rows))
         assert_equal(len(rows), 1)
 
         # Il doit y avoir plusieurs colonnes dans la ligne de résultats.
         cols = self.get_cells(response)
-        print "There are %d columns in the result set" % len(cols)
+        print("There are %d columns in the result set" % len(cols))
         assert_true(len(cols) > 1)
 
     def test_search_by_dates(self):
@@ -158,12 +159,12 @@ class TestSearchFormMisc(TestController):
 
         # Il doit y avoir 1 seule ligne de résultats.
         rows = self.get_rows(response)
-        print "There are %d rows in the result set" % len(rows)
+        print("There are %d rows in the result set" % len(rows))
         assert_equal(len(rows), 1)
 
         # Il doit y avoir plusieurs colonnes dans la ligne de résultats.
         cols = self.get_cells(response)
-        print "There are %d columns in the result set" % len(cols)
+        print("There are %d columns in the result set" % len(cols))
         assert_true(len(cols) > 1)
 
     def test_future_begin_date(self):

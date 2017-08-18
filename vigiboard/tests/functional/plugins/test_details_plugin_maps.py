@@ -6,6 +6,7 @@
 Teste la partie "Cartes" du formulaire contenant les détails
 pour un événement corrélé.
 """
+from __future__ import print_function
 from datetime import datetime
 import transaction
 
@@ -45,7 +46,7 @@ class TestDetailsPluginMapsHostLimited(TestController):
         root = functions.add_mapgroup(u'Root')
         DBSession.add(tables.Permission(permission_name=u'vigimap-access'))
 
-        print "Creation hote, service et cartes"
+        print("Creation hote, service et cartes")
         host = functions.add_host(u'localhost éçà')
         functions.add_lowlevelservice(host, u'lls éçà')
         sig = functions.add_supitemgroup(u'supitemgroup éçà')
@@ -59,14 +60,14 @@ class TestDetailsPluginMapsHostLimited(TestController):
 
         # On ajoute l'hôte 2 fois sur M1 pour vérifier
         # l'absense de doublons dans les liens.
-        print "Preparation cartes"
+        print("Preparation cartes")
         functions.add_node_host(host, 'h1', m1)
         functions.add_node_host(host, 'h2', m1)
         functions.add_node_host(host, 'h', m2)
         functions.add_node_host(host, 'h', m3)
 
         # Création de quelques utilisateurs.
-        print "Creation des comptes utilisateurs et reglages permissions"
+        print("Creation des comptes utilisateurs et reglages permissions")
         functions.add_user(u'restricted', u're@strict.ed',
                            u'restricted', u'restricted',
                            u'restricted')
@@ -103,7 +104,7 @@ class TestDetailsPluginMapsHostLimited(TestController):
 
     def _insert_dep(self):
         """Insertion de l'événement corrélé de test."""
-        print "Insertion evenement correle"
+        print("Insertion evenement correle")
         timestamp = datetime.now()
         supitem = DBSession.query(self.supitem_class).one()
         if isinstance(supitem, tables.Host):

@@ -5,6 +5,7 @@
 """
 Teste le formulaire de recherche avec un nom de service.
 """
+from __future__ import print_function
 from nose.tools import assert_true, assert_equal
 from datetime import datetime
 import transaction
@@ -77,12 +78,12 @@ class TestSearchFormService(TestController):
 
         # Il doit y avoir 1 seule ligne de résultats.
         rows = self.get_rows(response)
-        print "There are %d rows in the result set" % len(rows)
+        print("There are %d rows in the result set" % len(rows))
         assert_equal(len(rows), 1)
 
         # Il doit y avoir plusieurs colonnes dans la ligne de résultats.
         cols = self.get_cells(response)
-        print "There are %d columns in the result set" % len(cols)
+        print("There are %d columns in the result set" % len(cols))
         assert_true(len(cols) > 1)
 
     def test_search_service_when_allowed_by_service(self):
@@ -111,12 +112,12 @@ class TestSearchFormService(TestController):
 
         # Il doit y avoir 1 seule ligne de résultats.
         rows = self.get_rows(response)
-        print "There are %d rows in the result set" % len(rows)
+        print("There are %d rows in the result set" % len(rows))
         assert_equal(len(rows), 1)
 
         # Il doit y avoir plusieurs colonnes dans la ligne de résultats.
         cols = self.get_cells(response)
-        print "There are %d columns in the result set" % len(cols)
+        print("There are %d columns in the result set" % len(cols))
         assert_true(len(cols) > 1)
 
     def test_search_inexistent_service(self):
@@ -129,7 +130,7 @@ class TestSearchFormService(TestController):
 
         # Il doit y avoir 1 seule ligne de résultats.
         rows = self.get_rows(response)
-        print "There are %d rows in the result set" % len(rows)
+        print("There are %d rows in the result set" % len(rows))
         assert_equal(len(rows), 1)
 
         # Il doit y avoir 1 seule colonne dans la ligne de résultats.
@@ -152,11 +153,11 @@ class TestSearchFormService(TestController):
 
         # Il doit y avoir 1 seule ligne de résultats.
         rows = self.get_rows(response)
-        print "There are %d rows in the result set" % len(rows)
+        print("There are %d rows in the result set" % len(rows))
         assert_equal(len(rows), 1)
 
         # Il doit y avoir 1 seule colonne dans la ligne de résultats.
         # (la colonne contient le texte "Il n'y a aucun événément", traduit)
         cols = self.get_cells(response)
-        print "There are %d columns in the result set" % len(cols)
+        print("There are %d columns in the result set" % len(cols))
         assert_equal(len(cols), 1)

@@ -6,7 +6,7 @@
 Teste le formulaire de recherche avec un groupe d'hôtes.
 """
 
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 
 from nose.tools import assert_true, assert_equal
 
@@ -40,12 +40,12 @@ class TestSearchFormSupItemGroup(TestController):
 
         # Il doit y avoir 2 lignes dans la réponse.
         rows = self.get_rows(response)
-        print "There are %d rows in the result set" % len(rows)
+        print("There are %d rows in the result set" % len(rows))
         assert_equal(len(rows), 2)
 
         # Il doit y avoir plusieurs colonnes dans la réponse.
         cols = self.get_cells(response)
-        print "There are %d columns in the result set" % len(cols)
+        print("There are %d columns in the result set" % len(cols))
         assert_true(len(cols) > 1)
 
         # Le même utilisateur effectue une recherche sur un groupe de supitems
@@ -59,12 +59,12 @@ class TestSearchFormSupItemGroup(TestController):
 
         # Il doit y avoir 2 lignes dans la réponse.
         rows = self.get_rows(response)
-        print "There are %d rows in the result set" % len(rows)
+        print("There are %d rows in the result set" % len(rows))
         assert_equal(len(rows), 2)
 
         # Il doit y avoir plusieurs colonnes dans la réponse.
         cols = self.get_cells(response)
-        print "There are %d columns in the result set" % len(cols)
+        print("There are %d columns in the result set" % len(cols))
         assert_true(len(cols) > 1)
 
         # Le même utilisateur effectue une recherche à partir du groupe racine.
@@ -77,12 +77,12 @@ class TestSearchFormSupItemGroup(TestController):
 
         # Il doit y avoir 2 lignes dans la réponse.
         rows = self.get_rows(response)
-        print "There are %d rows in the result set" % len(rows)
+        print("There are %d rows in the result set" % len(rows))
         assert_equal(len(rows), 2)
 
         # Il doit y avoir plusieurs colonnes dans la réponse.
         cols = self.get_cells(response)
-        print "There are %d columns in the result set" % len(cols)
+        print("There are %d columns in the result set" % len(cols))
         assert_true(len(cols) > 1)
 
         # L'utilisateur est authentifié avec des permissions plus étendues.
@@ -97,12 +97,12 @@ class TestSearchFormSupItemGroup(TestController):
 
         # Il doit y avoir 5 lignes dans la réponse.
         rows = self.get_rows(response)
-        print "There are %d rows in the result set" % len(rows)
+        print("There are %d rows in the result set" % len(rows))
         assert_equal(len(rows), 5)
 
         # Il doit y avoir plusieurs colonnes dans la réponse.
         cols = self.get_cells(response)
-        print "There are %d columns in the result set" % len(cols)
+        print("There are %d columns in the result set" % len(cols))
         assert_true(len(cols) > 1)
 
         # L'utilisateur est authentifié et fait partie du groupe
@@ -116,12 +116,12 @@ class TestSearchFormSupItemGroup(TestController):
 
         # Il doit y avoir 5 lignes dans la réponse.
         rows = self.get_rows(response)
-        print "There are %d rows in the result set" % len(rows)
+        print("There are %d rows in the result set" % len(rows))
         assert_equal(len(rows), 5)
 
         # Il doit y avoir plusieurs colonnes dans la réponse.
         cols = self.get_cells(response)
-        print "There are %d columns in the result set" % len(cols)
+        print("There are %d columns in the result set" % len(cols))
         assert_true(len(cols) > 1)
 
     def test_search_inexistent_supitemgroup(self):
@@ -135,13 +135,13 @@ class TestSearchFormSupItemGroup(TestController):
 
         # Il doit y avoir 1 seule ligne de résultats.
         rows = self.get_rows(response)
-        print "There are %d rows in the result set" % len(rows)
+        print("There are %d rows in the result set" % len(rows))
         assert_equal(len(rows), 1)
 
         # Il doit y avoir 1 seule colonne dans la ligne de résultats.
         # (la colonne contient le texte "Il n'y a aucun événément", traduit)
         cols = self.get_cells(response)
-        print "There are %d columns in the result set" % len(cols)
+        print("There are %d columns in the result set" % len(cols))
         assert_equal(len(cols), 1)
 
         # L'utilisateur est authentifié et fait partie du groupe
@@ -152,13 +152,13 @@ class TestSearchFormSupItemGroup(TestController):
 
         # Il doit y avoir 1 seule ligne de résultats.
         rows = self.get_rows(response)
-        print "There are %d rows in the result set" % len(rows)
+        print("There are %d rows in the result set" % len(rows))
 
         # Il doit y avoir 1 seule colonne dans la ligne de résultats.
         # (la colonne contient le texte "Il n'y a aucun événément", traduit)
         assert_equal(len(rows), 1)
         cols = self.get_cells(response)
-        print "There are %d columns in the result set" % len(cols)
+        print("There are %d columns in the result set" % len(cols))
         assert_equal(len(cols), 1)
 
     def test_search_supitemgroup_when_disallowed(self):
@@ -183,10 +183,10 @@ class TestSearchFormSupItemGroup(TestController):
         # Il doit y avoir 1 seule ligne dans la réponse.
         # (la réponse contient le texte "Il n'y a aucun événément", traduit)
         rows = self.get_rows(response)
-        print "There are %d rows in the result set" % len(rows)
+        print("There are %d rows in the result set" % len(rows))
         assert_equal(len(rows), 1)
 
         # Il doit y avoir 1 seule colonne dans la réponse.
         cols = self.get_cells(response)
-        print "There are %d columns in the result set" % len(cols)
+        print("There are %d columns in the result set" % len(cols))
         assert_equal(len(cols), 1)

@@ -274,7 +274,7 @@ class SilenceController(BaseController):
         try:
             silence = DBSession.query(Silence
                 ).filter(Silence.idsilence == id).one()
-        except InvalidRequestError, e:
+        except InvalidRequestError as e:
             msg = _('An exception has been raised while ' \
                     'querying the database: %s') % str(e)
             error_handler.handle_error_message(msg)
@@ -373,7 +373,7 @@ class SilenceController(BaseController):
             try:
                 supitem = DBSession.query(SupItem
                     ).filter(SupItem.idsupitem == idsupitem).one()
-            except InvalidRequestError, e:
+            except InvalidRequestError as e:
                 msg = _('An exception has been raised while ' \
                         'querying the database: %s') % str(e)
                 error_handler.handle_error_message(msg)
@@ -395,7 +395,7 @@ class SilenceController(BaseController):
             try:
                 silence = DBSession.query(Silence
                     ).filter(Silence.idsilence == idsilence).one()
-            except InvalidRequestError, e:
+            except InvalidRequestError as e:
                 msg = _('An exception has been raised while ' \
                         'querying the database: %s') % str(e)
                 error_handler.handle_error_message(msg)
@@ -433,7 +433,7 @@ class SilenceController(BaseController):
                     ).filter(StateName.statename == state).one()
                 silence.states.append(s)
             DBSession.flush()
-        except (IntegrityError, InvalidRequestError), e:
+        except (IntegrityError, InvalidRequestError) as e:
             msg = _('An exception has been raised while ' \
                     'updating the database: %s') % str(e)
             error_handler.handle_error_message(msg)
@@ -544,7 +544,7 @@ class SilenceController(BaseController):
         try:
             silences = DBSession.query(Silence
                 ).filter(Silence.idsilence.in_(id)).all()
-        except InvalidRequestError, e:
+        except InvalidRequestError as e:
             msg = _('An exception has been raised while ' \
                     'querying the database: %s') % str(e)
             error_handler.handle_error_message(msg)
@@ -575,7 +575,7 @@ class SilenceController(BaseController):
             for silence in silences:
                 DBSession.delete(silence)
             DBSession.flush()
-        except InvalidRequestError, e:
+        except InvalidRequestError as e:
             msg = _('An exception has been raised while ' \
                     'deleting the silence rules: %s') % str(e)
             error_handler.handle_error_message(msg)

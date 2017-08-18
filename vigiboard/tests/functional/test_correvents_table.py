@@ -7,7 +7,7 @@
 Test du tableau d'événements de Vigiboard
 """
 
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 
 from nose.tools import assert_true, assert_equal
 
@@ -38,12 +38,12 @@ class TestEventTable(TestController):
 
         # Il doit y avoir 2 lignes de résultats.
         rows = self.get_rows(response)
-        print "There are %d rows in the result set" % len(rows)
+        print("There are %d rows in the result set" % len(rows))
         assert_equal(len(rows), 2)
 
         # Il doit y avoir plusieurs colonnes dans la ligne de résultats.
         cols = self.get_cells(response)
-        print "There are %d columns in the result set" % len(cols)
+        print("There are %d columns in the result set" % len(cols))
         assert_true(len(cols) > 1)
 
         # Mêmes vérifications pour le CSV.
@@ -60,12 +60,12 @@ class TestEventTable(TestController):
 
         # Il doit y avoir 5 lignes de résultats.
         rows = self.get_rows(response)
-        print "There are %d rows in the result set" % len(rows)
+        print("There are %d rows in the result set" % len(rows))
         assert_equal(len(rows), 5)
 
         # Il doit y avoir plusieurs colonnes dans la ligne de résultats.
         cols = self.get_cells(response)
-        print "There are %d columns in the result set" % len(cols)
+        print("There are %d columns in the result set" % len(cols))
         assert_true(len(cols) > 1)
 
         # Mêmes vérifications pour le CSV.
@@ -82,12 +82,12 @@ class TestEventTable(TestController):
 
         # Il doit y avoir 5 lignes de résultats.
         rows = self.get_rows(response)
-        print "There are %d rows in the result set" % len(rows)
+        print("There are %d rows in the result set" % len(rows))
         assert_equal(len(rows), 5)
 
         # Il doit y avoir plusieurs colonnes dans la ligne de résultats.
         cols = self.get_cells(response)
-        print "There are %d columns in the result set" % len(cols)
+        print("There are %d columns in the result set" % len(cols))
         assert_true(len(cols) > 1)
 
         # Mêmes vérifications pour le CSV.
@@ -123,7 +123,7 @@ class TestEventTable(TestController):
 
         # Il doit y avoir 1 ligne de résultats.
         rows = self.get_rows(response)
-        print "There are %d rows in the result set" % len(rows)
+        print("There are %d rows in the result set" % len(rows))
         assert_equal(len(rows), 1)
 
         # L'utilisateur fait partie du groupe 'managers'
@@ -134,7 +134,7 @@ class TestEventTable(TestController):
 
         # Il doit y avoir 1 ligne de résultats.
         rows = self.get_rows(response)
-        print "There are %d rows in the result set" % len(rows)
+        print("There are %d rows in the result set" % len(rows))
         assert_equal(len(rows), 1)
 
     def test_correvents_table_for_host(self):
@@ -163,7 +163,7 @@ class TestEventTable(TestController):
 
         # Il doit y avoir 1 ligne de résultats.
         rows = self.get_rows(response)
-        print "There are %d rows in the result set" % len(rows)
+        print("There are %d rows in the result set" % len(rows))
         assert_equal(len(rows), 1)
 
         # L'utilisateur fait partie du groupe 'managers'.
@@ -174,5 +174,5 @@ class TestEventTable(TestController):
 
         # Il doit y avoir 1 ligne de résultats.
         rows = self.get_rows(response)
-        print "There are %d rows in the result set" % len(rows)
+        print("There are %d rows in the result set" % len(rows))
         assert_equal(len(rows), 1)

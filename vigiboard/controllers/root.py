@@ -623,7 +623,7 @@ class RootController(AuthController, SelfMonitoringController):
                         "to VigiBoard"))
             try:
                 condition.check_authorization(request.environ)
-            except NotAuthorizedError, e:
+            except NotAuthorizedError as e:
                 reason = unicode(e)
                 flash(reason, 'error')
                 raise redirect(request.environ.get('HTTP_REFERER', '/'))
