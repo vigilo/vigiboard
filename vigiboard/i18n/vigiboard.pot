@@ -1,15 +1,15 @@
 # Translations template for vigilo-vigiboard.
-# Copyright (C) 2015 ORGANIZATION
+# Copyright (C) 2017 ORGANIZATION
 # This file is distributed under the same license as the vigilo-vigiboard
 # project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2015.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: vigilo-vigiboard 3.6.0\n"
+"Project-Id-Version: vigilo-vigiboard 4.1.0rc2\n"
 "Report-Msgid-Bugs-To: contact.vigilo@c-s.fr\n"
-"POT-Creation-Date: 2015-08-31 14:19+0200\n"
+"POT-Creation-Date: 2017-08-24 12:17+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,353 +18,353 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 0.9.4\n"
 
-#: vigiboard/websetup.py:33
+#: vigiboard/websetup.py:20
 #, python-format
 msgid "Vigilo has detected a breakdown on the following collector(s): %(list)s"
 msgstr ""
 
-#: vigiboard/controllers/root.py:89 vigiboard/controllers/root.py:99
-#: vigiboard/controllers/root.py:582 vigiboard/controllers/silence.py:72
+#: vigiboard/controllers/root.py:75 vigiboard/controllers/root.py:85
+#: vigiboard/controllers/root.py:555 vigiboard/controllers/silence.py:49
 msgid "You need to be authenticated"
 msgstr ""
 
-#: vigiboard/controllers/root.py:102
+#: vigiboard/controllers/root.py:88
 msgid "You don't have access to VigiBoard"
 msgstr ""
 
-#: vigiboard/controllers/root.py:251 vigiboard/controllers/root.py:548
-#: vigiboard/controllers/vigiboardrequest.py:469
+#: vigiboard/controllers/root.py:227 vigiboard/controllers/root.py:521
+#: vigiboard/controllers/vigiboardrequest.py:454
 msgid "Apply"
 msgstr ""
 
-#: vigiboard/controllers/root.py:388
+#: vigiboard/controllers/root.py:361
 msgid "No masked event or access denied"
 msgstr ""
 
-#: vigiboard/controllers/root.py:446
+#: vigiboard/controllers/root.py:419
 msgid "No such event or access denied"
 msgstr ""
 
-#: vigiboard/controllers/root.py:515
+#: vigiboard/controllers/root.py:488
 msgid "No such host/service"
 msgstr ""
 
-#: vigiboard/controllers/root.py:538
+#: vigiboard/controllers/root.py:511
 msgid "No access to this host/service or no event yet"
 msgstr ""
 
-#: vigiboard/controllers/root.py:585
+#: vigiboard/controllers/root.py:558
 msgid "You don't have write access to VigiBoard"
 msgstr ""
 
-#: vigiboard/controllers/root.py:608
+#: vigiboard/controllers/root.py:581
 msgid "No event has been selected"
 msgstr ""
 
-#: vigiboard/controllers/root.py:636
+#: vigiboard/controllers/root.py:609
 msgid ""
 "Changes have occurred since the page was last displayed, your changes HAVE "
 "NOT been saved."
 msgstr ""
 
-#: vigiboard/controllers/root.py:642
+#: vigiboard/controllers/root.py:615
 msgid "No access to this event"
 msgstr ""
 
-#: vigiboard/controllers/root.py:649
+#: vigiboard/controllers/root.py:622
 msgid "You don't have administrative access to VigiBoard"
 msgstr ""
 
-#: vigiboard/controllers/root.py:676
+#: vigiboard/controllers/root.py:649
 msgid "None"
 msgstr ""
 
-#: vigiboard/controllers/root.py:677
+#: vigiboard/controllers/root.py:650
 msgid "Acknowledged"
 msgstr ""
 
-#: vigiboard/controllers/root.py:678
+#: vigiboard/controllers/root.py:651
 msgid "Acknowledged and closed"
 msgstr ""
 
-#: vigiboard/controllers/root.py:699
+#: vigiboard/controllers/root.py:672
 #, python-format
 msgid ""
 "User \"%(user)s\" (%(address)s) changed the trouble ticket from "
 "\"%(previous)s\" to \"%(new)s\" on event #%(idevent)d"
 msgstr ""
 
-#: vigiboard/controllers/root.py:744
+#: vigiboard/controllers/root.py:717
 #, python-format
 msgid "User \"%(user)s\" (%(address)s) forcefully closed event #%(idevent)d"
 msgstr ""
 
-#: vigiboard/controllers/root.py:777
+#: vigiboard/controllers/root.py:750
 #, python-format
 msgid ""
 "User \"%(user)s\" (%(address)s) changed the state from \"%(previous)s\" to "
 "\"%(new)s\" on event #%(idevent)d"
 msgstr ""
 
-#: vigiboard/controllers/root.py:789
+#: vigiboard/controllers/root.py:762
 msgid "Updated successfully"
 msgstr ""
 
-#: vigiboard/controllers/root.py:814
+#: vigiboard/controllers/root.py:787
 #, python-format
 msgid "No such plugin '%s'"
 msgstr ""
 
-#: vigiboard/controllers/root.py:855
+#: vigiboard/controllers/root.py:828
 msgid "No such incident or insufficient permissions"
 msgstr ""
 
-#: vigiboard/controllers/root.py:975
+#: vigiboard/controllers/root.py:948
 #, python-format
 msgid "Next %(limit)s"
 msgstr ""
 
-#: vigiboard/controllers/silence.py:75
+#: vigiboard/controllers/silence.py:52
 msgid "Insufficient privileges for this action"
 msgstr ""
 
-#: vigiboard/controllers/silence.py:160
+#: vigiboard/controllers/silence.py:137
 #, python-format
 msgid "Another rule already exists for service '%s' on host '%s'."
 msgstr ""
 
-#: vigiboard/controllers/silence.py:164
+#: vigiboard/controllers/silence.py:141
 #, python-format
 msgid "Another rule already exists for host '%s'."
 msgstr ""
 
-#: vigiboard/controllers/silence.py:246
-#: vigiboard/controllers/plugins/hostname.py:38
+#: vigiboard/controllers/silence.py:223
+#: vigiboard/controllers/plugins/hostname.py:24
 msgid "Host"
 msgstr ""
 
-#: vigiboard/controllers/silence.py:247
-#: vigiboard/controllers/plugins/servicename.py:41
+#: vigiboard/controllers/silence.py:224
+#: vigiboard/controllers/plugins/servicename.py:26
 msgid "Service"
 msgstr ""
 
-#: vigiboard/controllers/silence.py:248
+#: vigiboard/controllers/silence.py:225
 msgid "States"
 msgstr ""
 
-#: vigiboard/controllers/silence.py:249
+#: vigiboard/controllers/silence.py:226
 msgid "Last modification"
 msgstr ""
 
-#: vigiboard/controllers/silence.py:250
+#: vigiboard/controllers/silence.py:227
 msgid "Author"
 msgstr ""
 
-#: vigiboard/controllers/silence.py:251
+#: vigiboard/controllers/silence.py:228
 msgid "Comment"
 msgstr ""
 
-#: vigiboard/controllers/silence.py:301 vigiboard/controllers/silence.py:400
-#: vigiboard/controllers/silence.py:422 vigiboard/controllers/silence.py:571
+#: vigiboard/controllers/silence.py:278 vigiboard/controllers/silence.py:377
+#: vigiboard/controllers/silence.py:399 vigiboard/controllers/silence.py:548
 #, python-format
 msgid "An exception has been raised while querying the database: %s"
 msgstr ""
 
-#: vigiboard/controllers/silence.py:305 vigiboard/controllers/silence.py:312
-#: vigiboard/controllers/silence.py:426 vigiboard/controllers/silence.py:593
+#: vigiboard/controllers/silence.py:282 vigiboard/controllers/silence.py:289
+#: vigiboard/controllers/silence.py:403 vigiboard/controllers/silence.py:570
 #, python-format
 msgid "Silence rule #%s does not exist."
 msgstr ""
 
-#: vigiboard/controllers/silence.py:383
+#: vigiboard/controllers/silence.py:360
 msgid "No state specified for the silence rule."
 msgstr ""
 
-#: vigiboard/controllers/silence.py:405
+#: vigiboard/controllers/silence.py:382
 #, python-format
 msgid "Host '%s' does not exist."
 msgstr ""
 
-#: vigiboard/controllers/silence.py:408
+#: vigiboard/controllers/silence.py:385
 #, python-format
 msgid "Service '%s' does not exist for host '%s'."
 msgstr ""
 
-#: vigiboard/controllers/silence.py:460
+#: vigiboard/controllers/silence.py:437
 #, python-format
 msgid "An exception has been raised while updating the database: %s"
 msgstr ""
 
-#: vigiboard/controllers/silence.py:470
+#: vigiboard/controllers/silence.py:447
 #, python-format
 msgid ""
 "User %(user)s (IP: %(ip)s) updated silence rule #%(id)s for service "
 "%(service)s on host %(host)s."
 msgstr ""
 
-#: vigiboard/controllers/silence.py:480
+#: vigiboard/controllers/silence.py:457
 #, python-format
 msgid ""
 "Silence rule #%(id)s (host: %(host)s, service: %(service)s) has been "
 "successfully updated."
 msgstr ""
 
-#: vigiboard/controllers/silence.py:489
+#: vigiboard/controllers/silence.py:466
 #, python-format
 msgid "User %(user)s (IP: %(ip)s) updated silence rule #%(id)s for host %(host)s."
 msgstr ""
 
-#: vigiboard/controllers/silence.py:497
+#: vigiboard/controllers/silence.py:474
 #, python-format
 msgid "Silence rule #%(id)s (host: %(host)s) has been successfully updated."
 msgstr ""
 
-#: vigiboard/controllers/silence.py:506
+#: vigiboard/controllers/silence.py:483
 #, python-format
 msgid ""
 "User %(user)s (IP: %(ip)s) added a silence rule (#%(id)s) for service "
 "%(service)s on host %(host)s."
 msgstr ""
 
-#: vigiboard/controllers/silence.py:516
+#: vigiboard/controllers/silence.py:493
 #, python-format
 msgid ""
 "A new silence rule (#%(id)s) has been added for service \"%(service)s\" on "
 "host \"%(host)s\"."
 msgstr ""
 
-#: vigiboard/controllers/silence.py:524
+#: vigiboard/controllers/silence.py:501
 #, python-format
 msgid "User %(user)s (IP: %(ip)s) added a silence rule (#%(id)s) for host %(host)s."
 msgstr ""
 
-#: vigiboard/controllers/silence.py:532
+#: vigiboard/controllers/silence.py:509
 #, python-format
 msgid "A new silence rule (#%(id)s) has been added for the host \"%(host)s\"."
 msgstr ""
 
-#: vigiboard/controllers/silence.py:562
+#: vigiboard/controllers/silence.py:539
 msgid "No silence rule id specified."
 msgstr ""
 
-#: vigiboard/controllers/silence.py:581
+#: vigiboard/controllers/silence.py:558
 #, python-format
 msgid "Error: the following silence rules do not exist: %s."
 msgstr ""
 
-#: vigiboard/controllers/silence.py:584
+#: vigiboard/controllers/silence.py:561
 #, python-format
 msgid "Error: silence rule #%s does not exist."
 msgstr ""
 
-#: vigiboard/controllers/silence.py:602
+#: vigiboard/controllers/silence.py:579
 #, python-format
 msgid "An exception has been raised while deleting the silence rules: %s"
 msgstr ""
 
-#: vigiboard/controllers/silence.py:612
+#: vigiboard/controllers/silence.py:589
 #, python-format
 msgid ""
 "User %(user)s (IP: %(ip)s) deleted silence rule #%(id)s for service "
 "%(service)s on host %(host)s"
 msgstr ""
 
-#: vigiboard/controllers/silence.py:624
+#: vigiboard/controllers/silence.py:601
 #, python-format
 msgid "User %(user)s (IP: %(ip)s) deleted silence rule #%(id)s for host %(host)s"
 msgstr ""
 
-#: vigiboard/controllers/silence.py:635
+#: vigiboard/controllers/silence.py:612
 #, python-format
 msgid "The following silence rules have been successfully deleted: %s."
 msgstr ""
 
-#: vigiboard/controllers/silence.py:638
+#: vigiboard/controllers/silence.py:615
 #, python-format
 msgid "Silence rule #%s has been successfully deleted."
 msgstr ""
 
-#: vigiboard/controllers/plugins/date.py:59
+#: vigiboard/controllers/plugins/date.py:44
 #, python-format
 msgid "Eg. %(date)s"
 msgstr ""
 
-#: vigiboard/controllers/plugins/date.py:66
+#: vigiboard/controllers/plugins/date.py:51
 msgid "Last occurrence"
 msgstr ""
 
-#: vigiboard/controllers/plugins/date.py:69
+#: vigiboard/controllers/plugins/date.py:54
 msgid "Between"
 msgstr ""
 
+#: vigiboard/controllers/plugins/date.py:55
 #: vigiboard/controllers/plugins/date.py:70
-#: vigiboard/controllers/plugins/date.py:85
-#: vigiboard/controllers/plugins/groups.py:41
+#: vigiboard/controllers/plugins/groups.py:26
 msgid "Choose"
 msgstr ""
 
-#: vigiboard/controllers/plugins/date.py:84
+#: vigiboard/controllers/plugins/date.py:69
 msgid "And"
 msgstr ""
 
-#: vigiboard/controllers/plugins/date.py:110
+#: vigiboard/controllers/plugins/date.py:95
 msgid "Start date cannot be greater than current date"
 msgstr ""
 
-#: vigiboard/controllers/plugins/date.py:115
+#: vigiboard/controllers/plugins/date.py:100
 msgid "Start date cannot be greater than end date"
 msgstr ""
 
-#: vigiboard/controllers/plugins/date.py:124
+#: vigiboard/controllers/plugins/date.py:109
 msgid "End date cannot be greater than current date"
 msgstr ""
 
-#: vigiboard/controllers/plugins/details.py:205
-#: vigiboard/controllers/plugins/state.py:47
+#: vigiboard/controllers/plugins/details.py:188
+#: vigiboard/controllers/plugins/state.py:32
 msgid "Current state"
 msgstr ""
 
-#: vigiboard/controllers/plugins/groups.py:42
+#: vigiboard/controllers/plugins/groups.py:27
 msgid "Clear"
 msgstr ""
 
-#: vigiboard/controllers/plugins/groups.py:78
+#: vigiboard/controllers/plugins/groups.py:63
 msgid "Group"
 msgstr ""
 
-#: vigiboard/controllers/plugins/hls.py:45
+#: vigiboard/controllers/plugins/hls.py:30
 msgid "High-Level Service"
 msgstr ""
 
-#: vigiboard/controllers/plugins/output.py:38
+#: vigiboard/controllers/plugins/output.py:23
 msgid "Output"
 msgstr ""
 
-#: vigiboard/controllers/plugins/priority.py:88
+#: vigiboard/controllers/plugins/priority.py:73
 msgid "Priority"
 msgstr ""
 
-#: vigiboard/controllers/plugins/status.py:53
+#: vigiboard/controllers/plugins/status.py:38
 msgid "All alerts"
 msgstr ""
 
-#: vigiboard/controllers/plugins/status.py:56
+#: vigiboard/controllers/plugins/status.py:41
 msgid "New alerts"
 msgstr ""
 
-#: vigiboard/controllers/plugins/status.py:57
+#: vigiboard/controllers/plugins/status.py:42
 msgid "Alerts marked as Acknowledged"
 msgstr ""
 
-#: vigiboard/controllers/plugins/status.py:58
+#: vigiboard/controllers/plugins/status.py:43
 msgid "Alerts marked as Closed"
 msgstr ""
 
-#: vigiboard/controllers/plugins/status.py:64 vigiboard/widgets/edit_event.py:73
+#: vigiboard/controllers/plugins/status.py:49 vigiboard/widgets/edit_event.py:58
 msgid "Trouble Ticket"
 msgstr ""
 
-#: vigiboard/controllers/plugins/status.py:69 vigiboard/widgets/edit_event.py:76
+#: vigiboard/controllers/plugins/status.py:54 vigiboard/widgets/edit_event.py:61
 msgid "Acknowledgement Status"
 msgstr ""
 
@@ -372,7 +372,7 @@ msgstr ""
 #. TRANSLATORS:
 #. http://www.dynarch.com/static/jscalendar-1.0/doc/html/reference.html#node_sec_5.3.5
 #. TRANSLATORS: http://docs.python.org/release/2.5/lib/module-time.html
-#: vigiboard/lib/dateformat.py:38
+#: vigiboard/lib/dateformat.py:37
 #, python-format
 msgid "%Y-%m-%d %I:%M:%S %p"
 msgstr ""
@@ -381,7 +381,7 @@ msgstr ""
 #. TRANSLATORS:
 #. http://www.dynarch.com/static/jscalendar-1.0/doc/html/reference.html#node_sec_5.3.5
 #. TRANSLATORS: http://docs.python.org/release/2.5/lib/module-time.html
-#: vigiboard/lib/dateformat.py:67
+#: vigiboard/lib/dateformat.py:66
 #, python-format
 msgid "%Y-%m-%d"
 msgstr ""
@@ -394,12 +394,12 @@ msgstr ""
 msgid "Select a group"
 msgstr ""
 
-#: vigiboard/public/js/main.js:85 vigiboard/public/js/main.js:106
-#: vigiboard/public/js/main.js:153 vigiboard/public/js/main.js:186
+#: vigiboard/public/js/main.js:87 vigiboard/public/js/main.js:108
+#: vigiboard/public/js/main.js:156 vigiboard/public/js/main.js:189
 msgid "Unable to save preferences"
 msgstr ""
 
-#: vigiboard/public/js/main.js:141
+#: vigiboard/public/js/main.js:144
 msgid "Could not refresh data, reloading the page"
 msgstr ""
 
@@ -419,59 +419,59 @@ msgstr ""
 msgid "No"
 msgstr ""
 
-#: vigiboard/widgets/edit_event.py:34
+#: vigiboard/widgets/edit_event.py:19
 msgid "No change"
 msgstr ""
 
-#: vigiboard/widgets/edit_event.py:35
+#: vigiboard/widgets/edit_event.py:20
 msgid "Change to None"
 msgstr ""
 
-#: vigiboard/widgets/edit_event.py:36
+#: vigiboard/widgets/edit_event.py:21
 msgid "Change to Acknowledged"
 msgstr ""
 
-#: vigiboard/widgets/edit_event.py:37
+#: vigiboard/widgets/edit_event.py:22
 msgid "Change to Closed"
 msgstr ""
 
-#: vigiboard/widgets/edit_event.py:38
+#: vigiboard/widgets/edit_event.py:23
 msgid "Force to Closed"
 msgstr ""
 
-#: vigiboard/widgets/edit_event.py:44
+#: vigiboard/widgets/edit_event.py:29
 msgid "Ticket change"
 msgstr ""
 
-#: vigiboard/widgets/edit_event.py:45
+#: vigiboard/widgets/edit_event.py:30
 msgid "Forced change state"
 msgstr ""
 
-#: vigiboard/widgets/edit_event.py:46
+#: vigiboard/widgets/edit_event.py:31
 msgid "Acknowledgement change state"
 msgstr ""
 
-#: vigiboard/widgets/edit_event.py:47
+#: vigiboard/widgets/edit_event.py:32
 msgid "Ticket change notification"
 msgstr ""
 
-#: vigiboard/widgets/edit_event.py:48
+#: vigiboard/widgets/edit_event.py:33
 msgid "New occurrence"
 msgstr ""
 
-#: vigiboard/widgets/edit_event.py:49
+#: vigiboard/widgets/edit_event.py:34
 msgid "Nagios update state"
 msgstr ""
 
-#: vigiboard/widgets/edit_event.py:53
+#: vigiboard/widgets/edit_event.py:38
 msgid "Forced"
 msgstr ""
 
-#: vigiboard/widgets/edit_event.py:74
+#: vigiboard/widgets/edit_event.py:59
 msgid "Warning: changing the ticket will affect all selected events."
 msgstr ""
 
-#: vigiboard/widgets/search_form.py:57
+#: vigiboard/widgets/search_form.py:42
 msgid "Search"
 msgstr ""
 
