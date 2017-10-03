@@ -47,6 +47,8 @@ rm -rf $RPM_BUILD_ROOT
 %doc COPYING.txt README.txt
 %dir %{_sysconfdir}/vigilo
 %dir %{_sysconfdir}/vigilo/%{module}
+%exclude %{_sysconfdir}/vigilo/%{module}/*.pyc
+%exclude %{_sysconfdir}/vigilo/%{module}/*.pyo
 %config(noreplace) %{_sysconfdir}/vigilo/%{module}/*.conf
 %config(noreplace) %{_sysconfdir}/vigilo/%{module}/*.py
 %config(noreplace) %{_sysconfdir}/vigilo/%{module}/*.wsgi
