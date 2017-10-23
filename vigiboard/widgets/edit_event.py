@@ -55,7 +55,8 @@ class EditEventForm(TableForm):
         Champs du formulaire d'édition des événements.
         """
         id = HiddenField('id')
-        trouble_ticket = TextField(label_text=l_('Trouble Ticket'))
+        trouble_ticket = TextField(label_text=l_('Trouble Ticket'),
+                                   maxlength=250)
         warning = Label(suppress_label=True, text=l_('Warning: changing '
                         'the ticket will affect all selected events.'))
         ack = SingleSelectField(label_text=l_('Acknowledgement Status'),
