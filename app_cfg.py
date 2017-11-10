@@ -115,6 +115,7 @@ base_config['vigiboard_plugins'] = (
     'date',
     'priority',
     'occurrences',
+#    'address',
     'hostname',
     'servicename',
     'output',

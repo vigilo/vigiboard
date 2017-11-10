@@ -94,6 +94,7 @@ class VigiboardRequest():
                 LowLevelService.idservice.label("idsupitem"),
                 LowLevelService.servicename.label("servicename"),
                 Host.name.label("hostname"),
+                Host.address.label("address"),
             ).join(
                 (Host, Host.idhost == LowLevelService.idhost),
             ).distinct()
@@ -103,6 +104,7 @@ class VigiboardRequest():
                 Host.idhost.label("idsupitem"),
                 expr_null().label("servicename"),
                 Host.name.label("hostname"),
+                Host.address.label("address"),
             ).distinct()
 
             # Application des filtres des plugins si nécessaire.
@@ -129,6 +131,7 @@ class VigiboardRequest():
                 UserSupItem.idsupitem,
                 UserSupItem.servicename,
                 UserSupItem.hostname,
+                UserSupItem.address,
             ).filter(
                 UserSupItem.username == user.user_name
             ).distinct()
@@ -430,7 +433,7 @@ class VigiboardRequest():
 
     def generate_tmpl_context(self):
         """
-        Génère et peuple la variable tmpl_context avec les Dialogs et
+        Génère et peuple la variable tmpl_context avec les dialogues et
         formulaires nécessaire au fonctionnement de Vigiboard
         """
 

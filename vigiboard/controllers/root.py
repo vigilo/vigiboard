@@ -172,6 +172,7 @@ class RootController(AuthController, SelfMonitoringController, I18nController):
 
         aggregates.add_table(
             CorrEvent,
+            aggregates.items.c.address,
             aggregates.items.c.hostname,
             aggregates.items.c.servicename
         )

@@ -81,6 +81,7 @@ setup(
             'date = vigiboard.controllers.plugins.date:PluginDate',
             'priority = vigiboard.controllers.plugins.priority:PluginPriority',
             'occurrences = vigiboard.controllers.plugins.occurrences:PluginOccurrences',
+            'address = vigiboard.controllers.plugins.address:PluginAddress',
             'hostname = vigiboard.controllers.plugins.hostname:PluginHostname',
             'servicename = vigiboard.controllers.plugins.servicename:PluginServicename',
             'output = vigiboard.controllers.plugins.output:PluginOutput',
