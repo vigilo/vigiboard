@@ -261,27 +261,26 @@ class RootController(AuthController, SelfMonitoringController):
             localedir = os.path.join(conf['paths']['root'], 'i18n')
 
         lang = get_lang()
+        modules = (
+            (conf['package'].__name__, localedir),
+            ('vigilo-themes', resource_filename('vigilo.themes.i18n', '')),
+        )
 
-        # Localise le fichier *.mo actuellement chargé
-        # et génère le chemin jusqu'au *.js correspondant.
-        filename = gettext.find(conf['package'].__name__, localedir,
-            languages=lang)
-        js = filename[:-3] + '.js'
+        # Charge et installe le fichier JS de traduction de chaque module
+        translations = "babel.Translations.load("
+        for domain, directory in modules:
+            try:
+                mofile = gettext.find(domain, directory, languages=lang)
+                if mofile is None:
+                    continue
 
-        themes_filename = gettext.find(
-            'vigilo-themes',
-            resource_filename('vigilo.themes.i18n', ''),
-            languages=lang)
-        themes_js = themes_filename[:-3] + '.js'
-
-        # Récupère et envoie le contenu du fichier de traduction *.js.
-        fhandle = open(js, 'r')
-        translations = fhandle.read()
-        fhandle.close()
-
-        fhandle = open(themes_js, 'r')
-        translations += fhandle.read()
-        fhandle.close()
+                fhandle = open(mofile[:-3] + '.js', 'r')
+                translations += fhandle.read()
+                fhandle.close()
+                translations += ").load("
+            except ImportError:
+                pass
+        translations += "{}).install()"
 
         response.headers['Content-Type'] = 'text/javascript; charset=utf-8'
         return translations
