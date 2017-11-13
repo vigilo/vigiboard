@@ -90,7 +90,10 @@ setup(
             'groups = vigiboard.controllers.plugins.groups:PluginGroups',
             'masked_events = vigiboard.controllers.plugins.masked_events:PluginMaskedEvents',
             'map = vigiboard.controllers.plugins.map:PluginMap',
-        ]
+        ],
+        'vigilo.turbogears.i18n': [
+            'vigiboard = vigiboard.i18n:100',
+        ],
     },
     cmdclass=cmdclass,
     data_files=[

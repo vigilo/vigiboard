@@ -39,6 +39,7 @@ from vigilo.turbogears.controllers.custom import CustomController
 from vigilo.turbogears.controllers.error import ErrorController
 from vigilo.turbogears.controllers.autocomplete import AutoCompleteController
 from vigilo.turbogears.controllers.proxy import ProxyController
+from vigilo.turbogears.controllers.i18n import I18nController
 from vigilo.turbogears.controllers.api.root import ApiRootController
 from vigilo.turbogears.helpers import get_current_user
 
@@ -62,7 +63,7 @@ __all__ = ('RootController', 'get_last_modification_timestamp',
 # W0613: Unused arguments: les arguments sont la query-string
 # W0622: Redefining built-in 'id': élément de la query-string
 
-class RootController(AuthController, SelfMonitoringController):
+class RootController(AuthController, SelfMonitoringController, I18nController):
     """
     Le controller général de vigiboard
     """
@@ -249,41 +250,6 @@ class RootController(AuthController, SelfMonitoringController):
             search = search,
             fixed_search = fixed_search,
         )
-
-
-    @expose()
-    def i18n(self):
-        # Repris de tg.i18n:_get_translator.
-        conf = config.current_conf()
-        try:
-            localedir = conf['localedir']
-        except KeyError:
-            localedir = os.path.join(conf['paths']['root'], 'i18n')
-
-        lang = get_lang()
-        modules = (
-            (conf['package'].__name__, localedir),
-            ('vigilo-themes', resource_filename('vigilo.themes.i18n', '')),
-        )
-
-        # Charge et installe le fichier JS de traduction de chaque module
-        translations = "babel.Translations.load("
-        for domain, directory in modules:
-            try:
-                mofile = gettext.find(domain, directory, languages=lang)
-                if mofile is None:
-                    continue
-
-                fhandle = open(mofile[:-3] + '.js', 'r')
-                translations += fhandle.read()
-                fhandle.close()
-                translations += ").load("
-            except ImportError:
-                pass
-        translations += "{}).install()"
-
-        response.headers['Content-Type'] = 'text/javascript; charset=utf-8'
-        return translations
 
 
     class MaskedEventsSchema(schema.Schema):
