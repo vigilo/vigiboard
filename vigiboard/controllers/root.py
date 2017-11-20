@@ -42,15 +42,15 @@ from vigilo.turbogears.controllers.proxy import ProxyController
 from vigilo.turbogears.controllers.i18n import I18nController
 from vigilo.turbogears.controllers.api.root import ApiRootController
 from vigilo.turbogears.helpers import get_current_user
+from vigilo.turbogears import widgets
 
 from vigiboard.controllers.vigiboardrequest import VigiboardRequest
 from vigiboard.controllers.feeds import FeedsController
 from vigiboard.controllers.silence import SilenceController
 
-from vigiboard.lib import export_csv, dateformat
-from vigiboard.widgets.edit_event import edit_event_status_options, \
-                                            EditEventForm
-from vigiboard.widgets.search_form import create_search_form
+from vigiboard.lib import export_csv
+from vigiboard.widgets.edit_form import EditForm
+from vigiboard.widgets.search_form import SearchForm, SearchFormWithSorting
 import logging
 
 LOGGER = logging.getLogger(__name__)
@@ -58,11 +58,11 @@ LOGGER = logging.getLogger(__name__)
 __all__ = ('RootController', 'get_last_modification_timestamp',
            'date_to_timestamp')
 
+
 # pylint: disable-msg=R0201,W0613,W0622
 # R0201: Method could be a function
 # W0613: Unused arguments: les arguments sont la query-string
 # W0622: Redefining built-in 'id': élément de la query-string
-
 class RootController(AuthController, SelfMonitoringController, I18nController):
     """
     Le controller général de vigiboard
@@ -116,33 +116,13 @@ class RootController(AuthController, SelfMonitoringController, I18nController):
                 pluginCls = plugins.next().load()
                 self._tickets = pluginCls()
 
-    class IndexSchema(schema.Schema):
-        """Schéma de validation de la méthode index."""
-        # Si on ne passe pas le paramètre "page" ou qu'on passe une valeur
-        # invalide ou pas de valeur du tout, alors on affiche la 1ère page.
-        page = validators.Int(
-            min=1,
-            if_missing=1,
-            if_invalid=1,
-            not_empty=True
-        )
-
-        # Paramètres de tri
-        sort = validators.UnicodeString(if_missing='')
-        order = validators.OneOf(['asc', 'desc'], if_missing='asc')
-
-        # Le fait de chaîner la validation avec le formulaire de recherche
-        # permet de convertir les critères de recherche vers leur type.
-        chained_validators = [create_search_form.validator]
-
-        allow_extra_fields = True
 
     @validate(
-        validators=IndexSchema(),
+        validators=SearchFormWithSorting,
         error_handler = process_form_errors)
     @expose('events_table.html')
     @require(access_restriction)
-    def index(self, page=None, sort=None, order=None, **search):
+    def index(self, page=None, sort=None, order=None, search_form=None):
         """
         Page d'accueil de Vigiboard. Elle affiche, suivant la page demandée
         (page 1 par defaut), la liste des événements, rangés par ordre de prise
@@ -167,8 +147,35 @@ class RootController(AuthController, SelfMonitoringController, I18nController):
         # Auto-supervision
         self.get_failures()
 
+        # On ne garde que les champs effectivement renseignés.
+        def filter_dict(dct):
+            res = {}
+            for k, v in dct.items():
+                if not isinstance(v, dict):
+                    if v:
+                        res[k] = v
+                else:
+                    tmp = filter_dict(v)
+                    if tmp:
+                        res[k] = tmp
+            return res
+        search = filter_dict(search_form or {})
+
+        # On rend les paramètres de la recherche "flat".
+        def serialize_dict(dct, prefix):
+            res = {}
+            for k, v in dct.items():
+                if isinstance(v, dict):
+                    res.update(serialize_dict(v, '%s%s:' % (prefix, k)))
+                elif isinstance(v, datetime):
+                    res['%s%s' % (prefix, k)] = v.strftime(widgets.get_date_format())
+                else:
+                    res['%s%s' % (prefix, k)] = v
+            return res
+        fixed_search = serialize_dict(search, 'search_form:')
+
         user = get_current_user()
-        aggregates = VigiboardRequest(user, search=search, sort=sort, order=order)
+        aggregates = VigiboardRequest(user, search=search_form, sort=sort, order=order)
 
         aggregates.add_table(
             CorrEvent,
@@ -182,24 +189,6 @@ class RootController(AuthController, SelfMonitoringController, I18nController):
         aggregates.add_join((aggregates.items,
             Event.idsupitem == aggregates.items.c.idsupitem))
         aggregates.add_order_by(asc(aggregates.items.c.hostname))
-
-        # On ne garde que les champs effectivement renseignés.
-        for column in search.copy():
-            if not search[column]:
-                del search[column]
-
-        # On sérialise les champs de type dict.
-        def serialize_dict(dct, key):
-            if isinstance(dct[key], dict):
-                for subkey in dct[key]:
-                    serialize_dict(dct[key], subkey)
-                    dct['%s.%s' % (key, subkey)] = dct[key][subkey]
-                del dct[key]
-            elif isinstance(dct[key], datetime):
-                dct[key] = dct[key].strftime(dateformat.get_date_format())
-        fixed_search = search.copy()
-        for column in fixed_search.copy():
-            serialize_dict(fixed_search, column)
 
         # Pagination des résultats
         aggregates.generate_request()
@@ -225,8 +214,7 @@ class RootController(AuthController, SelfMonitoringController, I18nController):
         tmpl_context.last_modification = calendar.timegm(
             get_last_modification_timestamp(ids_events).timetuple())
 
-        tmpl_context.edit_event_form = EditEventForm("edit_event_form",
-            submit_text=_('Apply'), action=url('/update'))
+        tmpl_context.edit_event_form = EditForm
 
         if request.response_type == 'text/csv':
             # Sans les 2 en-têtes suivants qui désactivent la mise en cache,
@@ -246,8 +234,7 @@ class RootController(AuthController, SelfMonitoringController, I18nController):
             page = page,
             sort = sort,
             order = order,
-            event_edit_status_options = edit_event_status_options,
-            search_form = create_search_form,
+            search_form = SearchForm,
             search = search,
             fixed_search = fixed_search,
         )
@@ -333,7 +320,7 @@ class RootController(AuthController, SelfMonitoringController, I18nController):
             servicename = servicename,
             plugins_data = {},
             page = page,
-            search_form = create_search_form,
+            search_form = SearchForm,
             search = {},
             fixed_search = {},
         )
@@ -400,7 +387,7 @@ class RootController(AuthController, SelfMonitoringController, I18nController):
             servicename = event.servicename,
             plugins_data = {},
             page = page,
-            search_form = create_search_form,
+            search_form = SearchForm,
             search = {},
             fixed_search = {},
         )
@@ -483,8 +470,7 @@ class RootController(AuthController, SelfMonitoringController, I18nController):
         tmpl_context.last_modification = calendar.timegm(
             get_last_modification_timestamp(ids_events).timetuple())
 
-        tmpl_context.edit_event_form = EditEventForm("edit_event_form",
-            submit_text=_('Apply'), action=url('/update'))
+        tmpl_context.edit_event_form = EditForm
 
         plugins_data = {}
         for plugin in dict(config['columns_plugins']):
@@ -497,25 +483,16 @@ class RootController(AuthController, SelfMonitoringController, I18nController):
             page = page,
             sort = sort,
             order = order,
-            event_edit_status_options = edit_event_status_options,
-            search_form = create_search_form,
+            search_form = SearchForm,
             search = {},
             fixed_search = {},
         )
 
 
-    class UpdateSchema(schema.Schema):
-        """Schéma de validation de la méthode update."""
-        id = validators.Regex(r'^[0-9]+(,[0-9]+)*,?$')
-        last_modification = validators.Number(not_empty=True)
-        trouble_ticket = validators.String(if_missing='')
-        ack = validators.OneOf(
-            [unicode(s[0]) for s in edit_event_status_options],
-            not_empty=True)
-
     @validate(
-        validators=UpdateSchema(),
+        validators=EditForm,
         error_handler = process_form_errors)
+    @expose()
     @require(
         All(
             not_anonymous(msg=l_("You need to be authenticated")),
@@ -523,8 +500,7 @@ class RootController(AuthController, SelfMonitoringController, I18nController):
                 has_permission('vigiboard-update'),
                 msg=l_("You don't have write access to VigiBoard"))
         ))
-    @expose()
-    def update(self, id, last_modification, trouble_ticket, ack):
+    def update(self, ids=(), last_modification=None, trouble_ticket=None, ack=None):
         """
         Mise à jour d'un événement suivant les arguments passés.
         Cela peut être un changement de ticket ou un changement de statut.
@@ -540,16 +516,15 @@ class RootController(AuthController, SelfMonitoringController, I18nController):
             - VIGILO_EXIG_VIGILO_BAC_0060,
             - VIGILO_EXIG_VIGILO_BAC_0110.
         """
-
         # On vérifie que des identifiants ont bien été transmis via
         # le formulaire, et on informe l'utilisateur le cas échéant.
-        if id is None:
-            flash(_('No event has been selected'), 'warning')
+        if ids is None:
+            flash(_('No event selected'), 'warning')
             raise redirect(request.environ.get('HTTP_REFERER', '/'))
 
         # On récupère la liste de tous les identifiants des événements
         # à mettre à jour.
-        ids = [ int(i) for i in id.strip(',').split(',') ]
+        ids = [ int(i) for i in ids.strip(',').split(',') ]
 
         user = get_current_user()
         events = VigiboardRequest(user)
@@ -604,9 +579,9 @@ class RootController(AuthController, SelfMonitoringController, I18nController):
         # et la représentation "humaine" du bac à événements.
         ack_mapping = {
             # Permet d'associer la valeur dans le widget ToscaWidgets
-            # (cf. vigiboard.widgets.edit_event.edit_event_status_options)
+            # (cf. vigiboard.widgets.edit_form.edit_event_status_options)
             # avec la valeur dans la base de données.
-            u'None': CorrEvent.ACK_NONE,
+            u'Unack': CorrEvent.ACK_NONE,
             u'Acknowledged': CorrEvent.ACK_KNOWN,
             u'AAClosed': CorrEvent.ACK_CLOSED,
 

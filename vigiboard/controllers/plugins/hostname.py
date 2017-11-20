@@ -7,7 +7,8 @@
 Un plugin pour VigiBoard qui ajoute une colonne avec le nom de l'hôte
 sur lequel porte l'événement corrélé.
 """
-import tw.forms as twf
+import tw2.forms as twf
+from formencode import validators
 from tg.i18n import lazy_ugettext as l_
 
 from vigilo.models.functions import sql_escape_like
@@ -21,8 +22,8 @@ class PluginHostname(VigiboardRequestPlugin):
         return [
             twf.TextField(
                 'host',
-                label_text=l_('Host'),
-                validator=twf.validators.String(if_missing=None),
+                label=l_('Host'),
+                validator=validators.String(if_missing=None),
             )
         ]
 

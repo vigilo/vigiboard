@@ -5,13 +5,16 @@
 
 """Le formulaire de recherche/filtrage."""
 
+import itertools
 from tg.i18n import lazy_ugettext as l_
-import tw.forms as twf
+from formencode import validators
+import tw2.core as twc
+import tw2.forms as twf
 import tg
 
 __all__ = (
     'SearchForm',
-    'create_search_form',
+    'SearchFormWithSorting',
 )
 
 class SearchForm(twf.TableForm):
@@ -28,16 +31,31 @@ class SearchForm(twf.TableForm):
 
     method = 'GET'
     style = 'display: none'
+    action = tg.lurl('/')
+    submit = twf.SubmitButton(value=l_('Search'))
+    id = 'search_form'
+
+    children = [
+        field(field.id) for field in
+        itertools.chain(*list(
+            plugin[1].get_search_fields()
+            for plugin in tg.config.get('columns_plugins', [])
+        ))
+    ]
+
+class SearchFormWithSorting(twc.CompoundWidget):
+    id = None
 
     # Paramètres liés à la pagination et au tri.
-    fields = [
-        twf.HiddenField('page'),
-        twf.HiddenField('sort'),
-        twf.HiddenField('order')
-    ]
-    for plugin, instance in tg.config.get('columns_plugins', []):
-        fields.extend(instance.get_search_fields())
+    page = twf.HiddenField(validator=validators.Int(
+            min=1,
+            if_missing=1,
+            if_invalid=1,
+            not_empty=True
+        ))
+    sort = twf.HiddenField(validator=validators.UnicodeString(if_missing=''))
+    order = twf.HiddenField(validator=validators.OneOf(['asc', 'desc'],
+                            if_missing='asc'))
 
-create_search_form = SearchForm("search_form",
-    submit_text=l_('Search'), action=tg.url('/'),
-)
+    # Paramètres liés au formulaire de recherche.
+    search_form = SearchForm()

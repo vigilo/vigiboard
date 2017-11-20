@@ -34,7 +34,7 @@ class TestSearchFormSupItemGroup(TestController):
         # il a accès, on s'attend à ce que la requête retourne 2 résultats.
         environ = {'REMOTE_USER': 'limited_access'}
         response = self.app.get(
-            '/?supitemgroup=%d' % group1.idgroup,
+            '/?search_form:search_form:supitemgroup=%d' % group1.idgroup,
             extra_environ=environ
         )
 
@@ -53,7 +53,7 @@ class TestSearchFormSupItemGroup(TestController):
         # On s'attend donc à ce que la requête retourne également 2 résultats.
         environ = {'REMOTE_USER': 'limited_access'}
         response = self.app.get(
-            '/?supitemgroup=%d' % maingroup.idgroup,
+            '/?search_form:search_form:supitemgroup=%d' % maingroup.idgroup,
             extra_environ=environ
         )
 
@@ -71,7 +71,7 @@ class TestSearchFormSupItemGroup(TestController):
         # On s'attend donc à ce que la requête retourne également 2 résultats.
         environ = {'REMOTE_USER': 'limited_access'}
         response = self.app.get(
-            '/?supitemgroup=%d' % root.idgroup,
+            '/?search_form:supitemgroup=%d' % root.idgroup,
             extra_environ=environ
         )
 
@@ -91,7 +91,7 @@ class TestSearchFormSupItemGroup(TestController):
         # dont 4 grâce à l'héritage de permissions entre les groupes.
         environ = {'REMOTE_USER': 'access'}
         response = self.app.get(
-            '/?supitemgroup=%d' % maingroup.idgroup,
+            '/?search_form:supitemgroup=%d' % maingroup.idgroup,
             extra_environ=environ
         )
 
@@ -110,7 +110,7 @@ class TestSearchFormSupItemGroup(TestController):
         # et on s'attend à ce que la requête retourne 5 résultats.
         environ = {'REMOTE_USER': 'manager'}
         response = self.app.get(
-            '/?supitemgroup=%d' % maingroup.idgroup,
+            '/?search_form:supitemgroup=%d' % maingroup.idgroup,
             extra_environ=environ
         )
 
@@ -130,7 +130,7 @@ class TestSearchFormSupItemGroup(TestController):
         # L'utilisateur est authentifié avec des permissions
         # étendues. Il effectue une recherche sur un groupe d'hôtes
         # qui n'existe pas, il ne doit donc obtenir aucun résultat.
-        response = self.app.get('/?supitemgroup=%d' % -42,
+        response = self.app.get('/?search_form:supitemgroup=%d' % -42,
             extra_environ={'REMOTE_USER': 'access'})
 
         # Il doit y avoir 1 seule ligne de résultats.
@@ -147,7 +147,7 @@ class TestSearchFormSupItemGroup(TestController):
         # L'utilisateur est authentifié et fait partie du groupe
         # 'managers'. Il effectue une recherche sur un groupe d'hôtes
         # qui n'existe pas, il ne doit donc obtenir aucun résultat.
-        response = self.app.get('/?supitemgroup=%d' % -42,
+        response = self.app.get('/?search_form:supitemgroup=%d' % -42,
             extra_environ={'REMOTE_USER': 'manager'})
 
         # Il doit y avoir 1 seule ligne de résultats.
@@ -176,7 +176,7 @@ class TestSearchFormSupItemGroup(TestController):
         # auquel il a accès. Il ne doit donc obtenir aucun résultat.
         environ = {'REMOTE_USER': 'limited_access'}
         response = self.app.get(
-            '/?supitemgroup=%d' % group2.idgroup,
+            '/?search_form:supitemgroup=%d' % group2.idgroup,
             extra_environ=environ
         )
 

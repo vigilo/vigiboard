@@ -12,7 +12,8 @@ applications externes.
 import urllib
 from tg import config, url, request
 from tg.i18n import lazy_ugettext as l_
-import tw.forms as twf
+import tw2.forms as twf
+from formencode import validators
 from sqlalchemy.sql.expression import null as expr_null, union_all
 from sqlalchemy import func
 
@@ -169,28 +170,19 @@ class PluginDetails(VigiboardRequestPlugin):
 
     def get_search_fields(self):
         states = DBSession.query(StateName.idstatename, StateName.statename
-                    ).order_by(StateName.order.asc()).all()
-        # Liste des valeurs acceptées pour la validation.
-        valid = []
-        # Liste des options présentes dans le champ de sélection.
-        options = []
-        for s in states:
-            valid.extend([str(s.idstatename), s.statename])
-            options.append( (
-                str(s.idstatename),
-                s.statename,
-                {'title': l_(s.statename)}
-            ) )
-
+            ).order_by(StateName.order.asc()).all()
+        options = [(str(s.idstatename), s.statename, {'title': l_(s.statename)})
+                   for s in states]
         return [
             twf.MultipleSelectField(
                 'state',
-                label_text=l_('Current state'),
+                label=l_('Current state'),
+                prompt_text=None,
                 options=options,
-                validator=twf.validators.OneOf(
-                    valid,
-                    if_invalid=[],
-                    if_missing=[],
+                item_validator=validators.OneOf(
+                    [opt[0] for opt in options],
+                    if_invalid=None,
+                    if_missing=None,
                 ),
             ),
         ]

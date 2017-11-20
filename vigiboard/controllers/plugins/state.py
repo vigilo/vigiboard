@@ -8,7 +8,8 @@ Un plugin pour VigiBoard qui ajoute une colonne avec l'état de l'alerte.
 """
 import urllib
 import tg
-import tw.forms as twf
+import tw2.forms as twf
+from formencode import validators
 from tg.i18n import lazy_ugettext as l_
 
 from vigilo.models.tables import CorrEvent, Event, StateName
@@ -23,16 +24,17 @@ class PluginState(VigiboardRequestPlugin):
 
     def get_search_fields(self):
         states = DBSession.query(StateName.idstatename, StateName.statename
-                    ).order_by(StateName.order.asc()).all()
-        options = [('', u'')] + \
-                    [( str(s.idstatename), s.statename ) for s in states]
+            ).order_by(StateName.order.asc()).all()
+        options = [(str(s.idstatename), s.statename, {'title': l_(s.statename)})
+                   for s in states]
         return [
-            twf.SingleSelectField(
+            twf.MultipleSelectField(
                 'state',
-                label_text=l_('Current state'),
+                label=l_('Current state'),
+                prompt_text=None,
                 options=options,
-                validator=twf.validators.OneOf(
-                    dict(options).keys(),
+                item_validator=validators.OneOf(
+                    [opt[0] for opt in options],
                     if_invalid=None,
                     if_missing=None,
                 ),

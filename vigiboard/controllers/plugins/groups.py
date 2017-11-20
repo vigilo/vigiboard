@@ -8,7 +8,8 @@ Un plugin pour VigiBoard qui ajoute une colonne avec les groupes
 d'éléments supervisés auxquels appartient l'objet associé
 à l'événement corrélé.
 """
-import tw.forms as twf
+import tw2.forms as twf
+from formencode import validators
 from tg.i18n import lazy_ugettext as l_
 
 from vigiboard.controllers.plugins import VigiboardRequestPlugin, INNER
@@ -21,34 +22,34 @@ from sqlalchemy.orm import aliased
 from sqlalchemy import or_
 
 
-class GroupSelector(twf.InputField):
+class GroupSelector(twf.Button):
     params = ["choose_text", "text_value", "clear_text"]
+    inline_engine_name = "genshi"
     choose_text = l_('Choose')
     clear_text = l_('Clear')
     text_value = ''
 
     template = """
-<div xmlns="http://www.w3.org/1999/xhtml"
-   xmlns:py="http://genshi.edgewall.org/" py:strip="">
-<input type="hidden" name="${name}" class="${css_class}"
-    id="${id}.value" value="${value}" py:attrs="attrs" />
-<input type="text" class="${css_class}" id="${id}.ui"
-    value="${text_value}" readonly="readonly" py:attrs="attrs" />
-<input type="button" class="${css_class}" id="${id}"
-    value="${choose_text}" py:attrs="attrs" />
-<input type="button" class="${css_class}" id="${id}.clear"
-    value="${clear_text}" py:attrs="attrs" />
+<div xmlns:py="http://genshi.edgewall.org/" py:strip="">
+<input type="hidden" name="${w.name}" id="${w.compound_id}.value" value="${w.value}" />
+<input type="text" id="${w.compound_id}.ui" value="${w.text_value}" readonly="readonly" />
+<input type="button" id="${w.compound_id}" value="${w.choose_text}" />
+<input type="button" id="${w.compound_id}.clear" value="${w.clear_text}" />
 </div>
 """
 
-    def update_params(self, d):
-        super(GroupSelector, self).update_params(d)
-        text_value = DBSession.query(Group.name).filter(
-                        Group.idgroup == d.value).scalar()
+    def prepare(self):
+        super(GroupSelector, self).prepare()
+        text_value = None
+
+        if self.value:
+            text_value = DBSession.query(Group.name).filter(
+                            Group.idgroup == self.value).scalar()
+
         if not text_value:
-            d.value = ''
+            self.value = None
         else:
-            d.text_value = text_value
+            self.text_value = text_value
 
 
 class PluginGroups(VigiboardRequestPlugin):
@@ -60,8 +61,8 @@ class PluginGroups(VigiboardRequestPlugin):
         return [
             GroupSelector(
                 'supitemgroup',
-                label_text=l_('Group'),
-                validator=twf.validators.Int(if_invalid=None, if_missing=None),
+                label=l_('Group'),
+                validator=validators.Int(if_invalid=None, if_missing=None),
             )
         ]
 

@@ -7,7 +7,8 @@
 Un plugin pour VigiBoard qui ajoute une colonne avec le nom de l'hôte
 sur lequel porte l'événement corrélé.
 """
-import tw.forms as twf
+import tw2.forms as twf
+from formencode import validators
 from tg.i18n import lazy_ugettext as l_
 from sqlalchemy.sql.expression import union_all
 from sqlalchemy.orm import aliased
@@ -24,7 +25,7 @@ class PluginMap(VigiboardRequestPlugin):
         return [
             twf.HiddenField(
                 'idmap',
-                validator=twf.validators.Int(if_missing=None),
+                validator=validators.Int(if_missing=None),
             )
         ]
 

@@ -7,41 +7,15 @@
 Un plugin pour VigiBoard qui ajoute une colonne avec la date à laquelle
 est survenu un événement et la durée depuis laquelle l'événement est actif.
 """
+import tw2.forms as twf
 from datetime import datetime, timedelta
-import tw.forms as twf
 from tg.i18n import ugettext as _, lazy_ugettext as l_
 
 from vigilo.models import tables
+from vigilo.turbogears import widgets
 
 from vigiboard.controllers.plugins import VigiboardRequestPlugin, ITEMS
-from vigiboard.lib import dateformat, error_handler
-
-
-class ExampleDateFormat(object):
-    """
-    Une classe permettant d'obtenir un exemple de date
-    correspondant au format de la locale de l'utilisateur.
-    """
-    def __str__(self):
-        """
-        Retourne l'heure courante au format attendu,
-        encodée en UTF-8.
-
-        @return: Heure courante au format attendu (en UTF-8).
-        @rtype: C{str}
-        """
-        return unicode(self).encode('utf-8')
-
-    def __unicode__(self):
-        """
-        Retourne l'heure courante au format attendu.
-
-        @return: Heure courante au format attendu.
-        @rtype: C{unicode}
-        """
-        format = dateformat.get_date_format()
-        date = datetime.strftime(datetime.utcnow(), format).decode('utf-8')
-        return _('Eg. %(date)s') % {'date': date}
+from vigiboard.lib import error_handler
 
 
 class PluginDate(VigiboardRequestPlugin):
@@ -49,35 +23,17 @@ class PluginDate(VigiboardRequestPlugin):
     def get_search_fields(self):
         return [
             twf.Label('date', text=l_('Last occurrence')),
-            twf.CalendarDateTimePicker(
+            widgets.CalendarDateTimePicker(
                 'from_date',
-                label_text=l_('Between'),
+                label=l_('Between'),
                 button_text=l_("Choose"),
                 not_empty=False,
-                validator=dateformat.DateFormatConverter(if_missing=None),
-                date_format=dateformat.get_date_format,
-                calendar_lang=dateformat.get_calendar_lang,
-                attrs={
-                    # Affiche un exemple de date au survol
-                    # et en tant qu'indication (placeholder).
-                    'title': ExampleDateFormat(),
-                    'placeholder': ExampleDateFormat()
-                },
             ),
-            twf.CalendarDateTimePicker(
+            widgets.CalendarDateTimePicker(
                 'to_date',
-                label_text=l_('And'),
+                label=l_('And'),
                 button_text=l_("Choose"),
                 not_empty=False,
-                validator=dateformat.DateFormatConverter(if_missing=None),
-                date_format=dateformat.get_date_format,
-                calendar_lang=dateformat.get_calendar_lang,
-                attrs={
-                    # Affiche un exemple de date au survol
-                    # et en tant qu'indication (placeholder).
-                    'title': ExampleDateFormat(),
-                    'placeholder': ExampleDateFormat()
-                },
             ),
         ]
 

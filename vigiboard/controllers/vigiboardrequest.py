@@ -19,7 +19,7 @@ from sqlalchemy.orm import contains_eager
 from vigilo.models.session import DBSession
 from vigilo.models.tables import Event, CorrEvent, EventHistory, \
     Host, LowLevelService, StateName, UserSupItem
-from vigiboard.widgets.edit_event import EditEventForm
+from vigiboard.widgets.edit_form import EditForm
 from vigiboard.controllers.plugins import VigiboardRequestPlugin, INNER, ITEMS
 
 LOGGER = logging.getLogger(__name__)
@@ -452,6 +452,4 @@ class VigiboardRequest():
         # des données pour ces formulaires.
         tmpl_context.last_modification = \
             mktime(get_last_modification_timestamp(ids).timetuple())
-
-        tmpl_context.edit_event_form = EditEventForm("edit_event_form",
-            submit_text=_('Apply'), action=url('/update'))
+        tmpl_context.edit_event_form = EditForm

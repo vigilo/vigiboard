@@ -60,7 +60,7 @@ class TestSorting(TestController):
         # triée sur le nom d'hôte par ordre croissant
         environ = {'REMOTE_USER': 'manager'}
         response = self.app.get(
-            '/?sort=hostname&order=asc', extra_environ=environ)
+            '/?search_form:sort=hostname&search_form:order=asc', extra_environ=environ)
 
         # Il doit y avoir 2 lignes de résultats :
         # - la 1ère concerne 'service2' sur 'host1' ;
@@ -82,7 +82,7 @@ class TestSorting(TestController):
         # triée sur le nom de service par ordre décroissant
         environ = {'REMOTE_USER': 'manager'}
         response = self.app.get(
-            '/?sort=servicename&order=desc', extra_environ=environ)
+            '/?search_form:sort=servicename&search_form:order=desc', extra_environ=environ)
 
         # Il doit y avoir 2 lignes de résultats :
         # - la 1ère concerne 'service2' sur 'host1' ;
@@ -107,7 +107,7 @@ class TestSorting(TestController):
                             host3, u'service3')
         DBSession.flush()
         items_per_page = int(config['vigiboard_items_per_page'])
-        for i in xrange(items_per_page - 1):
+        for i in range(items_per_page - 1):
             event = functions.add_event(service3, u'WARNING', u'foo')
             functions.add_correvent([event])
             DBSession.flush()

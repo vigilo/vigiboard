@@ -41,7 +41,7 @@ window.addEvent('domready', function (){
         modal: false,
         resize: true,
         move: true,
-        content: "search_form",
+        content: "search_form:form",
         onOpen: window.dlg_open_handler,
         onClose: window.dlg_close_handler,
         width: 400,
@@ -51,29 +51,32 @@ window.addEvent('domready', function (){
     window.search_dialog.toggleCollapse();
     window.search_dialog.toggleCollapse();
 
+    $$('.date_field_button').addEvent('click', function () {
+        $$(".calendar").setStyles({"zIndex": window.search_dialog.domObj.getStyle('zIndex').toInt() + 1});
+    });
+
     var selector = new SelectGroupTree({
         title: _("Select a group"),
-        labelId: "search_form_supitemgroup.ui",
-        idId: "search_form_supitemgroup.value"
+        labelId: "search_form:supitemgroup.ui",
+        idId: "search_form:supitemgroup.value"
     });
     selector.load();
-    $('search_form_supitemgroup').addEvent('click', function() {
-        selector.open();
-    });
-    $('search_form_supitemgroup.clear').addEvent('click', function () {
-        $('search_form_supitemgroup.ui').set('value', '');
-        $('search_form_supitemgroup.value').set('value', '');
-    });
+    var groups = $('search_form:supitemgroup');
+    if (groups) {
+        groups.addEvent('click', function() {
+            selector.open();
+        });
+        $('search_form:supitemgroup.clear').addEvent('click', function () {
+            $('search_form:supitemgroup.ui').set('value', '');
+            $('search_form:supitemgroup.value').set('value', '');
+        });
+    }
 
-    add_autocompleter('search_form_host', 'host', app_path + '/autocomplete/host');
-    add_autocompleter('search_form_service', 'service', app_path + '/autocomplete/service');
-    add_autocompleter('search_form_hls', 'service', app_path + '/autocomplete/hls');
+    add_autocompleter('search_form:host', 'host', app_path + '/autocomplete/host');
+    add_autocompleter('search_form:service', 'service', app_path + '/autocomplete/service');
+    add_autocompleter('search_form:hls', 'service', app_path + '/autocomplete/hls');
 
     change_refresh_rate(refresh_status);
-
-    $$('.date_field_button').addEvent('click', function () {
-        $$(".calendar").setStyles({"zIndex": window.search_dialog.domObj.getStyle('zIndex').toInt()});
-    });
 
     document.fireEvent('board-update');
 });

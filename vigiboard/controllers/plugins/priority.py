@@ -7,29 +7,25 @@
 Un plugin pour VigiBoard qui ajoute une colonne avec la priorité
 ITIL de l'événement corrélé.
 """
-import tw.forms as twf
+import tw2.forms as twf
+from formencode import validators
 from tg.i18n import lazy_ugettext as l_
 
 from vigilo.models.tables import CorrEvent, StateName
 from vigiboard.controllers.plugins import VigiboardRequestPlugin, ITEMS
 
-from tw.forms.fields import ContainerMixin, FormField
+from tw2.forms.widgets import BaseLayout, FormField
 
-class HorizontalBox(ContainerMixin, FormField):
+class HorizontalBox(BaseLayout, FormField):
     """
     Container de widgets, qui se contente de les placer
     côte-à-côte horizontalement.
     """
-
-    template = """<div
-    xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:py="http://genshi.edgewall.org/"
-    id="${id}"
-    name="${name}"
-    class="${css_class}"
-    py:attrs="attrs">
-    <py:for each="field in fields">
-        ${field.display(value_for(field), **args_for(field))}
+    inline_engine_name = "genshi"
+    template = """<div xmlns:py="http://genshi.edgewall.org/"
+        id="${w.compound_id}" name="${w.name}">
+    <py:for each="c in w.children_non_hidden">
+        ${c.display()}
     </py:for>
 </div>
 """
@@ -70,12 +66,12 @@ class PluginPriority(VigiboardRequestPlugin):
         return [
             HorizontalBox(
                 'priority',
-                label_text=l_('Priority'),
-                fields=[
+                label=l_('Priority'),
+                children=[
                     twf.SingleSelectField(
                         'op',
                         options=options,
-                        validator=twf.validators.OneOf(
+                        validator=validators.OneOf(
                             dict(options).keys(),
                             if_invalid=None,
                             if_missing=None,
@@ -83,7 +79,7 @@ class PluginPriority(VigiboardRequestPlugin):
                     ),
                     twf.TextField(
                         'value',
-                        validator=twf.validators.Int(
+                        validator=validators.Int(
                             if_invalid=None,
                             if_missing=None,
                         ),

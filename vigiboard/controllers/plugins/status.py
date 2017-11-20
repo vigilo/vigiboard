@@ -13,7 +13,8 @@ Un plugin pour VigiBoard qui ajoute 3 colonnes au tableau des événements :
 """
 import urllib
 import tg
-import tw.forms as twf
+import tw2.forms as twf
+from formencode import validators
 from tg.i18n import lazy_ugettext as l_
 
 from vigilo.models.tables import CorrEvent, StateName
@@ -46,14 +47,15 @@ class PluginStatus(VigiboardRequestPlugin):
         return [
             twf.TextField(
                 'trouble_ticket',
-                label_text=l_('Trouble Ticket'),
-                validator=twf.validators.UnicodeString(if_missing=None),
+                label=l_('Trouble Ticket'),
+                validator=validators.UnicodeString(if_missing=None),
             ),
             twf.SingleSelectField(
                 'ack',
-                label_text=l_('Acknowledgement Status'),
+                label=l_('Acknowledgement Status'),
                 options=options,
-                validator=twf.validators.OneOf(
+                prompt_text=None,
+                validator=validators.OneOf(
                     dict(options).keys(),
                     if_invalid=None,
                     if_missing=None,

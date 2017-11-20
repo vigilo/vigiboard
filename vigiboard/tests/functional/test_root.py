@@ -125,10 +125,10 @@ class TestRootController(TestController):
         # On vérifie que le plugin retourne bien une erreur 401.
         response = self.app.post(
             '/update', {
-                "id" : str(correvent1_id) + "," + str(correvent2_id),
-                "last_modification": timegm(timestamp.utctimetuple()),
-                "trouble_ticket" : u"foo",
-                "ack" : u'NoChange',
+                "edit_event_form:ids": "%d,%d" % (correvent1_id, correvent2_id),
+                "edit_event_form:last_modification": timegm(timestamp.utctimetuple()),
+                "edit_event_form:trouble_ticket": u"foo",
+                "edit_event_form:ack": u'NoChange',
             }, status = 401)
 
         ### 2ème cas : L'utilisateur utilisé pour
@@ -140,10 +140,10 @@ class TestRootController(TestController):
         # n'a pas la permission de modifier ces évènements.
         response = self.app.post(
             '/update', {
-                "id" : str(correvent1_id) + "," + str(correvent2_id),
-                "ack" : u'NoChange',
-                "trouble_ticket" : u"foo",
-                "last_modification": timegm(timestamp.utctimetuple()),
+                "edit_event_form:ids": "%d,%d" % (correvent1_id, correvent2_id),
+                "edit_event_form:ack": u'NoChange',
+                "edit_event_form:trouble_ticket": u"foo",
+                "edit_event_form:last_modification": timegm(timestamp.utctimetuple()),
             }, status = 302, extra_environ = environ)
 
         response = response.follow(status=200, extra_environ = environ)
@@ -159,10 +159,10 @@ class TestRootController(TestController):
         # évènements corrélés sélectionnées ont bien été mis à jour.
         response = self.app.post(
             '/update', {
-                "id" : str(correvent1_id) + "," + str(correvent2_id),
-                "last_modification": timegm(timestamp.utctimetuple()),
-                "trouble_ticket" : u"foo",
-                "ack" : u'NoChange',
+                "edit_event_form:ids": "%d,%d" % (correvent1_id, correvent2_id),
+                "edit_event_form:last_modification": timegm(timestamp.utctimetuple()),
+                "edit_event_form:trouble_ticket": u"foo",
+                "edit_event_form:ack": u'NoChange',
             }, status = 302, extra_environ = environ)
 
         response = response.follow(status=200, extra_environ = environ)
@@ -192,17 +192,16 @@ class TestRootController(TestController):
         timestamp = datetime.utcnow()
         correvent1_id = add_correvent_caused_by(services[0], timestamp)
         correvent2_id = add_correvent_caused_by(services[1], timestamp)
-
         transaction.commit()
 
         ### 1er cas : L'utilisateur n'est pas connecté.
         # On vérifie que le plugin retourne bien une erreur 401.
         response = self.app.post(
             '/update', {
-                "id" : str(correvent1_id) + "," + str(correvent2_id),
-                "last_modification": timegm(timestamp.utctimetuple()),
-                "trouble_ticket" : u"foo",
-                "ack" : u'NoChange',
+                "edit_event_form:ids": "%d,%d" % (correvent1_id, correvent2_id),
+                "edit_event_form:last_modification": timegm(timestamp.utctimetuple()),
+                "edit_event_form:trouble_ticket": u"foo",
+                "edit_event_form:ack": u'NoChange',
             }, status = 401)
 
         ### 2ème cas : L'utilisateur utilisé pour
@@ -214,10 +213,10 @@ class TestRootController(TestController):
         # n'a pas la permission de modifier ces évènements.
         response = self.app.post(
             '/update', {
-                "id" : str(correvent1_id) + "," + str(correvent2_id),
-                "last_modification": timegm(timestamp.utctimetuple()),
-                "trouble_ticket" : u"foo",
-                "ack" : u'NoChange',
+                "edit_event_form:ids": "%d,%d" % (correvent1_id, correvent2_id),
+                "edit_event_form:last_modification": timegm(timestamp.utctimetuple()),
+                "edit_event_form:trouble_ticket": u"foo",
+                "edit_event_form:ack": u'NoChange',
             }, status = 302, extra_environ = environ)
 
         response = response.follow(status=200, extra_environ = environ)
@@ -233,10 +232,10 @@ class TestRootController(TestController):
         # évènements corrélés sélectionnées ont bien été mis à jour.
         response = self.app.post(
             '/update', {
-                "id" : str(correvent1_id) + "," + str(correvent2_id),
-                "last_modification": timegm(timestamp.utctimetuple()),
-                "trouble_ticket" : u"foo",
-                "ack" : u'NoChange',
+                "edit_event_form:ids": "%d,%d" % (correvent1_id, correvent2_id),
+                "edit_event_form:last_modification": timegm(timestamp.utctimetuple()),
+                "edit_event_form:trouble_ticket": u"foo",
+                "edit_event_form:ack": u'NoChange',
             }, status = 302, extra_environ = environ)
 
         response = response.follow(status=200, extra_environ = environ)
@@ -271,10 +270,10 @@ class TestRootController(TestController):
         # On vérifie que le plugin retourne bien une erreur 401.
         response = self.app.post(
             '/update', {
-                "id" : str(correvent1_id) + "," + str(correvent2_id),
-                "last_modification": timegm(timestamp.utctimetuple()),
-                "trouble_ticket" : "",
-                "ack" : u'Acknowledged',
+                "edit_event_form:ids": "%d,%d" % (correvent1_id, correvent2_id),
+                "edit_event_form:last_modification": timegm(timestamp.utctimetuple()),
+                "edit_event_form:trouble_ticket": "",
+                "edit_event_form:ack": u'Acknowledged',
             }, status = 401)
 
         ### 2ème cas : L'utilisateur utilisé pour
@@ -286,10 +285,10 @@ class TestRootController(TestController):
         # n'a pas la permission de modifier ces évènements.
         response = self.app.post(
             '/update', {
-                "id" : str(correvent1_id) + "," + str(correvent2_id),
-                "last_modification": timegm(timestamp.utctimetuple()),
-                "trouble_ticket" : "",
-                "ack" : u'Acknowledged',
+                "edit_event_form:ids": "%d,%d" % (correvent1_id, correvent2_id),
+                "edit_event_form:last_modification": timegm(timestamp.utctimetuple()),
+                "edit_event_form:trouble_ticket": "",
+                "edit_event_form:ack": u'Acknowledged',
             }, status = 302, extra_environ = environ)
 
         response = response.follow(status=200, extra_environ = environ)
@@ -305,10 +304,10 @@ class TestRootController(TestController):
         # évènements corrélés sélectionnées ont bien été mis à jour.
         response = self.app.post(
             '/update', {
-                "id" : str(correvent1_id) + "," + str(correvent2_id),
-                "last_modification": timegm(timestamp.utctimetuple()),
-                "trouble_ticket" : "",
-                "ack" : u'Acknowledged',
+                "edit_event_form:ids": "%d,%d" % (correvent1_id, correvent2_id),
+                "edit_event_form:last_modification": timegm(timestamp.utctimetuple()),
+                "edit_event_form:trouble_ticket": "",
+                "edit_event_form:ack": u'Acknowledged',
             }, status = 302, extra_environ = environ)
 
         response = response.follow(status=200, extra_environ = environ)
@@ -338,17 +337,16 @@ class TestRootController(TestController):
         timestamp = datetime.utcnow()
         correvent1_id = add_correvent_caused_by(services[0], timestamp)
         correvent2_id = add_correvent_caused_by(services[1], timestamp)
-
         transaction.commit()
 
         ### 1er cas : L'utilisateur n'est pas connecté.
         # On vérifie que le plugin retourne bien une erreur 401.
         response = self.app.post(
             '/update', {
-                "id" : str(correvent1_id) + "," + str(correvent2_id),
-                "last_modification": timegm(timestamp.utctimetuple()),
-                "trouble_ticket" : "",
-                "ack" : u'Acknowledged',
+                "edit_event_form:ids": "%d,%d" % (correvent1_id, correvent2_id),
+                "edit_event_form:last_modification": timegm(timestamp.utctimetuple()),
+                "edit_event_form:trouble_ticket": "",
+                "edit_event_form:ack": u'Acknowledged',
             }, status = 401)
 
         ### 2ème cas : L'utilisateur utilisé pour
@@ -360,10 +358,10 @@ class TestRootController(TestController):
         # n'a pas la permission de modifier ces évènements.
         response = self.app.post(
             '/update', {
-                "id" : str(correvent1_id) + "," + str(correvent2_id),
-                "last_modification": timegm(timestamp.utctimetuple()),
-                "trouble_ticket" : "",
-                "ack" : u'Acknowledged',
+                "edit_event_form:ids": "%d,%d" % (correvent1_id, correvent2_id),
+                "edit_event_form:last_modification": timegm(timestamp.utctimetuple()),
+                "edit_event_form:trouble_ticket": "",
+                "edit_event_form:ack": u'Acknowledged',
             }, status = 302, extra_environ = environ)
 
         response = response.follow(status=200, extra_environ = environ)
@@ -379,10 +377,10 @@ class TestRootController(TestController):
         # évènements corrélés sélectionnées ont bien été mis à jour.
         response = self.app.post(
             '/update', {
-                "id" : str(correvent1_id) + "," + str(correvent2_id),
-                "last_modification": timegm(timestamp.utctimetuple()),
-                "trouble_ticket" : "",
-                "ack" : u'Acknowledged',
+                "edit_event_form:ids": "%d,%s" % (correvent1_id, correvent2_id),
+                "edit_event_form:last_modification": timegm(timestamp.utctimetuple()),
+                "edit_event_form:trouble_ticket": "",
+                "edit_event_form:ack": u'Acknowledged',
             }, status = 302, extra_environ = environ)
 
         response = response.follow(status=200, extra_environ = environ)
@@ -428,7 +426,6 @@ class TestRootController(TestController):
             idevent = correvent1.idcause,
             timestamp = later_date))
         DBSession.flush()
-
         transaction.commit()
 
         # L'utilisateur utilisé pour se connecter à Vigiboard est 'access'.
@@ -439,10 +436,10 @@ class TestRootController(TestController):
         # changements sont intervenus depuis le chargement de la page.
         response = self.app.post(
             '/update', {
-                "id" : str(correvent1_id),
-                "last_modification" : date,
-                "trouble_ticket" : "",
-                "ack" : u'Acknowledged',
+                "edit_event_form:ids": str(correvent1_id),
+                "edit_event_form:last_modification": date,
+                "edit_event_form:trouble_ticket": "",
+                "edit_event_form:ack": u'Acknowledged',
             }, status = 302, extra_environ = environ)
 
         response = response.follow(status=200, extra_environ = environ)
@@ -468,7 +465,7 @@ class TestRootController(TestController):
         # On crée autant d'événements qu'on peut en afficher par page + 1,
         # afin d'avoir 2 pages dans le bac à événements.
         items_per_page = int(config['vigiboard_items_per_page'])
-        for i in xrange(items_per_page + 1):
+        for i in range(items_per_page + 1):
             host = Host(
                 name = u'host%d' % (i + 1),
                 snmpcommunity = u'public',
@@ -504,10 +501,10 @@ class TestRootController(TestController):
         # évènements corrélés sélectionnées ont bien été mis à jour.
         response = self.app.post(
             '/update', {
-                "id" : str(idcorrevent),
-                "last_modification": timegm(datetime.utcnow().utctimetuple()),
-                "trouble_ticket" : "",
-                "ack" : u'Forced',
+                "edit_event_form:ids": str(idcorrevent),
+                "edit_event_form:last_modification": timegm(datetime.utcnow().utctimetuple()),
+                "edit_event_form:trouble_ticket": "",
+                "edit_event_form:ack": u'Forced',
             }, status=302, extra_environ=environ)
         # - On s'assure que la mise à jour a fonctionné.
         response = response.follow(status=200, extra_environ=environ)

@@ -89,7 +89,7 @@ class TestSearchFormMisc(TestController):
     def get_number_of_rows(self, from_date, to_date):
         """Détermine le nombre de lignes parmi les résultats d'une recherche sur le formulaire."""
         response = self.app.get(
-            '/?from_date=%(from_date)s&to_date=%(to_date)s' % {
+            '/?search_form:from_date=%(from_date)s&search_form:to_date=%(to_date)s' % {
                 'from_date': from_date,
                 'to_date': to_date,
             },
@@ -105,7 +105,7 @@ class TestSearchFormMisc(TestController):
 
         # Permet également de vérifier que la recherche est
         # insensible à la casse.
-        response = self.app.get('/?output=hello*',
+        response = self.app.get('/?search_form:output=hello*',
             extra_environ={'REMOTE_USER': 'user'})
 
         # Il doit y avoir 1 seule ligne de résultats.
@@ -125,7 +125,7 @@ class TestSearchFormMisc(TestController):
 
         # Permet également de vérifier que la recherche est
         # insensible à la casse.
-        response = self.app.get('/?trouble_ticket=*bar*',
+        response = self.app.get('/?search_form:trouble_ticket=*bar*',
             extra_environ={'REMOTE_USER': 'user'})
         transaction.commit()
 
@@ -151,7 +151,7 @@ class TestSearchFormMisc(TestController):
         # Permet également de vérifier que la recherche
         # par date est inclusive.
         response = self.app.get(
-            '/?from_date=%(from_date)s&to_date=%(to_date)s' % {
+            '/?search_form:from_date=%(from_date)s&search_form:to_date=%(to_date)s' % {
                 'from_date': from_date,
                 'to_date': to_date,
             },
@@ -181,7 +181,7 @@ class TestSearchFormMisc(TestController):
         # à la date actuelle doit générer une erreur/redirection.
         environ = {'REMOTE_USER': 'user'}
         resp = self.app.get(
-            '/?from_date=%(from_date)s&to_date=%(to_date)s' % {
+            '/?search_form:from_date=%(from_date)s&search_form:to_date=%(to_date)s' % {
                 'from_date': from_date,
                 'to_date': to_date,
             },
@@ -208,7 +208,7 @@ class TestSearchFormMisc(TestController):
         # à la date courante doit générer une erreur/redirection.
         environ = {'REMOTE_USER': 'user'}
         resp = self.app.get(
-            '/?from_date=%(from_date)s&to_date=%(to_date)s' % {
+            '/?search_form:from_date=%(from_date)s&search_form:to_date=%(to_date)s' % {
                 'from_date': from_date,
                 'to_date': to_date,
             },
@@ -235,7 +235,7 @@ class TestSearchFormMisc(TestController):
         # à la date de fin doit générer une erreur/redirection.
         environ = {'REMOTE_USER': 'user'}
         resp = self.app.get(
-            '/?from_date=%(from_date)s&to_date=%(to_date)s' % {
+            '/?search_form:from_date=%(from_date)s&search_form:to_date=%(to_date)s' % {
                 'from_date': from_date,
                 'to_date': to_date,
             },

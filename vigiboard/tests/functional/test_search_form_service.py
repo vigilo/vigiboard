@@ -73,7 +73,7 @@ class TestSearchFormService(TestController):
 
         # On envoie une requête avec recherche sur le service créé,
         # on s'attend à recevoir 1 résultat.
-        response = self.app.get('/?service=baz',
+        response = self.app.get('/?search_form:service=baz',
             extra_environ={'REMOTE_USER': 'user'})
 
         # Il doit y avoir 1 seule ligne de résultats.
@@ -107,7 +107,7 @@ class TestSearchFormService(TestController):
 
         # On envoie une requête avec recherche sur le service créé,
         # on s'attend à recevoir 1 résultat.
-        response = self.app.get('/?service=baz',
+        response = self.app.get('/?search_form:service=baz',
             extra_environ={'REMOTE_USER': 'user'})
 
         # Il doit y avoir 1 seule ligne de résultats.
@@ -125,7 +125,7 @@ class TestSearchFormService(TestController):
         transaction.commit()
         # On envoie une requête avec recherche sur un service
         # qui n'existe pas, on s'attend à n'obtenir aucun résultat.
-        response = self.app.get('/?service=bad',
+        response = self.app.get('/?search_form:service=bad',
             extra_environ={'REMOTE_USER': 'user'})
 
         # Il doit y avoir 1 seule ligne de résultats.
@@ -148,7 +148,7 @@ class TestSearchFormService(TestController):
         # On envoie une requête avec recherche sur le service créé,
         # mais avec un utilisateur ne disposant pas des permissions adéquates.
         # On s'attend à n'obtenir aucun résultat.
-        response = self.app.get('/?service=baz',
+        response = self.app.get('/?search_form:service=baz',
             extra_environ={'REMOTE_USER': 'user'})
 
         # Il doit y avoir 1 seule ligne de résultats.

@@ -8,7 +8,8 @@ Un plugin pour VigiBoard qui ajoute une colonne avec les services de haut
 niveau (L{HighLevelService}) impactés par un événement.
 """
 
-import tw.forms as twf
+import tw2.forms as twf
+from formencode import validators
 from tg.i18n import lazy_ugettext as l_
 
 from vigiboard.controllers.plugins import VigiboardRequestPlugin, INNER
@@ -27,8 +28,8 @@ class PluginHLS(VigiboardRequestPlugin):
         return [
             twf.TextField(
                 'hls',
-                label_text=l_('High-Level Service'),
-                validator=twf.validators.UnicodeString(if_missing=None),
+                label=l_('High-Level Service'),
+                validator=validators.UnicodeString(if_missing=None),
             )
         ]
 

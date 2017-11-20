@@ -5,19 +5,19 @@
 
 """Le formulaire d'édition d'un événement."""
 
+import tg
 from tg.i18n import lazy_ugettext as l_
-from tw.api import WidgetsList
-from tw.forms import TableForm, SingleSelectField, TextField, \
-                        HiddenField, Label
+import tw2.forms as twf
+from formencode import validators
 
 __all__ = (
     'edit_event_status_options',
-    'EditEventForm',
+    'EditForm',
 )
 
 edit_event_status_options = [
     ['NoChange', l_('No change')],
-    ['None', l_('Change to None')],
+    ['Unack', l_('Change to None')],
     ['Acknowledged', l_('Change to Acknowledged')],
     ['AAClosed', l_('Change to Closed')],
     ['Forced', l_('Force to Closed')],
@@ -38,7 +38,7 @@ valid_action_types = {
 l_('Forced')
 
 
-class EditEventForm(TableForm):
+class EditForm(twf.TableForm):
     """
     Formulaire d'édition d'événement
 
@@ -49,16 +49,18 @@ class EditEventForm(TableForm):
         - VIGILO_EXIG_VIGILO_BAC_0060
         - VIGILO_EXIG_VIGILO_BAC_0110
     """
+    action = tg.lurl('/update')
+    submit = twf.SubmitButton(value=l_('Apply'))
+    id = 'edit_event_form'
 
-    class fields(WidgetsList):
-        """
-        Champs du formulaire d'édition des événements.
-        """
-        id = HiddenField('id')
-        trouble_ticket = TextField(label_text=l_('Trouble Ticket'),
-                                   maxlength=250)
-        warning = Label(suppress_label=True, text=l_('Warning: changing '
-                        'the ticket will affect all selected events.'))
-        ack = SingleSelectField(label_text=l_('Acknowledgement Status'),
-                                options=edit_event_status_options)
-        last_modification = HiddenField()
+    # Champs du formulaire
+    ids = twf.HiddenField(validator=validators.Regex(r'^[0-9]+(,[0-9]+)*,?$'))
+    trouble_ticket = twf.TextField(label=l_('Trouble Ticket'),
+                                   maxlength=250,
+                                   validator=validators.UnicodeString(if_missing=''))
+    ack = twf.SingleSelectField(label=l_('Acknowledgement Status'),
+                                options=edit_event_status_options,
+                                prompt_text=None)
+    warning = twf.Label('warning', text=l_('Warning: all selected events '
+                                           'will be impacted by the change.'))
+    last_modification = twf.HiddenField(validator=validators.Number(not_empty=True))

@@ -7,7 +7,8 @@
 Un plugin pour VigiBoard qui ajoute une colonne avec la sortie
 de la commande de test exécutée par Nagios sur cet hôte/service.
 """
-import tw.forms as twf
+import tw2.forms as twf
+from formencode import validators
 from tg.i18n import lazy_ugettext as l_
 
 from vigilo.models.tables import Event
@@ -20,8 +21,8 @@ class PluginOutput(VigiboardRequestPlugin):
         return [
             twf.TextField(
                 'output',
-                label_text=l_('Output'),
-                validator=twf.validators.UnicodeString(if_missing=None),
+                label=l_('Output'),
+                validator=validators.UnicodeString(if_missing=None),
             )
         ]
 
