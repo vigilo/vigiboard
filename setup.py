@@ -40,7 +40,7 @@ setup(
     license='http://www.gnu.org/licenses/gpl-2.0.html',
     description="Vigilo event board",
     long_description="Vigilo event board",
-    url='http://www.vigilo-nms.com/',
+    url='https://www.vigilo-nms.com/',
     install_requires=[
         "vigilo-turbogears",
     ],
