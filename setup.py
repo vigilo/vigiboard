@@ -44,7 +44,6 @@ setup(
     install_requires=[
         "vigilo-turbogears",
     ],
-
     packages=find_packages(exclude=['ez_setup', 'buildenv']),
     include_package_data=True,
     test_suite='nose.collector',
