@@ -33,7 +33,7 @@ else:
 
 setup(
     name='vigilo-vigiboard',
-    version='5.0.0',
+    version='5.1.0dev',
     author='Vigilo Team',
     author_email='contact.vigilo@c-s.fr',
     zip_safe=False, # pour pouvoir déplacer app_cfg.py
