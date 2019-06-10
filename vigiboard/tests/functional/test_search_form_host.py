@@ -18,7 +18,7 @@ from vigilo.models.tables import SupItemGroup, Host, Permission, \
 
 def insert_deps():
     """Insère les dépendances nécessaires aux tests."""
-    timestamp = datetime.now()
+    timestamp = datetime.utcnow()
 
     hostgroup = SupItemGroup(name=u'foo', parent=None)
     DBSession.add(hostgroup)

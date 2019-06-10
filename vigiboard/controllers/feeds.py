@@ -25,12 +25,12 @@ class FeedsController(BaseController):
         return {
             'feed': {
                 'title': 'VigiBoard',
-                'mtime': datetime.now(),
+                'mtime': datetime.utcnow(),
             },
             'entries': [
                 {
                     'title': 'Test',
-                    'mtime': datetime.now(),
+                    'mtime': datetime.utcnow(),
                     'summary': 'Foo bar on baz',
                 }
             ],

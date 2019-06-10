@@ -58,11 +58,11 @@ def add_correvent_caused_by(supitem):
     DBSession.add(EventHistory(
         type_action=u'Nagios update state',
         idevent=event.idevent,
-        timestamp=datetime.now()))
+        timestamp=datetime.utcnow()))
     DBSession.add(EventHistory(
         type_action=u'Acknowlegement change state',
         idevent=event.idevent,
-        timestamp=datetime.now()))
+        timestamp=datetime.utcnow()))
     DBSession.flush()
 
     functions.add_correvent([event])

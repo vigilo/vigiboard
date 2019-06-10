@@ -18,7 +18,7 @@ from vigilo.models.tables import Permission, User, UserGroup, DataPermission
 
 def insert_deps():
     """Insère les dépendances nécessaires aux tests."""
-    timestamp = datetime.now()
+    timestamp = datetime.utcnow()
 
     hostgroup = functions.add_supitemgroup(u'foo')
     host = functions.add_host(u'bar')

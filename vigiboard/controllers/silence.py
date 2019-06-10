@@ -424,7 +424,7 @@ class SilenceController(BaseController):
         # les informations passées en paramètre
         silence.idsupitem = idsupitem
         silence.comment = comment
-        silence.lastmodification = datetime.now().replace(microsecond=0)
+        silence.lastmodification = datetime.utcnow().replace(microsecond=0)
         silence.author = user_name
         try:
             DBSession.add(silence)

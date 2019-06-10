@@ -40,7 +40,7 @@ class ExampleDateFormat(object):
         @rtype: C{unicode}
         """
         format = dateformat.get_date_format()
-        date = datetime.strftime(datetime.now(), format).decode('utf-8')
+        date = datetime.strftime(datetime.utcnow(), format).decode('utf-8')
         return _('Eg. %(date)s') % {'date': date}
 
 
@@ -90,7 +90,7 @@ class PluginDate(VigiboardRequestPlugin):
                 search['from_date'])
 
             # Ajout de contrôles sur la date de début
-            if search['from_date'] >= datetime.now():
+            if search['from_date'] >= datetime.utcnow():
                 error_handler.handle_error_message(
                     _('Start date cannot be greater than current date'))
 
@@ -104,7 +104,7 @@ class PluginDate(VigiboardRequestPlugin):
                 search['to_date'])
 
             # Ajout de contrôles sur la date de fin
-            if search['to_date'] >= datetime.now():
+            if search['to_date'] >= datetime.utcnow():
                 error_handler.handle_error_message(
                     _('End date cannot be greater than current date'))
 
@@ -115,7 +115,7 @@ class PluginDate(VigiboardRequestPlugin):
         # On supprime les microsecondes qui ne nous apportent
         # aucune information et fausse l'affichage dans l'export CSV
         # en créant un nouvel objet timedelta dérivé du premier.
-        duration = datetime.now() - event[0].timestamp_active
+        duration = datetime.utcnow() - event[0].timestamp_active
         duration = timedelta(days=duration.days, seconds=duration.seconds)
         return {
             'state': state,

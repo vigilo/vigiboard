@@ -81,11 +81,11 @@ def populate_DB(caused_by_service):
     DBSession.add(EventHistory(
         type_action=u'Nagios update state',
         idevent=event.idevent,
-        timestamp=datetime.now()))
+        timestamp=datetime.utcnow()))
     DBSession.add(EventHistory(
         type_action=u'Acknowlegement change state',
         idevent=event.idevent,
-        timestamp=datetime.now()))
+        timestamp=datetime.utcnow()))
     DBSession.flush()
 
     # Ajout d'un événement corrélé

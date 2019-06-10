@@ -105,7 +105,7 @@ class TestDetailsPluginMapsHostLimited(TestController):
     def _insert_dep(self):
         """Insertion de l'événement corrélé de test."""
         print("Insertion evenement correle")
-        timestamp = datetime.now()
+        timestamp = datetime.utcnow()
         supitem = DBSession.query(self.supitem_class).one()
         if isinstance(supitem, tables.Host):
             event = functions.add_event(supitem, u'DOWN', u'', timestamp)

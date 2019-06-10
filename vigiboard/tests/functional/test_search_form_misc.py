@@ -19,7 +19,7 @@ from vigilo.models.tables import SupItemGroup, Host, Permission, \
 
 def insert_deps():
     """Insère les dépendances nécessaires aux tests."""
-    timestamp = datetime.now() + timedelta(seconds=-10)
+    timestamp = datetime.utcnow() + timedelta(seconds=-10)
 
     host = Host(
         name=u'bar',
@@ -146,7 +146,7 @@ class TestSearchFormMisc(TestController):
 
         # Préparation des dates/heures.
         from_date = timestamp.strftime("%Y-%m-%d %I:%M:%S %p")
-        to_date = datetime.now().strftime("%Y-%m-%d %I:%M:%S %p")
+        to_date = datetime.utcnow().strftime("%Y-%m-%d %I:%M:%S %p")
 
         # Permet également de vérifier que la recherche
         # par date est inclusive.
@@ -173,9 +173,9 @@ class TestSearchFormMisc(TestController):
         transaction.commit()
 
         # Préparation des dates/heures.
-        from_date = datetime.now() + timedelta(seconds=60)
+        from_date = datetime.utcnow() + timedelta(seconds=60)
         from_date = from_date.strftime("%Y-%m-%d %I:%M:%S %p")
-        to_date = datetime.now().strftime("%Y-%m-%d %I:%M:%S %p")
+        to_date = datetime.utcnow().strftime("%Y-%m-%d %I:%M:%S %p")
 
         # La recherche en utilisant une date de début supérieure
         # à la date actuelle doit générer une erreur/redirection.
@@ -201,7 +201,7 @@ class TestSearchFormMisc(TestController):
 
         # Préparation des dates/heures.
         from_date = timestamp.strftime("%Y-%m-%d %I:%M:%S %p")
-        to_date = datetime.now() + timedelta(seconds=60)
+        to_date = datetime.utcnow() + timedelta(seconds=60)
         to_date = to_date.strftime("%Y-%m-%d %I:%M:%S %p")
 
         # La recherche en utilisant une date de fin supérieure

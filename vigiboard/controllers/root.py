@@ -5,10 +5,10 @@
 
 """VigiBoard Controller"""
 
+import calendar
 import gettext
 import os.path
 from datetime import datetime
-from time import mktime
 
 from pkg_resources import resource_filename, working_set
 
@@ -222,8 +222,8 @@ class RootController(AuthController, SelfMonitoringController, I18nController):
 
         # Ajout des formulaires et préparation
         # des données pour ces formulaires.
-        tmpl_context.last_modification = \
-            mktime(get_last_modification_timestamp(ids_events).timetuple())
+        tmpl_context.last_modification = calendar.timegm(
+            get_last_modification_timestamp(ids_events).timetuple())
 
         tmpl_context.edit_event_form = EditEventForm("edit_event_form",
             submit_text=_('Apply'), action=url('/update'))
@@ -480,8 +480,8 @@ class RootController(AuthController, SelfMonitoringController, I18nController):
         # Ajout des formulaires et préparation
         # des données pour ces formulaires.
         ids_events = [event[0].idcause for event in page.items]
-        tmpl_context.last_modification = \
-            mktime(get_last_modification_timestamp(ids_events).timetuple())
+        tmpl_context.last_modification = calendar.timegm(
+            get_last_modification_timestamp(ids_events).timetuple())
 
         tmpl_context.edit_event_form = EditEventForm("edit_event_form",
             submit_text=_('Apply'), action=url('/update'))
@@ -569,7 +569,7 @@ class RootController(AuthController, SelfMonitoringController, I18nController):
 
         # Si des changements sont survenus depuis que la
         # page est affichée, on en informe l'utilisateur.
-        last_modification = datetime.fromtimestamp(last_modification)
+        last_modification = datetime.utcfromtimestamp(last_modification)
         cur_last_modification = get_last_modification_timestamp(idevents, None)
         if cur_last_modification and last_modification < cur_last_modification:
             flash(_('Changes have occurred since the page was last displayed, '
@@ -632,7 +632,7 @@ class RootController(AuthController, SelfMonitoringController, I18nController):
                             'to': trouble_ticket,
                         },
                         username=user.user_name,
-                        timestamp=datetime.now(),
+                        timestamp=datetime.utcnow(),
                     )
                 DBSession.add(history)
                 LOGGER.info(_('User "%(user)s" (%(address)s) changed the '
@@ -676,7 +676,7 @@ class RootController(AuthController, SelfMonitoringController, I18nController):
                             value=u'OK',
                             text="Forced state to 'OK'",
                             username=user.user_name,
-                            timestamp=datetime.now(),
+                            timestamp=datetime.utcnow(),
                             state=StateName.statename_to_value(u'OK'),
                         )
                     DBSession.add(history)
@@ -710,7 +710,7 @@ class RootController(AuthController, SelfMonitoringController, I18nController):
                             ack_label,
                         ),
                         username=user.user_name,
-                        timestamp=datetime.now(),
+                        timestamp=datetime.utcnow(),
                     )
                 DBSession.add(history)
                 LOGGER.info(_('User "%(user)s" (%(address)s) changed the state '
@@ -969,7 +969,7 @@ class RootController(AuthController, SelfMonitoringController, I18nController):
         return dict(groups=groups, items=[])
 
 def get_last_modification_timestamp(event_id_list,
-                                    value_if_none=datetime.now()):
+                                    value_if_none=datetime.utcnow()):
     """
     Récupère le timestamp de la dernière modification
     opérée sur l'un des événements dont l'identifiant
@@ -988,5 +988,5 @@ def get_last_modification_timestamp(event_id_list,
             return None
         else:
             last_modification_timestamp = value_if_none
-    return datetime.fromtimestamp(mktime(
-        last_modification_timestamp.timetuple()))
+    return datetime.utcfromtimestamp(calendar.timegm(
+        last_modification_timestamp.utctimetuple()))

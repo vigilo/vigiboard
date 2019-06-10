@@ -28,7 +28,7 @@ def insert_deps(return_service):
         l'identifiant de l'L{Event} généré.
     @rtype: C{tuple}
     """
-    timestamp = datetime.now()
+    timestamp = datetime.utcnow()
 
     hostgroup = functions.add_supitemgroup(u'foo')
     host = functions.add_host(u'bar')

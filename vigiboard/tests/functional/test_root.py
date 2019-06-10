@@ -15,7 +15,7 @@ Please read http://pythonpaste.org/webtest/ for more information.
 """
 from nose.tools import assert_true, assert_false, assert_equal
 from datetime import datetime
-from time import mktime
+from calendar import timegm
 import transaction
 
 from vigilo.models.session import DBSession
@@ -116,7 +116,7 @@ class TestRootController(TestController):
         (hosts, _services) = populate_DB()
 
         # On ajoute 2 évènements corrélés causés par ces hôtes
-        timestamp = datetime.now()
+        timestamp = datetime.utcnow()
         correvent1_id = add_correvent_caused_by(hosts[0], timestamp)
         correvent2_id = add_correvent_caused_by(hosts[1], timestamp)
         transaction.commit()
@@ -126,7 +126,7 @@ class TestRootController(TestController):
         response = self.app.post(
             '/update', {
                 "id" : str(correvent1_id) + "," + str(correvent2_id),
-                "last_modification": mktime(timestamp.timetuple()),
+                "last_modification": timegm(timestamp.utctimetuple()),
                 "trouble_ticket" : u"foo",
                 "ack" : u'NoChange',
             }, status = 401)
@@ -143,7 +143,7 @@ class TestRootController(TestController):
                 "id" : str(correvent1_id) + "," + str(correvent2_id),
                 "ack" : u'NoChange',
                 "trouble_ticket" : u"foo",
-                "last_modification": mktime(timestamp.timetuple()),
+                "last_modification": timegm(timestamp.utctimetuple()),
             }, status = 302, extra_environ = environ)
 
         response = response.follow(status=200, extra_environ = environ)
@@ -160,7 +160,7 @@ class TestRootController(TestController):
         response = self.app.post(
             '/update', {
                 "id" : str(correvent1_id) + "," + str(correvent2_id),
-                "last_modification": mktime(timestamp.timetuple()),
+                "last_modification": timegm(timestamp.utctimetuple()),
                 "trouble_ticket" : u"foo",
                 "ack" : u'NoChange',
             }, status = 302, extra_environ = environ)
@@ -189,7 +189,7 @@ class TestRootController(TestController):
         (_hosts, services) = populate_DB()
 
         # On ajoute 2 évènements corrélés causés par ces hôtes
-        timestamp = datetime.now()
+        timestamp = datetime.utcnow()
         correvent1_id = add_correvent_caused_by(services[0], timestamp)
         correvent2_id = add_correvent_caused_by(services[1], timestamp)
 
@@ -200,7 +200,7 @@ class TestRootController(TestController):
         response = self.app.post(
             '/update', {
                 "id" : str(correvent1_id) + "," + str(correvent2_id),
-                "last_modification": mktime(timestamp.timetuple()),
+                "last_modification": timegm(timestamp.utctimetuple()),
                 "trouble_ticket" : u"foo",
                 "ack" : u'NoChange',
             }, status = 401)
@@ -215,7 +215,7 @@ class TestRootController(TestController):
         response = self.app.post(
             '/update', {
                 "id" : str(correvent1_id) + "," + str(correvent2_id),
-                "last_modification": mktime(timestamp.timetuple()),
+                "last_modification": timegm(timestamp.utctimetuple()),
                 "trouble_ticket" : u"foo",
                 "ack" : u'NoChange',
             }, status = 302, extra_environ = environ)
@@ -234,7 +234,7 @@ class TestRootController(TestController):
         response = self.app.post(
             '/update', {
                 "id" : str(correvent1_id) + "," + str(correvent2_id),
-                "last_modification": mktime(timestamp.timetuple()),
+                "last_modification": timegm(timestamp.utctimetuple()),
                 "trouble_ticket" : u"foo",
                 "ack" : u'NoChange',
             }, status = 302, extra_environ = environ)
@@ -262,7 +262,7 @@ class TestRootController(TestController):
         (hosts, _services) = populate_DB()
 
         # On ajoute 2 évènements corrélés causés par ces hôtes
-        timestamp = datetime.now()
+        timestamp = datetime.utcnow()
         correvent1_id = add_correvent_caused_by(hosts[0], timestamp)
         correvent2_id = add_correvent_caused_by(hosts[1], timestamp)
         transaction.commit()
@@ -272,7 +272,7 @@ class TestRootController(TestController):
         response = self.app.post(
             '/update', {
                 "id" : str(correvent1_id) + "," + str(correvent2_id),
-                "last_modification": mktime(timestamp.timetuple()),
+                "last_modification": timegm(timestamp.utctimetuple()),
                 "trouble_ticket" : "",
                 "ack" : u'Acknowledged',
             }, status = 401)
@@ -287,7 +287,7 @@ class TestRootController(TestController):
         response = self.app.post(
             '/update', {
                 "id" : str(correvent1_id) + "," + str(correvent2_id),
-                "last_modification": mktime(timestamp.timetuple()),
+                "last_modification": timegm(timestamp.utctimetuple()),
                 "trouble_ticket" : "",
                 "ack" : u'Acknowledged',
             }, status = 302, extra_environ = environ)
@@ -306,7 +306,7 @@ class TestRootController(TestController):
         response = self.app.post(
             '/update', {
                 "id" : str(correvent1_id) + "," + str(correvent2_id),
-                "last_modification": mktime(timestamp.timetuple()),
+                "last_modification": timegm(timestamp.utctimetuple()),
                 "trouble_ticket" : "",
                 "ack" : u'Acknowledged',
             }, status = 302, extra_environ = environ)
@@ -335,7 +335,7 @@ class TestRootController(TestController):
         (_hosts, services) = populate_DB()
 
         # On ajoute 2 évènements corrélés causés par ces hôtes
-        timestamp = datetime.now()
+        timestamp = datetime.utcnow()
         correvent1_id = add_correvent_caused_by(services[0], timestamp)
         correvent2_id = add_correvent_caused_by(services[1], timestamp)
 
@@ -346,7 +346,7 @@ class TestRootController(TestController):
         response = self.app.post(
             '/update', {
                 "id" : str(correvent1_id) + "," + str(correvent2_id),
-                "last_modification": mktime(timestamp.timetuple()),
+                "last_modification": timegm(timestamp.utctimetuple()),
                 "trouble_ticket" : "",
                 "ack" : u'Acknowledged',
             }, status = 401)
@@ -361,7 +361,7 @@ class TestRootController(TestController):
         response = self.app.post(
             '/update', {
                 "id" : str(correvent1_id) + "," + str(correvent2_id),
-                "last_modification": mktime(timestamp.timetuple()),
+                "last_modification": timegm(timestamp.utctimetuple()),
                 "trouble_ticket" : "",
                 "ack" : u'Acknowledged',
             }, status = 302, extra_environ = environ)
@@ -380,7 +380,7 @@ class TestRootController(TestController):
         response = self.app.post(
             '/update', {
                 "id" : str(correvent1_id) + "," + str(correvent2_id),
-                "last_modification": mktime(timestamp.timetuple()),
+                "last_modification": timegm(timestamp.utctimetuple()),
                 "trouble_ticket" : "",
                 "ack" : u'Acknowledged',
             }, status = 302, extra_environ = environ)
@@ -408,14 +408,14 @@ class TestRootController(TestController):
         (_hosts, services) = populate_DB()
 
         # On ajoute 2 évènements corrélés causés par ces hôtes
-        timestamp = datetime.now()
+        timestamp = datetime.utcnow()
         correvent1_id = add_correvent_caused_by(services[0], timestamp)
         add_correvent_caused_by(services[1], timestamp)
 
         # Date de modification du premier évènement corrélé
-        later_date = datetime.now()
+        later_date = datetime.utcnow()
         # Date du chargement de la page
-        date = mktime(later_date.timetuple()) - 42
+        date = timegm(later_date.utctimetuple()) - 42
 
         # On ajoute une entrée dans l'historique de l'évènement brut
         # causant le premier évènement corrélé, portant pour timestamp
@@ -478,7 +478,7 @@ class TestRootController(TestController):
             )
             DBSession.add(host)
             DBSession.flush()
-            add_correvent_caused_by(host, datetime.now())
+            add_correvent_caused_by(host, datetime.utcnow())
         transaction.commit()
 
         environ = {'REMOTE_USER': 'manager'}
@@ -505,7 +505,7 @@ class TestRootController(TestController):
         response = self.app.post(
             '/update', {
                 "id" : str(idcorrevent),
-                "last_modification": mktime(datetime.now().timetuple()),
+                "last_modification": timegm(datetime.utcnow().utctimetuple()),
                 "trouble_ticket" : "",
                 "ack" : u'Forced',
             }, status=302, extra_environ=environ)
