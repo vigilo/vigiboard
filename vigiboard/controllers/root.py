@@ -969,7 +969,7 @@ class RootController(AuthController, SelfMonitoringController, I18nController):
         return dict(groups=groups, items=[])
 
 def get_last_modification_timestamp(event_id_list,
-                                    value_if_none=datetime.utcnow()):
+                                    value_if_none=datetime.utcnow):
     """
     Récupère le timestamp de la dernière modification
     opérée sur l'un des événements dont l'identifiant
@@ -984,9 +984,8 @@ def get_last_modification_timestamp(event_id_list,
                          ).scalar()
 
     if not last_modification_timestamp:
-        if not value_if_none:
-            return None
+        if not callable(value_if_none):
+            return value_if_none
         else:
-            last_modification_timestamp = value_if_none
-    return datetime.utcfromtimestamp(calendar.timegm(
-        last_modification_timestamp.utctimetuple()))
+            last_modification_timestamp = value_if_none()
+    return last_modification_timestamp
