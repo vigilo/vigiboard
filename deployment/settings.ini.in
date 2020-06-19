@@ -280,6 +280,12 @@ app_path.nagios = /@NAGIOS_BIN@/
 ;app_auth_method.nagios = basic
 ;app_auth_username.nagios = nagios
 ;app_auth_password.nagios = <contenu de /etc/nagios/passwd.plaintext>
+; f) Définition de l'URL à interroger par défaut.
+;    L'URL peut inclure le motif "{host}", qui sera remplacé par le nom
+;    de l'hôte sélectionné par l'utilisateur, le cas échéant.
+;    Si cette option n'est pas renseignée, "/" est utilisé comme URL
+;    par défaut.
+;app_default_url.nagios = /cgi-bin/status.cgi?host={host}&style=detail
 
 ;
 ; 5 - Configuration avancée des sessions.
