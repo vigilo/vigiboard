@@ -1,7 +1,7 @@
 /*
  * Vigiboard
  *
- * Copyright (C) 2009-2020 CS GROUP – France
+ * Copyright (C) 2009-2020 CS GROUP - France
  */
 
 // Fonction d'échappement
