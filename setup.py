@@ -5,31 +5,36 @@
 # License: GNU GPL v2 <http://www.gnu.org/licenses/gpl-2.0.html>
 
 import os
-
-try:
-    from setuptools import setup, find_packages
-except ImportError:
-    from ez_setup import use_setuptools
-    use_setuptools()
-    from setuptools import setup, find_packages
-
-tests_require = [
-    'WebTest',
-    'BeautifulSoup',
-    'lxml',
-    'coverage',
-    'gearbox',
-]
-
-sysconfdir = os.getenv("SYSCONFDIR", "/etc")
+from setuptools import setup, find_packages
 
 cmdclass = {}
+try:
+    from vigilo.common.commands import install_data
+except ImportError:
+    pass
+else:
+    cmdclass['install_data'] = install_data
+
 try:
     from buildenv.babeljs import compile_catalog_plusjs
 except ImportError:
     pass
 else:
     cmdclass['compile_catalog'] = compile_catalog_plusjs
+
+os.environ.setdefault('HTTPD_USER', 'apache')
+os.environ.setdefault('SYSCONFDIR', '/etc')
+os.environ.setdefault('LOCALSTATEDIR', '/var')
+os.environ.setdefault('LOGROTATEDIR',
+    os.path.join(os.environ['SYSCONFDIR'], 'logrotate.d'))
+
+tests_require = [
+    'WebTest',
+    'lxml',
+    'coverage',
+    'gearbox',
+]
+
 
 setup(
     name='vigilo-vigiboard',
@@ -44,7 +49,7 @@ setup(
     install_requires=[
         "vigilo-turbogears",
     ],
-    packages=find_packages(exclude=['ez_setup', 'buildenv']),
+    packages=find_packages(),
     include_package_data=True,
     test_suite='nose.collector',
     tests_require=tests_require,
@@ -97,15 +102,15 @@ setup(
     },
     cmdclass=cmdclass,
     data_files=[
-        (os.path.join(sysconfdir, 'vigilo/vigiboard/'), [
-            'deployment/vigiboard.conf',
-            'deployment/vigiboard.wsgi',
-            'deployment/settings.ini',
+        ('@LOGROTATEDIR@', ['deployment/vigilo-vigiboard.in']),
+        (os.path.join('@SYSCONFDIR@', 'vigilo', 'vigiboard'), [
+            'deployment/vigiboard.wsgi.in',
+            'deployment/vigiboard.conf.in',
+            'deployment/settings.ini.in',
             'deployment/who.ini',
+            'app_cfg.py',
         ]),
-        (
-            os.path.join(sysconfdir, 'cron.daily'),
-            [os.path.join('pkg', 'vigilo-vigiboard.sh')]
-        ),
+        (os.path.join("@LOCALSTATEDIR@", "log", "vigilo", "vigiboard"), []),
+        (os.path.join("@LOCALSTATEDIR@", "cache", "vigilo", "sessions"), []),
     ],
 )
