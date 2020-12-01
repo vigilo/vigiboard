@@ -255,7 +255,7 @@ freshness_threshold = -1
 
 ; Configuration du proxy Nagios.
 ; a) Emplacement de l'installation de Nagios sur le serveur distant.
-app_path.nagios = /@NAGIOS_BIN@/
+app_path.nagios = @nagios@
 ; b) Schéma ("protocole") à utiliser pour se connecter
 ;    à l'application. En général : http ou https.
 ;    Par défaut : http
@@ -292,7 +292,7 @@ app_path.nagios = /@NAGIOS_BIN@/
 ;
 
 ; Le nom du dossier dans lequel les fichiers de sessions sont conservés.
-cache_dir = @LOCALSTATEDIR@/cache/vigilo/sessions
+cache_dir = @localstatedir@/cache/vigilo/sessions
 
 ; Le nom du cookie de session qui sera créé sur le navigateur
 ; du client.
@@ -364,25 +364,25 @@ formatter = generic
 
 [handler_sql_log]
 class = handlers.TimedRotatingFileHandler
-args = ('@LOCALSTATEDIR@/log/vigilo/vigiboard/sql.log','D', 30, 12)
+args = ('@localstatedir@/log/vigilo/vigiboard/sql.log','D', 30, 12)
 level = NOTSET
 formatter = generic
 
 [handler_root_log]
 class = handlers.TimedRotatingFileHandler
-args = ('@LOCALSTATEDIR@/log/vigilo/vigiboard/root.log', 'D', 30, 12)
+args = ('@localstatedir@/log/vigilo/vigiboard/root.log', 'D', 30, 12)
 level = NOTSET
 formatter = generic
 
 [handler_vigiboard_log]
 class = handlers.TimedRotatingFileHandler
-args = ('@LOCALSTATEDIR@/log/vigilo/vigiboard/vigiboard.log', 'D', 30, 12)
+args = ('@localstatedir@/log/vigilo/vigiboard/vigiboard.log', 'D', 30, 12)
 level = NOTSET
 formatter = generic
 
 [handler_auth_log]
 class = handlers.TimedRotatingFileHandler
-args = ('@LOCALSTATEDIR@/log/vigilo/vigiboard/auth.log', 'D', 30, 12)
+args = ('@localstatedir@/log/vigilo/vigiboard/auth.log', 'D', 30, 12)
 level = NOTSET
 formatter = generic
 

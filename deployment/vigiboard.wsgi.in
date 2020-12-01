@@ -2,4 +2,4 @@
 # vim: set fileencoding=utf-8 sw=4 ts=4 et ft=python :
 
 from vigilo.turbogears import loadapp
-application = loadapp('@SYSCONFDIR@/vigilo/vigiboard/settings.ini')
+application = loadapp('@sysconfdir@/vigilo/vigiboard/settings.ini')

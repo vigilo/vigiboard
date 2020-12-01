@@ -7,12 +7,12 @@ LoadModule wsgi_module modules/mod_wsgi.so
 WSGISocketPrefix /var/run/wsgi
 WSGIRestrictStdout off
 WSGIPassAuthorization on
-WSGIDaemonProcess vigiboard user=@HTTPD_USER@ group=@HTTPD_USER@ processes=4 threads=1 display-name=vigilo-vigiboard
-WSGIScriptAlias /vigilo/vigiboard "@SYSCONFDIR@/vigilo/vigiboard/vigiboard.wsgi"
+WSGIDaemonProcess vigiboard processes=4 threads=1 display-name=vigilo-vigiboard
+WSGIScriptAlias /vigilo/vigiboard "@sysconfdir@/vigilo/vigiboard/vigiboard.wsgi"
 
 KeepAlive Off
 
-<Directory "@SYSCONFDIR@/vigilo/vigiboard/">
+<Directory "@sysconfdir@/vigilo/vigiboard/">
     <IfModule mod_headers.c>
         Header set X-UA-Compatible "IE=edge"
     </IfModule>

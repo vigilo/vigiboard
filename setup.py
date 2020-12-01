@@ -7,26 +7,14 @@
 import os
 from setuptools import setup, find_packages
 
+setup_requires = ['vigilo-common'] if not os.environ.get('CI') else []
+
 cmdclass = {}
 try:
-    from vigilo.common.commands import install_data
-except ImportError:
-    pass
-else:
-    cmdclass['install_data'] = install_data
-
-try:
-    from buildenv.babeljs import compile_catalog_plusjs
-except ImportError:
-    pass
-else:
+    from vigilo.common.commands import compile_catalog_plusjs
     cmdclass['compile_catalog'] = compile_catalog_plusjs
-
-os.environ.setdefault('HTTPD_USER', 'apache')
-os.environ.setdefault('SYSCONFDIR', '/etc')
-os.environ.setdefault('LOCALSTATEDIR', '/var')
-os.environ.setdefault('LOGROTATEDIR',
-    os.path.join(os.environ['SYSCONFDIR'], 'logrotate.d'))
+except ImportError:
+    pass
 
 tests_require = [
     'WebTest',
@@ -46,6 +34,7 @@ setup(
     description="Vigilo event board",
     long_description="Vigilo event board",
     url='https://www.vigilo-nms.com/',
+    setup_requires=setup_requires,
     install_requires=[
         "vigilo-turbogears",
     ],
@@ -101,16 +90,30 @@ setup(
         ],
     },
     cmdclass=cmdclass,
+    vigilo_build_vars={
+        'nagios': {
+            'default': '/nagios/',
+            'description': "URL to Nagios' UI relative to the webserver's root",
+        },
+        'sysconfdir': {
+            'default': '/etc',
+            'description': "installation directory for configuration files",
+        },
+        'localstatedir': {
+            'default': '/var',
+            'description': "local state directory",
+        },
+    },
     data_files=[
-        ('@LOGROTATEDIR@', ['deployment/vigilo-vigiboard.in']),
-        (os.path.join('@SYSCONFDIR@', 'vigilo', 'vigiboard'), [
+        ('@sysconfdir@/logrotate.d', ['deployment/vigilo-vigiboard.in']),
+        (os.path.join('@sysconfdir@', 'vigilo', 'vigiboard'), [
             'deployment/vigiboard.wsgi.in',
             'deployment/vigiboard.conf.in',
             'deployment/settings.ini.in',
             'deployment/who.ini',
             'app_cfg.py',
         ]),
-        (os.path.join("@LOCALSTATEDIR@", "log", "vigilo", "vigiboard"), []),
-        (os.path.join("@LOCALSTATEDIR@", "cache", "vigilo", "sessions"), []),
+        (os.path.join("@localstatedir@", "log", "vigilo", "vigiboard"), []),
+        (os.path.join("@localstatedir@", "cache", "vigilo", "sessions"), []),
     ],
 )
