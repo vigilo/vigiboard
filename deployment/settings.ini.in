@@ -8,11 +8,10 @@
 ; and generally should not be modified by end users.
 
 [DEFAULT]
+; WARNING: *THE LINE BELOW MUST BE SET TO "false" ON A PRODUCTION ENVIRONMENT*
+; Debug mode will enable the interactive debugging tool, allowing ANYONE to
+; execute malicious code after an exception is raised.
 debug = false
-; Uncomment and replace with the address which should receive any error reports
-;email_to = you@yourdomain.com
-smtp_server = localhost
-error_email_from = paste@localhost
 
 [server:main]
 use = egg:Paste#http
@@ -23,27 +22,14 @@ port = 80
 use = egg:vigilo-vigiboard
 
 ;
-; Configuration de VigiBoard
+; Configuration des éléments de sécurité.
 ;
 
-;
-; 1 - Configuration de la base de données.
-;
-
-; URL d'accès à la base de données.
-sqlalchemy.url = postgresql://vigilo:vigilo@127.0.0.1/vigilo
-
-; Options de bas niveau de la couche ORM
-; (pour déboguer les requêtes SQL).
-sqlalchemy.echo = false
-sqlalchemy.echo_pool = false
-sqlalchemy.pool_recycle = 3600
-sqlalchemy.pool_size = 20
-sqlalchemy.max_overflow = 100
-
-;
-; 2 - Configuration des éléments de sécurité.
-;
+; La clé secrète utilisée pour signer les cookies.
+; Vous DEVEZ changer cette valeur avant la mise en production.
+; Vous pouvez utilisez la même valeur que pour la clé
+; "sa_auth.cookie_secret".
+secret = vigilo
 
 ; Liste des algorithmes de hachage des mots de passe acceptables,
 ; séparés par des espaces.
@@ -85,19 +71,6 @@ password_schemes=sha256_crypt
 ; Les algorithmes supportés sont les mêmes que pour l'option "password_schemes".
 deprecated_password_schemes=hex_md5
 
-; La clé secrète utilisée pour chiffrer/déchiffrer la session.
-; Vous DEVEZ changer cette valeur avant la mise en production.
-; Vous pouvez utilisez la même valeur que pour la clé
-; "sa_auth.cookie_secret".
-beaker.session.secret = vigilo
-
-; La clé secrète utilisée pour chiffrer/déchiffrer le cookie
-; d'authentification.
-; Vous DEVEZ changer cette valeur avant la mise en production.
-; Vous pouvez utilisez la même valeur que pour la clé
-; "beaker.session.secret".
-sa_auth.cookie_secret = vigilo
-
 ; Fichier de configuration définissant la politique de gestion
 ; de l'authentification.
 auth.config = %(here)s/who.ini
@@ -106,6 +79,21 @@ auth.config = %(here)s/who.ini
 ; séparés par des virgules.
 ; Par défaut : "managers"
 admin_groups = managers
+
+;
+; Configuration de la base de données.
+;
+
+; URL d'accès à la base de données.
+sqlalchemy.url = postgresql://vigilo:vigilo@127.0.0.1/vigilo
+
+; Options de bas niveau de la couche ORM
+; (pour déboguer les requêtes SQL).
+sqlalchemy.echo = false
+sqlalchemy.echo_pool = false
+sqlalchemy.pool_recycle = 3600
+sqlalchemy.pool_size = 20
+sqlalchemy.max_overflow = 100
 
 ;
 ; 3 - Configuration de l'interface.
@@ -118,7 +106,7 @@ admin_groups = managers
 ;tickets.plugin = identifiant_du_module
 
 ; La langue par défaut de l'interface.
-lang = fr
+i18n.lang = fr
 
 ; Lien d'aide (redirigeant vers la documentation de Vigilo
 ; par exemple).
@@ -288,36 +276,20 @@ app_path.nagios = @nagios@
 ;app_default_url.nagios = /cgi-bin/status.cgi?host={host}&style=detail
 
 ;
-; 5 - Configuration avancée des sessions.
+; Configuration avancée des sessions.
 ;
 
-; Le nom du dossier dans lequel les fichiers de sessions sont conservés.
+; Emplacement du cache des sessions.
 cache_dir = @localstatedir@/cache/vigilo/sessions
 
-; Le nom du cookie de session qui sera créé sur le navigateur
-; du client.
-beaker.session.key = vigiboard
-
-; If you'd like to fine-tune the individual locations of the cache data dirs
-; for the Cache data, or the Session saves, un-comment the desired settings
-; here:
-;beaker.cache.data_dir = %(here)s/data/cache
-;beaker.session.data_dir = %(here)s/data/sessions
+; Le nom du cookie de session qui sera créé sur le navigateur du client.
+session.key = vigiboard
 
 ;
-; 6 - Autres options.
+; Autres options.
 ; Pensez à configurer le logging dans les sections
 ; "loggers", "handlers" & "formatters" ci-dessous.
 ;
-
-; Doit être laissé à true pour obtenir une application fonctionnelle.
-full_stack = true
-
-; Doit valoir false en production (risque de sécurité sinon).
-; WARNING: *THE LINE BELOW MUST BE UNCOMMENTED ON A PRODUCTION ENVIRONMENT*
-; Debug mode will enable the interactive debugging tool, allowing ANYONE to
-; execute malicious code after an exception is raised.
-set debug = false
 
 ; Logging configuration
 ; Add additional loggers, handlers, formatters here

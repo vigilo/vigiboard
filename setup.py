@@ -62,7 +62,7 @@ setup(
 
     entry_points={
         'paste.app_factory': [
-            'main = vigiboard.config.middleware:make_app',
+            'main = vigiboard.config.application:make_app',
         ],
         'vigilo.models': [
             'populate_db = vigiboard.websetup:populate_db',

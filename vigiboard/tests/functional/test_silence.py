@@ -21,8 +21,6 @@ from vigilo.models.tables import Silence, SupItem
 from vigiboard.tests import TestController
 from tg import config
 
-import logging
-logging.basicConfig()
 
 def populate_DB():
     """ Peuple la base de données en vue des tests. """

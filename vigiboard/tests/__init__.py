@@ -4,6 +4,8 @@
 
 """Unit and functional test suite for vigiboard."""
 
+from __future__ import print_function
+
 from vigilo.turbogears.test import setup_db, teardown_db
 from vigilo.turbogears.test import TestController as TestTGController
 

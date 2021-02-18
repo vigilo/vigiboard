@@ -10,34 +10,10 @@ ITIL de l'événement corrélé.
 import tw2.forms as twf
 from formencode import validators
 from tg.i18n import lazy_ugettext as l_
+from tw2.forms.widgets import BaseLayout
 
 from vigilo.models.tables import CorrEvent, StateName
 from vigiboard.controllers.plugins import VigiboardRequestPlugin, ITEMS
-
-from tw2.forms.widgets import BaseLayout, FormField
-
-class HorizontalBox(BaseLayout, FormField):
-    """
-    Container de widgets, qui se contente de les placer
-    côte-à-côte horizontalement.
-    """
-    inline_engine_name = "genshi"
-    template = """<div xmlns:py="http://genshi.edgewall.org/"
-        id="${w.compound_id}" name="${w.name}">
-    <py:for each="c in w.children_non_hidden">
-        ${c.display()}
-    </py:for>
-</div>
-"""
-
-    def generate_schema(self):
-        """
-        Fait en sorte que l'absence de saisie dans les sous-champs
-        du container ne génère pas une erreur (Valeur manquante)
-        sur le container lui-même.
-        """
-        super(HorizontalBox, self).generate_schema()
-        self.validator.if_missing = None
 
 
 class PluginPriority(VigiboardRequestPlugin):
@@ -52,6 +28,7 @@ class PluginPriority(VigiboardRequestPlugin):
     (ordre opposé). L'ordre utilisé par VigiBoard pour le tri est
     défini dans la variable de configuration C{vigiboard_priority_order}.
     """
+    validator = validators.Validator(if_missing=None, if_empty=None)
 
     def get_search_fields(self):
         options = [
@@ -64,7 +41,7 @@ class PluginPriority(VigiboardRequestPlugin):
         ]
 
         return [
-            HorizontalBox(
+            BaseLayout(
                 'priority',
                 label=l_('Priority'),
                 children=[

@@ -9,6 +9,7 @@ from __future__ import print_function
 from nose.tools import assert_true, assert_equal
 from datetime import datetime
 from datetime import timedelta
+import time
 import transaction
 
 from vigiboard.tests import TestController
@@ -19,7 +20,8 @@ from vigilo.models.tables import SupItemGroup, Host, Permission, \
 
 def insert_deps():
     """Insère les dépendances nécessaires aux tests."""
-    timestamp = datetime.utcnow() + timedelta(seconds=-10)
+    utc_timestamp = datetime.utcnow() + timedelta(seconds=-10)
+    loc_timestamp = datetime.fromtimestamp(time.mktime(utc_timestamp.timetuple()))
 
     host = Host(
         name=u'bar',
@@ -40,7 +42,7 @@ def insert_deps():
 
     event = Event(
         supitem=host,
-        timestamp=timestamp,
+        timestamp=utc_timestamp,
         current_state=StateName.statename_to_value(u'WARNING'),
         message=u'Hello world',
     )
@@ -52,7 +54,7 @@ def insert_deps():
         trouble_ticket=u'FOO BAR BAZ éçà',
         ack=CorrEvent.ACK_NONE,
         occurrence=42,
-        timestamp_active=timestamp,
+        timestamp_active=utc_timestamp,
         cause=event,
     )
     correvent.events.append(event)
@@ -67,7 +69,7 @@ def insert_deps():
         access=u'r',
     ))
     DBSession.flush()
-    return timestamp
+    return loc_timestamp
 
 class TestSearchFormMisc(TestController):
     """Teste la récupération d'événements selon le nom d'hôte."""
@@ -146,7 +148,7 @@ class TestSearchFormMisc(TestController):
 
         # Préparation des dates/heures.
         from_date = timestamp.strftime("%Y-%m-%d %I:%M:%S %p")
-        to_date = datetime.utcnow().strftime("%Y-%m-%d %I:%M:%S %p")
+        to_date = datetime.now().strftime("%Y-%m-%d %I:%M:%S %p")
 
         # Permet également de vérifier que la recherche
         # par date est inclusive.
@@ -173,9 +175,9 @@ class TestSearchFormMisc(TestController):
         transaction.commit()
 
         # Préparation des dates/heures.
-        from_date = datetime.utcnow() + timedelta(seconds=60)
-        from_date = from_date.strftime("%Y-%m-%d %I:%M:%S %p")
-        to_date = datetime.utcnow().strftime("%Y-%m-%d %I:%M:%S %p")
+        now = datetime.now()
+        from_date = (now + timedelta(seconds=60)).strftime("%Y-%m-%d %I:%M:%S %p")
+        to_date = from_date
 
         # La recherche en utilisant une date de début supérieure
         # à la date actuelle doit générer une erreur/redirection.
@@ -190,9 +192,8 @@ class TestSearchFormMisc(TestController):
 
         # Après redirection, le message d'erreur apparait dans la page.
         resp = resp.follow(extra_environ=environ)
-        error = '<div id="flash"><div class="error">%s</div></div>' % \
-            'Start date cannot be greater than current date'
-        assert_true(error in resp.body)
+        error = resp.lxml.xpath('//div[@id="flash"]/div/text()')[0]
+        assert_equal(error, 'Start date cannot be greater than current date')
 
     def test_future_end_date(self):
         """Contrôle des dates. Vérifie que date de fin < date courante."""
@@ -200,9 +201,9 @@ class TestSearchFormMisc(TestController):
         transaction.commit()
 
         # Préparation des dates/heures.
-        from_date = timestamp.strftime("%Y-%m-%d %I:%M:%S %p")
-        to_date = datetime.utcnow() + timedelta(seconds=60)
-        to_date = to_date.strftime("%Y-%m-%d %I:%M:%S %p")
+        now = datetime.now()
+        from_date = now.strftime("%Y-%m-%d %I:%M:%S %p")
+        to_date = (now + timedelta(seconds=60)).strftime("%Y-%m-%d %I:%M:%S %p")
 
         # La recherche en utilisant une date de fin supérieure
         # à la date courante doit générer une erreur/redirection.
@@ -217,9 +218,8 @@ class TestSearchFormMisc(TestController):
 
         # Après redirection, le message d'erreur apparait dans la page.
         resp = resp.follow(extra_environ=environ)
-        error = '<div id="flash"><div class="error">%s</div></div>' % \
-            'End date cannot be greater than current date'
-        assert_true(error in resp.body)
+        error = resp.lxml.xpath('//div[@id="flash"]/div/text()')[0]
+        assert_equal(error, 'End date cannot be greater than current date')
 
     def test_dates_inconsistency(self):
         """Contrôle des dates. Vérifie date de début <= date de fin."""
@@ -244,7 +244,6 @@ class TestSearchFormMisc(TestController):
 
         # Après redirection, le message d'erreur apparait dans la page.
         resp = resp.follow(extra_environ=environ)
-        error = '<div id="flash"><div class="error">%s</div></div>' % \
-            'Start date cannot be greater than end date'
-        assert_true(error in resp.body)
+        error = resp.lxml.xpath('//div[@id="flash"]/div/text()')[0]
+        assert_equal(error, 'Start date cannot be greater than end date')
 

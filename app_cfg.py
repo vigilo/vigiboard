@@ -4,141 +4,138 @@
 # License: GNU GPL v2 <http://www.gnu.org/licenses/gpl-2.0.html>
 
 """
-Global configuration file for TG2-specific settings in vigiboard.
-
-This file complements development/deployment.ini.
-
-Please note that **all the argument values are strings**. If you want to
-convert them into boolean, for example, you should use the
-:func:`paste.deploy.converters.asbool` function, as in::
-
-    from paste.deploy.converters import asbool
-    setting = asbool(global_conf.get('the_setting'))
-
+Additional settings for VigiBoard that can only be represented
+using the Python programming language.
 """
 
-from vigilo.turbogears import VigiloAppConfig
-
 import vigiboard
-from vigiboard.lib import app_globals # pylint: disable-msg=W0611
-# W0611: Unused import: imports nécessaires pour le fonctionnement
+from vigiboard.config.configurator import VigiboardConfigurator
 
+options = {
+    # Configuration des liens
+    # Les elements suivants peuvent etre utilises dans la chaine de formatage :
+    # - %(idcorrevent)d : identifiant de l'aggregat (alerte correlee)
+    # - %(host)s : le nom de l'hote concerne par l'alerte
+    # - %(service)s : le nom du service concerne par l'alerte
+    # - %(message) : le message transmis par Nagios dans l'alerte
+    #
+    # Permet de satisfaire l'exigence VIGILO_EXIG_VIGILO_BAC_0130.
+    'vigiboard_links.eventdetails': (
+        {
+            'label': u'Détail de l\'hôte dans Nagios',
+            'uri': '/nagios/%(host)s/cgi-bin/status.cgi?host=%(host)s',
+        },
+        {
+            'label': u'Détail de la métrologie',
+            'uri': 'http://vigilo.example.com/vigilo/vigigraph/rpc/fullHostPage?host=%(host)s',
+        },
+        {
+            'label': u'Détail de la sécurité',
+            'uri': 'http://security.example.com/?host=%(host)s',
+        },
+        {
+            'label': 'Inventaire',
+            'uri': 'http://cmdb.example.com/?host=%(host)s',
+        },
+        {
+            'label': 'Documentation',
+            'uri': 'http://doc.example.com/?q=%(message)s',
+        },
+    ),
 
-import logging
-LOGGER = logging.getLogger(__name__)
+    # URL des tickets, possibilités:
+    # - %(idcorrevent)d
+    # - %(host)s
+    # - %(service)s
+    # - %(tt)s
+    'vigiboard_links.tt': 'http://bugs.example.com/?ticket=%(tt)s',
 
-class VigiboardConfig(VigiloAppConfig):
-    def setup_sqlalchemy(self):
-        super(VigiboardConfig, self).setup_sqlalchemy()
+    # Use the following plugins to display various pieces of information
+    # on VigiBoard's main page.
+    #
+    # Each plugin may add zero or more columns to VigiBoard's main page,
+    # or it may add fields to VigiBoard's search form.
+    #
+    # The order is significant (and affects columns / search fields order).
+    'vigiboard_plugins': (
+        # The 'id' plugin is disabled by default because it serves more as
+        # an example and does not add any operationnal value.
+        #'id',
 
-        # On est obligés d'attendre que la base de données
-        # soit configurée pour charger les plugins.
-        from pkg_resources import working_set
-        from vigiboard.controllers.plugins import VigiboardRequestPlugin
-        from tg import config
+        # The 'defaits' plugin adds a link to a menu where additional
+        # information about an alarm can be retrieved.
+        'details',
 
-        plugins = []
-        for plugin_name in config['vigiboard_plugins']:
-            try:
-                ep = working_set.iter_entry_points(
-                        "vigiboard.columns", plugin_name).next()
-            except StopIteration:
-                pass
+        # The 'state' plugin adds a column with the event's current state.
+        # The plugin is disabled by default because this information is already
+        # visible in other plugins as a color code.
+        #'state',
 
-            if ep.name in dict(plugins):
-                continue
+        # This plugin does not add any column to the display,
+        # but makes it possible to filter alarms based on the groups
+        # the affected host belongs to.
+        'groups',
 
-            try:
-                plugin_class = ep.load(require=True)
-                if issubclass(plugin_class, VigiboardRequestPlugin):
-                    plugins.append((unicode(ep.name), plugin_class()))
-            except Exception: # pylint: disable-msg=W0703
-                # W0703: Catch "Exception"
-                LOGGER.exception(u'Unable to import plugin %s', plugin_name)
+        # This plugin shows the date of the alarm's last occurrence,
+        # and the duration since the first occurrence.
+        'date',
 
-        config['columns_plugins'] = plugins
+        # This plugin displays the alarm's priority.
+        'priority',
 
-base_config = VigiboardConfig('VigiBoard')
-base_config.package = vigiboard
-base_config.mimetype_lookup = {
-    '.csv': 'text/csv',
+        # This plugin displays the number of occurrences.
+        'occurrences',
+
+        # This plugin displays the affected host's address.
+        # It is disabled by default because the hostname plugin is preferred.
+        #'address',
+
+        # This plugin displays the affected host's name.
+        'hostname',
+
+        # This plugin displays the affected service's name, if any.
+        'servicename',
+
+        # This plugin displays the alarm's output message.
+        'output',
+
+        # This plugin displays the number of events masked by the alarm.
+        # It is disabled by default because it is rarely used.
+        #'masked_events',
+
+        # This plugin displays the high-level services impacted by the alarm.
+        'hls',
+
+        # This plugin displays the acknowledgment status for the alarm.
+        # It can also be used to change the acknowledgment status
+        # and to assign a ticket to the alarm.
+        'status',
+
+        # This plugin displays a static message and serves as an exemple.
+        #'test',
+
+        # This plugin provides a way to filter alarms based on maps.
+        'map',
+    ),
+
+    'csv_columns': (
+        'id',
+        'state',
+        'initial_state',
+        'peak_state',
+        'date',
+        'duration',
+        'priority',
+        'occurrences',
+        'hostname',
+        'servicename',
+        'output',
+        'ack',
+        'trouble_ticket_id',
+        'trouble_ticket_link',
+    ),
 }
 
-##################################
-# Settings specific to Vigiboard #
-##################################
-
-# Configuration des liens
-# Les elements suivants peuvent etre utilises dans la chaine de formatage :
-# - %(idcorrevent)d : identifiant de l'aggregat (alerte correlee)
-# - %(host)s : le nom de l'hote concerne par l'alerte
-# - %(service)s : le nom du service concerne par l'alerte
-# - %(message) : le message transmis par Nagios dans l'alerte
-#
-# Permet de satisfaire l'exigence VIGILO_EXIG_VIGILO_BAC_0130.
-base_config['vigiboard_links.eventdetails'] = (
-    {
-        'label': u'Détail de l\'hôte dans Nagios',
-        'uri': '/nagios/%(host)s/cgi-bin/status.cgi?host=%(host)s',
-    },
-    {
-        'label': u'Détail de la métrologie',
-        'uri': 'http://vigilo.example.com/vigilo/vigigraph/rpc/fullHostPage?host=%(host)s',
-    },
-    {
-        'label': u'Détail de la sécurité',
-        'uri': 'http://security.example.com/?host=%(host)s',
-    },
-    {
-        'label': 'Inventaire',
-        'uri': 'http://cmdb.example.com/?host=%(host)s',
-    },
-    {
-        'label': 'Documentation',
-        'uri': 'http://doc.example.com/?q=%(message)s',
-    },
-)
-
-# URL des tickets, possibilités:
-# - %(idcorrevent)d
-# - %(host)s
-# - %(service)s
-# - %(tt)s
-base_config['vigiboard_links.tt'] = 'http://bugs.example.com/?ticket=%(tt)s'
-
-# Plugins to use
-base_config['vigiboard_plugins'] = (
-#    'id',
-    'details',
-#    'state',
-    'groups',
-    'date',
-    'priority',
-    'occurrences',
-#    'address',
-    'hostname',
-    'servicename',
-    'output',
-#    'masked_events',
-    'hls',
-    'status',
-#    'test',
-    'map',
-)
-
-base_config['csv_columns'] = (
-    'id',
-    'state',
-    'initial_state',
-    'peak_state',
-    'date',
-    'duration',
-    'priority',
-    'occurrences',
-    'hostname',
-    'servicename',
-    'output',
-    'ack',
-    'trouble_ticket_id',
-    'trouble_ticket_link',
-)
+# Create the final configuration for the application
+base_config = VigiboardConfigurator('VigiBoard', vigiboard)
+base_config.update_blueprint(options)

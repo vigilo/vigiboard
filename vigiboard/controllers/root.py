@@ -8,6 +8,7 @@
 import calendar
 import gettext
 import os.path
+import time
 from datetime import datetime
 
 from pkg_resources import resource_filename, working_set
@@ -94,13 +95,13 @@ class RootController(AuthController, SelfMonitoringController, I18nController):
         Gestion des erreurs de validation : on affiche les erreurs
         puis on redirige vers la dernière page accédée.
         """
-        for k in tmpl_context.form_errors:
-            flash("'%s': %s" % (k, tmpl_context.form_errors[k]), 'error')
+        for err in request.validation.errors.items():
+            flash("'%s': %s" % err, 'error')
         redirect(request.environ.get('HTTP_REFERER', '/'))
 
     @expose('json')
     def handle_validation_errors_json(self, *args, **kwargs):
-        kwargs['errors'] = tmpl_context.form_errors
+        kwargs['errors'] = request.validation.errors
         return dict(kwargs)
 
     def __init__(self, *args, **kwargs):
@@ -211,8 +212,7 @@ class RootController(AuthController, SelfMonitoringController, I18nController):
 
         # Ajout des formulaires et préparation
         # des données pour ces formulaires.
-        tmpl_context.last_modification = calendar.timegm(
-            get_last_modification_timestamp(ids_events).timetuple())
+        tmpl_context.last_modification = get_last_modification_timestamp(ids_events)
 
         tmpl_context.edit_event_form = EditForm
 
@@ -467,8 +467,7 @@ class RootController(AuthController, SelfMonitoringController, I18nController):
         # Ajout des formulaires et préparation
         # des données pour ces formulaires.
         ids_events = [event[0].idcause for event in page.items]
-        tmpl_context.last_modification = calendar.timegm(
-            get_last_modification_timestamp(ids_events).timetuple())
+        tmpl_context.last_modification = get_last_modification_timestamp(ids_events)
 
         tmpl_context.edit_event_form = EditForm
 
@@ -544,9 +543,8 @@ class RootController(AuthController, SelfMonitoringController, I18nController):
 
         # Si des changements sont survenus depuis que la
         # page est affichée, on en informe l'utilisateur.
-        last_modification = datetime.utcfromtimestamp(last_modification)
         cur_last_modification = get_last_modification_timestamp(idevents, None)
-        if cur_last_modification and last_modification < cur_last_modification:
+        if cur_last_modification and last_modification < int(cur_last_modification):
             flash(_('Changes have occurred since the page was last displayed, '
                     'your changes HAVE NOT been saved.'), 'warning')
             raise redirect(request.environ.get('HTTP_REFERER', '/'))
@@ -944,7 +942,7 @@ class RootController(AuthController, SelfMonitoringController, I18nController):
         return dict(groups=groups, items=[])
 
 def get_last_modification_timestamp(event_id_list,
-                                    value_if_none=datetime.utcnow):
+                                    value_if_none=time.time):
     """
     Récupère le timestamp de la dernière modification
     opérée sur l'un des événements dont l'identifiant
@@ -962,5 +960,5 @@ def get_last_modification_timestamp(event_id_list,
         if not callable(value_if_none):
             return value_if_none
         else:
-            last_modification_timestamp = value_if_none()
-    return last_modification_timestamp
+            return value_if_none()
+    return time.mktime(last_modification_timestamp.timetuple())

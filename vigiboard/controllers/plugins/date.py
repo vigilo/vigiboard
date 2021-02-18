@@ -7,6 +7,7 @@
 Un plugin pour VigiBoard qui ajoute une colonne avec la date à laquelle
 est survenu un événement et la durée depuis laquelle l'événement est actif.
 """
+import time
 import tw2.forms as twf
 from datetime import datetime, timedelta
 from tg.i18n import ugettext as _, lazy_ugettext as l_
@@ -41,28 +42,29 @@ class PluginDate(VigiboardRequestPlugin):
         if state != ITEMS:
             return
 
-        if search.get('from_date'):
-            query.add_filter(tables.CorrEvent.timestamp_active >=
-                search['from_date'])
+        from_date = search.get('from_date')
+        to_date = search.get('to_date')
 
-            # Ajout de contrôles sur la date de début
-            if search['from_date'] >= datetime.utcnow():
+        # Ajout des contrôles
+        if from_date and to_date and from_date > to_date:
+            error_handler.handle_error_message(
+                _('Start date cannot be greater than end date'))
+
+        if from_date:
+            if from_date >= datetime.utcnow():
                 error_handler.handle_error_message(
                     _('Start date cannot be greater than current date'))
 
-            if search.get('to_date') and \
-               search['from_date'] > search['to_date']:
-                error_handler.handle_error_message(
-                    _('Start date cannot be greater than end date'))
+            from_date = datetime.utcfromtimestamp(time.mktime(from_date.timetuple()))
+            query.add_filter(tables.CorrEvent.timestamp_active >= from_date)
 
-        if search.get('to_date'):
-            query.add_filter(tables.CorrEvent.timestamp_active <=
-                search['to_date'])
-
-            # Ajout de contrôles sur la date de fin
-            if search['to_date'] >= datetime.utcnow():
+        if to_date:
+            if to_date >= datetime.utcnow():
                 error_handler.handle_error_message(
                     _('End date cannot be greater than current date'))
+
+            to_date = datetime.utcfromtimestamp(time.mktime(to_date.timetuple()))
+            query.add_filter(tables.CorrEvent.timestamp_active <= to_date)
 
     def get_data(self, event):
         state = tables.StateName.value_to_statename(

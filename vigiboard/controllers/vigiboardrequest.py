@@ -450,6 +450,5 @@ class VigiboardRequest():
 
         # Ajout des formulaires et préparation
         # des données pour ces formulaires.
-        tmpl_context.last_modification = \
-            mktime(get_last_modification_timestamp(ids).timetuple())
+        tmpl_context.last_modification = get_last_modification_timestamp(ids)
         tmpl_context.edit_event_form = EditForm

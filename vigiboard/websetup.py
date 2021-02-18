@@ -29,8 +29,8 @@ def setup_app(command, conf, variables):
     app_cfg = imp.load_module('vigiboard.config.app_cfg', *mod_info)
 
     # Initialisation de l'environnement d'exécution.
-    load_environment = app_cfg.base_config.make_load_environment()
-    load_environment(conf.global_conf, conf.local_conf)
+    base_config = app_cfg.base_config
+    base_config.make_wsgi_app(conf.global_conf, conf.local_conf, wrap_app=None)
     tg_pop_db()
 
 def populate_db(bind):

@@ -46,6 +46,13 @@ class SearchForm(twf.TableForm):
 class SearchFormWithSorting(twc.CompoundWidget):
     id = None
 
+    # @HACK TurboGears expects a Form rather than a (Compound)Widget
+    #       and crashes when widget.child is not defined and a validation
+    #       error occurs.
+    @property
+    def child(self):
+        return self
+
     # Paramètres liés à la pagination et au tri.
     page = twf.HiddenField(validator=validators.Int(
             min=1,
