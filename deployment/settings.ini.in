@@ -85,7 +85,7 @@ admin_groups = managers
 ;
 
 ; URL d'accès à la base de données.
-sqlalchemy.url = postgresql://vigilo:vigilo@127.0.0.1/vigilo
+sqlalchemy.url = postgresql://vigilo:vigilo@127.0.0.1/vigilo?application_name=vigiboard
 
 ; Options de bas niveau de la couche ORM
 ; (pour déboguer les requêtes SQL).
